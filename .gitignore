@@ -5,3 +5,7 @@
 *~
 .project
 .pydevproject
+target
+.settings/*
+!.settings/.jsdtscope
+.classpath
