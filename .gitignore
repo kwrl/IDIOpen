@@ -3,9 +3,12 @@
 *.bak
 *.orig
 *~
+*.log
+*.egg-info
+*.py.disabled
 .project
 .pydevproject
-target
-.settings/*
-!.settings/.jsdtscope
-.classpath
+/venv/
+/virtenv/
+/dist/
+/build/
