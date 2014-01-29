@@ -1,0 +1,11 @@
+*.py[co]
+*.sw[po]
+*.bak
+*.orig
+*~
+.project
+.pydevproject
+target
+.settings/*
+!.settings/.jsdtscope
+.classpath
