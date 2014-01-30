@@ -3,14 +3,13 @@ Gentlecoding
 
 Programming for IDIOpen
 
-* _documents_: https://drive.google.com/#folders/0B0kLIN3j9tQ5c21NbFc1eHoybGM
-* _openshift-admin_: https://openshift.redhat.com/app/console/applications
-* _website_: it2901-gentlecoding.rhcloud.com
-* _jenkins_: jenkins-gentlecoding.rhcloud.com
-* _openshift-github_: ssh://52e4349a5004466b76000045@it2901-gentlecoding.rhcloud.com/~/git/it2901.git/
-* _openshift SSH_: ssh 52e4349a5004466b76000045@it2901-gentlecoding.rhcloud.com
-
-* _sounddrop spotify_: http://open.soundrop.fm/s/XN9jBJxMqazaBOZL
+* documents: https://drive.google.com/#folders/0B0kLIN3j9tQ5c21NbFc1eHoybGM
+* openshift-admin: https://openshift.redhat.com/app/console/applications
+* website: it2901-gentlecoding.rhcloud.com
+* jenkins: jenkins-gentlecoding.rhcloud.com
+* openshift-github: ssh://52e4349a5004466b76000045@it2901-gentlecoding.rhcloud.com/~/git/it2901.git/
+* openshift SSH: ssh 52e4349a5004466b76000045@it2901-gentlecoding.rhcloud.com
+* sounddrop spotify: http://open.soundrop.fm/s/XN9jBJxMqazaBOZL
 
 dev contact:
 
@@ -24,12 +23,12 @@ dev contact:
 To get github up and running for production, replace your .git/config file
 with the "config" provided in this directory.
 
-The *openshift* branch is LIVE, and will be put on the webserver.
+The **openshift branch** is LIVE, and will be put on the webserver.
 You can push this by writing "git push openshift".
-The *master* branch is supposed to stay clean, but it is only on github (not live)
+The **master** branch is supposed to stay clean, but it is only on github (not live)
 
-To push to *BOTH*, which is what you want ideally, write "git push all"
-the command *git push* (without any branch specified) should default to push 
+To push to **BOTH**, which is what you want ideally, write "git push all"
+the command **git push** (without any branch specified) should default to push 
 to master
 
 
