@@ -1,96 +1,37 @@
-Django 1.6 on OpenShift
-=======================
+Gentlecoding
+---------------
 
-This git repository helps you get up and running quickly w/ a Django 1.6
-installation on OpenShift.  The Django project name used in this repo
-is 'openshift' but you can feel free to change it.  Right now the
-backend is sqlite3 and the database runtime is found in
-`$OPENSHIFT_DATA_DIR/db.sqlite3`.
+Programming for IDIOpen
 
-Before you push this app for the first time, you will need to change
-the [Django admin password](#admin-user-name-and-password).
-Then, when you first push this
-application to the cloud instance, the sqlite database is copied from
-`wsgi/openshift/db.sqlite3` to $OPENSHIFT_DATA_DIR/ with your newly 
-changed login credentials. Other than the password change, this is the 
-stock database that is created when `python manage.py syncdb` is run with
-only the admin app installed.
+documents: https://drive.google.com/#folders/0B0kLIN3j9tQ5c21NbFc1eHoybGM
+openshift admin: https://openshift.redhat.com/app/console/applications
+website: it2901-gentlecoding.rhcloud.com
+jenkins: jenkins-gentlecoding.rhcloud.com
+openshift github: ssh://52e4349a5004466b76000045@it2901-gentlecoding.rhcl
+oud.com/~/git/it2901.git/
+openshift SSH: ssh 52e4349a5004466b76000045@it2901-gentlecoding.rhcloud.com
 
-On subsequent pushes, a `python manage.py syncdb` is executed to make
-sure that any models you added are created in the DB.  If you do
-anything that requires an alter table, you could add the alter
-statements in `GIT_ROOT/.openshift/action_hooks/alter.sql` and then use
-`GIT_ROOT/.openshift/action_hooks/deploy` to execute that script (make
-sure to back up your database w/ `rhc app snapshot save` first :) )
+sounddrop spotify: http://open.soundrop.fm/s/XN9jBJxMqazaBOZL
 
-With this you can install Django 1.6 on OpenShift.
+dev contact:
+andsild@gmail.com, andesil@stud.ntnu.no, 91 80 20 57
+filip.egge@gmail.com, filipfe@stud.ntnu.no, 94809127
+kitteeeeeeh@gmail.com, aakongk@stud.ntnu.no, 
+haakon.konrad@gmail.com, 98044242
+Fosse, 91369708
+tinolazreg@gmail.com, 90173005
 
-Running on OpenShift
---------------------
+To get github up and running for production, replace your .git/config file
+with the "config" provided in this directory.
 
-Create an account at http://openshift.redhat.com/
+The *openshift* branch is LIVE, and will be put on the webserver.
+You can push this by writing "git push openshift".
+The *master* branch is supposed to stay clean, but it is only on github (not live)
 
-Install the RHC client tools if you have not already done so:
-    
-    sudo gem install rhc
+To push to *BOTH*, which is what you want ideally, write "git push all"
+the command *git push* (without any branch specified) should default to push 
+to master
 
-Create a python-2.7 application
-
-    rhc app create -a djangoproj -t python-2.7
-
-Add this upstream repo
-
-    cd djangoproj
-    git remote add upstream -m master git://github.com/rancavil/django-openshift-quickstart.git
-    git pull -s recursive -X theirs upstream master
-
-####Note:
-If you want to use the Redis-Cloud with Django see [the wiki](https://github.com/rancavil/django-openshift-quickstart/wiki/Django-1.6-with-Redis-Cloud) 
-
-Then push the repo upstream
-
-    git push
-
-Here, the [admin user name and password will be displayed](#admin-user-name-and-password), so pay
-special attention.
-	
-That's it. You can now checkout your application at:
-
-    http://djangoproj-$yournamespace.rhcloud.com
-
-Admin user name and password
-----------------------------
-As the `git push` output scrolls by, keep an eye out for a
-line of output that starts with `Django application credentials: `. This line
-contains the generated admin password that you will need to begin
-administering your Django app. This is the only time the password
-will be displayed, so be sure to save it somewhere. You might want 
-to pipe the output of the git push to a text file so you can grep for
-the password later.
-
-When you make:
-
-     git push
-
-In the console output, you must find something like this:
-
-     remote: Django application credentials:
-     remote: 	user: admin
-     remote: 	SY1ScjQGb2qb
-
-Or you can go to SSH console, and check the CREDENTIALS file located 
-in $OPENSHIFT_DATA_DIR.
-
-     cd $OPENSHIFT_DATA_DIR
-     vi CREDENTIALS
-
-You should see the output:
-
-     Django application credentials:
-     		 user: admin
-     		 SY1ScjQGb2qb
-
-After, you can change the password in the Django admin console.
 
 Django project directory structure
 ----------------------------------
