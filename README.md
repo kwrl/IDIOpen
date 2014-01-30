@@ -23,13 +23,12 @@ dev contact:
 To get github up and running for production, replace your .git/config file
 with the "config" provided in this directory.
 
-The **openshift branch** is LIVE, and will be put on the webserver.
-You can push this by writing "git push openshift".
+The **openshift remote** is LIVE, and pushes will be put on the webserver.
+"git push openshift" achieves this.
 The **master** branch is supposed to stay clean, but it is only on github (not live)
 
-To push to **BOTH**, which is what you want ideally, write "git push all"
-the command **git push** (without any branch specified) should default to push 
-to master
+When pushing to production, you should push to *both* branches.
+Do this by typing **git push all**
 
 
 Django project directory structure
