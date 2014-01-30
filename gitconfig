@@ -1,0 +1,21 @@
+[core]
+	repositoryformatversion = 0
+	filemode = true
+	bare = false
+	logallrefupdates = true
+[remote "origin"]
+	url = https://github.com/kwrl/IDIOpen.git
+	fetch = +refs/heads/*:refs/remotes/origin/*
+[remote "openshift"]
+	url = ssh://52e4349a5004466b76000045@it2901-gentlecoding.rhcloud.com/~/git/it2901.git/
+
+[remote "all"]
+	url = https://github.com/kwrl/IDIOpen.git
+	url = ssh://52e4349a5004466b76000045@it2901-gentlecoding.rhcloud.com/~/git/it2901.git/
+	fetch = +refs/heads/*:refs/remotes/origin/*
+[remote "upstream"]
+	url = git://github.com/rancavil/django-openshift-quickstart.git
+	fetch = +refs/heads/*:refs/remotes/upstream/*
+[gui]
+	wmstate = normal
+	geometry = 1188x1035+0+14 192 177
