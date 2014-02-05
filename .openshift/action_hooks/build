@@ -5,3 +5,6 @@
 # could be python, php, ruby, etc.
 
 # Activate VirtualEnv in order to use the correct libraries
+
+export PYLINTHOME="${HOME}app-root/repo"
+export JENKINS_REPORT_DIR="${HOME}app-root/repo"
