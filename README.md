@@ -12,6 +12,7 @@ Programming for IDIOpen
 * sounddrop spotify: http://open.soundrop.fm/s/XN9jBJxMqazaBOZL
 
 dev contact:
+-----------------
 
 * andsild@gmail.com, andesil@stud.ntnu.no, 91 80 20 57
 * filip.egge@gmail.com, filipfe@stud.ntnu.no, 94809127
@@ -20,8 +21,13 @@ dev contact:
 * Fosse, 91369708
 * tinolazreg@gmail.com, 90173005
 
-To get github up and running for production, replace your .git/config file
+Git configuration
+--------------------------
+
+Replace your .git/config file
 with the "config" provided in this directory.
+
+**"cp -vi <gitfolder>/config/gitconfig <gitfolder>/.git/config"**
 
 The **openshift remote** is LIVE, and pushes will be put on the webserver.
 "git push openshift" achieves this.
@@ -37,7 +43,7 @@ Django project directory structure
      djangoproj/
         .gitignore
      	.openshift/
-     		action_hooks/  (Scripts for deploy the application)
+     		action_hooks/         ( Scripts invoked when pushing to openshift)
      			build
      			post_deploy
      			pre_build
@@ -45,13 +51,13 @@ Django project directory structure
      			secure_db.py
      		cron/
      		markers/
-     	setup.py   (Setup file with de dependencies and required libs)
-     	libs/   (Adicional libraries)
-     	data/	(For not-externally exposed wsgi code)
-     	wsgi/	(Externally exposed wsgi goes)
-     		application (Script to execute the application on wsgi)
-     		openshift/	(Django project directory)
+     	setup.py                  ( Setup file that should install/verify dependencies in building)
+     	libs/                     ( Adicional libraries)
+     	data/                     ( For not-externally exposed wsgi code)
+     	wsgi/                     ( Externally exposed wsgi goes)
+     		application           ( Script to execute the application on wsgi)
+     		openshift/            ( Django project directory)
      			templates/
      				home/
-     					home.html (Default home page)
-     		static/	(Public static content gets served here)
+     					home.html ( Default home page)
+     		static/               ( Public static content gets served here)
