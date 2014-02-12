@@ -55,6 +55,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
 	'django_jenkins',
+    'main',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -97,15 +98,23 @@ TEMPLATE_DIRS = (
 if ON_OPENSHIFT:
      DATABASES = {
          'default': {
-             'ENGINE': 'django.db.backends.sqlite3',
-             'NAME': os.path.join(os.environ['OPENSHIFT_DATA_DIR'], 'db.sqlite3'),
-         }
+             'ENGINE': 'django.db.backends.mysql',
+             'NAME': os.environ['OPENSHIFT_APP_NAME'],
+			 'USER': os.environ['OPENSHIFT_MYSQL_DB_USERNAME'],
+			 'PASSWORD': os.environ['OPENSHIFT_MYSQL_DB_PASSWORD'],
+			 'HOST': os.environ['OPENSHIFT_MYSQL_DB_HOST'],
+			 'PORT': os.environ['OPENSHIFT_MYSQL_DB_PORT'],
+		}
      }
 else:
      DATABASES = {
          'default': {
-             'ENGINE': 'django.db.backends.sqlite3',
-             'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+             'ENGINE': 'django.db.backends.mysql',
+             'NAME': 'openshift',
+			 'USER': os.environ.get('USER', False),
+			 'PASSWORD': '12345',
+			 'HOST': '',
+			 'PORT': '',
          }
     }
 
@@ -121,6 +130,9 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
+
+# AUTH_USER_MODEL = 'main.CustomUser'
+# AUTH_USER_MODULE = 'auth.User'
 
 
 # Static files (CSS, JavaScript, Images)
