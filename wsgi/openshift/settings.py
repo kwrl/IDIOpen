@@ -10,10 +10,12 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 import imp
+import uuid
+from datetime import datetime
 
 ON_OPENSHIFT = False
 if os.environ.has_key('OPENSHIFT_REPO_DIR'):
-     ON_OPENSHIFT = True
+    ON_OPENSHIFT = True
 
 BASE_DIR = os.path.dirname(os.path.realpath(__file__))
 print(BASE_DIR)
@@ -27,28 +29,30 @@ print(BASE_DIR)
 default_keys = { 'SECRET_KEY': 'vm4rl5*ymb@2&d_(gc$gb-^twq9w(u69hi--%$5xrh!xk(t%hw' }
 use_keys = default_keys
 if ON_OPENSHIFT:
-     imp.find_module('openshiftlibs')
-     import openshiftlibs
-     use_keys = openshiftlibs.openshift_secure(default_keys)
+    imp.find_module('openshiftlibs')
+    import openshiftlibs
+    use_keys = openshiftlibs.openshift_secure(default_keys)
 
 SECRET_KEY = use_keys['SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
 if ON_OPENSHIFT:
-     DEBUG = False
+    DEBUG = False
 else:
-     DEBUG = True
+    DEBUG = True
 
 TEMPLATE_DEBUG = DEBUG
 
 if DEBUG:
-     ALLOWED_HOSTS = []
+    ALLOWED_HOSTS = []
 else:
-     ALLOWED_HOSTS = ['*']
+    ALLOWED_HOSTS = ['*']
 
 # Application definition
 
 INSTALLED_APPS = (
+    'grappelli',
+    'filebrowser',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -56,7 +60,10 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'contest',
+    'article',
+    'django_summernote',
 	'django_jenkins',
+    'south',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -67,6 +74,16 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
+
+STATICFILES_FINDERS = (
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+)
+TEMPLATE_CONTEXT_PROCESSORS = (
+    "django.core.context_processors.request",
+    'django.contrib.auth.context_processors.auth',
+)
+
 
 # If you want configure the REDISCLOUD
 if 'REDISCLOUD_URL' in os.environ and 'REDISCLOUD_PORT' in os.environ and 'REDISCLOUD_PASSWORD' in os.environ:
@@ -97,14 +114,14 @@ TEMPLATE_DIRS = (
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
 if ON_OPENSHIFT:
-     DATABASES = {
+    DATABASES = {
          'default': {
              'ENGINE': 'django.db.backends.sqlite3',
              'NAME': os.path.join(os.environ['OPENSHIFT_DATA_DIR'], 'db.sqlite3'),
          }
      }
 else:
-     DATABASES = {
+    DATABASES = {
          'default': {
              'ENGINE': 'django.db.backends.sqlite3',
              'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
@@ -129,4 +146,24 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 STATIC_ROOT = os.path.join(BASE_DIR, '..', 'static')
 STATIC_URL = '/static/'
-print(STATIC_ROOT)
+MEDIA_ROOT = os.path.join(BASE_DIR, '..', 'media')
+MEDIA_URL = '/media/'
+PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
+
+STATICFILES_DIRS = (
+                    PROJECT_ROOT + '/static/',
+                    )
+
+
+def uploaded_filepath(instance, filename):
+    ext = filename.split('.')[-1]
+    filename = "%s.%s" % (uuid.uuid4(), ext)
+    today = datetime.now().strftime('%Y-%m-%d')
+    return os.path.join('attachement', today, filename)
+
+SUMMERNOTE_CONFIG = {
+                     'attachment_upload_to': uploaded_filepath,
+                     }
+GRAPPELLI_ADMIN_TITLE = 'IDI Open'
+
+AUTH_USER_MODEL = 'contest.CustomUser'
