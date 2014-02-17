@@ -1,0 +1,14 @@
+{% extends "home/home.html" %}
+
+{% block title %}Article list{% endblock %}
+
+{% block content %}
+{% if article_list %}
+	{% for article in article_list %}
+		<p><a href="../{{ article.id }}/">{{ article.title }}</a><p>
+		
+	{% endfor %}
+{% else %}
+	<p>No articles</p>
+{% endif %}
+{% endblock content %}

@@ -1,6 +1,6 @@
-from openshift.contest import TestCase
+from django.test import TestCase
 from openshift.contest.models import Contest
-from openshift.contest import datetime
+from datetime import datetime
 
 
 # Create your tests here.

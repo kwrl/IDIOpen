@@ -1,0 +1,11 @@
+div.nav-side {
+	background-color:grey;
+	height:100%
+}
+.logo {
+	background-color:green;
+	color: white;
+	text-align: center;
+	padding:25px;
+	font-family: Helvetica,Georgia,Serif;
+}
