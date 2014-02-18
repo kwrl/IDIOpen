@@ -27,6 +27,12 @@ class TeamInline(admin.StackedInline):
     verbose_name_plural = 'Teams'
     filter_horizontal = ('members',)
     
+    def formfield_for_manytomany(self, db_field, request, **kwargs):
+        if db_field.name == 'members':
+            print self.members
+            kwargs["queryset"] = Contestant.objects.all().exclude(members__in=Team.objects.all())
+        return super(TeamInline, self).formfield_for_manytomany(db_field, request, **kwargs)
+    
 
 class CustomUserAdmin(UserAdmin):
     # The forms to add and change user instances
@@ -88,10 +94,18 @@ class CustomTeamAdmin(UserAdmin):
         qs = super(UserAdmin, self).queryset(request)
         qs = qs.exclude(Q(is_staff=True) | Q(is_superuser=True))
         return qs
+    
+class TeamAdmin(admin.ModelAdmin):
+    filter_horizontal = ('members',)
+    
+    def formfield_for_manytomany(self, db_field, request, **kwargs):
+        if db_field.name == 'members':
+            kwargs["queryset"] = Contestant.objects.all().exclude(members__in=Team.objects.all())
+        return super(TeamAdmin, self).formfield_for_manytomany(db_field, request, **kwargs)
 
 admin.site.register(Admin, CustomUserAdmin)
 admin.site.register(CustomUser, CustomTeamAdmin)
 admin.site.register(Contest)
 admin.site.register(Link)
-admin.site.register(Team)
+admin.site.register(Team, TeamAdmin)
 admin.site.register(Contestant)
