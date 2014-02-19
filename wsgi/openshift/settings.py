@@ -55,13 +55,14 @@ INSTALLED_APPS = (
     'filebrowser',
     'django.contrib.admin',
     'django.contrib.auth',
+    'registration',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'debug_toolbar',
     'contest',
     'article',
-    'django_summernote',
 	'django_jenkins',
     'south',
 )
@@ -166,4 +167,10 @@ SUMMERNOTE_CONFIG = {
                      }
 GRAPPELLI_ADMIN_TITLE = 'IDI Open'
 
-AUTH_USER_MODEL = 'contest.CustomUser'
+ACCOUNT_ACTIVATION_DAYS = 7
+
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'idi@filip0.com'
+EMAIL_HOST_PASSWORD = 'adminadmin'
