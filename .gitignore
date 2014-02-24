@@ -12,3 +12,5 @@
 /virtenv/
 /dist/
 /build/
+db.*
+
