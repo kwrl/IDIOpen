@@ -5,7 +5,8 @@
 {% block content %}
 {% if article %}
 		<h1>{{ article.title }}</h1>
-		<p class="text-muted">Date published: 01.02.2014</p>
+		<p class="text-muted">{{article.pub_date}}</p>
+		<p> {{article.author.name}}  </p>
 		
 		<div>{{ article.text|safe}}</div>
 {% else %}
