@@ -1,4 +1,4 @@
-from django.shortcuts import render
+    from django.shortcuts import render
 
 from openshift.article.models import Article
 from openshift.contest.models import Contest
