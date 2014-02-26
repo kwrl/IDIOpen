@@ -7,3 +7,7 @@
 	color:white;
 	background-color: #96B299;	
 }
+
+.newsitem div:first-child
+{
+}
