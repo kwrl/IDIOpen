@@ -1,3 +1,5 @@
+#coding:utf-8
+
 """
 Django settings for openshift project.
 
@@ -128,8 +130,12 @@ if ON_OPENSHIFT:
 else:
     DATABASES = {
          'default': {
-             'ENGINE': 'django.db.backends.sqlite3',
-             'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+             'ENGINE': 'django.db.backends.mysql',
+             'NAME': 'gentleidi',
+			 'USER': os.environ['USER'],
+			 'PASSWORD': 'password',
+			 'HOST': 'localhost',
+			 'PORT': '3306',
          }
     }
 
@@ -138,12 +144,12 @@ else:
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
-
+TIME_ZONE = 'Europe/Oslo'
+# Whether or not to use django's locale
 USE_I18N = True
-
+# Display dates, etc, as per local standard
 USE_L10N = True
-
+# Timezone-aware or not
 USE_TZ = True
 
 
