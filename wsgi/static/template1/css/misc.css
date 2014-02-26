@@ -1,0 +1,17 @@
+*	{	border:none;	}
+
+#header pre		{	font-size: 50px;	}
+#main *			{	float:left;			}
+#left_bar		{	float:left;			}
+#right_bar		{	float:right;		}
+#menu input:first-child	{ border-top-right-radius: 5px; }
+#menu input		{	border:none;		}
+.sidebar		{	border-radius: 5px;	}
+#login_button	
+{	
+	font-size: 20px;
+	border:none;
+	border-top-left-radius: 5px;		
+}
+
+#login_button:hover	{	font-size: 22px;	}
