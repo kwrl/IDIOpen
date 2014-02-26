@@ -24,6 +24,7 @@ class Contest(models.Model):
 
 # Links for displaying in navigation for each contest    
 class Link(models.Model):
+    #name of the link
     text = models.CharField(max_length=30)
     # If true, url gets added to contest url
     # eg. url is 'article/1' if true gives '/open14/article/1'
