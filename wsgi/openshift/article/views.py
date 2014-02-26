@@ -25,3 +25,4 @@ def detail(request, article_id):
     context = {'article': article,
                }
     return render(request, 'article/article.html', context)
+
