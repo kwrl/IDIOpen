@@ -8,9 +8,9 @@
 *.py.disabled
 .project
 .pydevproject
+.settings/
 /venv/
 /virtenv/
 /dist/
 /build/
-<<<<<<< HEAD
 db.*
