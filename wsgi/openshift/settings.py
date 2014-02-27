@@ -67,6 +67,7 @@ INSTALLED_APPS = (
     'article',
 	'django_jenkins',
     'south',
+    'userregistration',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -177,6 +178,7 @@ SUMMERNOTE_CONFIG = {
                      }
 GRAPPELLI_ADMIN_TITLE = 'IDI Open'
 
+AUTH_USER_MODEL = 'userregistration.CustomUser'
 ACCOUNT_ACTIVATION_DAYS = 7
 
 EMAIL_USE_TLS = True
