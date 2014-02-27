@@ -1,6 +1,0 @@
-<ul>
-{% for link in links.all %}
-	
-	<li><a href="{% if link.contestUrl %}/{{ contest.url }}{% endif %}{{ link.url }}">{{ link.text }}</a></li>
-{% endfor %}
-</ul>
