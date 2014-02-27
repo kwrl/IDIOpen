@@ -7,10 +7,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-
-<html>
-	<head>
-		<title>{{ contest.title }} - {% block title %} {% endblock %}</title>
+	<title>{{ contest.title }} - {% block title %} {% endblock %}</title>
 		{% if contest.css %}
 		<link href="/media/{{ contest.css.path}}" rel="stylesheet">
 		{% else %}
@@ -27,11 +24,9 @@
 			<div id="main">
 				<div id="left_bar" class="sidebar">
 					<div id="menu">
-						{% if contest %}
-							
-							{% navigation contest %}
-							{% for link in links %}
-								<input type="button" value="{{link.text}} " onclick="location.href= {{link.url}} " ></input>
+						{% if contest %}							
+							{% for link in contest.links.all %}
+								<input type="button" value=" {{link.text}} " onclick="location.href= {{link.url}} " ></input>
 							{% endfor %}
 						{% endif %}						
 					</div>
