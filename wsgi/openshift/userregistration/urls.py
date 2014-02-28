@@ -4,11 +4,10 @@ Created on Feb 27, 2014
 @author: filip
 '''
 from django.conf.urls import patterns
-from django.conf.urls import include
 from django.conf.urls import url
 from django.views.generic.base import TemplateView
 from django.contrib.auth import views as auth_views
-from openshift.userregistration.views import ActivationView, RegistrationView
+from userregistration.views import ActivationView, RegistrationView
 urlpatterns = patterns('',
                        url(r'^activate/complete/$',
                            TemplateView.as_view(template_name='registration/activation_complete.html'),

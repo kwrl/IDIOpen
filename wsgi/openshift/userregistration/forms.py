@@ -5,7 +5,7 @@ Created on Feb 26, 2014
 '''
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django import forms
-from openshift.userregistration.models import CustomUser
+from userregistration.models import CustomUser
 from django.utils.translation import ugettext_lazy as _
 
 try:

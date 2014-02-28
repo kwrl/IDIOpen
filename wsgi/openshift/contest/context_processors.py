@@ -4,8 +4,7 @@ Created on Feb 19, 2014
 @author: filip
 '''
 from django.core.exceptions import ObjectDoesNotExist
-from openshift.contest.models import Contest
-from django.http import Http404
+from contest.models import Contest
 
 '''
 Currently not used

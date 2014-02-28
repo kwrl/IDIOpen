@@ -1,5 +1,5 @@
 from django.test import TestCase
-from openshift.contest.models import Contest
+from contest.models import Contest
 from datetime import datetime
 
 
