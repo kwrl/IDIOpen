@@ -4,14 +4,15 @@ from django.views.generic.edit import FormView
 from django.conf import settings
 from django.contrib.sites.models import RequestSite
 from django.contrib.sites.models import Site
-
-from registration import signals
-from registration.models import RegistrationProfile
-
-
 from openshift.userregistration import signals
-from registration.forms import RegistrationForm
+from openshift.userregistration.forms import RegistrationForm
 
+
+try:
+    from django.contrib.auth import get_user_model
+    User = get_user_model()
+except ImportError:
+    from openshift.userregistration.models import CustomUser as User
 
 class _RequestPassingFormView(FormView):
     """
@@ -102,16 +103,24 @@ class RegistrationView(_RequestPassingFormView):
         return True
 
     def register(self, request, **cleaned_data):
-        username, email, password = cleaned_data['username'], cleaned_data['email'], cleaned_data['password1']
-        site = Site.objects.get_current()
-        new_user = RegistrationProfile.objects.create_inactive_user(username, email,
-                                                                    password, site)
-        signals.user_registered.send(sender=self.__class__,
-                                     user=new_user,
-                                     request=request)
+        email, first_name = cleaned_data['email'], cleaned_data['first_name'] 
+        last_name, password = cleaned_data['last_name'], cleaned_data['password1']
+        if Site._meta.installed:
+            site = Site.objects.get_current()
+        else:
+            site = RequestSite(request)
+        new_user = User.objects.create_inactive_user(email, first_name, last_name, password, site)
+        signals.user_registered.send(sender=self.__class__, user=new_user, request=request)
         return new_user
-                
-
+# TODO: This needs to return with contest url first
+    def get_success_url(self, request, user):
+        """
+        Return the name of the URL to redirect to after successful
+        user registration.
+        
+        """
+        return ('registration_complete', (), {})
+    
 class ActivationView(TemplateView):
     """
     Base class for user activation views.
@@ -145,13 +154,13 @@ class ActivationView(TemplateView):
         the class of this backend as the sender.
         
         """
-        activated_user = RegistrationProfile.objects.activate_user(activation_key)
+        activated_user = User.objects.activate_user(activation_key)
         if activated_user:
             signals.user_activated.send(sender=self.__class__,
                                         user=activated_user,
                                         request=request)
         return activated_user
-
+# TODO: Fix so it will redirect with contest url as root
     def get_success_url(self, request, user):
         return ('registration_activation_complete', (), {})
 

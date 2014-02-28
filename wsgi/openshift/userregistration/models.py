@@ -10,15 +10,15 @@ from django.core.mail import send_mail
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.contrib.auth.models import BaseUserManager
 from django.template.loader import render_to_string
-
+'''
 try:
     from django.contrib.auth import get_user_model
     User = get_user_model()
 except ImportError:
     from django.contrib.auth.models import User
     
-SHA1_RE = re.compile('^[a-f0-9]{40}$')
 
+'''
 class CustomUserManager(BaseUserManager):
 
     def _create_user(self, email, first_name, last_name, password,
@@ -67,19 +67,19 @@ class CustomUserManager(BaseUserManager):
         # Make sure the key we're trying conforms to the pattern of a
         # SHA1 hash; if it doesn't, no point trying to look it up in
         # the database.
+        SHA1_RE = re.compile('^[a-f0-9]{40}$')
         if SHA1_RE.search(activation_key):
             try:
                 user = self.get(activation_key=activation_key)
             except self.model.DoesNotExist:
                 return False
-            if not user.activation_key_expired():
-                user.is_active = True
-                user.activation_key = self.model.ACTIVATED
-                user.save()
-                return user
+            user.is_active = True
+            user.activation_key = self.model.ACTIVATED
+            user.save()
+            return user
         return False
     
-    def create_inactive_user(self, username, email,first_name, last_name, password,
+    def create_inactive_user(self, email,first_name, last_name, password,
                              site, send_email=True):
         """
         Create a new, inactive ``User``, generate a
@@ -90,8 +90,13 @@ class CustomUserManager(BaseUserManager):
         user. To disable this, pass ``send_email=False``.
         
         """
-        new_user = User.objects.create_user(username, email,first_name, last_name, password)
+        salt = hashlib.sha1(str(random.random())).hexdigest()[:5]
+        if isinstance(email, unicode):
+            username = email.encode('utf-8')
+        activation_key = hashlib.sha1(salt+username).hexdigest()
+        new_user = self.create_user(email,first_name, last_name, password)
         new_user.is_active = False
+        new_user.activation_key = activation_key
         new_user.save()
 
         if send_email:
@@ -191,7 +196,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         message = render_to_string('registration/activation_email.txt',
                                    ctx_dict)
         
-        self.user.email_user(subject, message)
+        self.email_user(subject, message)
 
     def email_user(self, subject, message, from_email=None):
         """
