@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.conf import settings
 from filebrowser.fields import FileBrowseField
 # Create your models here.
 
@@ -37,8 +38,8 @@ class Link(models.Model):
 class Team(models.Model):
     name = models.CharField(max_length=200)
     onsite = models.BooleanField()
-    leader = models.ForeignKey(User, related_name='leader')
-    members = models.ManyToManyField(User, related_name='members')
+    leader = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='leader')
+    members = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='members')
     contest = models.ForeignKey(Contest, related_name='contest')
     def __str__(self):
         return self.name
