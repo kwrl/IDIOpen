@@ -132,21 +132,22 @@ if ON_OPENSHIFT:
 elif MYSQL:
     DATABASES = {
          'default': {
-             'ENGINE': 'django.db.backends.sqlite3',
-             'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+             'ENGINE': 'django.db.backends.mysql',
+             'NAME': 'gentleidi',
+             'USER': os.environ['USER'],
+             'PASSWORD': 'password',
+             'HOST': 'localhost',
+             'PORT': '3306',
          }
     }
 else:
     DATABASES = {
          'default': {
-             'ENGINE': 'django.db.backends.mysql',
-             'NAME': 'gentleidi',
-			 'USER': os.environ['USER'],
-			 'PASSWORD': 'password',
-			 'HOST': 'localhost',
-			 'PORT': '3306',
+             'ENGINE': 'django.db.backends.sqlite3',
+             'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
          }
     }
+    
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
 
