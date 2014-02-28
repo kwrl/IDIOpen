@@ -2,8 +2,8 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.utils.translation import ugettext_lazy as _
 
-from openshift.userregistration.models import CustomUser
-from openshift.userregistration.forms import CustomUserChangeForm, CustomUserCreationForm
+from userregistration.models import CustomUser
+from userregistration.forms import CustomUserChangeForm, CustomUserCreationForm
 
 class CustomUserAdmin(UserAdmin):
     # The forms to add and change user instances

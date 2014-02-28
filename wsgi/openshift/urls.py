@@ -14,7 +14,6 @@ urlpatterns = patterns('',
     # url(r'^blog/', include('blog.urls')),
     (r'^grappelli/', include('grappelli.urls')),
     (r'^admin/filebrowser/', include(site.urls)),
-    (r'^accounts/', include('userregistration.urls')),
     url(r'^admin/', include(admin.site.urls)),
     (r'^([^/]+)/', include('contest.urls')),
 ) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

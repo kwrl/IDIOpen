@@ -80,7 +80,7 @@ class CustomUserManager(BaseUserManager):
         return False
     
     def create_inactive_user(self, email,first_name, last_name, password,
-                             site, send_email=True):
+                             site,url, send_email=True):
         """
         Create a new, inactive ``User``, generate a
         ``RegistrationProfile`` and email its activation key to the
@@ -100,7 +100,7 @@ class CustomUserManager(BaseUserManager):
         new_user.save()
 
         if send_email:
-            new_user.send_activation_email(site)
+            new_user.send_activation_email(site, url)
 
         return new_user
     #create_inactive_user = transaction.commit_on_success(create_inactive_user)
@@ -148,7 +148,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         "Returns the short name for the user."
         return self.first_name
     
-    def send_activation_email(self, site):
+    def send_activation_email(self, site, url):
         """
         Send an activation email to the user associated with this
         ``RegistrationProfile``.
@@ -187,6 +187,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
         """
         ctx_dict = {'activation_key': self.activation_key,
+                    'contest':url,
                     'site': site}
         subject = render_to_string('registration/activation_email_subject.txt',
                                    ctx_dict)

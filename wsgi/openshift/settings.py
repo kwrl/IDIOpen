@@ -119,7 +119,7 @@ MYSQL = True
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
 if ON_OPENSHIFT:
-     DATABASES = {
+    DATABASES = {
          'default': {
              'ENGINE': 'django.db.backends.mysql',
              'NAME': os.environ['OPENSHIFT_APP_NAME'],

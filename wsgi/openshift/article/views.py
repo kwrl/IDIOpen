@@ -1,13 +1,12 @@
 from django.shortcuts import render
 
-from openshift.article.models import Article
-from openshift.contest.models import Contest
+from article.models import Article
 # Create your views here.
 '''
 Shows all articles for a contest
 TODO: Add support for published date
 '''
-def index(request):
+def index(request, contest):
     # Get the current site url
     url = request.path.split('/')[1]
     # Get the articles with foreignkey to the given contest
@@ -20,7 +19,7 @@ def index(request):
 Shows the view for a single article
 TODO: Add support for published date
 '''
-def detail(request, article_id):
+def detail(request, contest, article_id):
     article = Article.objects.get(id=article_id)
     context = {'article': article,
                }

@@ -1,11 +1,10 @@
 from django.shortcuts import redirect
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView
-from django.conf import settings
 from django.contrib.sites.models import RequestSite
 from django.contrib.sites.models import Site
-from openshift.userregistration import signals
-from openshift.userregistration.forms import RegistrationForm
+from userregistration import signals
+from userregistration.forms import RegistrationForm
 
 
 try:
@@ -63,7 +62,7 @@ class _RequestPassingFormView(FormView):
 class RegistrationView(_RequestPassingFormView):
     """
     Base class for user registration views.
-    
+    admin/userregistration/cadmin/userregistration/customuser/ustomuser/
     """
     disallowed_url = 'registration_disallowed'
     form_class = RegistrationForm
@@ -103,13 +102,15 @@ class RegistrationView(_RequestPassingFormView):
         return True
 
     def register(self, request, **cleaned_data):
+        url = request.path.split('/')[1]
+        print url
         email, first_name = cleaned_data['email'], cleaned_data['first_name'] 
         last_name, password = cleaned_data['last_name'], cleaned_data['password1']
         if Site._meta.installed:
             site = Site.objects.get_current()
         else:
             site = RequestSite(request)
-        new_user = User.objects.create_inactive_user(email, first_name, last_name, password, site)
+        new_user = User.objects.create_inactive_user(email, first_name, last_name, password, site, url)
         signals.user_registered.send(sender=self.__class__, user=new_user, request=request)
         return new_user
 # TODO: This needs to return with contest url first
@@ -119,7 +120,9 @@ class RegistrationView(_RequestPassingFormView):
         user registration.
         
         """
-        return ('registration_complete', (), {})
+        url = request.path.split('/')[1]
+        print url
+        return ('registration_complete', (), {'contest':url})
     
 class ActivationView(TemplateView):
     """
@@ -162,5 +165,6 @@ class ActivationView(TemplateView):
         return activated_user
 # TODO: Fix so it will redirect with contest url as root
     def get_success_url(self, request, user):
-        return ('registration_activation_complete', (), {})
+        url = request.path.split('/')[1]
+        return ('registration_activation_complete', (), {'contest':url})
 
