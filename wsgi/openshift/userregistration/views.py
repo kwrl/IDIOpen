@@ -5,6 +5,8 @@ from django.contrib.sites.models import RequestSite
 from django.contrib.sites.models import Site
 from userregistration import signals
 from userregistration.forms import RegistrationForm
+from django.core.urlresolvers import reverse
+from django.http import HttpResponseRedirect
 
 
 try:
@@ -82,16 +84,18 @@ class RegistrationView(_RequestPassingFormView):
 
     def form_valid(self, request, form):
         new_user = self.register(request, **form.cleaned_data)
-        success_url = self.get_success_url(request, new_user)
+        #success_url = self.get_success_url(request, new_user)
         
         # success_url may be a simple string, or a tuple providing the
         # full argument set for redirect(). Attempting to unpack it
         # tells us which one it is.
-        try:
-            to, args, kwargs = success_url
-            return redirect(to, *args, **kwargs)
-        except ValueError:
-            return redirect(success_url)
+        #try:
+        #    to, args, kwargs = success_url
+        #    return redirect(to, *args, **kwargs)
+        #except ValueError:
+        #    return redirect(success_url)
+        url = request.path.split('/')[1]
+        return HttpResponseRedirect(reverse('registration_complete', args=(url,)))
 
     def registration_allowed(self, request):
         """
@@ -138,12 +142,17 @@ class ActivationView(TemplateView):
             signals.user_activated.send(sender=self.__class__,
                                         user=activated_user,
                                         request=request)
+            '''
             success_url = self.get_success_url(request, activated_user)
             try:
                 to, args, kwargs = success_url
                 return redirect(to, *args, **kwargs)
             except ValueError:
                 return redirect(success_url)
+                '''
+            url = request.path.split('/')[1]
+            return HttpResponseRedirect(reverse('registration_activation_complete', args=(url,)))
+            
         return super(ActivationView, self).get(request, *args, **kwargs)
 
     def activate(self, request, activation_key):
