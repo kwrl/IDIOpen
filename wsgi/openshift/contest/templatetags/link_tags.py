@@ -36,4 +36,9 @@ def contest(context):
 @register.filter
 def filename(value):
     return os.path.basename(value.file.name)
+
+#TODO: implement the sponsor picture stuff
+#def advert(value):
+# There might be more pictures to return
+#    pass
     

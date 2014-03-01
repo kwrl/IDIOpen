@@ -1,17 +1,13 @@
-{% extends "base.html" %}
+{% extends "base.htm" %}
 
 {% block content %}
 {% if article_list %}
 	{% for article in article_list %}
-		<div class="feed">
-		<h1>{{ article.title }}</h1>
-		<p class="text-muted"> Author: {{article.author }}, Date: {{article.created_at|date:"d.m.Y"}}</p>
-		
-		<div>{{ article.text|safe}}</div>
-
-		</div>
-		<hr />
-		
+		<div class="newsitem">
+			<div><pre>{{ article.title }}</pre></div>
+				<p class="text-muted"> Author: {{article.author }}, Date: {{article.created_at|date:"d.m.Y"}}</p>		
+				<div><pre>{{ article.text|safe}}</pre></div>
+			</div>
 	{% endfor %} 
 {% endif %}
 
