@@ -1,0 +1,48 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+{% load link_tags %}
+{% contest as contest %}
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>{{ contest.title }} - {% block title %} {% endblock %}</title>
+		{% if contest.css %}
+		<link href="/media/{{ contest.css.path}}" rel="stylesheet">
+		{% else %}
+			{% for css in css_list %}
+			<link rel="stylesheet" href="{{css}}">
+			{% endfor %}		
+		{% endif %}		
+	</head>
+	<body>
+		<div id="header">
+			<pre>IDIOpen</pre>
+			<div></div>
+		</div>
+			<div id="main">
+				<div id="left_bar" class="sidebar">
+					<div id="menu">
+						{% if contest %}							
+							{% for link in contest.links.all %}
+								<input type="button" value=" {{link.text}} " onclick="location.href= {{link.url}} " ></input>
+							{% endfor %}
+						{% endif %}						
+					</div>
+					{% if contest %}
+		
+					{%endif%}
+				</div>
+				<div id="newsfeed">
+					{% block content %}
+					{% endblock content %}
+				</div>
+				<div id="right_bar" class="sidebar">
+					<input type="button" id="login_button" value="Login"></input>
+					{% block widget %}
+					{% endblock widget %}
+				</div>
+		</div>
+	</body>
+</html>
