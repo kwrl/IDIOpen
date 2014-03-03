@@ -26,10 +26,10 @@ def registration(request):
     else:
         form = Team_Form() # a new form
         
-    return render(request, 'registerForContest/registration.htm', {
+    return render(request, 'registerForContest/registration.html', {
         'form': form,
     })
 
 
 def registrationComplete(request):
-    return render(request, 'registerForContest/registrationComplete.htm')
+    return render(request, 'registerForContest/registrationComplete.html')
