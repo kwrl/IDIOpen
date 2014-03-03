@@ -41,14 +41,14 @@ SECRET_KEY = use_keys['SECRET_KEY']
 AUTH_USER_MODEL = 'userregistration.CustomUser'
 # SECURITY WARNING: don't run with debug turned on in production!
 if ON_OPENSHIFT:
-    DEBUG = False
+    DEBUG = True
 else:
     DEBUG = True
 
 TEMPLATE_DEBUG = DEBUG
 
 if DEBUG:
-    ALLOWED_HOSTS = []
+    ALLOWED_HOSTS = ['*']
 else:
     ALLOWED_HOSTS = ['*']
 
