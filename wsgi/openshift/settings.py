@@ -106,8 +106,7 @@ if 'REDISCLOUD_URL' in os.environ and 'REDISCLOUD_PORT' in os.environ and 'REDIS
         }
     }
     MIDDLEWARE_CLASSES = ('django.middleware.cache.UpdateCacheMiddleware',) + MIDDLEWARE_CLASSES + ('django.middleware.cache.FetchFromCacheMiddleware',)
-else:
-    INSTALLED_APPS = ('debug_toolbar',) + INSTALLED_APPS
+
 ROOT_URLCONF = 'urls'
 
 WSGI_APPLICATION = 'wsgi.application'
@@ -119,6 +118,7 @@ MYSQL = True
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
 if ON_OPENSHIFT:
+    INSTALLED_APPS = ('debug_toolbar',) + INSTALLED_APPS
     DATABASES = {
          'default': {
              'ENGINE': 'django.db.backends.mysql',
@@ -161,7 +161,7 @@ USE_L10N = True
 # Timezone-aware or not
 USE_TZ = True
 
-
+DEBUG_TOOLBAR_PATCH_SETTINGS = False
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 STATIC_ROOT = os.path.join(BASE_DIR, '..', 'static')
