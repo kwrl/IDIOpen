@@ -22,6 +22,7 @@ if os.environ.has_key('OPENSHIFT_REPO_DIR'):
 BASE_DIR = os.path.dirname(os.path.realpath(__file__))
 print(BASE_DIR)
 
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
 
@@ -37,6 +38,7 @@ if ON_OPENSHIFT:
 
 SECRET_KEY = use_keys['SECRET_KEY']
 
+AUTH_USER_MODEL = 'userregistration.CustomUser'
 # SECURITY WARNING: don't run with debug turned on in production!
 if ON_OPENSHIFT:
     DEBUG = False
@@ -57,14 +59,13 @@ INSTALLED_APPS = (
     'filebrowser',
     'django.contrib.admin',
     'django.contrib.auth',
-    'registration',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    #'debug_toolbar',
     'contest',
     'article',
+    'userregistration',
 	'django_jenkins',
     'south',
 )
@@ -105,7 +106,8 @@ if 'REDISCLOUD_URL' in os.environ and 'REDISCLOUD_PORT' in os.environ and 'REDIS
         }
     }
     MIDDLEWARE_CLASSES = ('django.middleware.cache.UpdateCacheMiddleware',) + MIDDLEWARE_CLASSES + ('django.middleware.cache.FetchFromCacheMiddleware',)
-
+else:
+    INSTALLED_APPS = ('debug_toolbar',) + INSTALLED_APPS
 ROOT_URLCONF = 'urls'
 
 WSGI_APPLICATION = 'wsgi.application'
@@ -113,11 +115,11 @@ WSGI_APPLICATION = 'wsgi.application'
 TEMPLATE_DIRS = (
      os.path.join(BASE_DIR,'templates'),
 )
-
+MYSQL = True
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
 if ON_OPENSHIFT:
-     DATABASES = {
+    DATABASES = {
          'default': {
              'ENGINE': 'django.db.backends.mysql',
              'NAME': os.environ['OPENSHIFT_APP_NAME'],
@@ -127,19 +129,28 @@ if ON_OPENSHIFT:
              'PORT': os.environ['OPENSHIFT_MYSQL_DB_PORT'],
 }
      }
-else:
+elif MYSQL:
     DATABASES = {
          'default': {
              'ENGINE': 'django.db.backends.mysql',
              'NAME': 'gentleidi',
+
 			#'USER': os.environ['USER'],
-             'USER': os.getenv('USER') or os.getenv('USERNAME'),  
+             'USER': os.getenv('USER') or os.getenv('USERNAME'), #Added TINO support  
 			 'PASSWORD': 'password',
 			 'HOST': 'localhost',
 			 'PORT': '3306',
+
          }
     }
-
+else:
+    DATABASES = {
+         'default': {
+             'ENGINE': 'django.db.backends.sqlite3',
+             'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+         }
+    }
+    
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
 
@@ -178,6 +189,7 @@ SUMMERNOTE_CONFIG = {
                      }
 GRAPPELLI_ADMIN_TITLE = 'IDI Open'
 
+
 ACCOUNT_ACTIVATION_DAYS = 7
 
 EMAIL_USE_TLS = True
@@ -185,3 +197,4 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'idi@filip0.com'
 EMAIL_HOST_PASSWORD = 'adminadmin'
+

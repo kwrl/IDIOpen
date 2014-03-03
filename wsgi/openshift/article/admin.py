@@ -1,5 +1,5 @@
 from django.contrib import admin
-from openshift.article.models import Article
+from article.models import Article
 
 
 # Register your models here.
