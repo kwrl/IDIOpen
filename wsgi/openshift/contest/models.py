@@ -38,20 +38,23 @@ class Link(models.Model):
     def __str__(self):
         return self.text
     
-    
 class Team(models.Model):
     team_name = models.CharField(max_length=200)
     onsite = models.BooleanField()
-
+    '''
+    TODO: Set leader 
+    NOTE: in order to implement leader we information about the logged in user. 
+    '''
     #leader = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='leader')
-    members = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='members')
+    members = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='members', through = 'team_membership')
     #contest = models.ForeignKey(Contest, related_name='contest')
-
+    offsite = models.CharField(max_length=200)
     def __str__(self):
         return self.name
         
-        
-
-
-    
+class team_membership(models.Model):
+    user_ID = models.ForeignKey(settings.AUTH_USER_MODEL)
+    team_ID = models.ForeignKey(Team)
+    date_invited = models.DateField()
+    is_member = models.BooleanField(); 
     

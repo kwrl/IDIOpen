@@ -11,3 +11,4 @@ class Team_Form(forms.ModelForm):
     class Meta:
         model = Team
         fields = ['team_name', 'onsite', 'offsite']
+        
