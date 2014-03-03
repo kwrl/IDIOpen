@@ -63,7 +63,6 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'debug_toolbar',
     'contest',
     'article',
     'userregistration',
@@ -107,7 +106,8 @@ if 'REDISCLOUD_URL' in os.environ and 'REDISCLOUD_PORT' in os.environ and 'REDIS
         }
     }
     MIDDLEWARE_CLASSES = ('django.middleware.cache.UpdateCacheMiddleware',) + MIDDLEWARE_CLASSES + ('django.middleware.cache.FetchFromCacheMiddleware',)
-
+else:
+    INSTALLED_APPS = ('debug_toolbar',) + INSTALLED_APPS
 ROOT_URLCONF = 'urls'
 
 WSGI_APPLICATION = 'wsgi.application'
