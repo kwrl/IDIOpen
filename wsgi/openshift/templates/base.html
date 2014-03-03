@@ -1,8 +1,8 @@
 {% load staticfiles %}
-<!DOCTYPE html>
-<html lang="en">
 {% load link_tags %}
 {% contest as contest %}
+<!DOCTYPE html>
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -11,10 +11,8 @@
 		{% if contest.css %}
 		<link href="/media/{{ contest.css.path}}" rel="stylesheet">
 		{% else %}
-			{% for css in css_list %}
-			<link rel="stylesheet" href="{{css}}">
-			{% endfor %}		
-		{% endif %}		
+		<link href="{% static  "openshift/css/merged.css" %}" rel="stylesheet">
+		{% endif %}	
 	</head>
 	<body>
 		<div id="header">
@@ -26,7 +24,7 @@
 					<div id="menu">
 						{% if contest %}							
 							{% for link in contest.links.all %}
-								<input type="button" value=" {{link.text}} " onclick="location.href= {{link.url}} " ></input>
+								<input type="button" value="{{link.text}}" onclick="location.href='{% if link.contestUrl %}/{{ contest.url }}{% endif %}{{link.url}}'" >
 							{% endfor %}
 						{% endif %}						
 					</div>

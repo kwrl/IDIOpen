@@ -1,10 +1,8 @@
 #coding:utf-8
 from django.shortcuts import render
-from openshift.contest.models import Contest
-from openshift.article.models import Article
-from openshift.contest.forms import Team_Form 
+from contest.forms import Team_Form 
 from django.http import HttpResponseRedirect
-
+from article.models import Article
 
 # Create your views here.
 

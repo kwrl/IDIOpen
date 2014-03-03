@@ -1,7 +1,6 @@
 from django.shortcuts import render
 
-from openshift.article.models import Article
-from openshift.contest.models import Contest
+from article.models import Article
 # Create your views here.
 '''
 Shows all articles for a contest

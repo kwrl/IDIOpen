@@ -4,7 +4,7 @@ Created on Feb 12, 2014
 @author: filip
 '''
 from django import template
-from openshift.contest.models import Contest
+from contest.models import Contest
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import Http404
 import os
@@ -13,7 +13,13 @@ register = template.Library()
 
 @register.inclusion_tag('navigation.html')
 def navigation(contest):
-    links = contest.links
+    #if os.environ['USER'] == 'andesil': import ipdb; ipdb.set_trace();
+    links = ''
+    if contest == '':
+        links == 'ERROR: no links'
+    else:
+        links = contest.links
+
     return {'links': links,
             'contest': contest,}
 
