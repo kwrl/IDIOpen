@@ -1,6 +1,11 @@
+#coding:utf-8
 from django.shortcuts import render
 from openshift.contest.models import Contest
 from openshift.article.models import Article
+from openshift.contest.forms import Team_Form 
+from django.http import HttpResponseRedirect
+
+
 # Create your views here.
 
 def index(request):
@@ -10,3 +15,23 @@ def index(request):
                }    
     return render(request, 'contest/index.html', context)
 
+def registration(request):
+    if request.method == 'POST': # If the form has been submitted...
+        # teamform is defined in openshif.contest.models
+        form = Team_Form(request.POST) # A form bound to the POST data
+        if form.is_valid(): # All validation rules pass
+            '''
+            TODO: prosess the data in form.cleaned_data
+            '''            
+            form.save() # Save the TeamForm in the database
+            return HttpResponseRedirect('registrationComplete/') # Redirect after POST
+    else:
+        form = Team_Form() # a new form
+        
+    return render(request, 'registerForContest/registration.htm', {
+        'form': form,
+    })
+
+
+def registrationComplete(request):
+    return render(request, 'registerForContest/registrationComplete.htm')

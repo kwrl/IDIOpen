@@ -132,7 +132,8 @@ else:
          'default': {
              'ENGINE': 'django.db.backends.mysql',
              'NAME': 'gentleidi',
-			 'USER': os.environ['USER'],
+			#'USER': os.environ['USER'],
+             'USER': os.getenv('USER') or os.getenv('USERNAME'),  
 			 'PASSWORD': 'password',
 			 'HOST': 'localhost',
 			 'PORT': '3306',
