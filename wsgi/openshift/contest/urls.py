@@ -7,9 +7,10 @@ from django.conf.urls import patterns, include, url
 from contest import views
 from article import views as articleview
 
+# Into these URL's, the name of the contest is passed as a prefix to all 
+# patterns below.
 urlpatterns = patterns('',
-    # Examples:
-    url(r'^$', views.index, name='home'),
+    url(r'^$', views.index, name='home'), # Default
     (r'^accounts/', include('userregistration.urls')),
     # url(r'^blog/', include('blog.urls')),
     url(r'^article/(?P<article_id>\d+)/$', articleview.detail, name='detail'),
