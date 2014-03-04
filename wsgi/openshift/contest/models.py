@@ -10,15 +10,32 @@ Contest model
 
 TODO: Add location, fix start, end, publish date, validate
 '''
+
+from django.db import models
+from django.core.urlresolvers import reverse
+
+class Article(models.Model):
+    title = models.CharField(max_length=200)
+    pub_date = models.DateField()
+
+    def get_absolute_url(self):
+        return reverse('article-detail', kwargs={'pk': self.pk})
+
 class Contest(models.Model):
     title = models.CharField(max_length=200)
     url = models.CharField(max_length=20, unique=True)
-    start_date = models.DateTimeField('Start date')
+    start_date = models.DateField(verbose_name='Start date')
     end_date = models.DateTimeField('End date')
     publish_date = models.DateTimeField('Publish date')
     links = models.ManyToManyField('Link')
-    css = FileBrowseField('CSS', max_length=200, directory='css/', extensions=['.css',], blank=True, null=True)
+    css = FileBrowseField('CSS', max_length=200, directory='css/', 
+                          extensions=['.css',], blank=True, null=True)
     
+
+    def get_absolute_url(self):
+        import ipdb;
+        ipdb.set_trace();
+        return reverse(str(self.url), kwargs={'pk': self.pk})
     
     def __str__(self):
         return self.title
