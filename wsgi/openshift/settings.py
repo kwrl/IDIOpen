@@ -36,6 +36,7 @@ if ON_OPENSHIFT:
     import openshiftlibs
     use_keys = openshiftlibs.openshift_secure(default_keys)
 
+
 SECRET_KEY = use_keys['SECRET_KEY']
 
 AUTH_USER_MODEL = 'userregistration.CustomUser'
@@ -63,13 +64,18 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'debug_toolbar',
     'contest',
     'article',
     'userregistration',
 	'django_jenkins',
     'south',
 )
-
+'''
+if not ON_OPENSHIFT:
+    print 'not on openshift'
+    INSTALLED_APPS = ('debug_toolbar',) + INSTALLED_APPS
+'''
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -114,11 +120,13 @@ WSGI_APPLICATION = 'wsgi.application'
 TEMPLATE_DIRS = (
      os.path.join(BASE_DIR,'templates'),
 )
+
+
+
 MYSQL = True
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
 if ON_OPENSHIFT:
-    INSTALLED_APPS = ('debug_toolbar',) + INSTALLED_APPS
     DATABASES = {
          'default': {
              'ENGINE': 'django.db.backends.mysql',
@@ -127,7 +135,7 @@ if ON_OPENSHIFT:
              'PASSWORD': os.environ['OPENSHIFT_MYSQL_DB_PASSWORD'],
              'HOST': os.environ['OPENSHIFT_MYSQL_DB_HOST'],
              'PORT': os.environ['OPENSHIFT_MYSQL_DB_PORT'],
-}
+             }
      }
 elif MYSQL:
     DATABASES = {
@@ -161,7 +169,7 @@ USE_L10N = True
 # Timezone-aware or not
 USE_TZ = True
 
-DEBUG_TOOLBAR_PATCH_SETTINGS = False
+#DEBUG_TOOLBAR_PATCH_SETTINGS = False
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 STATIC_ROOT = os.path.join(BASE_DIR, '..', 'static')
