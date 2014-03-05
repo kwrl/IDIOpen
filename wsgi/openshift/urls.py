@@ -10,18 +10,22 @@ from contest import views, models
 from filebrowser.sites import site
 admin.autodiscover()
 
+#
 # To capture a value from the URL, just put parenthesis around it.
 
 
 urlpatterns = patterns('',
-    # Examples:
-    (r'^grappelli/', include('grappelli.urls')),
+    url(r'^admin/', include(admin.site.urls),),
+    url(r'^grappelli/', include('grappelli.urls')),
 
-    (r'^admin/filebrowser/', include(site.urls)),
+    url(r'^admin/filebrowser/', include(site.urls)),
+    #andesil @ filip : I'm deprecating this.
+    # (r'^([^/]+)/', include('contest.urls')), 
 
-    url(r'^admin/', include(admin.site.urls)),
-
-    # pass name of contest as suffix
-    # url(r'^([^/]+)/', include('contest.urls')), 
-    url(r'(?P<contestURL>[-\w]+)/', include('contest.urls')),
+    # Get the string-suffix from root, store it in contestURL,
+    # pass it on to contest.urls
+    # \w = any single word character
+    url(r'(?P<contestURL>[-\w]+)/', include('contest.urls',app_name='contest')),
 ) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+# EOF

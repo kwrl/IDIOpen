@@ -15,5 +15,10 @@ urlpatterns = patterns('',
     (r'^accounts/', include('userregistration.urls')),
     # url(r'^blog/', include('blog.urls
     url(r'^article/(?P<article_id>\d+)/$', articleview.detail, name='detail'),
-    url(r'^article/list/$', articleview.index, kwargs='contestURL', name='articleList'),
+
+    url(r'^article/list/$', view=articleview.index, 
+                            kwargs={'contestURL':'contestURL'}, # from ../urls.py
+                            name='articleList'),
 )
+
+# EOF
