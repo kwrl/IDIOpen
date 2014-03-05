@@ -4,9 +4,9 @@
 {% if article_list %}
 	{% for article in article_list %}
 		<div class="newsitem">
-			<div><pre>{{ article.title }}</pre></div>
+			<h1>{{ article.title }}</h1>
 				<p class="text-muted"> Author: {{article.author }}, Date: {{article.created_at|date:"d.m.Y"}}</p>		
-				<div><pre>{{ article.text|safe}}</pre></div>
+				<div>{{ article.text|safe}}</div>
 			</div>
 	{% endfor %} 
 {% endif %}

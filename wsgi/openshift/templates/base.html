@@ -1,46 +1,81 @@
 {% load staticfiles %}
-{% load link_tags %}
-{% contest as contest %}
 <!DOCTYPE html>
 <html lang="en">
+{% load link_tags %}
+{% load i18n %}
+{% contest as contest %}
 <head>
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>{{ contest.title }} - {% block title %} {% endblock %}</title>
-		{% if contest.css %}
-		<link href="/media/{{ contest.css.path}}" rel="stylesheet">
-		{% else %}
-		<link href="{% static  "openshift/css/merged.css" %}" rel="stylesheet">
-		{% endif %}	
-	</head>
-	<body>
-		<div id="header">
-			<pre>IDIOpen</pre>
-			<div></div>
-		</div>
-			<div id="main">
-				<div id="left_bar" class="sidebar">
-					<div id="menu">
-						{% if contest %}							
-							{% for link in contest.links.all %}
-								<input type="button" value="{{link.text}}" onclick="location.href='{% if link.contestUrl %}/{{ contest.url }}{% endif %}{{link.url}}'" >
-							{% endfor %}
-						{% endif %}						
-					</div>
+<title>{{ contest.title }} - {% block title %}My amasing site{% endblock %}</title>
+
+<!-- Bootstrap -->
+<link href="{% static 'openshift/css/bootstrap.css' %}" rel="stylesheet">
+{% if contest.css %}
+	<link href="/media/{{ contest.css.path}}" rel="stylesheet">
+{% else %}
+	<link href="{% static  "openshift/css/style.css" %}" rel="stylesheet">
+{% endif %}
+<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+	<script src="https://code.jquery.com/jquery.js"></script>
+	<script	src="//netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
+	<div id="wrap">
+	<div id="logo">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-10" onClick="javascript:location.href='/{{ contest.url }}'">
 					{% if contest %}
-		
-					{%endif%}
+						<h1>{{ contest.title }}</h1>
+					{% endif %}
 				</div>
-				<div id="newsfeed">
-					{% block content %}
-					{% endblock content %}
+				<div class="col-lg-2">
 				</div>
-				<div id="right_bar" class="sidebar">
-					<input type="button" id="login_button" value="Login"></input>
-					{% block widget %}
-					{% endblock widget %}
-				</div>
+			</div>
 		</div>
-	</body>
+	</div>
+	<div class="container">
+		<div class="row">
+			<div class="col-lg-2">
+					{% if contest %}
+						<ul class="list-group">
+						{% for link in contest.links.all %}
+							<li class="list-group-item"><a href="{% if link.contestUrl %}/{{ contest.url }}{% endif %}{{ link.url }}">{{ link.text }}</a></li>
+						{% endfor %}
+						</ul>
+					{% endif %}
+			</div>
+			<div class="col-lg-8">
+				{% block content %}{% endblock content %}
+			</div>
+			<div class="col-lg-2">
+				<div class="panel panel-default">
+					<div class="panel-body">
+				    	Basic panel example
+				  	</div>
+				</div>
+				
+			</div>
+		</div>
+	</div>
+	
+		<div id="push"></div>
+    </div>
+	<div id="footer">
+      <div class="container">
+        <p class="muted credit">IDI Open &copy; 2014
+        </p>
+      </div>
+    </div>
+
+
+</body>
 </html>
