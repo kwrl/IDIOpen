@@ -37,6 +37,9 @@ def contest(context):
 def filename(value):
     return os.path.basename(value.file.name)
 
+@register.filter(name='addcss')
+def addcss(field, css):
+   return field.as_widget(attrs={"class":css})
 #TODO: implement the sponsor picture stuff
 #def advert(value):
 # There might be more pictures to return
