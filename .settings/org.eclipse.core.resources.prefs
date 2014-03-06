@@ -1,2 +1,4 @@
 eclipse.preferences.version=1
+encoding//wsgi/openshift/contest/templates/registerForContest/registration.html=UTF-8
+encoding//wsgi/openshift/contest/views.py=utf-8
 encoding//wsgi/openshift/settings.py=utf-8

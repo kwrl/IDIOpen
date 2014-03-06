@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base.htm" %}
 
 {% block title %}Article list{% endblock %}
 
@@ -6,7 +6,6 @@
 {% if article_list %}
 	{% for article in article_list %}
 		<p><a href="../{{ article.id }}/">{{ article.title }} Date published: {{ article.created_at }}</a><p>
-		
 	{% endfor %}
 {% else %}
 	<p>No articles</p>
