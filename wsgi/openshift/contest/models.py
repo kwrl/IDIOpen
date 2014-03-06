@@ -93,6 +93,9 @@ class Invite(models.Model):
     is_member = models.BooleanField(default=False);
     
     objects = InviteManager()
+    
+    def __unicode__(self):
+        return self.team.team_name + ' ' + self.email
 
 
 

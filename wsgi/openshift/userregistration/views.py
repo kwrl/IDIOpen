@@ -7,6 +7,9 @@ from userregistration import signals
 from userregistration.forms import RegistrationForm
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
+from contest.models import Invite
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
 
 
 try:
@@ -175,3 +178,15 @@ class ActivationView(TemplateView):
         url = request.path.split('/')[1]
         return ('registration_activation_complete', (), {'contest':url})
 
+
+
+@login_required
+def user_profile(request):
+    email = request.user.email
+    
+    notification_list = Invite.objects.filter(email=email)
+    context = {'notification_list' : notification_list,
+               'user': request.user,
+               }
+    #return HttpResponse(notification_list[0].confirmed)
+    return render(request, 'userregistration/profile.html', context)

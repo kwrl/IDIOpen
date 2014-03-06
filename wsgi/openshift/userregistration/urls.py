@@ -7,7 +7,7 @@ from django.conf.urls import patterns
 from django.conf.urls import url
 from django.views.generic.base import TemplateView
 from django.contrib.auth import views as auth_views
-from userregistration.views import ActivationView, RegistrationView
+from userregistration.views import ActivationView, RegistrationView, user_profile
 urlpatterns = patterns('',
                        url(r'^activate/complete/$',
                            TemplateView.as_view(template_name='registration/activation_complete.html'),
@@ -28,6 +28,7 @@ urlpatterns = patterns('',
                        url(r'^register/closed/$',
                            TemplateView.as_view(template_name='registration/registration_closed.html'),
                            name='registration_disallowed'),
+                       url(r'^profile/', user_profile, name='profile'),
                        url(r'^login/$',
                            auth_views.login,
                            {'template_name': 'registration/login.html'},
