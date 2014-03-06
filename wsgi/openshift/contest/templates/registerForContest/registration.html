@@ -2,7 +2,19 @@
 
 {% block content %}
 
+<br>
+Register with a team name. You can add up to two friends.  
+Note that by registering for this site, you also sign up for the contest.
+<br>
+<br>
+
 {%if user.is_authenticated %}
+
+If you are going to participate online (not being present at NTNU), 
+please specify what city you are participating from in in the offiste field
+
+<br>
+<br>
 <form action="" method="post">{% csrf_token %}
 {{ form.as_p}}
 <input type="submit" value="Submit" />

@@ -30,9 +30,7 @@ def registration(request):
             new_team = form.save(commit=False)
             email_one = form.cleaned_data['email_one']
             email_two = form.cleaned_data['email_two']  
-            '''
-            TODO: prosess the data in form.cleaned_data
-            '''             
+    
             team = Team.objects.create(team_name=form.cleaned_data['team_name'], onsite=form.cleaned_data['onsite'], 
                                        offsite=form.cleaned_data['offsite'])            
             '''
