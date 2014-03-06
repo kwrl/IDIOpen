@@ -19,9 +19,9 @@ class _RequestPassingFormView(FormView):
     """
     A version of FormView which passes extra arguments to certain
     methods, notably passing the HTTP request nearly everywhere, to
-    enable finer-grained processing.
-    
+    enable finer-grained processing.    
     """
+    
     def get(self, request, *args, **kwargs):
         # Pass request to get_form_class and get_form for per-request
         # form control.
@@ -117,6 +117,7 @@ class RegistrationView(_RequestPassingFormView):
         new_user = User.objects.create_inactive_user(email, first_name, last_name, password, site, url)
         signals.user_registered.send(sender=self.__class__, user=new_user, request=request)
         return new_user
+    
 # TODO: This needs to return with contest url first
     def get_success_url(self, request, user):
         """
