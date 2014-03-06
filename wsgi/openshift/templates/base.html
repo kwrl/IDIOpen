@@ -34,11 +34,12 @@
 			<div class="row">
 				<div class="col-lg-7" onClick="javascript:location.href='/{{ contest.url }}'">
 					{% if contest %}
-						<h1>{{ contest.title }}</h1>
+						<h1 class="logo">{{ contest.title }}</h1>
 					{% endif %}
 				</div>
 				<div class="col-lg-5">
-				{% if user.is_authenticated %}
+					<div class="row-fluid">
+					<br>
 					<form class="form-inline" role="form" method="post" action="{% url 'auth_login' contest.url %}">
 						{% csrf_token %}
 					  	<div class="form-group">
@@ -54,9 +55,7 @@
 					  	<input type="hidden" name="next" value="{{ next }}" />
 					  	</div>
 					</form>
-				{% else %}
-					<p>Logged in</p>
-				{% endif %}		
+					</div>
 				</div>
 			</div>
 		</div>
