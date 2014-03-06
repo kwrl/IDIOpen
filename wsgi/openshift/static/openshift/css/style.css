@@ -3,8 +3,7 @@ div.nav-side {
 	height:100%
 }
 .logo {
-	background-color:blue;
-	padding:25px;
+	color: #F2F0EB;
 }
 html,
 body {
@@ -26,12 +25,15 @@ body {
 #footer {
   height: 60px;
 }
+.credit {
+	color: #F2F0EB;
+}
 #footer {
-  background-color: #f5f5f5;
+  background-color: #193C59;
 }
 
 #logo {
-	background-color: red;
+	background-color: #193C59;
 	margin-bottom: 10px;
 }
 
