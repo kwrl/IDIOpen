@@ -142,10 +142,13 @@ elif MYSQL:
          'default': {
              'ENGINE': 'django.db.backends.mysql',
              'NAME': 'gentleidi',
-             'USER': os.environ['USER'],
-             'PASSWORD': 'password',
-             'HOST': 'localhost',
-             'PORT': '3306',
+
+			#'USER': os.environ['USER'],
+             'USER': os.getenv('USER') or os.getenv('USERNAME'), #Added TINO support  
+			 'PASSWORD': 'password',
+			 'HOST': 'localhost',
+			 'PORT': '3306',
+
          }
     }
 else:
