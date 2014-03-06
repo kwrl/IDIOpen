@@ -54,9 +54,10 @@ class Team(models.Model):
     #leader = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='leader')
     members = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='members')
     #contest = models.ForeignKey(Contest, related_name='contest')
-    offsite = models.CharField(max_length=200)
+    offsite = models.CharField(max_length=200, blank = True)
     def __str__(self):
         return self.name
+
         
 class InviteManager(models.Manager):
     def create_invite(self, email, team, url, site):
@@ -84,7 +85,7 @@ class InviteManager(models.Manager):
         else:
             message = render_to_string('registration/team_register_email.txt', ctx_dict)
 
-        send_mail(subject, message, False, [email,])
+        # send_mail(subject, message, False, [email,])
         
 
 class Invite(models.Model):
