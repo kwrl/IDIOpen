@@ -5,8 +5,11 @@ from django.http import HttpResponseRedirect
 from article.models import Article
 from userregistration.models import CustomUser
 from userregistration.models import CustomUserManager
+from contest.models import Team, Invite
+from django.contrib.auth import get_user_model
+from django.contrib.sites.models import get_current_site
 
-
+User = get_user_model()
 # Create your views here.
 
 def index(request):
@@ -26,13 +29,23 @@ def registration(request):
             email_two = form.cleaned_data['email_two']  
             '''
             TODO: prosess the data in form.cleaned_data
-            ''' 
-            if not(user_exist(email_one)): # returns True if the user e
-                new_user = CustomUser.objects.create_user(email_one, "<insertName>", "<insertName>", "eple1")                
-                new_user = CustomUser.objects.create_inactive_user(email_one, "PenisFjes", "Håkon", "tiss", "google.no", "google.no", True)
-        
-                new_user.save()
-                
+            '''             
+            team = Team.objects.create(team_name=form.cleaned_data['team_name'], onsite=form.cleaned_data['onsite'], 
+                                       offsite=form.cleaned_data['offsite'])            
+            '''
+            TODO:  This should be a loop, looping over the number allowed members. But first  
+            '''
+            site = get_current_site(request)
+            url = request.path.split('/')[1]
+            
+            invite_1 =Invite.objects.create_invite(email = email_one, team=team, url=url, site=site); # adding "user" (a.k.a the email) to invite list.
+            invite_1.save()  
+            invite_2 = Invite.objects.create_invite(email = email_two, team=team, url=url, site=site); # adding "user" (a.k.a the email) to invite list. 
+            invite_2.save()
+            '''
+            Checking wether or not a user with that email exist is done in userregistration.
+            '''
+                         
             form.save() # Save the TeamForm in the database
             return HttpResponseRedirect('registrationComplete/') # Redirect after POST
     else:
