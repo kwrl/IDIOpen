@@ -2,10 +2,18 @@
 
 {% block content %}
 
+{%if user.is_authenticated %}
 <form action="" method="post">{% csrf_token %}
 {{ form.as_p}}
 <input type="submit" value="Submit" />
 </form>
+{% else %}
+
+<p> Du må logge inn/registrerere deg for å lage et lag <p>
+
+ <a href=" {% url 'auth_login' contest.url %}">Log in </a> / <a href=" {% url 'registration_register' contest.url %}">Registrer </a>
+
+{% endif %}
 
 {% endblock content %}
-%}
+

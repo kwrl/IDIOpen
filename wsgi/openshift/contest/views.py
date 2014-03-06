@@ -8,6 +8,8 @@ from userregistration.models import CustomUserManager
 from contest.models import Team, Invite
 from django.contrib.auth import get_user_model
 from django.contrib.sites.models import get_current_site
+from django.contrib.auth.decorators import login_required
+
 
 User = get_user_model()
 # Create your views here.
@@ -19,6 +21,7 @@ def index(request):
                }    
     return render(request, 'contest/index.html', context)
 
+# @login_required
 def registration(request):
     if request.method == 'POST': # If the form has been submitted...
         # teamform is defined in openshif.contest.models
@@ -37,6 +40,7 @@ def registration(request):
             '''
             site = get_current_site(request)
             url = request.path.split('/')[1]
+            
             
             invite_1 =Invite.objects.create_invite(email = email_one, team=team, url=url, site=site); # adding "user" (a.k.a the email) to invite list.
             invite_1.save()  
