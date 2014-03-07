@@ -3,7 +3,7 @@ from django.contrib.auth.admin import UserAdmin
 from django.utils.translation import ugettext_lazy as _
 from django.db.models import Q
 from userregistration.models import CustomUser
-from userregistration.forms import CustomUserChangeForm, CustomUserCreationForm
+from userregistration.forms import CustomUserChangeForm, CustomUserCreationForm, CustomStaffUserCreationForm
 
 
 class Admin(CustomUser):
@@ -66,10 +66,11 @@ class CustomStaffAdmin(UserAdmin):
         (None, {
             'classes': ('wide',),
             'fields': ('email', 'first_name', 'last_name', 'password1', 'password2')}
-        ),
+        ),(_('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser',
+                                       'groups', 'user_permissions')}),
     )
     form = CustomUserChangeForm
-    add_form = CustomUserCreationForm
+    add_form = CustomStaffUserCreationForm
     list_display = ('email', 'first_name', 'last_name', 'is_staff')
     search_fields = ('email', 'first_name', 'last_name')
     ordering = ('email',)
