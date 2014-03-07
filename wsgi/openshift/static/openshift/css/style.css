@@ -5,6 +5,11 @@ div.nav-side {
 .logo {
 	color: #F2F0EB;
 }
+.center{
+    display : table-cell;
+    vertical-align : middle;
+    float:none;
+}
 html,
 body {
   height: 100%;

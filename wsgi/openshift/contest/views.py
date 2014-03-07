@@ -31,19 +31,20 @@ def registration(request):
             email_one = form.cleaned_data['email_one']
             email_two = form.cleaned_data['email_two']  
     
-            team = Team.objects.create(team_name=form.cleaned_data['team_name'], onsite=form.cleaned_data['onsite'], 
-                                       offsite=form.cleaned_data['offsite'])            
+            #team = Team.objects.create(name=form.cleaned_data['name'], onsite=form.cleaned_data['onsite'], 
+            #                           offsite=form.cleaned_data['offsite'])            
             '''
             TODO:  This should be a loop, looping over the number allowed members. But first  
             '''
             site = get_current_site(request)
             url = request.path.split('/')[1]
-            
-            
-            invite_1 =Invite.objects.create_invite(email = email_one, team=team, url=url, site=site); # adding "user" (a.k.a the email) to invite list.
-            invite_1.save()  
-            invite_2 = Invite.objects.create_invite(email = email_two, team=team, url=url, site=site); # adding "user" (a.k.a the email) to invite list. 
-            invite_2.save()
+            if email_one:
+                invite_1 =Invite.objects.create_invite(email = email_one, team=new_team, url=url, site=site); # adding "user" (a.k.a the email) to invite list.
+                invite_1.save()
+                
+            if email_two:
+                invite_2 = Invite.objects.create_invite(email = email_two, team=new_team, url=url, site=site); # adding "user" (a.k.a the email) to invite list. 
+                invite_2.save()
             '''
             Checking wether or not a user with that email exist is done in userregistration.
             '''

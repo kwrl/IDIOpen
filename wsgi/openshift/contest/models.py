@@ -25,7 +25,6 @@ class Contest(models.Model):
     links = models.ManyToManyField('Link')
     css = FileBrowseField('CSS', max_length=200, directory='css/', extensions=['.css',], blank=True, null=True)
     
-    
     def __str__(self):
         return self.title
 
@@ -45,7 +44,7 @@ class Link(models.Model):
  
     
 class Team(models.Model):
-    team_name = models.CharField(max_length=200)
+    name = models.CharField(max_length=200)
     onsite = models.BooleanField()
     '''
     TODO: Set leader 
@@ -96,7 +95,7 @@ class Invite(models.Model):
     objects = InviteManager()
     
     def __unicode__(self):
-        return self.team.team_name + ' ' + self.email
+        return self.team.name + ' ' + self.email
 
 
 
