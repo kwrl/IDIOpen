@@ -9,7 +9,7 @@ Created on Feb 12, 2014
 
 
 '''
-TODO: add support ofor leader. We need the log in to do that.
+TODO: add support for leader. We need the log in to do that.
 '''
 class Team_Form(forms.ModelForm):
     email_one = forms.EmailField(required=False);

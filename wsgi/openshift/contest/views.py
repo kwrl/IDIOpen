@@ -27,29 +27,29 @@ def registration(request):
         # teamform is defined in openshif.contest.models
         form = Team_Form(request.POST) # A form bound to the POST data
         if form.is_valid(): # All validation rules pass
-            new_team = form.save(commit=False)
+            #new_team = form.save(commit=False)
             email_one = form.cleaned_data['email_one']
             email_two = form.cleaned_data['email_two']  
     
-            #team = Team.objects.create(name=form.cleaned_data['name'], onsite=form.cleaned_data['onsite'], 
-            #                           offsite=form.cleaned_data['offsite'])            
+            team = Team.objects.create(name=form.cleaned_data['name'], onsite=form.cleaned_data['onsite'], 
+                                       offsite=form.cleaned_data['offsite'])            
             '''
             TODO:  This should be a loop, looping over the number allowed members. But first  
             '''
             site = get_current_site(request)
             url = request.path.split('/')[1]
             if email_one:
-                invite_1 =Invite.objects.create_invite(email = email_one, team=new_team, url=url, site=site); # adding "user" (a.k.a the email) to invite list.
+                invite_1 =Invite.objects.create_invite(email = email_one, team=team, url=url, site=site); # adding "user" (a.k.a the email) to invite list.
                 invite_1.save()
                 
             if email_two:
-                invite_2 = Invite.objects.create_invite(email = email_two, team=new_team, url=url, site=site); # adding "user" (a.k.a the email) to invite list. 
+                invite_2 = Invite.objects.create_invite(email = email_two, team=team, url=url, site=site); # adding "user" (a.k.a the email) to invite list. 
                 invite_2.save()
             '''
             Checking wether or not a user with that email exist is done in userregistration.
             '''
                          
-            form.save() # Save the TeamForm in the database
+            #form.save() # Save the TeamForm in the database
             return HttpResponseRedirect('registrationComplete/') # Redirect after POST
     else:
         form = Team_Form() # a new form
@@ -70,4 +70,14 @@ def user_exist(email):
     if CustomUser.objects.filter(email = email):
         return True
     return False
-    
+
+'''
+AUTHOR: Haakon
+'''
+@login_required
+def teamProfil(request):    
+    user = request.user
+    url = request.path.split('/')[1]
+    #team = Team.objects.filter(contest_url = url).filter(member__has = user)
+    return render(request, 'contest/team.html')
+
