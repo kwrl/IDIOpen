@@ -10,7 +10,10 @@ from django.http import HttpResponseRedirect
 from contest.models import Invite
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-
+from userregistration.forms import Invites_Form
+from django import forms
+from django.core.exceptions import ObjectDoesNotExist
+from django.utils.translation import ugettext_lazy as _
 
 try:
     from django.contrib.auth import get_user_model
@@ -183,10 +186,44 @@ class ActivationView(TemplateView):
 @login_required
 def user_profile(request):
     email = request.user.email
-    
-    notification_list = Invite.objects.filter(email=email)
-    context = {'notification_list' : notification_list,
+    messages = []
+    if request.method == 'POST':
+        form = Invites_Form(request.POST)
+        submit = form.data['submit']
+        id = form.data['id']
+        if id.isdigit():
+            try:
+                try:
+                    invite = Invite.objects.filter(email=email).filter(is_member=False).get(pk=id)
+                except ObjectDoesNotExist:
+                    messages.append({'text':'Invalid invite','error':'alert-danger'})
+                    raise Exception
+                
+                if submit == 'accept':
+                    try:
+                        invite.team.members.add(User.objects.get(email=email))
+                        invite.is_member = True
+                    except ObjectDoesNotExist:
+                        raise forms.ValidationError(_("The form did not validate"))
+                    invite.save()
+                    messages.append({'text':'Invite accepted','error':'alert-success'})
+                    
+                elif submit == 'decline':
+                    invite.delete()
+                    messages.append({'text':'Invite declined','error':'alert-info'})
+                else:
+                    messages.append({'text':'Validation failed','error':'alert-danger'})
+            except:
+                pass
+        else:
+            messages.append({'text':'Validation failed','error':'alert-danger'})
+        
+        
+        
+    invites = Invite.objects.filter(email=email).filter(is_member = False)
+    context = {'invites' : invites,
                'user': request.user,
+               'messages':messages
                }
     #return HttpResponse(notification_list[0].confirmed)
     return render(request, 'userregistration/profile.html', context)

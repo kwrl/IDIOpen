@@ -70,11 +70,17 @@
 		<div class="row">
 			<div class="col-lg-2">
 					{% if contest %}
-						<ul class="list-group">
+						<div class="list-group">
 						{% for link in contest.links.all %}
-							<li class="list-group-item"><a href="{% if link.contestUrl %}/{{ contest.url }}{% endif %}{{ link.url }}">{{ link.text }}</a></li>
+							<a class="list-group-item" href="{% if link.contestUrl %}/{{ contest.url }}{% endif %}{{ link.url }}">{{ link.text }}</a>
 						{% endfor %}
-						</ul>
+						</div>
+						
+						<div class="list-group">
+						{% if user.is_authenticated %}
+							<a class="list-group-item" href="{% url "team_profile" contest.url %}">team</a>
+						{% endif %}
+						</div>
 					{% endif %}
 			</div>
 			<div class="col-lg-7">

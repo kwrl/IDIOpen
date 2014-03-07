@@ -1,15 +1,29 @@
 {% extends 'base.html' %}
 {% block content %}
+
+	{% if messages %}
+		{% for message in messages %}
+			<div class="alert {{ message.error }}">{{ message.text }}</div>	
+		{% endfor %}	
+	{% endif %}
 	<p>
 	{{ user.first_name }}
 	{{ user.last_name }}
 	{{ user.email }}
 	</p>
-	{% if notification_list %}
-		{% for notification in notification_list.all %}
-			<input type="button" text="Accept">
-			<p>{{ notification }}</p>
-			</input>
+	<br>
+
+	{% if invites %}
+		{% for invite in invites.all %}
+			<p>{{ invite }}</p>
+			<form action="." method="post">
+			{% csrf_token %}
+			<input type="hidden" value="{{ invite.id }}" name="id">
+			<button type="submit" name="submit" value="accept" class="btn btn-default btn-sm">Accept</button>
+			<button type="submit" name="submit" value="decline" class="btn btn-default btn-sm">Decline</button>
+			</form>
+			
+			
 		{% endfor %}
 	{% endif %}
 {% endblock content %}

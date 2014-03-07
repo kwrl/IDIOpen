@@ -6,12 +6,12 @@ User = get_user_model()
 
 class TeamAdmin(admin.ModelAdmin):
     filter_horizontal = ('members',)
-    
+    '''
     def formfield_for_manytomany(self, db_field, request, **kwargs):
         if db_field.name == 'members':
             kwargs["queryset"] = User.objects.all().exclude(members__in=Team.objects.all())
         return super(TeamAdmin, self).formfield_for_manytomany(db_field, request, **kwargs)
-
+    '''
 
 
 admin.site.register(Contest)

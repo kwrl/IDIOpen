@@ -54,7 +54,7 @@ class Team(models.Model):
     members = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='members')
     #contest = models.ForeignKey(Contest, related_name='contest')
     offsite = models.CharField(max_length=200, blank = True)
-    def __str__(self):
+    def __unicode__(self):
         return self.name
 
         
@@ -91,7 +91,6 @@ class Invite(models.Model):
     email = models.EmailField(); 
     team = models.ForeignKey(Team)
     is_member = models.BooleanField(default=False);
-    
     objects = InviteManager()
     
     def __unicode__(self):
