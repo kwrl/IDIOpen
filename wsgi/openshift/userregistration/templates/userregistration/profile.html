@@ -7,9 +7,12 @@
 		{% endfor %}	
 	{% endif %}
 	<p>
-	{{ user.first_name }}
-	{{ user.last_name }}
-	{{ user.email }}
+	<h3>{{ user.first_name }}
+	{{ user.last_name }}</h3>
+	<br>
+	Email:<em> {{ user.email }}</em>
+	<br>
+	Date joined:<em> {{ user.date_joined|date:"d.m.Y - H.i"}}</em>
 	</p>
 	<br>
 

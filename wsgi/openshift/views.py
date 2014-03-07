@@ -1,4 +1,11 @@
-from django.shortcuts import render_to_response
+from django.shortcuts import render
+from contest.models import Contest
 
 def home(request):
-    return render_to_response('home/home.html')
+    
+    contests = Contest.objects.all()
+    
+    context = {'contests':contests,
+               }
+    
+    return render(request, 'home/home.html', context)

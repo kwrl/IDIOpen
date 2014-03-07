@@ -9,7 +9,7 @@ from article import views as articleview
 
 urlpatterns = patterns('',
     # Examples:
-    url(r'^$', views.index, name='home'),
+    url(r'^$', views.index, name='contest_list'),
     (r'^accounts/', include('userregistration.urls')),
     # url(r'^blog/', include('blog.urls')),
     url(r'^article/(?P<article_id>\d+)/$', articleview.detail, name='article_detail'),

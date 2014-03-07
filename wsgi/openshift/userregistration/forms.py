@@ -28,6 +28,20 @@ class CustomUserCreationForm(UserCreationForm):
     class Meta:
         model = CustomUser
         fields = ("email","first_name","last_name")
+        
+class CustomStaffUserCreationForm(UserCreationForm):
+    """
+    A form that creates a user, with no privileges, from the given email and
+    password.
+    """
+
+    def __init__(self, *args, **kargs):
+        super(CustomStaffUserCreationForm, self).__init__(*args, **kargs)
+        del self.fields['username']
+
+    class Meta:
+        model = CustomUser
+        fields = ("email","first_name","last_name", "is_staff", "is_superuser")
 
 class CustomUserChangeForm(UserChangeForm):
     """A form for updating users. Includes all the fields on
