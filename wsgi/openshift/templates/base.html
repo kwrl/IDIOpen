@@ -77,10 +77,8 @@
 						</div>
 						
 						<div class="list-group">
-						{% if user.is_authenticated %}
 							<a class="list-group-item" href="{% url "team_profile" contest.url %}">Team</a>
 							<a class="list-group-item" href="{% url "register_teams" contest.url %}">Register Team</a>
-						{% endif %}
 						</div>
 					{% endif %}
 			</div>
