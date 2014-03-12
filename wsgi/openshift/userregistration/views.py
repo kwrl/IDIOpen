@@ -7,7 +7,13 @@ from userregistration import signals
 from userregistration.forms import RegistrationForm
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
-
+from contest.models import Invite
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+from userregistration.forms import Invites_Form
+from django import forms
+from django.core.exceptions import ObjectDoesNotExist
+from django.utils.translation import ugettext_lazy as _
 
 try:
     from django.contrib.auth import get_user_model
@@ -19,9 +25,9 @@ class _RequestPassingFormView(FormView):
     """
     A version of FormView which passes extra arguments to certain
     methods, notably passing the HTTP request nearly everywhere, to
-    enable finer-grained processing.
-    
+    enable finer-grained processing.    
     """
+    
     def get(self, request, *args, **kwargs):
         # Pass request to get_form_class and get_form for per-request
         # form control.
@@ -110,13 +116,11 @@ class RegistrationView(_RequestPassingFormView):
         print url
         email, first_name = cleaned_data['email'], cleaned_data['first_name'] 
         last_name, password = cleaned_data['last_name'], cleaned_data['password1']
-        if Site._meta.installed:
-            site = Site.objects.get_current()
-        else:
-            site = RequestSite(request)
+        site = RequestSite(request)
         new_user = User.objects.create_inactive_user(email, first_name, last_name, password, site, url)
         signals.user_registered.send(sender=self.__class__, user=new_user, request=request)
         return new_user
+    
 # TODO: This needs to return with contest url first
     def get_success_url(self, request, user):
         """
@@ -177,3 +181,49 @@ class ActivationView(TemplateView):
         url = request.path.split('/')[1]
         return ('registration_activation_complete', (), {'contest':url})
 
+
+
+@login_required
+def user_profile(request):
+    email = request.user.email
+    messages = []
+    if request.method == 'POST':
+        form = Invites_Form(request.POST)
+        submit = form.data['submit']
+        id = form.data['id']
+        if id.isdigit():
+            try:
+                try:
+                    invite = Invite.objects.filter(email=email).filter(is_member=False).get(pk=id)
+                except ObjectDoesNotExist:
+                    messages.append({'text':'Invalid invite','error':'alert-danger'})
+                    raise Exception
+                
+                if submit == 'accept':
+                    try:
+                        invite.team.members.add(User.objects.get(email=email))
+                        invite.is_member = True
+                    except ObjectDoesNotExist:
+                        raise forms.ValidationError(_("The form did not validate"))
+                    invite.save()
+                    messages.append({'text':'Invite accepted','error':'alert-success'})
+                    
+                elif submit == 'decline':
+                    invite.delete()
+                    messages.append({'text':'Invite declined','error':'alert-info'})
+                else:
+                    messages.append({'text':'Validation failed','error':'alert-danger'})
+            except:
+                pass
+        else:
+            messages.append({'text':'Validation failed','error':'alert-danger'})
+        
+        
+        
+    invites = Invite.objects.filter(email=email).filter(is_member = False)
+    context = {'invites' : invites,
+               'user': request.user,
+               'messages':messages
+               }
+    #return HttpResponse(notification_list[0].confirmed)
+    return render(request, 'userregistration/profile.html', context)

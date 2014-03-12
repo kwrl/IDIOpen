@@ -105,7 +105,6 @@ class CustomUserManager(BaseUserManager):
         return new_user
     #create_inactive_user = transaction.commit_on_success(create_inactive_user)
 
-
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     """
     A fully featured User model with admin-compliant permissions that uses

@@ -9,8 +9,7 @@ class ArticleAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         # Only update author if author = None
         if getattr(obj, 'author', None) is None:
-            # obj.author = request.user ?
-            obj.author = request.user.first_name + " " + request.user.last_name #fix me
+            obj.author = request.user.first_name + " " + request.user.last_name
         obj.save()        
     class Media:
         # Include javascript for wysiwyg editor

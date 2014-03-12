@@ -7,6 +7,7 @@ from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django import forms
 from userregistration.models import CustomUser
 from django.utils.translation import ugettext_lazy as _
+from contest.models import Invite 
 
 try:
     from django.contrib.auth import get_user_model
@@ -27,6 +28,20 @@ class CustomUserCreationForm(UserCreationForm):
     class Meta:
         model = CustomUser
         fields = ("email","first_name","last_name")
+        
+class CustomStaffUserCreationForm(UserCreationForm):
+    """
+    A form that creates a user, with no privileges, from the given email and
+    password.
+    """
+
+    def __init__(self, *args, **kargs):
+        super(CustomStaffUserCreationForm, self).__init__(*args, **kargs)
+        del self.fields['username']
+
+    class Meta:
+        model = CustomUser
+        fields = ("email","first_name","last_name", "is_staff", "is_superuser")
 
 class CustomUserChangeForm(UserChangeForm):
     """A form for updating users. Includes all the fields on
@@ -89,3 +104,18 @@ class RegistrationForm(forms.Form):
             if self.cleaned_data['password1'] != self.cleaned_data['password2']:
                 raise forms.ValidationError(_("The two password fields didn't match."))
         return self.cleaned_data
+    
+class Invites_Form(forms.Form):
+    def clean(self):
+        if 'id' in self.cleaned_data and 'submit' in self.cleaned_data:
+            if self.cleaned_data['id'].isdigit():
+                if self.cleaned_data['submit'] == 'accept':
+                    self.cleaned_data['submit'] = True
+                elif self.cleaned_data['submit'] == 'decline':
+                    self.cleaned_data['submit'] = False
+                
+                return self.cleaned_data
+        
+        raise forms.ValidationError(_("The form did not validate"))
+
+                
