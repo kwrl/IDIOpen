@@ -5,14 +5,11 @@ from django.db import models
 from django.contrib.auth import get_user_model
 from django.conf import settings
 from filebrowser.fields import FileBrowseField
-<<<<<<< HEAD
 from django.forms import ModelForm
 from django import forms
 from django.template.loader import render_to_string
 from django.core.mail import send_mail
 from django.core.exceptions import ObjectDoesNotExist
-=======
->>>>>>> b26a2609d2508fce3e0eb4b8528b56b2cf0ad0f4
 
 # Create your models here.
 
