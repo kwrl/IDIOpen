@@ -1,5 +1,5 @@
 from django.contrib import admin
-from contest.models import Contest, Link, Team
+from contest.models import Contest, Link, Team, Sponsor
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
@@ -17,6 +17,7 @@ class TeamAdmin(admin.ModelAdmin):
 admin.site.register(Contest)
 admin.site.register(Link)
 admin.site.register(Team, TeamAdmin)
+admin.site.register(Sponsor)
 
 
 
