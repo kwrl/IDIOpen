@@ -64,7 +64,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'debug_toolbar',
+   # 'debug_toolbar',
     'contest',
     'article',
     'userregistration',
@@ -146,7 +146,7 @@ elif MYSQL:
              'NAME': 'gentleidi',
 
 			#'USER': os.environ['USER'],
-             'USER': os.getenv('USER') or os.getenv('USERNAME'), #Added TINO support  
+             'USER': os.getenv('USER') or os.getenv('USERNAME'), #Added Windows support  
 			 'PASSWORD': 'password',
 			 'HOST': 'localhost',
 			 'PORT': '3306',
