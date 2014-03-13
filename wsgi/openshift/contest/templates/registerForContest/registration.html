@@ -2,6 +2,17 @@
 
 {% block content %}
 
+
+{% if messages %}
+		{% for message in messages %}
+			<div class = "alert {{ message.error }} alert-dismissable">
+			<button type="button" class="close" data-dismiss="alert">&times;</button>
+			<strong> {{ message.text }} </strong> 
+			</div>	
+		{% endfor %}	
+{% endif %}
+
+
 <br>
 Register with a team name. You can add up to two friends.  
 Note that by registering for this site, you also sign up for the contest.
@@ -21,7 +32,7 @@ please specify what city you are participating from in in the offiste field
 </form>
 {% else %}
 
-<p> Du må logge inn/registrerere deg for å lage et lag <p>
+<p> You have to log in/register in order to create team <p>
 
  <a href=" {% url 'auth_login' contest.url %}">Log in </a> / <a href=" {% url 'registration_register' contest.url %}">Registrer </a>
 

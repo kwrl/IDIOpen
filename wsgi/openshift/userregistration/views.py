@@ -14,6 +14,11 @@ from userregistration.forms import Invites_Form
 from django import forms
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import ugettext_lazy as _
+from contest.models import Team, Contest
+from django.http import Http404
+from django.core.exceptions import ObjectDoesNotExist
+ 
+
 
 try:
     from django.contrib.auth import get_user_model
@@ -181,16 +186,47 @@ class ActivationView(TemplateView):
         url = request.path.split('/')[1]
         return ('registration_activation_complete', (), {'contest':url})
 
+'''
+Returns the current contest. 
+E.g open14. It uses the URL. 
+'''
+def get_current_contest(request):
+    url = request.path.split('/')[1]    
+    try:
+        current_contest =  Contest.objects.get(url = url)
+    except Exception.ObjectDoesNotExist as e:
+        raise Http404; 
+     
+    return current_contest
 
+'''
+checks if the user is a team. 
+'''
+def is_on_team(request):
+    test_member = Team.objects.filter(members = request.user, contest = get_current_contest(request))
+    if test_member: #checks if the test_members exist in team
+        return True
+    else: # if the test_member for one reason does not exist. It should be impossible, you have to be logged in.
+        return False
+     
+    return False
+
+def get_current_team(request):
+    team = Team.objects.filter(members = request.user, contest = get_current_contest(request))
+    if team: 
+        return team; 
+    else:
+        print "no current_team"
+        raise Http404 
 
 @login_required
 def user_profile(request):
     email = request.user.email
-    messages = []
+    messages = []     
     if request.method == 'POST':
         form = Invites_Form(request.POST)
         submit = form.data['submit']
-        id = form.data['id']
+        id = form.data['id']        
         if id.isdigit():
             try:
                 try:
@@ -199,14 +235,25 @@ def user_profile(request):
                     messages.append({'text':'Invalid invite','error':'alert-danger'})
                     raise Exception
                 
-                if submit == 'accept':
-                    try:
-                        invite.team.members.add(User.objects.get(email=email))
-                        invite.is_member = True
-                    except ObjectDoesNotExist:
-                        raise forms.ValidationError(_("The form did not validate"))
-                    invite.save()
-                    messages.append({'text':'Invite accepted','error':'alert-success'})
+                    '''
+                    If you pressed accept
+                    '''               
+                
+                if submit == 'accept':                    
+                    
+                    '''
+                    We here performe a test to see if the contestant is a part of a team.
+                    '''
+                    if is_on_team(request):
+                        messages.append({'text':"You are already a member of a team!" , 'error':'alert-info'})
+                    else:
+                        try:
+                            invite.team.members.add(User.objects.get(email=email)) #it is here the user is added to a team
+                            invite.is_member = True
+                        except ObjectDoesNotExist:
+                                raise forms.ValidationError(_("The form did not validate"))
+                        invite.save()
+                        messages.append({'text':'Invite accepted','error':'alert-success'})
                     
                 elif submit == 'decline':
                     invite.delete()
@@ -223,7 +270,12 @@ def user_profile(request):
     invites = Invite.objects.filter(email=email).filter(is_member = False)
     context = {'invites' : invites,
                'user': request.user,
-               'messages':messages
+               'messages': messages,
+               'have_team': is_on_team(request)
                }
     #return HttpResponse(notification_list[0].confirmed)
     return render(request, 'userregistration/profile.html', context)
+
+def isMemberOfTeam(reques):
+    
+    pass

@@ -1,9 +1,11 @@
 {% extends 'base.html' %}
 {% block content %}
-
 	{% if messages %}
 		{% for message in messages %}
-			<div class="alert {{ message.error }}">{{ message.text }}</div>	
+			<div class = "alert {{ message.error }} alert-dismissable">
+			<button type="button" class="close" data-dismiss="alert">&times;</button>
+			<strong> {{ message.text }} </strong> 
+			</div>	
 		{% endfor %}	
 	{% endif %}
 	<p>
@@ -12,17 +14,20 @@
 	<br>
 	Email:<em> {{ user.email }}</em>
 	<br>
-	Date joined:<em> {{ user.date_joined|date:"d.m.Y - H.i"}}</em>
+	Date joined:<em> {{ user.date_joined|date:"d.m.Y - H:i"}}</em>
 	</p>
 	<br>
-
+	
 	{% if invites %}
 		{% for invite in invites.all %}
 			<p>{{ invite }}</p>
-			<form action="." method="post">
-			{% csrf_token %}
+			<form action="." method="post"> {% csrf_token %}
+			{% if have_team %}
+				<button type="submit" name="submit" value="accept" disabled="True" class="btn btn-default btn-sm">Accept</button>
+			{% else %}
+				<button type="submit" name="submit" value="accept" class="btn btn-default btn-sm">Accept</button>
+			{% endif %}
 			<input type="hidden" value="{{ invite.id }}" name="id">
-			<button type="submit" name="submit" value="accept" class="btn btn-default btn-sm">Accept</button>
 			<button type="submit" name="submit" value="decline" class="btn btn-default btn-sm">Decline</button>
 			</form>
 			
