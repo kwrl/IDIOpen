@@ -49,11 +49,11 @@
 						{% csrf_token %}
 					  	<div class="form-group">
 					    	<label class="sr-only" for="id_username">Email address</label>
-					    	<input type="text" class="form-control" id="id_username" name="username" placeholder="Enter email">
+					    	<input type="email" class="form-control" id="id_username" name="username" placeholder="Enter email" required>
 					  	</div>
 					  	<div class="form-group">
 					    	<label class="sr-only" for="id_username">Password</label>
-					    	<input type="password" class="form-control" id="id_password" name="password" placeholder="Password">
+					    	<input type="password" class="form-control" id="id_password" name="password" placeholder="Password" required>
 					  	</div>
 					  	<div class="form-group">
 					  	<button type="submit" class="btn btn-default">Sign in</button>
@@ -80,6 +80,14 @@
 							<a class="list-group-item" href="{% url "team_profile" contest.url %}">Team</a>
 							<a class="list-group-item" href="{% url "register_teams" contest.url %}">Register Team</a>
 						</div>
+						{% if contest.sponsors %}
+						<h4 class="text-center">Sponsors</h4>
+						<div class="list-group">
+							{% for sponsor in contest.sponsors.all %}
+								<a class="list-group-item" href="{{ sponsor.url }}"><img src="/media/{{ sponsor.image.path }}"></a>
+							{% endfor %}
+						</div>
+						{% endif %}
 					{% endif %}
 			</div>
 			<div class="col-lg-7">
