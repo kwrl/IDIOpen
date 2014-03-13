@@ -78,6 +78,8 @@ AUTHOR: Haakon
 def teamProfil(request):    
     user = request.user
     url = request.path.split('/')[1]
-    #team = Team.objects.filter(contest_url = url).filter(member__has = user)
-    return render(request, 'contest/team.html')
+    
+    team = Team.objects.filter(members__id = user.id)[0]
+    context = {'team':team,}
+    return render(request, 'contest/team.html', context)
 
