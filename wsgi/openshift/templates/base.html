@@ -80,6 +80,14 @@
 							<a class="list-group-item" href="{% url "team_profile" contest.url %}">Team</a>
 							<a class="list-group-item" href="{% url "register_teams" contest.url %}">Register Team</a>
 						</div>
+						{% if contest.sponsors %}
+						<h4 class="text-center">Sponsors</h4>
+						<div class="list-group">
+							{% for sponsor in contest.sponsors.all %}
+								<a class="list-group-item" href="{{ sponsor.url }}"><img src="/media/{{ sponsor.image.path }}"></a>
+							{% endfor %}
+						</div>
+						{% endif %}
 					{% endif %}
 			</div>
 			<div class="col-lg-7">
