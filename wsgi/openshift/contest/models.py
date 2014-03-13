@@ -1,3 +1,6 @@
+#coding: utf-8
+
+from django.core.exceptions import ValidationError;
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.conf import settings
@@ -16,15 +19,30 @@ Contest model
 
 TODO: Add location, fix start, end, publish date, validate
 '''
+
+from django.db import models
+from django.core.urlresolvers import reverse
+
 class Contest(models.Model):
     title = models.CharField(max_length=200)
-    url = models.CharField(max_length=20, unique=True)
-    start_date = models.DateTimeField('Start date')
+    """ The url is saved as the suffix from root, only, not the entire url
+    """
+    url = models.CharField(max_length=20, unique=True);
+    start_date = models.DateTimeField(verbose_name='Start date')
     end_date = models.DateTimeField('End date')
     publish_date = models.DateTimeField('Publish date')
     links = models.ManyToManyField('Link')
-    css = FileBrowseField('CSS', max_length=200, directory='css/', extensions=['.css',], blank=True, null=True)
-    
+    css = FileBrowseField('CSS', max_length=200, directory='css/', 
+                          extensions=['.css',], blank=True, null=True)
+
+    def clean(self):
+        # TODO: which is better? To do clean here, or in form?
+        # in model you can only invoke validationerror on _ALL_ fields, 
+        # not a single one
+        if self.start_date is not None and self.end_date is not None:
+            if self.start_date.__lt__(self.end_date) == False:
+                raise ValidationError('You cannot set start date to be after the end date');
+
     def __str__(self):
         return self.title
 
@@ -98,3 +116,5 @@ class Invite(models.Model):
 
 
 
+        
+# EOF

@@ -115,6 +115,8 @@ if 'REDISCLOUD_URL' in os.environ and 'REDISCLOUD_PORT' in os.environ and 'REDIS
 
 ROOT_URLCONF = 'urls'
 
+LOGIN_URL = '/login/'
+
 WSGI_APPLICATION = 'wsgi.application'
 
 TEMPLATE_DIRS = (
