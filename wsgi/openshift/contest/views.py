@@ -1,6 +1,6 @@
 #coding:utf-8
-from django.shortcuts import render
-from contest.forms import Team_Form 
+from django.shortcuts import render, redirect, get_object_or_404
+from contest.forms import Team_Form, Team_Edit 
 from django.http import HttpResponseRedirect
 from article.models import Article
 from userregistration.models import CustomUser
@@ -9,7 +9,6 @@ from contest.models import Team, Invite
 from django.contrib.auth import get_user_model
 from django.contrib.sites.models import get_current_site
 from django.contrib.auth.decorators import login_required
-
 
 User = get_user_model()
 # Create your views here.
@@ -78,8 +77,33 @@ AUTHOR: Haakon
 def teamProfil(request):    
     user = request.user
     url = request.path.split('/')[1]
+    print(Team.objects.filter(members__id = user.id))
+    # Need to give error if you dont have team (link to register team page)
     
     team = Team.objects.filter(members__id = user.id)[0]
     context = {'team':team,}
     return render(request, 'contest/team.html', context)
 
+'''
+AUTHOR: Tino
+'''
+
+def editTeamProfil(request):
+    print("You are now in Edit Team Profil View")
+    
+    user = request.user
+    url = request.path.split('/')[1]
+    # Get the team or 404
+    instance = get_object_or_404(Team)
+    # make a new form, with the instance as its model
+    form = Team_Edit(request.POST or None, instance = instance)
+    if form.is_valid():
+        form.save()
+        return redirect('team_profile', url)
+    return render(request, 'contest/editTeam.html', {
+        'form': form,
+        'team': instance,
+    })
+
+def deleteTeamMember(request):
+    pass

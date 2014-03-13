@@ -8,13 +8,15 @@ Onsite: {{ team.onsite }}
 Members:
 <br>
 {% for member in team.members.all %}
-	First name: {{ member.first_name }}
+	First name: {{ member.first_name }} 
 	<br>
 	Last name: {{ member.last_name }}
 	<br>
 	Email: {{ member.email }}
 	<br>
 {% endfor %}
-
+<form action="editteam" method="GET">
+    <input type="submit" value="Edit Team" />
+</form>
 </p>
 {% endblock content %}

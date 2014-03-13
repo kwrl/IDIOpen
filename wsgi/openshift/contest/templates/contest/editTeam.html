@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block content %}
+<form action="" method="post"> {% csrf_token %}
+{{ form.as_p}}
+<br>
+<input type="submit" value="Submit" />
+</form>
+
+<form action="" method="post"> 
+Members:
+{% for member in team.members.all %}
+	<br>
+	Email: {{ member.email }}	
+<input type="checkbox" value="deleteMember" />
+	<br>
+{% endfor %}
+<input type="submit" value="Delete selected memebers" />
+</form>
+{% endblock content %}
