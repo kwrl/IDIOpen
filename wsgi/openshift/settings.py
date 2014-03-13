@@ -64,7 +64,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-   # 'debug_toolbar',
+    'debug_toolbar',
     'contest',
     'article',
     'userregistration',
@@ -92,6 +92,7 @@ STATICFILES_FINDERS = (
 TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.request",
     'django.contrib.auth.context_processors.auth',
+    'django.contrib.messages.context_processors.messages',
 )
 
 

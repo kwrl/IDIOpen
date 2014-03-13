@@ -113,8 +113,5 @@ class Invite(models.Model):
     
     def __unicode__(self):
         return self.team.name + ' ' + self.email
-
-
-
         
 # EOF

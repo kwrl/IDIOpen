@@ -1,6 +1,6 @@
 #coding:utf-8
 from django.shortcuts import render, redirect, get_object_or_404
-from contest.forms import Team_Form, Team_Edit 
+from contest.forms import Team_Form, Team_Edit, Team_Delete_Members
 from django.http import HttpResponseRedirect
 from article.models import Article
 from userregistration.models import CustomUser
@@ -9,6 +9,7 @@ from contest.models import Team, Invite
 from django.contrib.auth import get_user_model
 from django.contrib.sites.models import get_current_site
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 
 User = get_user_model()
 # Create your views here.
@@ -90,18 +91,35 @@ AUTHOR: Tino
 
 def editTeamProfil(request):
     print("You are now in Edit Team Profil View")
-    
     user = request.user
     url = request.path.split('/')[1]
     # Get the team or 404
     instance = get_object_or_404(Team)
     # make a new form, with the instance as its model
-    form = Team_Edit(request.POST or None, instance = instance)
-    if form.is_valid():
-        form.save()
-        return redirect('team_profile', url)
+    editForm = Team_Edit(None, instance = instance)
+    deleteForm = Team_Delete_Members(None, instance = instance)
+    if request.method == 'POST':
+        if 'edit' in request.POST:
+            editForm = Team_Edit(request.POST, instance = instance)
+            if editForm.is_valid():
+                messages.success(request, 'Profile details updated.')
+                editForm.save()
+        if 'deletebutton' in request.POST:
+            deleteForm = Team_Delete_Members(request.POST, instance = instance)
+            if deleteForm.is_valid():
+                if deleteForm.save():
+                    messages.success(request, 'Members updated.')
+                else:
+                    messages.error(request, 'Something went wrong')
+                
+       
+     
+    #if request.method == 'POST':
+     #   submit = editForm.data['submit']
+    #    if submit == 'edit':
     return render(request, 'contest/editTeam.html', {
-        'form': form,
+        'editForm': editForm,
+        'deleteForm': deleteForm,
         'team': instance,
     })
 
