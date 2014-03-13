@@ -49,11 +49,11 @@
 						{% csrf_token %}
 					  	<div class="form-group">
 					    	<label class="sr-only" for="id_username">Email address</label>
-					    	<input type="text" class="form-control" id="id_username" name="username" placeholder="Enter email">
+					    	<input type="email" class="form-control" id="id_username" name="username" placeholder="Enter email" required>
 					  	</div>
 					  	<div class="form-group">
 					    	<label class="sr-only" for="id_username">Password</label>
-					    	<input type="password" class="form-control" id="id_password" name="password" placeholder="Password">
+					    	<input type="password" class="form-control" id="id_password" name="password" placeholder="Password" required>
 					  	</div>
 					  	<div class="form-group">
 					  	<button type="submit" class="btn btn-default">Sign in</button>
