@@ -32,6 +32,7 @@ class Contest(models.Model):
     end_date = models.DateTimeField('End date')
     publish_date = models.DateTimeField('Publish date')
     links = models.ManyToManyField('Link')
+    sponsors = models.ManyToManyField('Sponsor', blank=True)
     css = FileBrowseField('CSS', max_length=200, directory='css/', 
                           extensions=['.css',], blank=True, null=True)
 
@@ -115,6 +116,14 @@ class Invite(models.Model):
         return self.team.name + ' ' + self.email
 
 
-
-        
+class Sponsor(models.Model):
+    name = models.CharField(max_length=50, default='Logo', help_text='Company name for the sponsor')
+    url = models.URLField(help_text='The url you want the user to get redirected to when the logo is clicked')  
+    image = FileBrowseField('Image', max_length=200, directory='sponsor/', 
+                          extensions=['.jpg','.jpeg','.png','.gif'], blank=False, null=False,
+                          help_text='Select logo image, allowed formats jpg, jpeg, png, gif')
+    
+    def __unicode__(self):
+        return self.name
+     
 # EOF
