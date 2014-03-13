@@ -16,6 +16,6 @@ urlpatterns = patterns('',
     url(r'^article/list/$', articleview.index, name='articleList'),
     url(r'^registration/$', views.registration, name = 'register_teams'),
     url(r'^registration/registrationComplete/$', views.registrationComplete, name = 'register_team_complete'),
-    url(r'^team$', views.teamProfil, name = 'team_profile'),
+    url(r'^team$', views.teamProfil, name = 'team_profile'), 
     
-)<
+)
