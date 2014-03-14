@@ -1,0 +1,19 @@
+<html>
+<head><title>Contest - Page</title></head>
+
+<body>
+
+<h1>{{newContest}}</h1>
+
+<p> Register Team: </p>
+
+<form action="" method="post">
+        <table>
+            {{ form.as_table }}
+        </table>
+        {% csrf_token %}
+        <input type="submit" value="Submit">
+    </form>
+
+</body>
+</html>

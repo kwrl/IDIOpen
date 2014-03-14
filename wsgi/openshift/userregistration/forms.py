@@ -6,9 +6,11 @@ Created on Feb 26, 2014
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.core.exceptions import ValidationError;
 from django import forms
+from django.forms.util import ErrorList 
 from userregistration.models import CustomUser
 from django.utils.translation import ugettext_lazy as _
 from contest.models import Invite 
+from django.views.decorators.debug import sensitive_variables
 
 import ipdb;
 
@@ -121,24 +123,99 @@ class Invites_Form(forms.Form):
                 return self.cleaned_data
         
         raise forms.ValidationError(_("The form did not validate"))
-
-class ContestantForm(forms.ModelForm):
-    password_validation = forms.CharField(widget=forms.PasswordInput());
     
+class PasswordForm(forms.ModelForm):
+    password_validation = forms.CharField(widget=forms.PasswordInput(),
+                                          label="Password (confirm)");
+    
+    def __init__(self, *args, **kwargs):
+        super(PasswordForm, self).__init__(*args, **kwargs);
+        self.fields.keyOrder = ['password', 'password_validation'];
+        self.contextName = "userpw";
+    
+    @sensitive_variables('password', 'password_validation')
     def clean(self):
-        ipdb.set_trace();
-        if self.password_validation != self.Meta.fields['password']:
-            raise forms.ValidationError("Passwords do not match");
-        
-        super(ContestantForm, self).clean();
-        return self.cleaned_data;
+        if  'password'            in self.cleaned_data \
+        and 'password_validation' in self.cleaned_data:
+            pw = self.cleaned_data['password'];
+            pw_validation = self.cleaned_data['password_validation'];
+            
+            if pw != pw_validation:
+                    self.errors['password'] = ErrorList();
+                    self.errors['password_validation'] = ErrorList();
+                    self.errors['password'].append("%s do not match" % ("Passwords"));
+                    self.errors['password_validation'].append("%s do not match" % ("Passwords"));
+            else:
+                super(PasswordForm, self).clean();
+                return self.cleaned_data;
+
+        raise ValidationError("Fields cannot be empty")
+
+    def save(self):
+        self.instance.set_password(self.cleaned_data['password']);
+        super(PasswordForm, self).save();
+                                          
+    class Meta:
+        model = CustomUser;
+        fields = ['password'];
+        help_texts = {
+                      'password_validation': "Enter password again for validation",
+                      };
+        widgets = {
+                   'password' : forms.PasswordInput()
+            };
+
+class EmailForm(forms.ModelForm):
+    email_validation = forms.EmailField()
+
+    def __init__(self, *args, **kwargs):
+        super(EmailForm, self).__init__(*args, **kwargs);
+        self.contextName = "useremail";
+
+    def clean(self):
+        if  'email'            in self.cleaned_data \
+        and 'email_validation' in self.cleaned_data:
+            email = self.cleaned_data['email'];
+            email_validation = self.cleaned_data['email_validation'];
+ 
+            if email != email_validation:
+                self.errors['email'] = ErrorList();
+                self.errors['email_validation'] = ErrorList();
+                self.errors['email'].append("%s do not match"
+                                                % ("emails"));
+                self.errors['email_validation'].append("%s do not match" 
+                                                           % ("emails"));
+            else:
+                super(EmailForm, self).clean();
+                return self.cleaned_data;
+
+        raise ValidationError("Fields cannot be empty")
+
+    def save(self):
+        """self.instance.set_password(self.cleaned_data['password']);"""
+        """super(ContestantForm, self).save();"""
+        self.instance.add_new_email(self.cleaned_data['email_validation'])
         
     class Meta:
-        fields =['first_name', 'last_name', 'email', 'password'];
-        
-        widgets = {
-                   'password': forms.PasswordInput()
-                   };
-        
         model = CustomUser;
+        fields =['email'];
+
+
                 
+class PIForm(forms.ModelForm):
+    def save(self):
+        pass
+
+    def __init__(self, *args, **kwargs):
+        super(PIForm, self).__init__(*args, **kwargs);
+        self.contextName = "userpi";
+    
+    class Meta:
+        model   = CustomUser
+        fields  = ['first_name', 'last_name']
+        help_text = {
+                     'first_name': "First name",
+                     'last_name':"Last name",
+                     } 
+                
+# EOF

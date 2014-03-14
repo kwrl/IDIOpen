@@ -102,6 +102,8 @@ class CustomUserManager(BaseUserManager):
             new_user.send_activation_email(site, url)
 
         return new_user
+    
+    
     #create_inactive_user = transaction.commit_on_success(create_inactive_user)
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
@@ -111,7 +113,9 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     Email and password are required. Other fields are optional.
     """
-    email = models.EmailField(_('email address'), max_length=254, unique=True)
+    email       = models.EmailField(_('email address'), max_length=254, unique=True)
+    temp_email  = models.EmailField(_('temp email'), max_length=254, unique=False)
+    email_activation_key = models.CharField(max_length=40)
     first_name = models.CharField(_('first name'), max_length=30)
     last_name = models.CharField(_('last name'), max_length=30)
     is_staff = models.BooleanField(_('staff status'), default=False,
@@ -202,3 +206,24 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         Sends an email to this User.
         """
         send_mail(subject, message, from_email, [self.email])
+        
+    """Adds a new email to be swapped in"""
+    def add_new_email(self, new_email):
+        self.temp_email = new_email
+        salt = hashlib.sha1(str(random.random())).hexdigest()[:5]
+        email_activation_key = hashlib.sha1(salt+self.email.encode('utf-8')).hexdigest()    
+        self.email_user("Fis", email_activation_key)
+        
+    """Swaps in the new email"""
+    def activate_new_email(self, key):
+        assert(self.email_activation_key==key)
+        self.email = self.temp_email
+        self.temp_email = None
+        self.email_activation_key = None
+     
+           
+    
+    
+        
+        
+        

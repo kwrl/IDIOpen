@@ -1,0 +1,36 @@
+#header
+{
+	width: 	100%;
+	height: 100px;
+}
+
+
+#menu input	
+{
+	width: 100%;
+	height:40px;
+}
+
+
+#login_button
+{
+	width: 	100%;
+	height: 80px;
+}
+
+#left_bar	{	width: 	200px;	}
+#right_bar	{	width:	200px;	}
+.sidebar	{	min-height: 700px;	}
+#newsfeed	{	width: 	64%;	}
+.advert		{	width: 	100%;	}
+.newsitem
+{
+	min-height: 300px;
+	width: 100%;
+}
+
+.newsitem div:first-child
+{
+	height: 60px;
+	width:100%;
+}

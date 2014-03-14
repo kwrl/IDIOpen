@@ -1,20 +1,19 @@
-from django.shortcuts import redirect
+from django import forms
+from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ObjectDoesNotExist
+from django.core.urlresolvers import reverse;
+from django.shortcuts import redirect, render_to_response;
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView
-from django.contrib.sites.models import RequestSite
-from django.contrib.sites.models import Site
-from userregistration import signals
-from userregistration.forms import RegistrationForm, ContestantForm
+from django.contrib.sites.models import RequestSite, Site
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from contest.models import Invite
 from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
-from userregistration.forms import Invites_Form
-from django import forms
-from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import ugettext_lazy as _
 
+from userregistration.forms import *
+from userregistration import signals
 
 import ipdb;
 
@@ -185,14 +184,42 @@ class ActivationView(TemplateView):
         return ('registration_activation_complete', (), {'contest':url})
 
 @login_required
-def updateProfile(request):
-    cf = ContestantForm(instance=request.user);
+def updateProfilePw(request):
+    form = None;
     if request.method == 'POST':
-        cf.clean();
-        if cf.is_valid():
-            cf.save();
+        form = PasswordForm(data=request.POST, instance=request.user);
+        if form.is_valid():
+            form.save();
+    else:
+        form = PasswordForm(instance=request.user);
     
-    return retProfile(request);
+    return retProfile(request, UserProfile(request,
+                                            pw=form));
+
+@login_required
+def updateProfileEmail(request):
+    form = None;
+    if request.method == 'POST':
+        form = EmailForm(data=request.POST, instance=request.user);
+        if form.is_valid():
+            form.save();
+    else:
+        form = EmailForm(instance=request.user);
+    
+    return retProfile(request, UserProfile(request,
+                                           email=form));
+
+@login_required
+def updateProfilePI(request):
+    form = None;
+    if request.method == 'POST':
+        form = PIForm(data=request.POST, instance=request.user);
+        if form.is_valid():
+            form.save();
+    else:
+        form = PIForm(instance=request.user);
+    
+    return retProfile(request, UserProfile(request, pi=form));
 
 @login_required
 def user_profile(request):
@@ -228,21 +255,43 @@ def user_profile(request):
                 pass
         else:
             messages.append({'text':'Validation failed','error':'alert-danger'})
-        
-    return retProfile;
     
-       
-def retProfile(request=None):
-    cf = ContestantForm(instance=request.user);
     email = request.user.email;
     messages = [];
     invites = Invite.objects.filter(email=email).filter(is_member = False)
     context = {'invites' : invites,
-               'user': cf,
                'messages':messages
                }
-    #return HttpResponse(notification_list[0].confirmed)
+    context.update(UserProfile(request).getDict());
     return render(request, 'userregistration/profile.html', context)
 
-    
+class UserProfile(object):
+    def __init__(self, request, pw=None, pi=None, email=None):
+        self.pwForm = pw or PasswordForm(instance=request.user);
+        self.piForm = pi or PIForm(instance=request.user);
+        self.email = email or EmailForm(instance=request.user);
+        self.forms = [self.pwForm, self.piForm, self.email];
+        
+    def getDict(self):
+        a = {};
+        for form in self.forms:
+            a[form.contextName] = form;
+        return a;
+
+def retProfile(request, userProfile):
+    email = request.user.email;
+    messages = [];
+    invites = Invite.objects.filter(email=email).filter(is_member = False)
+    context = {'invites' : invites,
+               'messages':messages
+               }
+
+    context.update(userProfile.getDict());
+
+    #return HttpResponse(notification_list[0].confirmed)
+    return render(request, 'userregistration/profile.html', context);
+    return HttpResponseRedirect(reverse('profile', args={request.path.split('/')[1]:''}));
+    return redirect('user_profile', data=request, name='profile');
+    return redirect('userregistration/profile.html');
+
 # EOF

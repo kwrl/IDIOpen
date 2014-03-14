@@ -7,7 +7,7 @@ from django.conf.urls import patterns
 from django.conf.urls import url
 from django.views.generic.base import TemplateView
 from django.contrib.auth import views as auth_views;
-from userregistration.views import ActivationView, RegistrationView, user_profile, updateProfile;
+from userregistration.views import *;
 from mercurial.bookmarks import update
 urlpatterns = patterns('',
                        url(r'^activate/complete/$',
@@ -30,7 +30,10 @@ urlpatterns = patterns('',
                            TemplateView.as_view(template_name='registration/registration_closed.html'),
                            name='registration_disallowed'),
                        url(r'^profile/', user_profile, name='profile'),
-                       url(r'^profileEdit/', updateProfile, name='profile'),
+                       url(r'^profileEditPw/', updateProfilePw, name='profile'),
+                       url(r'^profileEditEmail/', updateProfileEmail, name='profile'),
+                       url(r'^profileEditPI/', updateProfilePI, name='profile'),
+                       url(r'^profileEdit/', user_profile, name='profile'),
                        url(r'^login/$',
                            auth_views.login,
                            {'template_name': 'registration/login.html'},
