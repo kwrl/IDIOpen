@@ -1,5 +1,7 @@
 from django.contrib import admin
-from contest.models import Contest, Link, Team, Sponsor
+from contest.models import Sponsor #weird error..Haakon 
+from contest.models import Contest, Link, Team, Invite
+
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
@@ -18,6 +20,7 @@ admin.site.register(Contest)
 admin.site.register(Link)
 admin.site.register(Team, TeamAdmin)
 admin.site.register(Sponsor)
+admin.site.register(Invite)
 
 
 
