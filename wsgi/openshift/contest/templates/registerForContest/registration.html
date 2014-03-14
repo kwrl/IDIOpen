@@ -12,11 +12,10 @@ Note that by registering for this site, you also sign up for the contest.
 {%if user.is_authenticated %}
 <p>
 If you are going to participate online (not being present at NTNU), 
-please specify what city you are participating from in in the offiste field
+please specify what city you are participating from in in the offsite field
 </p>
 		<form class="form-horizontal" method="post" action="." role="form">
 		  {% csrf_token %}
-		  
 		  {% for field in form %}
 		        <div class="form-group">
 		            {{ field.errors }}

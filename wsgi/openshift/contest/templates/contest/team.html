@@ -24,8 +24,8 @@
 	<form action="editteam" method="GET">
 	    <input type="submit" value="Edit Team" />
 	</form>
-	</p>
-	<p>
+	<hr>
+	<p>You can add new members here: </p>
 	<form action="" method="post">{% csrf_token %}
 	{{ addMemberForm.as_p}}
 	    <div class="form-group">
