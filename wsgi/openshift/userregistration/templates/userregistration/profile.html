@@ -1,16 +1,9 @@
 {% extends 'base.html' %}
 {% block content %}
-	{% if messages %}
-		{% for message in messages %}
-			<div class = "alert {{ message.error }} alert-dismissable">
-			<button type="button" class="close" data-dismiss="alert">&times;</button>
-			<strong> {{ message.text }} </strong> 
-			</div>	
-		{% endfor %}	
-	{% endif %}
-	<p>
+
 	<h3>{{ user.first_name }}
 	{{ user.last_name }}</h3>
+	<p>
 	<br>
 	Email:<em> {{ user.email }}</em>
 	<br>
@@ -19,19 +12,24 @@
 	<br>
 	
 	{% if invites %}
-		{% for invite in invites.all %}
-			<p>{{ invite }}</p>
-			<form action="." method="post"> {% csrf_token %}
-			{% if have_team %}
-				<button type="submit" name="submit" value="accept" disabled="True" class="btn btn-default btn-sm">Accept</button>
-			{% else %}
+		{% if have_team %}
+			<p> You already have a team </p>
+		{% else %}
+			{% for invite in invites.all %}
+				<p>{{ invite }}</p>
+				<form action="." method="post"> {% csrf_token %}
+				<input type="hidden" value="{{ invite.id }}" name="id">
+				{% if have_team %}
+					<button type="submit" name="submit" value="accept" disabled="disabled" class="btn btn-default btn-sm">Accept</button>
+				{% elif invite.team.members.count >= 3 %}
+				<p>This team has reached the maximum number of members</p>
+				<button type="submit" name="submit" disabled="disabled" value="accept" class="btn btn-default btn-sm">Accept</button>
+				{% else %}
 				<button type="submit" name="submit" value="accept" class="btn btn-default btn-sm">Accept</button>
-			{% endif %}
-			<input type="hidden" value="{{ invite.id }}" name="id">
-			<button type="submit" name="submit" value="decline" class="btn btn-default btn-sm">Decline</button>
-			</form>
-			
-			
-		{% endfor %}
+				{% endif %}
+				<button type="submit" name="submit" value="decline" class="btn btn-default btn-sm">Decline</button>
+				</form>
+			{% endfor %}
+		{% endif %}
 	{% endif %}
 {% endblock content %}

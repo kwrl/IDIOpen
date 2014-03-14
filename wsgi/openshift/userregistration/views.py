@@ -1,24 +1,20 @@
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView
-from django.contrib.sites.models import RequestSite
-from django.contrib.sites.models import Site
+from django.contrib.sites.models import RequestSite, Site
 from userregistration import signals
-from userregistration.forms import RegistrationForm
+from userregistration.forms import RegistrationForm, Invites_Form
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from contest.models import Invite
-from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from userregistration.forms import Invites_Form
 from django import forms
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import ugettext_lazy as _
 from contest.models import Team, Contest
 from django.http import Http404
 from django.core.exceptions import ObjectDoesNotExist
- 
-
+from django.contrib import messages
 
 try:
     from django.contrib.auth import get_user_model
@@ -222,7 +218,6 @@ def get_current_team(request):
 @login_required
 def user_profile(request):
     email = request.user.email
-    messages = []     
     if request.method == 'POST':
         form = Invites_Form(request.POST)
         submit = form.data['submit']
@@ -232,46 +227,39 @@ def user_profile(request):
                 try:
                     invite = Invite.objects.filter(email=email).filter(is_member=False).get(pk=id)
                 except ObjectDoesNotExist:
-                    messages.append({'text':'Invalid invite','error':'alert-danger'})
+                    messages.error(request, 'Invalid invite')
                     raise Exception
-                
-                    '''
-                    If you pressed accept
-                    '''               
-                
-                if submit == 'accept':                    
-                    
-                    '''
-                    We here performe a test to see if the contestant is a part of a team.
-                    '''
+
+                if submit == 'accept':
                     if is_on_team(request):
-                        messages.append({'text':"You are already a member of a team!" , 'error':'alert-info'})
-                    else:
-                        try:
-                            invite.team.members.add(User.objects.get(email=email)) #it is here the user is added to a team
-                            invite.is_member = True
-                        except ObjectDoesNotExist:
+                        if invite.team.members.count() <= 3:
+                            try:
+                                invite.team.members.add(User.objects.get(email=email))
+                                invite.is_member = True
+                            except ObjectDoesNotExist:
                                 raise forms.ValidationError(_("The form did not validate"))
-                        invite.save()
-                        messages.append({'text':'Invite accepted','error':'alert-success'})
-                    
+                            invite.save()
+                            messages.success(request, 'Invite accepted')
+                        else:
+                            messages.error(request, 'The team you tried to join has the maximum allowed members')
+                    else:
+                        messages.info(request, 'You are already a member of a team!')
                 elif submit == 'decline':
                     invite.delete()
-                    messages.append({'text':'Invite declined','error':'alert-info'})
+                    messages.info(request, 'Invite declined')
                 else:
-                    messages.append({'text':'Validation failed','error':'alert-danger'})
+                    messages.error(request, 'Validation failed')
             except:
                 pass
         else:
-            messages.append({'text':'Validation failed','error':'alert-danger'})
+            messages.error(request, 'Validation failed')
         
         
         
     invites = Invite.objects.filter(email=email).filter(is_member = False)
     context = {'invites' : invites,
                'user': request.user,
-               'messages': messages,
-               'have_team': is_on_team(request)
+               'have_team': is_on_team(request),
                }
     #return HttpResponse(notification_list[0].confirmed)
     return render(request, 'userregistration/profile.html', context)
