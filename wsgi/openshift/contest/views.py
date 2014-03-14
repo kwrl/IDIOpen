@@ -1,6 +1,6 @@
 #coding:utf-8
-from django.shortcuts import render
-from contest.forms import Team_Form 
+from django.shortcuts import render, redirect, get_object_or_404
+from contest.forms import Team_Form, Team_Edit, Team_Delete_Members, Team_Add_Members
 from django.http import HttpResponseRedirect
 from article.models import Article
 from userregistration.models import CustomUser
@@ -11,7 +11,7 @@ from django.contrib.sites.models import get_current_site
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import Http404
-
+from django.contrib import messages
 
 
 User = get_user_model()
@@ -110,19 +110,71 @@ def user_exist(email):
     return False
 
 '''
-AUTHOR: Haakon
-but.. it is not working...
+
+AUTHOR: Haakon, Tino, Filip
+
 '''
 @login_required
 def teamProfil(request):    
     user = request.user
     url = request.path.split('/')[1]
-    
+
+    site = get_current_site(request)
+
+    # Need to give error if you dont have team (link to register team page)
     team = Team.objects.filter(members__id = user.id)
     if team.count() > 0:
         team = team[0]
     else:
-        team = None 
-    context = {'team':team}
+        team = None
+         
+    # TODO: Only visible to Team leaders
+    if request.method == 'POST':
+        addMemberForm = Team_Add_Members(request.POST)
+        if addMemberForm.is_valid():
+            email = addMemberForm.cleaned_data['email']
+            if Team.objects.values('members').count() < 2:  #TODO: Fix hard code     
+                print("Du har under 2 medlemmer")
+                invite = Invite.objects.create_invite(email, team, url, site)
+                invite.save()
+            else:   
+                messages.error(request, 'You already have the maximum number of members')
+    else:        
+        addMemberForm = Team_Add_Members()
+        
+    context = {'team':team, 'addMemberForm' : addMemberForm,}
     return render(request, 'contest/team.html', context)
+
+'''
+AUTHOR: Tino, Filip
+'''
+
+def editTeamProfil(request):
+    print("You are now in Edit Team Profil View")
+    user = request.user
+    url = request.path.split('/')[1]
+    # Get the team or 404
+    instance = get_object_or_404(Team)
+    # make a new form, with the instance as its model
+    editForm = Team_Edit(None, instance = instance)
+    deleteForm = Team_Delete_Members(None, instance = instance)
+    if request.method == 'POST':
+        if 'edit' in request.POST:
+            editForm = Team_Edit(request.POST, instance = instance)
+            if editForm.is_valid():
+                messages.success(request, 'Profile details updated.')
+                editForm.save()
+        if 'deletebutton' in request.POST:
+            deleteForm = Team_Delete_Members(request.POST, instance = instance)
+            if deleteForm.is_valid():
+                if deleteForm.save():
+                    messages.success(request, 'Members updated.')
+                else:
+                    messages.error(request, 'Something went wrong')
+                       
+    return render(request, 'contest/editTeam.html', {
+        'editForm': editForm,
+        'deleteForm': deleteForm,
+        'team': instance,
+    })
 

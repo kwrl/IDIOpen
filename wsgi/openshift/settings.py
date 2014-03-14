@@ -92,6 +92,7 @@ STATICFILES_FINDERS = (
 TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.request",
     'django.contrib.auth.context_processors.auth',
+    'django.contrib.messages.context_processors.messages',
 )
 
 
@@ -146,7 +147,7 @@ elif MYSQL:
              'NAME': 'gentleidi',
 
 			#'USER': os.environ['USER'],
-             'USER': os.getenv('USER') or os.getenv('USERNAME'), #Added TINO support  
+             'USER': os.getenv('USER') or os.getenv('USERNAME'), #Added Windows support  
 			 'PASSWORD': 'password',
 			 'HOST': 'localhost',
 			 'PORT': '3306',
