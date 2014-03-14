@@ -141,26 +141,39 @@ def teamProfil(request):
     else:
         team = None
          
-    # TODO: Only visible to Team leaders
-    if request.method == 'POST':
-        addMemberForm = Team_Add_Members(request.POST)
-        if addMemberForm.is_valid():
-            email = addMemberForm.cleaned_data['email']
-            if Team.objects.get(pk=team.id).members.count() < 3:  #TODO: Fix hard code      
-                invite = Invite.objects.create_invite(email, team, url, site)
-                invite.save()
-                messages.success(request, 'Email has been sent to: ' + email)
-            else:   
-                messages.error(request, 'You already have the maximum number of members')
-    else:        
-        addMemberForm = Team_Add_Members()
-        
-    context = {'team':team, 'addMemberForm' : addMemberForm,}
+    # Check if user is leader for team
+    if is_leader(request):
+        if request.method == 'POST':
+            addMemberForm = Team_Add_Members(request.POST)
+            print("post happened")
+            if addMemberForm.is_valid():
+                email = addMemberForm.cleaned_data['email']
+                if Team.objects.get(pk=team.id).members.count() < 3:  #TODO: Fix hard code      
+                    invite = Invite.objects.create_invite(email, team, url, site)
+                    invite.save()
+                    messages.success(request, 'Email has been sent to: ' + email)
+                else:   
+                    messages.error(request, 'You already have the maximum number of members')
+        else:        
+            addMemberForm = Team_Add_Members()        
+        context = {'team':team, 'addMemberForm' : addMemberForm, 'is_leader' : is_leader(request)}
+    else:
+        context = {'team':team, 'is_leader' : is_leader(request),}
+
     return render(request, 'contest/team.html', context)
 
 '''
 AUTHOR: Tino, Filip
 '''
+#===============================================================================
+# Check if user is Team leader
+#===============================================================================
+def is_leader(request):
+    team = Team.objects.get(members__id = request.user.id)
+    if team.leader.id == request.user.id:
+        return True
+    else:
+        return False
 
 #Haakon
 def is_member_of_team(request):

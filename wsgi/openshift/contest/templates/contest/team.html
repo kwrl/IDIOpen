@@ -26,6 +26,7 @@
 	</form>
 	</p>
 	<p>
+	{% if is_leader %}
 	<form action="" method="post">{% csrf_token %}
 	{{ addMemberForm.as_p}}
 	    <div class="form-group">
@@ -35,6 +36,7 @@
   		</div>
 	</form>
 	</p>
+	{% endif %}
 {% else %}
 	<p> You are currently not member of any team. Want to participate in this contest? </p>
 	<a href=" {% url 'register_teams' contest.url %}">Registrer Team </a>
