@@ -2,54 +2,43 @@
 {% load link_tags %}
 {% load i18n %}
 {% block content %}
-{% if messages %}
-<ul class="messages">
-    {% for message in messages %}
-    <div class="alert alert-{{ message.tags }} alert-dismissable">
-  		<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-  		 {{ message }}
-	</div>
+<form class="form-horizontal" method="POST" action="" role="form">
+	{% csrf_token %}
+	<h3>Update team</h3>
+	{% for field in editForm %}
+	    <div class="form-group">
+            {{ field.errors }}
+            <label for="{{ field.id_for_label }}" class="col-lg-3 control-label">{{ field.label }}</label> 
+	            <div class="col-lg-5">
+		            {{ field|addcss:"form-control"}}
+	            </div>
+        </div>
     {% endfor %}
-</ul>
-{% endif %}
-<h3>Update team</h3>
-<form class="form-horizontal" method="POST" action="" role="form">
-		  {% csrf_token %}
-		  
-		  {% for field in editForm %}
-		        <div class="form-group">
-		            {{ field.errors }}
-		            <label for="{{ field.id_for_label }}" class="col-lg-3 control-label">{{ field.label }}</label> 
-		            <div class="col-lg-5">
-		            {{ field|addcss:"form-control"}}
-		            </div>
-		        </div>
-		    {% endfor %}
-		    <div class="form-group">
-			<div class="col-lg-offset-3 col-lg-10">
-		  		<button type="submit" name='edit' value="edit" class="btn btn-default">{% trans 'Update Team' %}</button>
-		  	</div>
-		  	</div>
-		</form>
+    <div class="form-group">
+		<div class="col-lg-offset-3 col-lg-9">
+	  		<button type="submit" name='edit' value="edit" class="btn btn-default">{% trans 'Update Team' %}</button>
+	  	</div>
+  	</div>
+</form>
 <hr>
-<h4>Delete members</h4>
 <form class="form-horizontal" method="POST" action="" role="form">
-		  {% csrf_token %}
-		  
-		  {% for field in deleteForm %}
-		        <div class="form-group">
-		            {{ field.errors }}
-		            <label for="{{ field.id_for_label }}" class="col-lg-3 control-label">{{ field.label }}</label> 
-		            <div class="col-lg-9">
-		            {{ field|addcss:"form-control"}}
-		            </div>
-		        </div>
-		    {% endfor %}
-		    <div class="form-group">
-			<div class="col-lg-offset-3 col-lg-10">
-		  		<button type="submit" name='deletebutton' value="deletebutton" class="btn btn-default">{% trans 'Update Members' %}</button>
-		  	</div>
-		  	</div>
-		</form>
+	{% csrf_token %}
+    {{ field.errors }}
+	<h3>Delete members</h3>
+        <div class="form-group">
+            <div class="col-lg-offset-3 col-lg-9">
+            {% for radio in deleteForm.members %}
+			<div class="myradio">
+			    {{ radio }}
+			</div>
+			{% endfor %}
+            </div>
+        </div>
+    <div class="form-group">
+	<div class="col-lg-offset-3 col-lg-10">
+  		<button type="submit" name='deletebutton' value="deletebutton" class="btn btn-default">{% trans 'Update Members' %}</button>
+  	</div>
+  	</div>
+</form>
 {% endblock content %}
 

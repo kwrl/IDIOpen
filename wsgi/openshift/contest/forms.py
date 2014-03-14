@@ -1,5 +1,5 @@
 from django import forms
-from models import Team
+from models import Team, Invite
 from django.forms.widgets import CheckboxSelectMultiple
 from django.forms.models import ModelMultipleChoiceField
 from userregistration.models import CustomUser
@@ -41,3 +41,9 @@ class Team_Delete_Members(forms.ModelForm):
         model = Team
         fields = ['members']
     #    widgets = {'members':CheckboxSelectMultiple(),}
+
+class Team_Add_Members(forms.ModelForm):
+    class Meta:
+        model = Invite
+        fields = ['email']
+                

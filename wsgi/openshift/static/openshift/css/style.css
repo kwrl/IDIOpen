@@ -10,6 +10,17 @@ div.nav-side {
     vertical-align : middle;
     float:none;
 }
+.alert-error {
+  background-color: #f04124;
+  border-color: #ea2f10;
+  color: #ffffff;
+}
+.alert-error hr {
+  border-top-color: #d32a0e;
+}
+.alert-error .alert-link {
+  color: #e6e6e6;
+}
 html,
 body {
   height: 100%;
