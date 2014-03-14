@@ -1,5 +1,6 @@
 {% extends "base.html" %}
-
+{% load link_tags %}
+{% load i18n %}
 {% block content %}
 
 <br>
@@ -9,19 +10,31 @@ Note that by registering for this site, you also sign up for the contest.
 <br>
 
 {%if user.is_authenticated %}
-
+<p>
 If you are going to participate online (not being present at NTNU), 
 please specify what city you are participating from in in the offiste field
-
-<br>
-<br>
-<form action="" method="post">{% csrf_token %}
-{{ form.as_p}}
-<input type="submit" value="Submit" />
-</form>
+</p>
+		<form class="form-horizontal" method="post" action="." role="form">
+		  {% csrf_token %}
+		  
+		  {% for field in form %}
+		        <div class="form-group">
+		            {{ field.errors }}
+		            <label for="{{ field.id_for_label }}" class="col-lg-3 control-label">{{ field.label }}</label> 
+		            <div class="col-lg-5">
+		            {{ field|addcss:"form-control"}}
+		            </div>
+		        </div>
+		    {% endfor %}
+		    <div class="form-group">
+			<div class="col-lg-offset-3 col-lg-10">
+		  		<button type="submit" class="btn btn-default">{% trans 'Submit' %}</button>
+		  	</div>
+		  	</div>
+		</form>
 {% else %}
 
-<p> Du må logge inn/registrerere deg for å lage et lag <p>
+<p> You have to log in/register in order to create team <p>
 
  <a href=" {% url 'auth_login' contest.url %}">Log in </a> / <a href=" {% url 'registration_register' contest.url %}">Registrer </a>
 
