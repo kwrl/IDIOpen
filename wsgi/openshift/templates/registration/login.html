@@ -1,13 +1,39 @@
 {% extends "base.html" %}
 {% load i18n %}
-
+{% load link_tags %}
+{% load widget_tweaks %}
 {% block content %}
-<form method="post" action=".">
-  {% csrf_token %}
-  {{ form.as_p }}
 
-  <input type="submit" value="{% trans 'Log in' %}" />
-  <input type="hidden" name="next" value="{% url 'profile' contest.url %}" />
-</form>
+<form class="form-horizontal" method="post" action="." role="form">
+		  {% for error in form.non_field_errors %}
+      			<div class="alert alert-danger">{{ error }}</div>
+      		{% endfor %}
+		  {% csrf_token %}
+		  <div class="form-group">
+		  	<div class="col-lg-offset-3 col-lg-9">
+		<h2>Login</h2>		  
+		  	</div>
+		  </div>
+		        <div class="form-group">
+		            {{ form.username.errors }}
+		            <label for="{{ form.username.id_for_label }}" class="col-lg-3 control-label">{{ form.username.label }}</label> 
+		            <div class="col-lg-5">
+		            {% render_field form.username type="email" class+="form-control" required="" %}
+		            </div>
+		        </div>
+		        <div class="form-group">
+		            {{ form.password.errors }}
+		            <label for="{{ form.password.id_for_label }}" class="col-lg-3 control-label">{{ form.password.label }}</label> 
+		            <div class="col-lg-5">
+		            {{ form.password|add_class:"form-control"|attr:"required"}}
+		            </div>
+		        </div>
+		    <div class="form-group">
+			<div class="col-lg-offset-3 col-lg-9">
+		  		<button type="submit" class="btn btn-default">{% trans 'Submit' %}</button>
+		  		 <input type="hidden" name="next" value="{% url 'profile' contest.url %}" />
+		  	</div>
+		  	</div>
+		</form>
 
 {% endblock %}

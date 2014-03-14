@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
 
+<<<<<<< HEAD
 <link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
   <script src="//code.jquery.com/jquery-1.9.1.js"></script>
   <script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
@@ -102,18 +103,37 @@
 
     </div>
 </div>
+=======
+	<h3>{{ user.first_name }}
+	{{ user.last_name }}</h3>
+	<p>
+	<br>
+	Email:<em> {{ user.email }}</em>
+	<br>
+	Date joined:<em> {{ user.date_joined|date:"d.m.Y - H:i"}}</em>
+	</p>
+	<br>
+>>>>>>> a96bbbda56c22aee267615e17d285166b83e89a2
 	
 	{% if invites %}
-		{% for invite in invites.all %}
-			<p>{{ invite }}</p>
-			<form action="." method="post">
-			{% csrf_token %}
-			<input type="hidden" value="{{ invite.id }}" name="id">
-			<button type="submit" name="submit" value="accept" class="btn btn-default btn-sm">Accept</button>
-			<button type="submit" name="submit" value="decline" class="btn btn-default btn-sm">Decline</button>
-			</form>
-			
-			
-		{% endfor %}
+		{% if have_team %}
+			<p> You already have a team </p>
+		{% else %}
+			{% for invite in invites.all %}
+				<p>{{ invite }}</p>
+				<form action="." method="post"> {% csrf_token %}
+				<input type="hidden" value="{{ invite.id }}" name="id">
+				{% if have_team %}
+					<button type="submit" name="submit" value="accept" disabled="disabled" class="btn btn-default btn-sm">Accept</button>
+				{% elif invite.team.members.count >= 3 %}
+				<p>This team has reached the maximum number of members</p>
+				<button type="submit" name="submit" disabled="disabled" value="accept" class="btn btn-default btn-sm">Accept</button>
+				{% else %}
+				<button type="submit" name="submit" value="accept" class="btn btn-default btn-sm">Accept</button>
+				{% endif %}
+				<button type="submit" name="submit" value="decline" class="btn btn-default btn-sm">Decline</button>
+				</form>
+			{% endfor %}
+		{% endif %}
 	{% endif %}
 {% endblock content %}
