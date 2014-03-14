@@ -1,6 +1,6 @@
 #coding:utf-8
 from django.shortcuts import render, redirect, get_object_or_404
-from contest.forms import Team_Form, Team_Edit, Team_Delete_Members
+from contest.forms import Team_Form, Team_Edit, Team_Delete_Members, Team_Add_Members
 from django.http import HttpResponseRedirect
 from article.models import Article
 from userregistration.models import CustomUser
@@ -72,21 +72,36 @@ def user_exist(email):
     return False
 
 '''
-AUTHOR: Haakon
+AUTHOR: Haakon, Tino, Filip
 '''
 @login_required
 def teamProfil(request):    
     user = request.user
     url = request.path.split('/')[1]
+    site = get_current_site(request)
+
     print(Team.objects.filter(members__id = user.id))
     # Need to give error if you dont have team (link to register team page)
-    
     team = Team.objects.filter(members__id = user.id)[0]
-    context = {'team':team,}
+    # TODO: Only visible to Team leaders
+    if request.method == 'POST':
+        addMemberForm = Team_Add_Members(request.POST)
+        if addMemberForm.is_valid():
+            email = addMemberForm.cleaned_data['email']
+            if Team.objects.values('members').count() < 2:  #TODO: Fix hard code     
+                print("Du har under 2 medlemmer")
+                invite = Invite.objects.create_invite(email, team, url, site)
+                invite.save()
+            else:   
+                messages.error(request, 'You already have the maximum number of members')
+    else:        
+        addMemberForm = Team_Add_Members()
+        
+    context = {'team':team, 'addMemberForm' : addMemberForm,}
     return render(request, 'contest/team.html', context)
 
 '''
-AUTHOR: Tino
+AUTHOR: Tino, Filip
 '''
 
 def editTeamProfil(request):
@@ -111,17 +126,10 @@ def editTeamProfil(request):
                     messages.success(request, 'Members updated.')
                 else:
                     messages.error(request, 'Something went wrong')
-                
-       
-     
-    #if request.method == 'POST':
-     #   submit = editForm.data['submit']
-    #    if submit == 'edit':
+                       
     return render(request, 'contest/editTeam.html', {
         'editForm': editForm,
         'deleteForm': deleteForm,
         'team': instance,
     })
 
-def deleteTeamMember(request):
-    pass
