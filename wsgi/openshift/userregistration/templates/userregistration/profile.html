@@ -10,11 +10,11 @@
 	Date joined:<em> {{ user.date_joined|date:"d.m.Y - H:i"}}</em>
 	</p>
 	<br>
-	
+	<hr>
 	{% if invites %}
 		{% if have_team %}
 			<p> You already have a team </p>
-		{% else %}
+		{% endif %}
 			{% for invite in invites.all %}
 				<p>{{ invite }}</p>
 				<form action="." method="post"> {% csrf_token %}
@@ -30,6 +30,5 @@
 				<button type="submit" name="submit" value="decline" class="btn btn-default btn-sm">Decline</button>
 				</form>
 			{% endfor %}
-		{% endif %}
 	{% endif %}
 {% endblock content %}
