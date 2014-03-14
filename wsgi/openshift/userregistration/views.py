@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 from django import forms
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
@@ -10,7 +11,25 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from contest.models import Invite
 from django.shortcuts import render
+=======
+from django.shortcuts import redirect, render
+from django.views.generic.base import TemplateView
+from django.views.generic.edit import FormView
+from django.contrib.sites.models import RequestSite, Site
+from userregistration import signals
+from userregistration.forms import RegistrationForm, Invites_Form
+from django.core.urlresolvers import reverse
+from django.http import HttpResponseRedirect
+from contest.models import Invite
+from django.contrib.auth.decorators import login_required
+from django import forms
+from django.core.exceptions import ObjectDoesNotExist
+>>>>>>> a96bbbda56c22aee267615e17d285166b83e89a2
 from django.utils.translation import ugettext_lazy as _
+from contest.models import Team, Contest
+from django.http import Http404
+from django.core.exceptions import ObjectDoesNotExist
+from django.contrib import messages
 
 from userregistration.forms import *
 from userregistration import signals
@@ -183,6 +202,7 @@ class ActivationView(TemplateView):
         url = request.path.split('/')[1]
         return ('registration_activation_complete', (), {'contest':url})
 
+<<<<<<< HEAD
 @login_required
 def updateProfilePw(request):
     form = None;
@@ -220,40 +240,79 @@ def updateProfilePI(request):
         form = PIForm(instance=request.user);
     
     return retProfile(request, UserProfile(request, pi=form));
+=======
+'''
+Returns the current contest. 
+E.g open14. It uses the URL. 
+'''
+def get_current_contest(request):
+    url = request.path.split('/')[1]    
+    try:
+        current_contest =  Contest.objects.get(url = url)
+    except Exception.ObjectDoesNotExist as e:
+        raise Http404; 
+     
+    return current_contest
+
+'''
+checks if the user is a team. 
+'''
+def is_on_team(request):
+    test_member = Team.objects.filter(members = request.user, contest = get_current_contest(request))
+    if test_member: #checks if the test_members exist in team
+        return True
+    else: # if the test_member for one reason does not exist. It should be impossible, you have to be logged in.
+        return False
+     
+    return False
+
+def get_current_team(request):
+    team = Team.objects.filter(members = request.user, contest = get_current_contest(request))
+    if team: 
+        return team; 
+    else:
+        print "no current_team"
+        raise Http404 
+>>>>>>> a96bbbda56c22aee267615e17d285166b83e89a2
 
 @login_required
 def user_profile(request):
     email = request.user.email
-    messages = []
     if request.method == 'POST':
         form = Invites_Form(request.POST)
         submit = form.data['submit']
-        id = form.data['id']
+        id = form.data['id']        
         if id.isdigit():
             try:
                 try:
                     invite = Invite.objects.filter(email=email).filter(is_member=False).get(pk=id)
                 except ObjectDoesNotExist:
-                    messages.append({'text':'Invalid invite','error':'alert-danger'})
+                    messages.error(request, 'Invalid invite')
                     raise Exception
-                
+
                 if submit == 'accept':
-                    try:
-                        invite.team.members.add(User.objects.get(email=email))
-                        invite.is_member = True
-                    except ObjectDoesNotExist:
-                        raise forms.ValidationError(_("The form did not validate"))
-                    invite.save()
-                    messages.append({'text':'Invite accepted','error':'alert-success'})
-                    
+                    if is_on_team(request):
+                        if invite.team.members.count() <= 3:
+                            try:
+                                invite.team.members.add(User.objects.get(email=email))
+                                invite.is_member = True
+                            except ObjectDoesNotExist:
+                                raise forms.ValidationError(_("The form did not validate"))
+                            invite.save()
+                            messages.success(request, 'Invite accepted')
+                        else:
+                            messages.error(request, 'The team you tried to join has the maximum allowed members')
+                    else:
+                        messages.info(request, 'You are already a member of a team!')
                 elif submit == 'decline':
                     invite.delete()
-                    messages.append({'text':'Invite declined','error':'alert-info'})
+                    messages.info(request, 'Invite declined')
                 else:
-                    messages.append({'text':'Validation failed','error':'alert-danger'})
+                    messages.error(request, 'Validation failed')
             except:
                 pass
         else:
+<<<<<<< HEAD
             messages.append({'text':'Validation failed','error':'alert-danger'})
     
     email = request.user.email;
@@ -271,6 +330,9 @@ class UserProfile(object):
         self.piForm = pi or PIForm(instance=request.user);
         self.email = email or EmailForm(instance=request.user);
         self.forms = [self.pwForm, self.piForm, self.email];
+=======
+            messages.error(request, 'Validation failed')
+>>>>>>> a96bbbda56c22aee267615e17d285166b83e89a2
         
     def getDict(self):
         a = {};
@@ -283,15 +345,28 @@ def retProfile(request, userProfile):
     messages = [];
     invites = Invite.objects.filter(email=email).filter(is_member = False)
     context = {'invites' : invites,
+<<<<<<< HEAD
                'messages':messages
+=======
+               'user': request.user,
+               'have_team': is_on_team(request),
+>>>>>>> a96bbbda56c22aee267615e17d285166b83e89a2
                }
 
     context.update(userProfile.getDict());
 
     #return HttpResponse(notification_list[0].confirmed)
+<<<<<<< HEAD
     return render(request, 'userregistration/profile.html', context);
     return HttpResponseRedirect(reverse('profile', args={request.path.split('/')[1]:''}));
     return redirect('user_profile', data=request, name='profile');
     return redirect('userregistration/profile.html');
 
 # EOF
+=======
+    return render(request, 'userregistration/profile.html', context)
+
+def isMemberOfTeam(reques):
+    
+    pass
+>>>>>>> a96bbbda56c22aee267615e17d285166b83e89a2

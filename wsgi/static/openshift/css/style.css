@@ -3,10 +3,24 @@ div.nav-side {
 	height:100%
 }
 .logo {
-	background-color:blue;
-	padding:25px;
+	color: #F2F0EB;
 }
-
+.center{
+    display : table-cell;
+    vertical-align : middle;
+    float:none;
+}
+.alert-error {
+  background-color: #f04124;
+  border-color: #ea2f10;
+  color: #ffffff;
+}
+.alert-error hr {
+  border-top-color: #d32a0e;
+}
+.alert-error .alert-link {
+  color: #e6e6e6;
+}
 html,
 body {
   height: 100%;
@@ -27,8 +41,16 @@ body {
 #footer {
   height: 60px;
 }
+.credit {
+	color: #F2F0EB;
+}
 #footer {
-  background-color: #f5f5f5;
+  background-color: #193C59;
+}
+
+#logo {
+	background-color: #193C59;
+	margin-bottom: 10px;
 }
 
 /* Lastly, apply responsive CSS fixes as necessary */
