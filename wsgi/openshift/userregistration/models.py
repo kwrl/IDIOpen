@@ -120,9 +120,10 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     """ email used when an activated user changes his/her email
     """
     temp_email  = models.EmailField(_('temp email'), max_length=254,
-                                    unique=False)
+                                    unique=False, null=True, blank=True)
 
-    email_activation_key = models.CharField(max_length=40)
+    email_activation_key = models.CharField(max_length=40,
+                                            null=True);
     first_name = models.CharField(_('first name'), max_length=30)
     last_name = models.CharField(_('last name'), max_length=30)
     is_staff = models.BooleanField(_('staff status'), default=False,

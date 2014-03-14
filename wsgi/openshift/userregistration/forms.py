@@ -112,14 +112,9 @@ class RegistrationForm(forms.Form):
                 raise forms.ValidationError(
                                     _("The two password fields didn't match."))
         return self.cleaned_data
-<<<<<<< HEAD
-
-=======
-    
 '''
 Form for showing the invites
 '''
->>>>>>> a96bbbda56c22aee267615e17d285166b83e89a2
 class Invites_Form(forms.Form):
     def clean(self):
         if 'id' in self.cleaned_data and 'submit' in self.cleaned_data:
