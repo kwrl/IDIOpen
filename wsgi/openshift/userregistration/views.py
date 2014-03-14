@@ -11,7 +11,7 @@ from django.contrib.auth.decorators import login_required
 from django import forms
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import ugettext_lazy as _
-
+from django.contrib import messages
 try:
     from django.contrib.auth import get_user_model
     User = get_user_model()
@@ -183,7 +183,6 @@ class ActivationView(TemplateView):
 @login_required
 def user_profile(request):
     email = request.user.email
-    messages = []
     if request.method == 'POST':
         form = Invites_Form(request.POST)
         submit = form.data['submit']
@@ -193,34 +192,35 @@ def user_profile(request):
                 try:
                     invite = Invite.objects.filter(email=email).filter(is_member=False).get(pk=id)
                 except ObjectDoesNotExist:
-                    messages.append({'text':'Invalid invite','error':'alert-danger'})
+                    messages.error(request, 'Invalid invite')
                     raise Exception
                 
                 if submit == 'accept':
-                    try:
-                        invite.team.members.add(User.objects.get(email=email))
-                        invite.is_member = True
-                    except ObjectDoesNotExist:
-                        raise forms.ValidationError(_("The form did not validate"))
-                    invite.save()
-                    messages.append({'text':'Invite accepted','error':'alert-success'})
-                    
+                    if invite.team.members.count() <= 3:
+                        try:
+                            invite.team.members.add(User.objects.get(email=email))
+                            invite.is_member = True
+                        except ObjectDoesNotExist:
+                            raise forms.ValidationError(_("The form did not validate"))
+                        invite.save()
+                        messages.success(request, 'Invite accepted')
+                    else:
+                        messages.error(request, 'The team you tried to join has the maximum allowed members')
                 elif submit == 'decline':
                     invite.delete()
-                    messages.append({'text':'Invite declined','error':'alert-info'})
+                    messages.info(request, 'Invite declined')
                 else:
-                    messages.append({'text':'Validation failed','error':'alert-danger'})
+                    messages.error(request, 'Validation failed')
             except:
                 pass
         else:
-            messages.append({'text':'Validation failed','error':'alert-danger'})
+            messages.error(request, 'Validation failed')
         
         
         
     invites = Invite.objects.filter(email=email).filter(is_member = False)
     context = {'invites' : invites,
                'user': request.user,
-               'messages':messages
                }
     #return HttpResponse(notification_list[0].confirmed)
     return render(request, 'userregistration/profile.html', context)

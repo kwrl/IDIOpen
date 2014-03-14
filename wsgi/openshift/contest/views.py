@@ -109,7 +109,7 @@ def editTeamProfil(request):
     user = request.user
     url = request.path.split('/')[1]
     # Get the team or 404
-    instance = get_object_or_404(Team)
+    instance = get_object_or_404(Team, members__in=CustomUser.objects.filter(pk=user.id))
     # make a new form, with the instance as its model
     editForm = Team_Edit(None, instance = instance)
     deleteForm = Team_Delete_Members(None, instance = instance)
