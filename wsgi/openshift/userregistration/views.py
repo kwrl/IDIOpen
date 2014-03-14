@@ -263,3 +263,4 @@ def user_profile(request):
                }
     #return HttpResponse(notification_list[0].confirmed)
     return render(request, 'userregistration/profile.html', context)
+
