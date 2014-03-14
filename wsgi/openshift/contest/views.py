@@ -136,30 +136,34 @@ def teamProfil(request):
 
     # Need to give error if you dont have team (link to register team page)
     team = Team.objects.filter(members__id = user.id)
+    # If you have a team
     if team.count() > 0:
-        team = team[0]
+        team = team[0]     
+        # If you are leader
+        if is_leader(request):
+            if request.method == 'POST':
+                addMemberForm = Team_Add_Members(request.POST)
+                if addMemberForm.is_valid():
+                    email = addMemberForm.cleaned_data['email']
+                    if Team.objects.get(pk=team.id).members.count() < 3:  #TODO: Fix hard code      
+                        invite = Invite.objects.create_invite(email, team, url, site)
+                        invite.save()
+                        messages.success(request, 'Email has been sent to: ' + email)
+                    else:   
+                        messages.error(request, 'You already have the maximum number of members')
+            # If request is not POST, add an empty form            
+            else:        
+                addMemberForm = Team_Add_Members()
+        
+            # send team, addMemberForm and is_leader with context        
+            context = {'team':team, 'addMemberForm' : addMemberForm, 'is_leader' : is_leader(request)}
+        # If user is not leader, send context without addMemberForm
+        else:
+            context = {'team':team, 'is_leader' : is_leader(request),}
+    # If you don't have team, send an empty context
     else:
-        team = None
-         
-    # Check if user is leader for team
-    if is_leader(request):
-        if request.method == 'POST':
-            addMemberForm = Team_Add_Members(request.POST)
-            print("post happened")
-            if addMemberForm.is_valid():
-                email = addMemberForm.cleaned_data['email']
-                if Team.objects.get(pk=team.id).members.count() < 3:  #TODO: Fix hard code      
-                    invite = Invite.objects.create_invite(email, team, url, site)
-                    invite.save()
-                    messages.success(request, 'Email has been sent to: ' + email)
-                else:   
-                    messages.error(request, 'You already have the maximum number of members')
-        else:        
-            addMemberForm = Team_Add_Members()        
-        context = {'team':team, 'addMemberForm' : addMemberForm, 'is_leader' : is_leader(request)}
-    else:
-        context = {'team':team, 'is_leader' : is_leader(request),}
-
+        context = {}
+        
     return render(request, 'contest/team.html', context)
 
 '''
