@@ -7,14 +7,23 @@
 		{% endfor %}	
 	{% endif %}
 	<p>
-	<h3>{{ user.first_name }}
-	{{ user.last_name }}</h3>
-	<br>
-	Email:<em> {{ user.email }}</em>
-	<br>
-	Date joined:<em> {{ user.date_joined|date:"d.m.Y - H.i"}}</em>
-	</p>
-	<br>
+	{# <h3>{{ user.first_name }} #}
+	{# {{ user.last_name }}</h3> #}
+	{# <br> #}
+	{# Email:<em> {{ user.email }}</em> #}
+	{# <br> #}
+	{# Date joined:<em> {{ user.date_joined|date:"d.m.Y - H.i"}}</em> #}
+	{# </p> #}
+	{# <br> #}
+	
+	<form id="contestant_edit" METHOD="POST" action="../profileEdit/">
+	{% csrf_token %}
+		{{ user.as_p }}
+		{{ user.errors }}
+		<button type="submit" name="submit" value="accept" class="btn btn-default btn-sm">
+			Accept
+		</button>
+	</form>
 
 	{% if invites %}
 		{% for invite in invites.all %}
