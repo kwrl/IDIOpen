@@ -1,16 +1,13 @@
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView
-from django.contrib.sites.models import RequestSite
-from django.contrib.sites.models import Site
+from django.contrib.sites.models import RequestSite, Site
 from userregistration import signals
-from userregistration.forms import RegistrationForm
+from userregistration.forms import RegistrationForm, Invites_Form
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from contest.models import Invite
-from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from userregistration.forms import Invites_Form
 from django import forms
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import ugettext_lazy as _

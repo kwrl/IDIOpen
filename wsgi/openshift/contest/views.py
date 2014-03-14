@@ -88,10 +88,10 @@ def teamProfil(request):
         addMemberForm = Team_Add_Members(request.POST)
         if addMemberForm.is_valid():
             email = addMemberForm.cleaned_data['email']
-            if Team.objects.values('members').count() < 2:  #TODO: Fix hard code     
-                print("Du har under 2 medlemmer")
+            if Team.objects.get(pk=team.id).members.count() < 3:  #TODO: Fix hard code      
                 invite = Invite.objects.create_invite(email, team, url, site)
                 invite.save()
+                messages.success(request, 'Email has been sent to: ' + email)
             else:   
                 messages.error(request, 'You already have the maximum number of members')
     else:        
@@ -103,7 +103,7 @@ def teamProfil(request):
 '''
 AUTHOR: Tino, Filip
 '''
-
+@login_required
 def editTeamProfil(request):
     print("You are now in Edit Team Profil View")
     user = request.user
