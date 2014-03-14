@@ -2,19 +2,24 @@
 {% block content %}
 
 
-<h3> {{ team.name }}</h3>
-Onsite: {{ team.onsite }}
-<br>
-Members:
-<br>
-{% for member in team.members.all %}
-	First name: {{ member.first_name }}
+{% if team %}
+	<h3> {{ team.name }}</h3>
+	Onsite: {{ team.onsite }}
 	<br>
-	Last name: {{ member.last_name }}
+	Members:
 	<br>
-	Email: {{ member.email }}
-	<br>
-{% endfor %}
+	{% for member in team.members.all %}
+		First name: {{ member.first_name }}
+		<br>
+		Last name: {{ member.last_name }}
+		<br>
+		Email: {{ member.email }}
+		<br>
+	{% endfor %}
+{% else %}
+	<p> You are currently not member of any team. Want to participate in this contest? </p>
+	<a href=" {% url 'register_teams' contest.url %}">Registrer Team </a>
+{% endif %}
 
 </p>
 {% endblock content %}

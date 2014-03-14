@@ -69,9 +69,9 @@ class Team(models.Model):
     TODO: Set leader 
     NOTE: in order to implement leader we information about the logged in user. 
     '''
-    #leader = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='leader')
+    leader = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='leader', null = True)
     members = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='members')
-    contest = models.ForeignKey(Contest, related_name='contest')
+    contest = models.ForeignKey(Contest, related_name='contest', null=True)
     offsite = models.CharField(max_length=200, blank = True)
     def __unicode__(self):
         return self.name
