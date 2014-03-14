@@ -2,17 +2,6 @@
 
 {% block content %}
 
-
-{% if messages %}
-		{% for message in messages %}
-			<div class = "alert {{ message.error }} alert-dismissable">
-			<button type="button" class="close" data-dismiss="alert">&times;</button>
-			<strong> {{ message.text }} </strong> 
-			</div>	
-		{% endfor %}	
-{% endif %}
-
-
 <br>
 Register with a team name. You can add up to two friends.  
 Note that by registering for this site, you also sign up for the contest.
