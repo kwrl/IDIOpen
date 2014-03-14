@@ -24,13 +24,24 @@ def index(request):
                }    
     return render(request, 'contest/index.html', context)
 
+def is_on_team(request):
+    pass
+
 # @login_required
 def registration(request):
-    messages = []
-    if request.method == 'POST': # If the form has been submitted...
+    '''
+    TODO: Ch3ck if you already have a team. 
+    '''
+    if request.method == 'POST' and is_member_of_team(request): 
+        messages.warning(request, 'Unfortunately you can only be part of one team for this contest. :( ')
+    
+    elif is_member_of_team(request):
+        messages.info(request, 'Unfortunately you can only be part of one team for this contest. :( ')
+    
+    elif request.method == 'POST': # If the form has been submitted...
         # teamform is defined in openshif.contest.models
         form = Team_Form(request.POST) # A form bound to the POST data
-         
+        
         if form.is_valid(): # All validation rules pass
             #new_team = form.save(commit=False)
             email_one = form.cleaned_data['email_one']
@@ -42,10 +53,11 @@ def registration(request):
             We need to check if the emails are equal. You should not be able to use to equal emails.
             '''
             if (email_one == email_two):
-                messages.append({'text':'Please do not use equal emails','error':'alert-danger'})                
+                messages.error(request, 'Please do not use equal emails')                
             
+            #checks if you are trying to add yourself. It is no legal. 
             elif request.user.email == email_one or request.user.email == email_two:
-                messages.append({'text':'Please do not fill inn your own email. You will be added as leader by default.','error':'alert-danger'})
+                messages.error(request, 'Please do not fill inn your own email. You will be added as leader by default.')
                 pass                            
                 
             else: # if the emails do not equal each other
@@ -84,14 +96,15 @@ def registration(request):
                 Checking if a user with that email exist is done in userregistration.
                 '''                         
                 #form.save() # Save the TeamForm in the database
-                return HttpResponseRedirect('registrationComplete/') # Redirect after POST, sends you to complete
+                messages.success(request, "You are now ready to compete in the compititon")
+                
+                return render(request, 'registerForContest/registrationComplete.html')
                 #end else
             return render(request, 'registerForContest/registration.html', {
                     'form': form,
-                    'messages':messages,
                     })
-    else:
-        form = Team_Form() # a new form
+
+    form = Team_Form() # a new form
         
     return render(request, 'registerForContest/registration.html', {
         'form': form,
@@ -148,6 +161,14 @@ def teamProfil(request):
 '''
 AUTHOR: Tino, Filip
 '''
+
+#Haakon
+def is_member_of_team(request):
+    team = Team.objects.filter(members__id = request.user.id)
+    if team.count() > 0:
+        return team[0]
+    else:
+        team = False
 
 def editTeamProfil(request):
     print("You are now in Edit Team Profil View")
