@@ -4,7 +4,7 @@ from django.views.generic.edit import FormView
 from django.contrib.sites.models import RequestSite
 from django.contrib.sites.models import Site
 from userregistration import signals
-from userregistration.forms import RegistrationForm
+from userregistration.forms import RegistrationForm, ContestantForm
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from contest.models import Invite
@@ -14,6 +14,9 @@ from userregistration.forms import Invites_Form
 from django import forms
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import ugettext_lazy as _
+
+
+import ipdb;
 
 try:
     from django.contrib.auth import get_user_model
@@ -181,7 +184,15 @@ class ActivationView(TemplateView):
         url = request.path.split('/')[1]
         return ('registration_activation_complete', (), {'contest':url})
 
-
+@login_required
+def updateProfile(request):
+    cf = ContestantForm(instance=request.user);
+    if request.method == 'POST':
+        cf.clean();
+        if cf.is_valid():
+            cf.save();
+    
+    return retProfile(request);
 
 @login_required
 def user_profile(request):
@@ -218,12 +229,20 @@ def user_profile(request):
         else:
             messages.append({'text':'Validation failed','error':'alert-danger'})
         
-        
-        
+    return retProfile;
+    
+       
+def retProfile(request=None):
+    cf = ContestantForm(instance=request.user);
+    email = request.user.email;
+    messages = [];
     invites = Invite.objects.filter(email=email).filter(is_member = False)
     context = {'invites' : invites,
-               'user': request.user,
+               'user': cf,
                'messages':messages
                }
     #return HttpResponse(notification_list[0].confirmed)
     return render(request, 'userregistration/profile.html', context)
+
+    
+# EOF

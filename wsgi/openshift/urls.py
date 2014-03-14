@@ -5,7 +5,9 @@ from django.contrib import admin
 from contest import views
 from filebrowser.sites import site
 from django.contrib.auth import views as auth_views
+from django.contrib.auth.admin import UserAdmin
 admin.autodiscover()
+
 
 
 

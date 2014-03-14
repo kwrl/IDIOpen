@@ -4,10 +4,13 @@ Created on Feb 26, 2014
 @author: filip
 '''
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
+from django.core.exceptions import ValidationError;
 from django import forms
 from userregistration.models import CustomUser
 from django.utils.translation import ugettext_lazy as _
 from contest.models import Invite 
+
+import ipdb;
 
 try:
     from django.contrib.auth import get_user_model
@@ -102,6 +105,7 @@ class RegistrationForm(forms.Form):
         """
         if 'password1' in self.cleaned_data and 'password2' in self.cleaned_data:
             if self.cleaned_data['password1'] != self.cleaned_data['password2']:
+                ipdb.set_trace()
                 raise forms.ValidationError(_("The two password fields didn't match."))
         return self.cleaned_data
     
@@ -118,4 +122,23 @@ class Invites_Form(forms.Form):
         
         raise forms.ValidationError(_("The form did not validate"))
 
+class ContestantForm(forms.ModelForm):
+    password_validation = forms.CharField(widget=forms.PasswordInput());
+    
+    def clean(self):
+        ipdb.set_trace();
+        if self.password_validation != self.Meta.fields['password']:
+            raise forms.ValidationError("Passwords do not match");
+        
+        super(ContestantForm, self).clean();
+        return self.cleaned_data;
+        
+    class Meta:
+        fields =['first_name', 'last_name', 'email', 'password'];
+        
+        widgets = {
+                   'password': forms.PasswordInput()
+                   };
+        
+        model = CustomUser;
                 

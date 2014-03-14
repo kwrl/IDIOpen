@@ -16,7 +16,6 @@ try:
     User = get_user_model()
 except ImportError:
     from django.contrib.auth.models import User
-    
 
 '''
 class CustomUserManager(BaseUserManager):

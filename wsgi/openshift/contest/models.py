@@ -42,7 +42,7 @@ class Contest(models.Model):
         if self.start_date is not None and self.end_date is not None:
             if self.start_date.__lt__(self.end_date) == False:
                 raise ValidationError('You cannot set start date to be after the end date');
-
+            
     def __str__(self):
         return self.title
 
