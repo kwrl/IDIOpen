@@ -21,12 +21,12 @@
 
 	{% endfor %}
 
+	{% if is_leader %}
 	<form action="editteam" method="GET">
 	    <input type="submit" value="Edit Team" />
 	</form>
 	</p>
 	<p>
-	{% if is_leader %}
 	<form action="" method="post">{% csrf_token %}
 	{{ addMemberForm.as_p}}
 	    <div class="form-group">
