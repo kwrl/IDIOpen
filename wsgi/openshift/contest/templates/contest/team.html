@@ -1,20 +1,42 @@
 {% extends 'base.html' %}
+{% load i18n %}
 {% block content %}
-<p>
 
-<h3> {{ team.name }}</h3>
-Onsite: {{ team.onsite }}
-<br>
-Members:
-<br>
-{% for member in team.members.all %}
-	First name: {{ member.first_name }}
-	<br>
-	Last name: {{ member.last_name }}
-	<br>
-	Email: {{ member.email }}
-	<br>
-{% endfor %}
 
-</p>
+{% if team %}
+	<h3> {{ team.name }}</h3>
+	Onsite: {{ team.onsite }}
+	<br>
+	Offsite: {{ team.offsite }}
+	<br>
+	Members:
+	<br>
+	{% for member in team.members.all %}
+		First name: {{ member.first_name }} 
+		<br>
+		Last name: {{ member.last_name }}
+		<br>
+		Members:
+		<br>
+
+	{% endfor %}
+
+	<form action="editteam" method="GET">
+	    <input type="submit" value="Edit Team" />
+	</form>
+	</p>
+	<p>
+	<form action="" method="post">{% csrf_token %}
+	{{ addMemberForm.as_p}}
+	    <div class="form-group">
+			<div class="col-lg-offset-3 col-lg-9">
+	  			<button type="submit" name='addMember' value="addMember" class="btn btn-default">{% trans 'Add new member' %}</button>
+	  		</div>
+  		</div>
+	</form>
+	</p>
+{% else %}
+	<p> You are currently not member of any team. Want to participate in this contest? </p>
+	<a href=" {% url 'register_teams' contest.url %}">Registrer Team </a>
+{% endif %}
 {% endblock content %}
