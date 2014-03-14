@@ -70,7 +70,6 @@ INSTALLED_APPS = (
     'userregistration',
 	'django_jenkins',
     'south',
-    'usermanagent',
 )
 '''
 if not ON_OPENSHIFT:
