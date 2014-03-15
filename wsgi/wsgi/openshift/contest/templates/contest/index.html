@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% if article_list %}
+	{% for article in article_list %}
+		<div class="newsitem">
+			<h1>{{ article.title }}</h1>
+				<p class="text-muted">Published: {{article.created_at|date:"d.m.Y - H.i"}}, Author: {{article.author }}</p>	
+				<div>{{ article.text|safe}}</div>
+			</div>
+	{% endfor %} 
+{% endif %}
+
+{% endblock content %}

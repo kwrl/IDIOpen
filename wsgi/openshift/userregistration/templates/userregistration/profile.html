@@ -1,16 +1,124 @@
 {% extends 'base.html' %}
 {% block content %}
 
-	<h3>{{ user.first_name }}
-	{{ user.last_name }}</h3>
-	<p>
-	<br>
+	<h2> Profile page</h2>
+	<hr>
+	<em><p style="font-size: 250%;">{{ user.first_name }} {{ user.last_name }} </p></em>
+	{% if team %}
+	<em><p style="font-size: 200%;">{{ team.name }}</p></em>
+	{% else %}
+	{{ team }}
+	{% endif %}
+	<br>    
 	Email:<em> {{ user.email }}</em>
 	<br>
-	Date joined:<em> {{ user.date_joined|date:"d.m.Y - H:i"}}</em>
+	Date joined:<em> {{ user.date_joined|date:"d.m.Y"}}</em>
 	</p>
 	<br>
+<hr>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
+  <script src="//code.jquery.com/jquery-1.9.1.js"></script>
+  <script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+  <link rel="stylesheet" href="/resources/demos/style.css">
+
+<script>$(document).ready( function () {
+    $(".accordion").collapse("hide");
+} );
+</script>
+
+	<p>
+
+    {% if userpw.errors %}
+        {% for err in userpw.non_field_errors %}
+        {{ err }}
+        {% endfor %}
+    {% endif %}
+    {% if useremail.errors %}
+        {% for err in useremail.non_field_errors %}
+        {{ err }}
+        {% endfor %}
+    {% endif %}
+    {% if userpi.errors %}
+        {% for err in userpi.non_field_errors %}
+        {{ err }}
+        {% endfor %}
+    {% endif %}
+	
+<div class="panel-group" id="accordion">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+        <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
+            <h4 class="panel-title">
+                    Change password
+            </h4>
+            </a>
+        </div>
+        <div id="collapseOne" class="panel-collapse collapse ">
+            <div class="panel-body">
+                <form id="contestant_edit_pw" METHOD="POST" action="../profileEditPw/">
+                {% csrf_token %}
+                    {% for field in userpw %}
+                        {{ field.label_tag }} {{ field }}
+                        {{ field.errors }}
+                        <br />
+                    {% endfor %}
+                    <button type="submit" name="submit" value="Save" class="btn btn-default btn-sm">
+                        Change password
+                    </button>
+                </form>
+            </div>
+        </div>
+        <div class="panel-heading">
+        <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">
+            <h4 class="panel-title">
+                    Change email
+            </h4>
+            </a>
+        </div>
+        <div id="collapseTwo" class="panel-collapse collapse">
+            <div class="panel-body">
+                <form id="contestant_edit_pw" METHOD="POST" action="../profileEditEmail/">
+                {% csrf_token %}
+                    {% for field in useremail %}
+                        {{ field.label_tag }} {{ field }}
+                        {{ field.errors }}
+                        <br />
+                    {% endfor %}
+                    <button type="submit" name="submit" value="Save" class="btn btn-default btn-sm">
+                        Change email
+                    </button>
+                </form>
+            </div>
+        </div>
+         <div class="panel-heading">
+         <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree">
+            <h4 class="panel-title">
+                    Change user information
+            </h4>
+            </a>
+        </div>
+        <div id="collapseThree" class="panel-collapse collapse">
+            <div class="panel-body">
+                <form id="contestant_edit_pw" METHOD="POST" action="../profileEditPI/">
+                {% csrf_token %}
+                    {% for field in userpi %}
+                        {{ field.label_tag }} {{ field }}
+                        {{ field.errors }}
+                        <br />
+                    {% endfor %}
+                    <button type="submit" name="submit" value="Save" class="btn btn-default btn-sm">
+                        Update user information
+                    </button>
+                </form>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+	
 	<hr>
+	<h1>List over invites: </h1>
 	{% if invites %}
 		{% if have_team %}
 			<p> You already have a team </p>
@@ -30,5 +138,7 @@
 				<button type="submit" name="submit" value="decline" class="btn btn-default btn-sm">Decline</button>
 				</form>
 			{% endfor %}
+	{% else %}
+		<p> You have no invites :( <p>
 	{% endif %}
 {% endblock content %}
