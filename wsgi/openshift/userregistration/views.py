@@ -276,7 +276,7 @@ def user_profile(request):
                     raise Exception
 
                 if submit == 'accept':
-                    if is_on_team(request):
+                    if not is_on_team(request):
                         if invite.team.members.count() <= 3:
                             try:
                                 invite.team.members.add(User.objects.get(email=email))
@@ -340,4 +340,3 @@ def retProfile(request, userProfile):
     return render(request, 'userregistration/profile.html', context);
 
 # EOF
-
