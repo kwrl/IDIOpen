@@ -12,6 +12,8 @@ from userregistration.models import CustomUser
 from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.debug import sensitive_variables
 
+from .models import YEAR_OF_STUDY, GENDER_CHOICES;
+
 try:
     from django.contrib.auth import get_user_model
     User = get_user_model()
@@ -77,10 +79,20 @@ class RegistrationForm(forms.Form):
     email = forms.EmailField(label=_("E-mail"))
     first_name = forms.CharField(label=_("First Name"))
     last_name = forms.CharField(label=_("Last Name"))
+    nickname = forms.CharField(label=
+                               _("Nickname (optional)"),
+                               required=False);
     password1 = forms.CharField(widget=forms.PasswordInput,
                                 label=_("Password"))
     password2 = forms.CharField(widget=forms.PasswordInput,
                                 label=_("Password (again)"))
+
+    skill_level = forms.ChoiceField(label="Year of study",
+                                  choices=YEAR_OF_STUDY,
+                                  initial=YEAR_OF_STUDY[-1][0]);
+    gender = forms.ChoiceField(label="Gender",
+                             choices=GENDER_CHOICES,
+                             initial=GENDER_CHOICES[0][0]);
 
     def clean_email(self):
         """
@@ -247,7 +259,8 @@ class PIForm(forms.ModelForm):
 
     class Meta:
         model   = CustomUser
-        fields  = ['first_name', 'last_name']
+        fields  = ['first_name', 'last_name', 'nickname',
+                   'skill_level', 'gender']
         help_text = {
                      'first_name': "First name",
                      'last_name':"Last name",

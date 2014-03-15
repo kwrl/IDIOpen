@@ -3,17 +3,21 @@
 
 	<h2> Profile page</h2>
 	<hr>
-	<em><h3>{{ user.first_name }} {{ user.last_name }} </h3></em>
+    <em><p style="font-size: 250%;">{{ user.first_name }}
+        {% if user.nickname %} 
+        &lsquo;{{ user.nickname|escape }}&lsquo;
+        {% endif %}
+                {{ user.last_name }} </p></em>
 	{% if team %}
-	<em><h4>{{ team.name }}</h4></em>
+	<em><p style="font-size: 200%;">{{ team.name }}</p></em>
 	{% else %}
 	{{ team }}
 	{% endif %}
 	<br>    
 	Email:<em> {{ user.email }}</em>
 	<br>
-	Skill:<em> {{ user.email }}</em>
-	Date joined:<em> {{ user.date_joined|date:"d.m.Y"}}</em>
+	Date joined:<em>
+            {{ user.date_joined|date:"d.m.Y"}}</em>
 	</p>
 	<br>
 <hr>
@@ -22,6 +26,7 @@
   <script src="//code.jquery.com/jquery-1.9.1.js"></script>
   <script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
   <link rel="stylesheet" href="/resources/demos/style.css">
+
 
     {% if userpw.errors %}
         <script>$(document).ready( function () {
@@ -40,16 +45,6 @@
             document.getElementById("collapsePI").classList.add("in");
             });
         </script>
-    {% endif %}
-    {% if useremail.errors %}
-        {% for err in useremail.non_field_errors %}
-        {{ err }}
-        {% endfor %}
-    {% endif %}
-    {% if userpi.errors %}
-        {% for err in userpi.non_field_errors %}
-        {{ err }}
-        {% endfor %}
     {% endif %}
 	
 <div class="panel-group" id="accordion">
