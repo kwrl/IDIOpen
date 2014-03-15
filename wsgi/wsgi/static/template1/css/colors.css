@@ -1,0 +1,13 @@
+#header				{	background-color: #7AA095;	}
+#header pre			{	color:	white;	}
+#menu input			{	background-color: #96B299;	}
+#menu input:hover	{	background-color: #7AA095;	}
+#login_button		
+{	
+	color:white;
+	background-color: #96B299;	
+}
+
+.newsitem div:first-child
+{
+}

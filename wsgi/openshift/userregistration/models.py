@@ -1,3 +1,4 @@
+#pylint: disable=R0904, W0232, C1001, R0903, R0913
 import hashlib
 import random
 import re
@@ -16,11 +17,9 @@ try:
     User = get_user_model()
 except ImportError:
     from django.contrib.auth.models import User
-    
 
 '''
 class CustomUserManager(BaseUserManager):
-
     def _create_user(self, email, first_name, last_name, password,
                      is_staff, is_superuser, **extra_fields):
         """
@@ -30,7 +29,8 @@ class CustomUserManager(BaseUserManager):
         if not email:
             raise ValueError('The given email must be set')
         email = self.normalize_email(email)
-        user = self.model(email=email, first_name=first_name, last_name=last_name,
+        user = self.model(email=email, first_name=first_name,
+                          last_name=last_name,
                           is_staff=is_staff, is_active=True,
                           is_superuser=is_superuser, last_login=now,
                           date_joined=now, **extra_fields)
@@ -38,26 +38,28 @@ class CustomUserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-    def create_user(self, email, first_name, last_name, password=None, **extra_fields):
-        return self._create_user(email, first_name, last_name, password, False, False,
-                                 **extra_fields)
+    def create_user(self, email, first_name, last_name,
+                    password=None, **extra_fields):
+        return self._create_user(email, first_name, last_name, password,
+                                 False, False, **extra_fields)
 
-    def create_superuser(self, email, first_name, last_name, password, **extra_fields):
-        return self._create_user(email, first_name, last_name, password, True, True,
-                                 **extra_fields)
+    def create_superuser(self, email,
+                         first_name, last_name, password, **extra_fields):
+        return self._create_user(email, first_name, last_name, password,
+                                True, True, **extra_fields)
     def activate_user(self, activation_key):
         """
         Validate an activation key and activate the corresponding
         ``User`` if valid.
-        
+
         If the key is valid and has not expired, return the ``User``
         after activating.
-        
+
         If the key is not valid or has expired, return ``False``.
-        
+
         If the key is valid but the ``User`` is already active,
         return ``False``.
-        
+
         To prevent reactivation of an account which has been
         deactivated by site administrators, the activation key is
         reset to the string constant ``RegistrationProfile.ACTIVATED``
@@ -78,7 +80,7 @@ class CustomUserManager(BaseUserManager):
             user.save()
             return user
         return False
-    
+
     def create_inactive_user(self, email,first_name, last_name, password,
                              site,url, send_email=True):
         """
@@ -88,7 +90,7 @@ class CustomUserManager(BaseUserManager):
 
         By default, an activation email will be sent to the new
         user. To disable this, pass ``send_email=False``.
-        
+
         """
         salt = hashlib.sha1(str(random.random())).hexdigest()[:5]
         if isinstance(email, unicode):
@@ -103,6 +105,7 @@ class CustomUserManager(BaseUserManager):
             new_user.send_activation_email(site, url)
 
         return new_user
+
     #create_inactive_user = transaction.commit_on_success(create_inactive_user)
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
@@ -112,7 +115,15 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     Email and password are required. Other fields are optional.
     """
-    email = models.EmailField(_('email address'), max_length=254, unique=True)
+    email       = models.EmailField(_('email address'), max_length=254,
+                                    unique=True)
+    """ email used when an activated user changes his/her email
+    """
+    temp_email  = models.EmailField(_('temp email'), max_length=254,
+                                    unique=False, null=True, blank=True)
+
+    email_activation_key = models.CharField(max_length=40,
+                                            null=True);
     first_name = models.CharField(_('first name'), max_length=30)
     last_name = models.CharField(_('last name'), max_length=30)
     is_staff = models.BooleanField(_('staff status'), default=False,
@@ -146,12 +157,12 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     def get_short_name(self):
         "Returns the short name for the user."
         return self.first_name
-    
+
     def send_activation_email(self, site, url):
         """
         Send an activation email to the user associated with this
         ``RegistrationProfile``.
-        
+
         The activation email will make use of two templates:
 
         ``registration/activation_email_subject.txt``
@@ -192,10 +203,9 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
                                    ctx_dict)
         # Email subject *must not* contain newlines
         subject = ''.join(subject.splitlines())
-        
+
         message = render_to_string('registration/activation_email.txt',
                                    ctx_dict)
-        
         self.email_user(subject, message)
 
     def email_user(self, subject, message, from_email=None):
@@ -203,3 +213,18 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         Sends an email to this User.
         """
         send_mail(subject, message, from_email, [self.email])
+
+    """Adds a new email to be swapped in"""
+    def add_new_email(self, new_email):
+        self.temp_email = new_email
+        salt = hashlib.sha1(str(random.random())).hexdigest()[:5]
+        email_activation_key = hashlib.sha1(salt+self.email.encode('utf-8')).\
+                                                                    hexdigest()
+        self.email_user("Fis", email_activation_key)
+
+    """Swaps in the new email"""
+    def activate_new_email(self, key):
+        assert self.email_activation_key==key
+        self.email = self.temp_email
+        self.temp_email = None
+        self.email_activation_key = None

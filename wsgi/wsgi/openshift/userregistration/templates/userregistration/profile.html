@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% block content %}
+
+	{% if messages %}
+		{% for message in messages %}
+			<div class="alert {{ message.error }}">{{ message.text }}</div>	
+		{% endfor %}	
+	{% endif %}
+	<p>
+	{# <h3>{{ user.first_name }} #}
+	{# {{ user.last_name }}</h3> #}
+	{# <br> #}
+	{# Email:<em> {{ user.email }}</em> #}
+	{# <br> #}
+	{# Date joined:<em> {{ user.date_joined|date:"d.m.Y - H.i"}}</em> #}
+	{# </p> #}
+	{# <br> #}
+	
+	<form id="contestant_edit_pw" METHOD="POST" action="../profileEditPw/">
+	{% csrf_token %}
+		{% for field in userpw %}
+			{{ field.label_tag }} {{ field }}
+			{{ field.errors }}
+			<br />
+		{% endfor %}
+		<button type="submit" name="submit" value="Save" class="btn btn-default btn-sm">
+			Change password
+		</button>
+	</form>
+	
+	<form id="contestant_edit_email" METHOD="POST" action="../profileEditEmail/">
+	{% csrf_token %}
+		{% for field in useremail %}
+			{{ field.label_tag }} {{ field }}
+			{{ field.errors }}
+			<br />
+		{% endfor %}
+		<button type="submit" name="submit" value="Save" class="btn btn-default btn-sm">
+			Change email
+		</button>
+	</form>
+	
+	<form id="contestant_edit_pi" METHOD="POST" action="../profileEditPI/">
+	{% csrf_token %}
+		{% for field in userpi %}
+			{{ field.label_tag }} {{ field }}
+			{{ field.errors }}
+			<br />
+		{% endfor %}
+		<button type="submit" name="submit" value="Save" class="btn btn-default btn-sm">
+			Edit personal information
+		</button>
+	</form>
+
+	{% if invites %}
+		{% for invite in invites.all %}
+			<p>{{ invite }}</p>
+			<form action="." method="post">
+			{% csrf_token %}
+			<input type="hidden" value="{{ invite.id }}" name="id">
+			<button type="submit" name="submit" value="accept" class="btn btn-default btn-sm">Accept</button>
+			<button type="submit" name="submit" value="decline" class="btn btn-default btn-sm">Decline</button>
+			</form>
+			
+			
+		{% endfor %}
+	{% endif %}
+{% endblock content %}
