@@ -302,7 +302,9 @@ def user_profile(request):
                'user': request.user,
                'have_team': is_on_team(request),
                }
-    #return HttpResponse(notification_list[0].confirmed)
+
+    u = UserProfile(request);
+    context.update(u.getDict());
     return render(request, 'userregistration/profile.html', context)
 
 class UserProfile(object):
@@ -311,7 +313,6 @@ class UserProfile(object):
         self.piForm = pi or PIForm(instance=request.user);
         self.email = email or EmailForm(instance=request.user);
         self.forms = [self.pwForm, self.piForm, self.email];
-        messages.error(request, 'Validation failed')
 
     def getDict(self):
         a = {};
