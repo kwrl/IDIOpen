@@ -165,7 +165,7 @@ def teamProfil(request):
 AUTHOR: Tino, Filip
 '''
 
-#Haakon
+# author: Haakon
 def is_member_of_team(request):
     team = Team.objects.filter(members__id = request.user.id)
     if team.count() > 0:

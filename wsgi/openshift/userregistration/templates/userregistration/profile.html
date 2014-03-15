@@ -1,6 +1,17 @@
 {% extends 'base.html' %}
 {% block content %}
 
+	<h2> Profile page</h2>
+	<hr>
+	<em><p style="font-size: 250%;">{{ user.first_name }} {{ user.last_name }} </p></em>
+	<em><p style="font-size: 200%;">{{ team.name }}</p></em>
+	<br>    
+	Email:<em> {{ user.email }}</em>
+	<br>
+	Date joined:<em> {{ user.date_joined|date:"d.m.Y"}}</em>
+	</p>
+	<br>
+<hr>
 <link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
   <script src="//code.jquery.com/jquery-1.9.1.js"></script>
   <script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
@@ -15,13 +26,7 @@
     $(".accordion").collapse("hide");
 } );
 </script>
-   
 
-	{% if messages %}
-		{% for message in messages %}
-			<div class="alert {{ message.error }}">{{ message.text }}</div>	
-		{% endfor %}	
-	{% endif %}
 	<p>
 
     {% if userpw.errors %}
@@ -102,15 +107,7 @@
 
     </div>
 </div>
-	<h3>{{ user.first_name }}
-	{{ user.last_name }}</h3>
-	<p>
-	<br>
-	Email:<em> {{ user.email }}</em>
-	<br>
-	Date joined:<em> {{ user.date_joined|date:"d.m.Y - H:i"}}</em>
-	</p>
-	<br>
+	
 	<hr>
 	<h1>List over invites: </h1>
 	{% if invites %}

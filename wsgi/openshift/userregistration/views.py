@@ -1,20 +1,23 @@
-from django.shortcuts import redirect, render
+from django import forms
+from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ObjectDoesNotExist
+from django.core.urlresolvers import reverse;
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView
-from django.contrib.sites.models import RequestSite, Site
-from userregistration import signals
-from userregistration.forms import RegistrationForm, Invites_Form
-from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from contest.models import Invite
-from django.contrib.auth.decorators import login_required
-from django import forms
-from django.core.exceptions import ObjectDoesNotExist
+from django.shortcuts import render
+from userregistration import signals
+from userregistration.forms import RegistrationForm, Invites_Form
+from contest.models import Invite
 from django.utils.translation import ugettext_lazy as _
 from contest.models import Team, Contest
 from django.http import Http404
-from django.core.exceptions import ObjectDoesNotExist
 from django.contrib import messages
+from userregistration.forms import *
+from userregistration import signals
+from django.contrib.sites.models import RequestSite
+from django.shortcuts import redirect
 
 try:
     from django.contrib.auth import get_user_model
@@ -26,9 +29,9 @@ class _RequestPassingFormView(FormView):
     """
     A version of FormView which passes extra arguments to certain
     methods, notably passing the HTTP request nearly everywhere, to
-    enable finer-grained processing.    
+    enable finer-grained processing.
     """
-    
+
     def get(self, request, *args, **kwargs):
         # Pass request to get_form_class and get_form for per-request
         # form control.
@@ -156,8 +159,9 @@ class ActivationView(TemplateView):
                 return redirect(success_url)
                 '''
             url = request.path.split('/')[1]
-            return HttpResponseRedirect(reverse('registration_activation_complete', args=(url,)))
-            
+            return HttpResponseRedirect(reverse(
+                            'registration_activation_complete', args=(url,)))
+
         return super(ActivationView, self).get(request, *args, **kwargs)
 
     def activate(self, request, activation_key):
@@ -169,7 +173,7 @@ class ActivationView(TemplateView):
         ``registration.signals.user_activated`` will be sent, with the
         newly activated ``User`` as the keyword argument ``user`` and
         the class of this backend as the sender.
-        
+
         """
         activated_user = User.objects.activate_user(activation_key)
         if activated_user:
@@ -177,11 +181,48 @@ class ActivationView(TemplateView):
                                         user=activated_user,
                                         request=request)
         return activated_user
-# TODO: Fix so it will redirect with contest url as root
+    #TODO: Fix so it will redirect with contest url as root
     def get_success_url(self, request, user):
         url = request.path.split('/')[1]
         return ('registration_activation_complete', (), {'contest':url})
 
+@login_required
+def updateProfilePw(request):
+    form = None;
+    if request.method == 'POST':
+        form = PasswordForm(data=request.POST, instance=request.user);
+        if form.is_valid():
+            form.save();
+    else:
+        form = PasswordForm(instance=request.user);
+    
+    return retProfile(request, UserProfile(request,
+                                            pw=form));
+
+@login_required
+def updateProfileEmail(request):
+    form = None;
+    if request.method == 'POST':
+        form = EmailForm(data=request.POST, instance=request.user);
+        if form.is_valid():
+            form.save();
+    else:
+        form = EmailForm(instance=request.user);
+    
+    return retProfile(request, UserProfile(request,
+                                           email=form));
+
+@login_required
+def updateProfilePI(request):
+    form = None;
+    if request.method == 'POST':
+        form = PIForm(data=request.POST, instance=request.user);
+        if form.is_valid():
+            form.save();
+    else:
+        form = PIForm(instance=request.user);
+    
+    return retProfile(request, UserProfile(request, pi=form));
 '''
 Returns the current contest. 
 E.g open14. It uses the URL. 
@@ -209,10 +250,10 @@ def is_on_team(request):
 
 def get_current_team(request):
     team = Team.objects.filter(members = request.user, contest = get_current_contest(request))
-    if team: 
+    if team:
+        team = team[0] 
         return team; 
     else:
-        print "no current_team"
         raise Http404 
 
 @login_required
@@ -252,15 +293,44 @@ def user_profile(request):
             except:
                 pass
         else:
-            messages.error(request, 'Validation failed')
-        
-        
-        
+            messages.error(request, 'Validation failed DAAA')
+    
+    email = request.user.email;
+    messages = [];
     invites = Invite.objects.filter(email=email).filter(is_member = False)
     context = {'invites' : invites,
+               'messages':messages,
+               'team' : get_current_team(request), 
+               }
+    context.update(UserProfile(request).getDict());
+    return render(request, 'userregistration/profile.html', context)
+
+class UserProfile(object):
+    def __init__(self, request, pw=None, pi=None, email=None):
+        self.pwForm = pw or PasswordForm(instance=request.user);
+        self.piForm = pi or PIForm(instance=request.user);
+        self.email = email or EmailForm(instance=request.user);
+        self.forms = [self.pwForm, self.piForm, self.email];
+        messages.error(request, 'Validation failed')
+
+    def getDict(self):
+        a = {};
+        for form in self.forms:
+            a[form.contextName] = form;
+        return a;
+
+def retProfile(request, userProfile):
+    email = request.user.email;
+    messages = [];
+    invites = Invite.objects.filter(email=email).filter(is_member = False)
+    context = {'invites' : invites,
+               'messages':messages,
                'user': request.user,
                'have_team': is_on_team(request),
                }
+
+    context.update(userProfile.getDict());
+
     #return HttpResponse(notification_list[0].confirmed)
     return render(request, 'userregistration/profile.html', context)
 

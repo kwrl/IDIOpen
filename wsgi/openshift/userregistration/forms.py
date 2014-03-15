@@ -12,8 +12,6 @@ from userregistration.models import CustomUser
 from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.debug import sensitive_variables
 
-import ipdb;
-
 try:
     from django.contrib.auth import get_user_model
     User = get_user_model()
@@ -108,7 +106,6 @@ class RegistrationForm(forms.Form):
         if 'password1' in self.cleaned_data \
         and 'password2' in self.cleaned_data:
             if self.cleaned_data['password1'] != self.cleaned_data['password2']:
-                ipdb.set_trace()
                 raise forms.ValidationError(
                                     _("The two password fields didn't match."))
         return self.cleaned_data
