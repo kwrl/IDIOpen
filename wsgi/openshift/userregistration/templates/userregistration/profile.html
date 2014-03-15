@@ -3,7 +3,11 @@
 
 	<h2> Profile page</h2>
 	<hr>
-	<em><p style="font-size: 250%;">{{ user.first_name }} {{ user.last_name }} </p></em>
+    <em><p style="font-size: 250%;">{{ user.first_name }}
+        {% if user.nickname %} 
+        &lsquo;{{ user.nickname|escape }}&lsquo;
+        {% endif %}
+                {{ user.last_name }} </p></em>
 	{% if team %}
 	<em><p style="font-size: 200%;">{{ team.name }}</p></em>
 	{% else %}
@@ -12,7 +16,8 @@
 	<br>    
 	Email:<em> {{ user.email }}</em>
 	<br>
-	Date joined:<em> {{ user.date_joined|date:"d.m.Y"}}</em>
+	Date joined:<em>
+            {{ user.date_joined|date:"d.m.Y"}}</em>
 	</p>
 	<br>
 <hr>
