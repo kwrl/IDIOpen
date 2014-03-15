@@ -225,7 +225,7 @@ class PIForm(forms.ModelForm):
     """ Form to update the personal information of activated contestants
     """
     def save(self):
-        pass;
+        super(PIForm, self).save();
 
     def __init__(self, *args, **kwargs):
         super(PIForm, self).__init__(*args, **kwargs);
