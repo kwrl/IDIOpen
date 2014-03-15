@@ -1,18 +1,19 @@
-from django import forms
-from django.contrib.auth.decorators import login_required
-from django.core.exceptions import ObjectDoesNotExist
-from django.core.urlresolvers import reverse;
+from django.shortcuts import redirect, render
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView
-from django.http import HttpResponseRedirect
-from contest.models import Invite
-from django.shortcuts import render
+from django.contrib.sites.models import RequestSite, Site
 from userregistration import signals
 from userregistration.forms import RegistrationForm, Invites_Form
+from django.core.urlresolvers import reverse
+from django.http import HttpResponseRedirect
 from contest.models import Invite
+from django.contrib.auth.decorators import login_required
+from django import forms
+from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import ugettext_lazy as _
 from contest.models import Team, Contest
 from django.http import Http404
+from django.core.exceptions import ObjectDoesNotExist
 from django.contrib import messages
 from userregistration.forms import *
 from userregistration import signals
@@ -254,7 +255,7 @@ def get_current_team(request):
         team = team[0] 
         return team; 
     else:
-        raise Http404 
+        return None 
 
 @login_required
 def user_profile(request):
@@ -293,16 +294,19 @@ def user_profile(request):
             except:
                 pass
         else:
-            messages.error(request, 'Validation failed DAAA')
-    
-    email = request.user.email;
-    messages = [];
+            messages.error(request, 'Validation failed')
+        
+        
+        
     invites = Invite.objects.filter(email=email).filter(is_member = False)
     context = {'invites' : invites,
-               'messages':messages,
                'team' : get_current_team(request), 
+               'user': request.user,
+               'have_team': is_on_team(request),
                }
-    context.update(UserProfile(request).getDict());
+
+    u = UserProfile(request);
+    context.update(u.getDict());
     return render(request, 'userregistration/profile.html', context)
 
 class UserProfile(object):
@@ -311,7 +315,6 @@ class UserProfile(object):
         self.piForm = pi or PIForm(instance=request.user);
         self.email = email or EmailForm(instance=request.user);
         self.forms = [self.pwForm, self.piForm, self.email];
-        messages.error(request, 'Validation failed')
 
     def getDict(self):
         a = {};
@@ -321,10 +324,8 @@ class UserProfile(object):
 
 def retProfile(request, userProfile):
     email = request.user.email;
-    messages = [];
     invites = Invite.objects.filter(email=email).filter(is_member = False)
     context = {'invites' : invites,
-               'messages':messages,
                'user': request.user,
                'have_team': is_on_team(request),
                }
@@ -332,5 +333,8 @@ def retProfile(request, userProfile):
     context.update(userProfile.getDict());
 
     #return HttpResponse(notification_list[0].confirmed)
-    return render(request, 'userregistration/profile.html', context)
+
+    return render(request, 'userregistration/profile.html', context);
+
+# EOF
 

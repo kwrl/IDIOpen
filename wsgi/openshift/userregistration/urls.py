@@ -9,6 +9,7 @@ from django.conf.urls import url
 from django.views.generic.base import TemplateView
 from django.contrib.auth import views as auth_views;
 from userregistration.views import *;
+from userregistration.views import updateProfilePw;
 
 urlpatterns = patterns('',
         url(r'^activate/complete/$',
