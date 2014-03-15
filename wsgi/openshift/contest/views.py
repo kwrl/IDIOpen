@@ -32,6 +32,9 @@ def registration(request):
     '''
     TODO: Ch3ck if you already have a team. 
     '''
+    if not request.user.is_authenticated():
+        return render(request, 'registerForContest/requireLogin.html')
+    
     if request.method == 'POST' and is_member_of_team(request): 
         messages.warning(request, 'Unfortunately you can only be part of one team for this contest. :( ')
     
@@ -44,8 +47,8 @@ def registration(request):
         
         if form.is_valid(): # All validation rules pass
             #new_team = form.save(commit=False)
-            email_one = form.cleaned_data['email_one']
-            email_two = form.cleaned_data['email_two'] 
+            email_one = form.cleaned_data['member_one']
+            email_two = form.cleaned_data['member_two'] 
             
             print request.user.email
             
@@ -179,7 +182,7 @@ def is_leader(request):
     else:
         return False
 
-#Haakon
+# author: Haakon
 def is_member_of_team(request):
     team = Team.objects.filter(members__id = request.user.id)
     if team.count() > 0:
