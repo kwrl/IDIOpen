@@ -1,44 +1,61 @@
 {% extends 'base.html' %}
 {% load i18n %}
+{% load link_tags %}
 {% block content %}
 
 
 {% if team %}
-	<h3> {{ team.name }}</h3>
-	Onsite: {{ team.onsite }}
+	<div class="row">
+		<div class="col-lg-9">
+			<h3> {{ team.name }}</h3>
+		</div>
+		{% if is_leader %}
+		<div class="col-lg-3">
+			<a href="{% url 'team_edit' contest.url %}" class="btn btn-primary btn-sm pull-right">{% trans 'Edit team' %}</a>
+		</div>
+		{% endif %}
+	</div>
+	Location: 
+	{% if team.onsite %}
+		Onsite
+	{% else %}
+		{{ team.offsite }}
+	{% endif %}
 	<br>
-	Offsite: {{ team.offsite }}
-	<br>
-	Members:
-	<br>
-	{% for member in team.members.all %}
-		First name: {{ member.first_name }} 
-		<br>
-		Last name: {{ member.last_name }}
-		<br>
-		Members:
-		<br>
-
-	{% endfor %}
 
 	{% if is_leader %}
-	<form action="editteam" method="GET">
-	    <input type="submit" value="Edit Team" />
-	</form>
-	</p>
 	<p>
-	<form action="" method="post">{% csrf_token %}
-	{{ addMemberForm.as_p}}
+	<hr>
+	<h4>Members</h4>
+	<table class="table table-striped">
+      <thead>
+        <tr>
+          <th>First Name</th>
+          <th>Last Name</th>
+          <th>Email</th>
+        </tr>
+      </thead>
+    </table>
+    
+	<form class="form-horizontal" method="post" action="." role="form">
+	{% csrf_token %}
+		<div class="form-group">
+            {{ addMemberForm.email.errors }}
+            <label for="{{ field.id_for_label }}" class="col-lg-3 control-label">
+            {{ addMemberForm.email.label }}</label> 
+            <div class="col-lg-5">
+            {{ addMemberForm.email|addcss:"form-control"}}
+            </div>
+        </div>
 	    <div class="form-group">
 			<div class="col-lg-offset-3 col-lg-9">
 	  			<button type="submit" name='addMember' value="addMember" class="btn btn-default">{% trans 'Add new member' %}</button>
 	  		</div>
   		</div>
 	</form>
-	</p>
 	{% endif %}
 {% else %}
 	<p> You are currently not member of any team. Want to participate in this contest? </p>
 	<a href=" {% url 'register_teams' contest.url %}">Registrer Team </a>
-{% endif %}
+{% endif %}	
 {% endblock content %}
