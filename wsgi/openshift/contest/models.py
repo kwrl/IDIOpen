@@ -63,7 +63,7 @@ class Link(models.Model):
  
     
 class Team(models.Model):
-    name = models.CharField(max_length=200)
+    name = models.CharField(max_length=200, verbose_name = "Team name")
     onsite = models.BooleanField()
     '''
     TODO: Set leader 
