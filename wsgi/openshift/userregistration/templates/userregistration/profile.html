@@ -21,39 +21,36 @@
   <script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
   <link rel="stylesheet" href="/resources/demos/style.css">
 
-<script>$(document).ready( function () {
-    $(".accordion").collapse("hide");
-} );
-</script>
-
-	<p>
 
     {% if userpw.errors %}
-        {% for err in userpw.non_field_errors %}
-        {{ err }}
-        {% endfor %}
+        <script>$(document).ready( function () {
+            document.getElementById("collapsePw").classList.add("in");
+            });
+        </script>
     {% endif %}
     {% if useremail.errors %}
-        {% for err in useremail.non_field_errors %}
-        {{ err }}
-        {% endfor %}
+        <script>$(document).ready( function () {
+            document.getElementById("collapseEmail").classList.add("in");
+            });
+        </script>
     {% endif %}
     {% if userpi.errors %}
-        {% for err in userpi.non_field_errors %}
-        {{ err }}
-        {% endfor %}
+        <script>$(document).ready( function () {
+            document.getElementById("collapsePI").classList.add("in");
+            });
+        </script>
     {% endif %}
 	
 <div class="panel-group" id="accordion">
     <div class="panel panel-default">
         <div class="panel-heading">
-        <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
+        <a data-toggle="collapse" data-parent="#accordion" href="#collapsePw">
             <h4 class="panel-title">
                     Change password
             </h4>
             </a>
         </div>
-        <div id="collapseOne" class="panel-collapse collapse ">
+        <div id="collapsePw" class="panel-collapse collapse ">
             <div class="panel-body">
                 <form id="contestant_edit_pw" METHOD="POST" action="../profileEditPw/">
                 {% csrf_token %}
@@ -69,13 +66,13 @@
             </div>
         </div>
         <div class="panel-heading">
-        <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">
+        <a data-toggle="collapse" data-parent="#accordion" href="#collapseEmail">
             <h4 class="panel-title">
                     Change email
             </h4>
             </a>
         </div>
-        <div id="collapseTwo" class="panel-collapse collapse">
+        <div id="collapseEmail" class="panel-collapse collapse">
             <div class="panel-body">
                 <form id="contestant_edit_pw" METHOD="POST" action="../profileEditEmail/">
                 {% csrf_token %}
@@ -91,13 +88,13 @@
             </div>
         </div>
          <div class="panel-heading">
-         <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree">
+         <a data-toggle="collapse" data-parent="#accordion" href="#collapsePI">
             <h4 class="panel-title">
                     Change user information
             </h4>
             </a>
         </div>
-        <div id="collapseThree" class="panel-collapse collapse">
+        <div id="collapsePI" class="panel-collapse collapse">
             <div class="panel-body">
                 <form id="contestant_edit_pw" METHOD="POST" action="../profileEditPI/">
                 {% csrf_token %}
