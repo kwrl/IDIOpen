@@ -9,7 +9,7 @@
 		<div class="col-lg-9">
 			<h3> {{ team.name }}</h3>
 		</div>
-		{% if is_leader %}
+		{% if is_leader %}    
 		<div class="col-lg-3">
 			<a href="{% url 'team_edit' contest.url %}" class="btn btn-primary btn-sm pull-right">{% trans 'Edit team' %}</a>
 		</div>
@@ -22,8 +22,6 @@
 		{{ team.offsite }}
 	{% endif %}
 	<br>
-
-	{% if is_leader %}
 	<p>
 	<hr>
 	<h4>Members</h4>
@@ -35,8 +33,17 @@
           <th>Email</th>
         </tr>
       </thead>
+        <tbody>
+        {% for member in team.members.all %}
+        <tr>
+          <td><a href="#">{{ member.first_name }}</a></td>
+          <td><a href="#">{{ member.last_name }}</a></td>
+          <td><a href="#">{{ member.email }}</a></td>
+        </tr>
+		{% endfor %}
+      </tbody>
     </table>
-    
+	{% if is_leader %}    
 	<form class="form-horizontal" method="post" action="." role="form">
 	{% csrf_token %}
 		<div class="form-group">

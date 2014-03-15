@@ -200,6 +200,7 @@ def editTeamProfil(request):
     deleteForm = Team_Delete_Members(None, instance = instance)
     # Need to be leader to edit a profile
     if is_leader(request):
+        print ("You are the leader")
         if request.method == 'POST':
             if 'edit' in request.POST:
                 editForm = Team_Edit(request.POST, instance = instance)
@@ -213,7 +214,9 @@ def editTeamProfil(request):
                         messages.success(request, 'Members updated.')
                     else:
                         messages.error(request, 'Something went wrong')
-                        
+    else:
+        messages.error(request, 'You are not the team leader')                    
+    
     return render(request, 'contest/editTeam.html', {
         'editForm': editForm,
         'deleteForm': deleteForm,
