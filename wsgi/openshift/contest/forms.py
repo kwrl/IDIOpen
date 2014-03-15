@@ -34,8 +34,7 @@ class Team_Delete_Members(forms.ModelForm):
         super(Team_Delete_Members, self).__init__(*args,**kwargs)
         #qs = Team.objects.get(pk = self.instance.pk)
         self.fields['members'] = ModelMultipleChoiceField(
-            # TODO exlude leader from qs
-            queryset= CustomUser.objects.filter(members__in=Team.objects.filter(pk = self.instance.pk)), 
+            queryset= CustomUser.objects.filter(members__in=Team.objects.filter(pk = self.instance.pk)).exclude(pk=self.instance.leader.pk), 
                                        widget=CheckboxSelectMultiple())
     class Meta:
         model = Team
