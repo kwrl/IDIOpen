@@ -49,7 +49,8 @@ class CustomUserManager(BaseUserManager):
     def create_superuser(self, email,
                          first_name, last_name, password, **extra_fields):
         return self._create_user(email, first_name, last_name, password,
-                                True, True, **extra_fields)
+                                skill_level='1', gender='M', nickname="",
+                                is_staff=True, is_superuser=True, **extra_fields)
     def activate_user(self, activation_key):
         """
         Validate an activation key and activate the corresponding
