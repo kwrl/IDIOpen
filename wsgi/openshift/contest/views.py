@@ -198,20 +198,22 @@ def editTeamProfil(request):
     # make a new form, with the instance as its model
     editForm = Team_Edit(None, instance = instance)
     deleteForm = Team_Delete_Members(None, instance = instance)
-    if request.method == 'POST':
-        if 'edit' in request.POST:
-            editForm = Team_Edit(request.POST, instance = instance)
-            if editForm.is_valid():
-                messages.success(request, 'Profile details updated.')
-                editForm.save()
-        if 'deletebutton' in request.POST:
-            deleteForm = Team_Delete_Members(request.POST, instance = instance)
-            if deleteForm.is_valid():
-                if deleteForm.save():
-                    messages.success(request, 'Members updated.')
-                else:
-                    messages.error(request, 'Something went wrong')
-                       
+    # Need to be leader to edit a profile
+    if is_leader(request):
+        if request.method == 'POST':
+            if 'edit' in request.POST:
+                editForm = Team_Edit(request.POST, instance = instance)
+                if editForm.is_valid():
+                    messages.success(request, 'Profile details updated.')
+                    editForm.save()
+            if 'deletebutton' in request.POST:
+                deleteForm = Team_Delete_Members(request.POST, instance = instance)
+                if deleteForm.is_valid():
+                    if deleteForm.save():
+                        messages.success(request, 'Members updated.')
+                    else:
+                        messages.error(request, 'Something went wrong')
+                        
     return render(request, 'contest/editTeam.html', {
         'editForm': editForm,
         'deleteForm': deleteForm,
