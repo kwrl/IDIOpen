@@ -1,5 +1,6 @@
 #coding: utf-8
 
+from sortedm2m.fields import SortedManyToManyField
 from django.core.exceptions import ValidationError;
 from django.db import models
 from django.contrib.auth import get_user_model
@@ -31,7 +32,7 @@ class Contest(models.Model):
     start_date = models.DateTimeField(verbose_name='Start date')
     end_date = models.DateTimeField('End date')
     publish_date = models.DateTimeField('Publish date')
-    links = models.ManyToManyField('Link')
+    links= SortedManyToManyField('Link')
     sponsors = models.ManyToManyField('Sponsor', blank=True)
     css = FileBrowseField('CSS', max_length=200, directory='css/', 
                           extensions=['.css',], blank=True, null=True)
@@ -56,7 +57,7 @@ class Link(models.Model):
     contestUrl = models.BooleanField()
     url = models.CharField(max_length=50)
 
-    def __str__(self):
+    def __unicode__(self):
         return self.text
 
 
