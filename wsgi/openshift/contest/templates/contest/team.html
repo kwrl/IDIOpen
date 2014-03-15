@@ -17,15 +17,15 @@
 	</div>
 	<hr>
 	<em><h3> {{ team.name }}</h3></em>
+	<p class="text-muted">
 	Location: 
 	{% if team.onsite %}
 		Onsite
 	{% else %}
 		{{ team.offsite }}
 	{% endif %}
-	<br>
-	<p>
-	<h4>Members</h4>
+	</p>
+	<em><h4>Members</h4></em>
 	<table class="table table-striped">
       <thead>
         <tr>
