@@ -15,9 +15,10 @@ from contest.models import Team, Contest
 from django.http import Http404
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib import messages
-
 from userregistration.forms import *
 from userregistration import signals
+from django.contrib.sites.models import RequestSite
+from django.shortcuts import redirect
 
 try:
     from django.contrib.auth import get_user_model
@@ -250,11 +251,11 @@ def is_on_team(request):
 
 def get_current_team(request):
     team = Team.objects.filter(members = request.user, contest = get_current_contest(request))
-    if team: 
+    if team:
+        team = team[0] 
         return team; 
     else:
-        print "no current_team"
-        raise Http404 
+        return None 
 
 @login_required
 def user_profile(request):
@@ -299,6 +300,7 @@ def user_profile(request):
         
     invites = Invite.objects.filter(email=email).filter(is_member = False)
     context = {'invites' : invites,
+               'team' : get_current_team(request), 
                'user': request.user,
                'have_team': is_on_team(request),
                }
@@ -322,10 +324,8 @@ class UserProfile(object):
 
 def retProfile(request, userProfile):
     email = request.user.email;
-    messages = [];
     invites = Invite.objects.filter(email=email).filter(is_member = False)
     context = {'invites' : invites,
-               'messages':messages,
                'user': request.user,
                'have_team': is_on_team(request),
                }
@@ -333,6 +333,8 @@ def retProfile(request, userProfile):
     context.update(userProfile.getDict());
 
     #return HttpResponse(notification_list[0].confirmed)
+
     return render(request, 'userregistration/profile.html', context);
 
 # EOF
+
