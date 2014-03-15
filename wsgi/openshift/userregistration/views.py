@@ -194,6 +194,7 @@ def updateProfilePw(request):
         form = PasswordForm(data=request.POST, instance=request.user);
         if form.is_valid():
             form.save();
+            messages.success(request, "Password updated");
     else:
         form = PasswordForm(instance=request.user);
     
@@ -204,11 +205,12 @@ def updateProfilePw(request):
 def updateProfileEmail(request):
     form = None;
     if request.method == 'POST':
-        form = EmailForm(data=request.POST, instance=request.user);
+        form = EmailForm(data=request.POST);
         if form.is_valid():
             form.save();
+            messages.success(request, "Email verification sent");
     else:
-        form = EmailForm(instance=request.user);
+        form = EmailForm();
     
     return retProfile(request, UserProfile(request,
                                            email=form));
@@ -220,6 +222,7 @@ def updateProfilePI(request):
         form = PIForm(data=request.POST, instance=request.user);
         if form.is_valid():
             form.save();
+            messages.success(request, "Personal information updated");
     else:
         form = PIForm(instance=request.user);
     
@@ -313,7 +316,7 @@ class UserProfile(object):
     def __init__(self, request, pw=None, pi=None, email=None):
         self.pwForm = pw or PasswordForm(instance=request.user);
         self.piForm = pi or PIForm(instance=request.user);
-        self.email = email or EmailForm(instance=request.user);
+        self.email = email or EmailForm();
         self.forms = [self.pwForm, self.piForm, self.email];
 
     def getDict(self):
