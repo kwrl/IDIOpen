@@ -1,6 +1,6 @@
 from django import forms
 from models import Team, Invite
-from django.forms.widgets import CheckboxSelectMultiple
+from django.forms.widgets import CheckboxSelectMultiple, Widget
 from django.forms.models import ModelMultipleChoiceField
 from userregistration.models import CustomUser
 
@@ -9,19 +9,22 @@ Created on Feb 12, 2014
 
 @author: tino, haakon 
 '''
-
-
 '''
 TODO: add support for leader. We need the log in to do that.
+support for leader is added. This is done in the view
 '''
 class Team_Edit(forms.ModelForm):
     class Meta:
         model = Team
+        widgets = {
+                'name' : forms.TextInput(attrs={'placeholder' : 'Insert team name here'}),
+         
+        } 
         fields = ['name', 'onsite', 'offsite']
 
 class Team_Form(Team_Edit):
-    email_one = forms.EmailField(required=False);
-    email_two = forms.EmailField(required=False);
+    member_one = forms.EmailField(required=False, widget=forms.TextInput(attrs= {'placeholder':'Insert email for team member 1'}));
+    member_two = forms.EmailField(required=False, widget=forms.TextInput(attrs= {'placeholder':'Insert email for team member 2'}));
     
 class CustomSelectMultiple(ModelMultipleChoiceField):
     def label_from_instance(self, obj):

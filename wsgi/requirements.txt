@@ -1,0 +1,8 @@
+south
+simplemysql
+django<=1.6
+django-grappelli
+django-filebrowser
+django-registration
+MYSQL-python
+django-jenkins
