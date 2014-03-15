@@ -4,7 +4,11 @@
 	<h2> Profile page</h2>
 	<hr>
 	<em><p style="font-size: 250%;">{{ user.first_name }} {{ user.last_name }} </p></em>
+	{% if team %}
 	<em><p style="font-size: 200%;">{{ team.name }}</p></em>
+	{% else %}
+	{{ team }}
+	{% endif %}
 	<br>    
 	Email:<em> {{ user.email }}</em>
 	<br>
@@ -16,12 +20,7 @@
   <script src="//code.jquery.com/jquery-1.9.1.js"></script>
   <script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
   <link rel="stylesheet" href="/resources/demos/style.css">
- {#  <script> #}
- {#  $(function() { #}
- {#          //$( "#accordion" ).accordion({active:false, collapsible:true}); #}
- {#          $( "#accordion" ).accordion(); #}
- {#  }); #}
- {# </script> #}
+
 <script>$(document).ready( function () {
     $(".accordion").collapse("hide");
 } );
@@ -34,15 +33,25 @@
         {{ err }}
         {% endfor %}
     {% endif %}
+    {% if useremail.errors %}
+        {% for err in useremail.non_field_errors %}
+        {{ err }}
+        {% endfor %}
+    {% endif %}
+    {% if userpi.errors %}
+        {% for err in userpi.non_field_errors %}
+        {{ err }}
+        {% endfor %}
+    {% endif %}
 	
 <div class="panel-group" id="accordion">
     <div class="panel panel-default">
         <div class="panel-heading">
+        <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
             <h4 class="panel-title">
-                <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
                     Change password
-                </a>
             </h4>
+            </a>
         </div>
         <div id="collapseOne" class="panel-collapse collapse ">
             <div class="panel-body">
@@ -60,11 +69,11 @@
             </div>
         </div>
         <div class="panel-heading">
+        <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">
             <h4 class="panel-title">
-                <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">
                     Change email
-                </a>
             </h4>
+            </a>
         </div>
         <div id="collapseTwo" class="panel-collapse collapse">
             <div class="panel-body">
@@ -82,11 +91,11 @@
             </div>
         </div>
          <div class="panel-heading">
+         <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree">
             <h4 class="panel-title">
-                <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree">
                     Change user information
-                </a>
             </h4>
+            </a>
         </div>
         <div id="collapseThree" class="panel-collapse collapse">
             <div class="panel-body">
