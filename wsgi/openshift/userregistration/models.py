@@ -108,7 +108,24 @@ class CustomUserManager(BaseUserManager):
 
     #create_inactive_user = transaction.commit_on_success(create_inactive_user)
 
+YEAR_OF_STUDY = (
+        ('1', '1'),
+        ('2', '2'),
+        ('3', '3'),
+        ('4', '4'),
+        ('5', '5'),
+        ('N/A', 'Not a student'),
+    );
+GENDER_CHOICES = (
+            ('M', 'Male'),
+            ('F', 'Female'),
+    );
+
 class CustomUser(AbstractBaseUser, PermissionsMixin):
+    skill_level = models.CharField(max_length=4, choices=YEAR_OF_STUDY,
+                                  default=YEAR_OF_STUDY[0][0]);
+    gender = models.CharField(max_length=1, choices=GENDER_CHOICES,
+                             default=GENDER_CHOICES[0][0]);
     """
     A fully featured User model with admin-compliant permissions that uses
     a full-length email field as the username.
@@ -136,6 +153,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     ACTIVATED = u"ALREADY_ACTIVATED"
     activation_key = models.CharField(_('activation key'), max_length=40)
     objects = CustomUserManager()
+    nickname = models.CharField(_('nickname'), max_length=20, default='',
+                                null=True, blank=True);
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['first_name', 'last_name']
