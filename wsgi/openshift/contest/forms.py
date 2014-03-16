@@ -15,10 +15,7 @@ support for leader is added. This is done in the view
 '''
 
 
-ON_OR_OFF = (
-            (True, 'onsite'),
-            (False, 'offsite')
-            ) 
+ON_OR_OFF = ((True, 'Yes'), (False, 'No')) 
 
 class Team_Edit(forms.ModelForm):
     class Meta:
