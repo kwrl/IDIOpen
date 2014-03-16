@@ -13,7 +13,6 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.http import Http404
 from django.contrib import messages
 
-
 import datetime;
 from django.utils import timezone;
 
@@ -22,7 +21,7 @@ User = get_user_model()
 
 def index(request):
     url = request.path.split('/')[1]
-    article_list = Article.objects.all().filter(contest__url = url).order_by("-created_at")
+    article_list = Article.objects.all().filter(contest__url = url).exclude(visible_article_list = False).order_by("-created_at")
     context = {'article_list' : article_list, 
                }    
     return render(request, 'contest/index.html', context)
@@ -67,7 +66,7 @@ def registration(request):
                     });
 
     if request.method == 'POST' and is_member_of_team(request):
-        return render(request, 'registerForContest/requireLogin.html');
+        messages.warning(request, 'Unfortunately you can only be part of one team for this contest. :( ')
     
     elif is_member_of_team(request):
         messages.info(request, 'Unfortunately you can only be part of one team for this contest. :( ')
@@ -213,7 +212,9 @@ def is_leader(request):
     else:
         return False
 
-# author: Haakon
+#===============================================================================
+# Check if user is on a team
+#===============================================================================
 def is_member_of_team(request):
     team = Team.objects.filter(members__id = request.user.id)
     if team.count() > 0:
@@ -277,3 +278,19 @@ def editTeamProfil(request):
         'team': instance,
     })
 
+
+def view_teams(request):
+
+    try: 
+        team_list = Team.objects.filter(contest = get_current_contest(request))
+    except ObjectDoesNotExist as e:
+        messages.info(request, "Somethin went wrong trying to view teams. WHAAAAT :( ")    
+         
+    if len(team_list) < 1:
+        messages.info(request, "There are currento no team registeren for this contest. Why not be the first? :) ")
+        
+    return render(request, 'viewTeams/viewTeams.html',{
+                  'team_list': team_list,
+                  'number_of_teams': len(team_list)
+                  })
+    

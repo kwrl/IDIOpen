@@ -1,5 +1,6 @@
 #coding: utf-8
 
+from sortedm2m.fields import SortedManyToManyField
 from django.core.exceptions import ValidationError;
 from django.db import models
 from django.contrib.auth import get_user_model;
@@ -42,17 +43,21 @@ class Contest(models.Model):
                                            default=timezone.make_aware(
                                            datetime.datetime(2099, 1, 1, 0, 0),
                                            timezone.get_default_timezone()));
-    links = models.ManyToManyField('Link')
+    links = SortedManyToManyField('Link');
     sponsors = models.ManyToManyField('Sponsor', blank=True)
-    css = FileBrowseField('CSS', max_length=200, directory='css/', 
+    css = FileBrowseField('CSS', max_length=200, directory='css/',
                           extensions=['.css',], blank=True, null=True)
+
+    def isPublishable(self):
+        return self.publish_date.__lt__(getTodayDate());
+
 
     def isRegOpen(self):
         return self.teamreg_end_date.__gt__(getTodayDate());
-   
+
     def clean(self):
         # TODO: which is better? To do clean here, or in form?
-        # in model you can only invoke validationerror on _ALL_ fields, 
+        # in model you can only invoke validationerror on _ALL_ fields,
         # not a single one
         if self.start_date is not None and self.end_date is not None:
             if self.start_date.__lt__(self.end_date) == False:
@@ -60,17 +65,31 @@ class Contest(models.Model):
             
     def __str__(self):
         return self.title
-
+    
+    @property
+    def is_past_registration_day(self):
+        # if publish date is less than 
+        if timezone.make_aware(datetime.datetime.now(), timezone.get_default_timezone()) > self.publish_date:
+            return True
+        else:
+            return False
+        
+    
+     
 # Links for displaying in navigation for each contest    
 class Link(models.Model):
     #name of the link
-    text = models.CharField(max_length=30)
+    text = models.CharField(max_length=30, help_text='The display name for the link')
     # If true, url gets added to contest url
     # eg. url is 'article/1' if true gives '/open14/article/1'
-    contestUrl = models.BooleanField()
-    url = models.CharField(max_length=50)
+    contestUrl = models.BooleanField(help_text='If the url requires the contest url as prefix,' +
+                                     'example \'/open14/accounts/register/\'')
+    url = models.CharField(max_length=50, 
+                           help_text='Example \'/accounts/register/\','+
+                           ' make sure to have leading and trailing slashes.'+
+                           ' The url can also link to external web pages')
 
-    def __str__(self):
+    def __unicode__(self):
         return self.text
 
 
