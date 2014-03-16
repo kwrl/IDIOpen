@@ -13,7 +13,6 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.http import Http404
 from django.contrib import messages
 
-
 import datetime;
 from django.utils import timezone;
 
@@ -57,7 +56,7 @@ def registration(request):
     con = get_current_contest(request);
     today = getTodayDate(request);
 
-    if con.isRegOpen():
+    if not con.isRegOpen():
         messages.error(request, 'Registration is now closed');
         request.GET = {}; request.POST = {};
         tf = Team_Form();

@@ -9,8 +9,6 @@ from article import views as articleview
 
 from .views import get_current_contest;
 
-import ipdb; ipdb.set_trace();
-
 urlpatterns = patterns('',
     # Examples:
     url(r'^$', views.index, name='contest_list'),

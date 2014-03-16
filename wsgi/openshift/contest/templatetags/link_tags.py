@@ -29,6 +29,8 @@ def contest(context):
     url = request.path.split('/')[1]
     try:
         contest = Contest.objects.get(url=url)
+        if not contest.isPublishable(): 
+            raise Http404;
     except ObjectDoesNotExist:
         raise Http404
     return contest

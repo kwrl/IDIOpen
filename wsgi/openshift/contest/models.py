@@ -44,15 +44,19 @@ class Contest(models.Model):
                                            timezone.get_default_timezone()));
     links = models.ManyToManyField('Link')
     sponsors = models.ManyToManyField('Sponsor', blank=True)
-    css = FileBrowseField('CSS', max_length=200, directory='css/', 
+    css = FileBrowseField('CSS', max_length=200, directory='css/',
                           extensions=['.css',], blank=True, null=True)
 
+    def isPublishable(self):
+        return self.publish_date.__gt__(getTodayDate());
+
+
     def isRegOpen(self):
-        return self.teamreg_end_date.__lt__(getTodayDate());
-   
+        return self.teamreg_end_date.__gt__(getTodayDate());
+
     def clean(self):
         # TODO: which is better? To do clean here, or in form?
-        # in model you can only invoke validationerror on _ALL_ fields, 
+        # in model you can only invoke validationerror on _ALL_ fields,
         # not a single one
         if self.start_date is not None and self.end_date is not None:
             if self.start_date.__lt__(self.end_date) == False:
