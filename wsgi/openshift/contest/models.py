@@ -28,21 +28,22 @@ from django.db import models
 from django.core.urlresolvers import reverse
 
 def getTodayDate():
-     return timezone.make_aware(datetime.datetime.now(),
-                                timezone.get_default_timezone());
+     return timezone.make_aware(datetime.datetime.now(), timezone.get_default_timezone());
+
+class ContactInformation(models.Model):
+    email = models.EmailField()
+    phone = models.IntegerField(max_length=12)
 
 class Contest(models.Model):
     title = models.CharField(max_length=200)
+    contact_infos = models.ManyToManyField(ContactInformation)
     """ The url is saved as the suffix from root, only, not the entire url
     """
     url = models.CharField(max_length=20, unique=True);
     start_date = models.DateTimeField(verbose_name='Start date');
     end_date = models.DateTimeField('End date');
     publish_date = models.DateTimeField('Publish date');
-    teamreg_end_date = models.DateTimeField('Team registration close date',
-                                           default=timezone.make_aware(
-                                           datetime.datetime(2099, 1, 1, 0, 0),
-                                           timezone.get_default_timezone()));
+    teamreg_end_date = models.DateTimeField("Team registration close date", default=timezone.make_aware(datetime.datetime(2099, 1, 1, 0), timezone.get_default_timezone()));
     links = SortedManyToManyField('Link');
     sponsors = models.ManyToManyField('Sponsor', blank=True)
     css = FileBrowseField('CSS', max_length=200, directory='css/',
