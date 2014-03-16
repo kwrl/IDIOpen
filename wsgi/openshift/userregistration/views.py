@@ -268,15 +268,14 @@ def user_profile(request):
     if request.method == 'POST':
         form = Invites_Form(request.POST)
         submit = form.data['submit']
-        id = form.data['id']        
+        id = form.data['id']
         if id.isdigit():
             try:
                 try:
-                    invite = Invite.objects.filter(email=email).filter(is_member=False).get(pk=id)
+                    invite = Invite.objects.filter(email=email).filter(is_member=False, ).get(pk=id)
                 except ObjectDoesNotExist:
                     messages.error(request, 'Invalid invite')
                     raise Exception
-
                 if submit == 'accept':
                     if not is_on_team(request):
                         if invite.team.members.count() <= 3:

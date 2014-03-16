@@ -11,9 +11,10 @@
 	{% if team %}
 	<em><p style="font-size: 200%;">{{ team.name }}</p></em>
 	{% else %}
-	{{ team }}
+	<em>You are currently on no team</em>
 	{% endif %}
 	<br>    
+	<br>
 	Email:<em> {{ user.email }}</em>
 	<br>
 	Date joined:<em>
@@ -121,13 +122,14 @@
 </div>
 	
 	<hr>
-	<h1>List over invites: </h1>
+	<h4>List over invites: </h4>
+	<br>
 	{% if invites %}
 		{% if have_team %}
 			<p> You already have a team </p>
 		{% endif %}
 			{% for invite in invites.all %}
-				<p>{{ invite }}</p>
+				<p>From: {{ invite.team.name }}. Sendt by: {{ invite.team.leader.get_full_name }}</p>
 				<form action="." method="post"> {% csrf_token %}
 				<input type="hidden" value="{{ invite.id }}" name="id">
 				{% if have_team %}
@@ -140,6 +142,7 @@
 				{% endif %}
 				<button type="submit" name="submit" value="decline" class="btn btn-default btn-sm">Decline</button>
 				</form>
+				<br>
 			{% endfor %}
 	{% else %}
 		<p> You have no invites :( <p>
