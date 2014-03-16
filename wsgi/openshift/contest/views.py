@@ -14,6 +14,9 @@ from django.http import Http404
 from django.contrib import messages
 
 
+import datetime;
+from django.utils import timezone;
+
 User = get_user_model()
 # Create your views here.
 
@@ -24,8 +27,24 @@ def index(request):
                }    
     return render(request, 'contest/index.html', context)
 
-def is_on_team(request):
-    pass
+def get_current_url(request):
+    try: 
+        url = request.path.split('/')[1]
+    except ObjectDoesNotExist as e: 
+        raise Http404
+    return url; 
+
+def get_current_contest(request):
+    try: 
+        current_contest = Contest.objects.get(url = get_current_url(request))
+    except ObjectDoesNotExist as e: 
+        raise Http404
+    return current_contest;
+
+def getTodayDate(request):
+    con = get_current_contest(request);
+    return timezone.make_aware(datetime.datetime.now(),
+                               timezone.get_default_timezone());
 
 # @login_required
 def registration(request):
@@ -34,9 +53,21 @@ def registration(request):
     '''
     if not request.user.is_authenticated():
         return render(request, 'registerForContest/requireLogin.html')
-    
-    if request.method == 'POST' and is_member_of_team(request): 
-        messages.warning(request, 'Unfortunately you can only be part of one team for this contest. :( ')
+
+    con = get_current_contest(request);
+    today = getTodayDate(request);
+
+    if not con.isRegOpen():
+        messages.error(request, 'Registration is now closed');
+        request.GET = {}; request.POST = {};
+        tf = Team_Form();
+        tf.disable_fields();
+        return render(request, 'registerForContest/registration.html', {
+                    'form': tf,
+                    });
+
+    if request.method == 'POST' and is_member_of_team(request):
+        return render(request, 'registerForContest/requireLogin.html');
     
     elif is_member_of_team(request):
         messages.info(request, 'Unfortunately you can only be part of one team for this contest. :( ')
@@ -190,17 +221,23 @@ def is_member_of_team(request):
     else:
         team = False
 
+#===============================================================================
+# Adds functionality for when a contestant wants to leave a team
+#===============================================================================
 def leave_team(request):
     user = request.user
-    
+    con = get_current_contest(request)   
     if request.method == 'GET':
-        if is_leader(request): # If leader, delete the team
-            team = Team.objects.get(members__id = request.user.id)
-            team.remove()    
-        else: # else delete the member from the team
-            team = Team.objects.get(members__id = request.user.id)
-            team.members.remove(user.id)
-                    
+        if con.isRegOpen(): 
+            if is_leader(request): # If leader, delete the team
+                team = Team.objects.get(members__id = request.user.id)
+                team.delete()    
+            else: # else delete the member from the team
+                team = Team.objects.get(members__id = request.user.id)
+                team.members.remove(user.id)
+        else:
+            messages.error(request, 'Can\'t leave team after registration is closed')
+                         
     return render(request, 'contest/team.html')
     
 
