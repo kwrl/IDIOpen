@@ -43,7 +43,7 @@ class Contest(models.Model):
                                            default=timezone.make_aware(
                                            datetime.datetime(2099, 1, 1, 0, 0),
                                            timezone.get_default_timezone()));
-    links = models.ManyToManyField('Link');
+    links = SortedManyToManyField('Link');
     sponsors = models.ManyToManyField('Sponsor', blank=True)
     css = FileBrowseField('CSS', max_length=200, directory='css/',
                           extensions=['.css',], blank=True, null=True)
