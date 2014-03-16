@@ -51,11 +51,15 @@ class Contest(models.Model):
 # Links for displaying in navigation for each contest    
 class Link(models.Model):
     #name of the link
-    text = models.CharField(max_length=30)
+    text = models.CharField(max_length=30, help_text='The display name for the link')
     # If true, url gets added to contest url
     # eg. url is 'article/1' if true gives '/open14/article/1'
-    contestUrl = models.BooleanField()
-    url = models.CharField(max_length=50)
+    contestUrl = models.BooleanField(help_text='If the url requires the contest url as prefix,' +
+                                     'example \'/open14/accounts/register/\'')
+    url = models.CharField(max_length=50, 
+                           help_text='Example \'/accounts/register/\','+
+                           ' make sure to have leading and trailing slashes.'+
+                           ' The url can also link to external web pages')
 
     def __unicode__(self):
         return self.text
