@@ -23,8 +23,13 @@ TODO: Add location, fix start, end, publish date, validate
 from django.db import models
 from django.core.urlresolvers import reverse
 
+class ContactInformation(models.Model):
+    phone = models.IntegerField(max_length=12)
+    email = models.EmailField() 
+
 class Contest(models.Model):
     title = models.CharField(max_length=200)
+    contact_infos = models.ManyToManyField(ContactInformation)
     """ The url is saved as the suffix from root, only, not the entire url
     """
     url = models.CharField(max_length=20, unique=True);
@@ -33,9 +38,8 @@ class Contest(models.Model):
     publish_date = models.DateTimeField('Publish date')
     links = models.ManyToManyField('Link')
     sponsors = models.ManyToManyField('Sponsor', blank=True)
-    css = FileBrowseField('CSS', max_length=200, directory='css/', 
-                          extensions=['.css',], blank=True, null=True)
-
+    css = FileBrowseField('CSS', max_length=200, directory='css/', extensions=['.css',], blank=True, null=True)
+    
     def clean(self):
         # TODO: which is better? To do clean here, or in form?
         # in model you can only invoke validationerror on _ALL_ fields, 
@@ -46,6 +50,7 @@ class Contest(models.Model):
             
     def __str__(self):
         return self.title
+
 
 # Links for displaying in navigation for each contest    
 class Link(models.Model):
