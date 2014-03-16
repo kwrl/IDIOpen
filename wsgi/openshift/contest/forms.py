@@ -25,6 +25,10 @@ class Team_Edit(forms.ModelForm):
 class Team_Form(Team_Edit):
     member_one = forms.EmailField(required=False, widget=forms.TextInput(attrs= {'placeholder':'Insert email for team member 1'}));
     member_two = forms.EmailField(required=False, widget=forms.TextInput(attrs= {'placeholder':'Insert email for team member 2'}));
+
+    def disable_fields(self):
+        for _, field in self.fields.items():
+            field.widget.attrs['readonly'] = True;
     
 class CustomSelectMultiple(ModelMultipleChoiceField):
     def label_from_instance(self, obj):

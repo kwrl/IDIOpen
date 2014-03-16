@@ -2,14 +2,17 @@
 
 from django.core.exceptions import ValidationError;
 from django.db import models
-from django.contrib.auth import get_user_model
-from django.conf import settings
-from filebrowser.fields import FileBrowseField
-from django.forms import ModelForm
-from django import forms
+from django.contrib.auth import get_user_model;
+from django.conf import settings;
+from filebrowser.fields import FileBrowseField;
+from django.forms import ModelForm;
+from django import forms;
 from django.template.loader import render_to_string
 from django.core.mail import send_mail
 from django.core.exceptions import ObjectDoesNotExist
+
+import datetime;
+from django.utils import timezone;
 
 # Create your models here.
 
@@ -23,20 +26,30 @@ TODO: Add location, fix start, end, publish date, validate
 from django.db import models
 from django.core.urlresolvers import reverse
 
+def getTodayDate():
+     return timezone.make_aware(datetime.datetime.now(),
+                                timezone.get_default_timezone());
+
 class Contest(models.Model):
     title = models.CharField(max_length=200)
     """ The url is saved as the suffix from root, only, not the entire url
     """
     url = models.CharField(max_length=20, unique=True);
-    start_date = models.DateTimeField(verbose_name='Start date')
-    end_date = models.DateTimeField('End date')
-    publish_date = models.DateTimeField('Publish date')
-    teamreg_end_date = models.DateTimeField('Team registration close date');
+    start_date = models.DateTimeField(verbose_name='Start date');
+    end_date = models.DateTimeField('End date');
+    publish_date = models.DateTimeField('Publish date');
+    teamreg_end_date = models.DateTimeField('Team registration close date',
+                                           default=timezone.make_aware(
+                                           datetime.datetime(2099, 1, 1, 0, 0),
+                                           timezone.get_default_timezone()));
     links = models.ManyToManyField('Link')
     sponsors = models.ManyToManyField('Sponsor', blank=True)
     css = FileBrowseField('CSS', max_length=200, directory='css/', 
                           extensions=['.css',], blank=True, null=True)
 
+    def isRegOpen(self):
+        return self.teamreg_end_date.__lt__(getTodayDate());
+   
     def clean(self):
         # TODO: which is better? To do clean here, or in form?
         # in model you can only invoke validationerror on _ALL_ fields, 

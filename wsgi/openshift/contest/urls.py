@@ -7,6 +7,10 @@ from django.conf.urls import patterns, include, url
 from contest import views
 from article import views as articleview
 
+from .views import get_current_contest;
+
+import ipdb; ipdb.set_trace();
+
 urlpatterns = patterns('',
     # Examples:
     url(r'^$', views.index, name='contest_list'),
@@ -18,5 +22,4 @@ urlpatterns = patterns('',
     url(r'^registration/registrationComplete/$', views.registrationComplete, name = 'register_team_complete'),
     url(r'^team$', views.teamProfil, name = 'team_profile'),
     url(r'^editteam$', views.editTeamProfil, name = 'team_edit'),
-    
 )
