@@ -72,13 +72,13 @@
 					{% if contest %}
 						<div class="list-group">
 						{% for link in contest.links.all %}
+							{% if link.url == 'seperator' %}
+							</div>
+							<div class="list-group">
+							{% else %}
 							<a class="list-group-item" href="{% if link.contestUrl %}/{{ contest.url }}{% endif %}{{ link.url }}">{{ link.text }}</a>
+							{% endif %}
 						{% endfor %}
-						</div>
-						
-						<div class="list-group">
-							<a class="list-group-item" href="{% url "team_profile" contest.url %}">Team</a>
-							<a class="list-group-item" href="{% url "register_teams" contest.url %}">Register Team</a>
 						</div>
 						{% if contest.sponsors %}
 						<h4 class="text-center">Sponsors</h4>
