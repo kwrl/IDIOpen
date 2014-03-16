@@ -175,7 +175,6 @@ def teamProfil(request):
         # If you are leader
         if is_leader(request):
             if request.method == 'POST':
-                print("Hey for faen")
                 addMemberForm = Team_Add_Members(request.POST)
                 if addMemberForm.is_valid():
                     email = addMemberForm.cleaned_data['email']
@@ -262,12 +261,19 @@ def editTeamProfil(request):
                     messages.success(request, 'Profile details updated.')
                     editForm.save()
             if 'deletebutton' in request.POST:
+                print("deletebutton in post")
                 deleteForm = Team_Delete_Members(request.POST, instance = instance)
+                print (deleteForm)
+                print deleteForm.is_valid()
                 if deleteForm.is_valid():
+                    print("deletebutton is valid")                        
                     if deleteForm.save():
+                        print("deletebutton save")
                         messages.success(request, 'Members updated.')
                     else:
                         messages.error(request, 'Something went wrong')
+                else:
+                    messages.error(request, 'Something went wrong')
     else:
         messages.error(request, 'You are not the team leader')                    
     
