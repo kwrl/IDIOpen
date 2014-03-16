@@ -99,6 +99,10 @@ class Link(models.Model):
 class Team(models.Model):
     name = models.CharField(max_length=200, verbose_name = "Team name")
     onsite = models.BooleanField()
+    '''
+    TODO: Set leader 
+    NOTE: in order to implement leader we information about the logged in user. 
+    '''
     leader = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='leader', null = True)
     members = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='members')
     contest = models.ForeignKey(Contest, related_name='contest', null=True)
