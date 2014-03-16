@@ -14,10 +14,16 @@ class TeamAdmin(admin.ModelAdmin):
             kwargs["queryset"] = User.objects.all().exclude(members__in=Team.objects.all())
         return super(TeamAdmin, self).formfield_for_manytomany(db_field, request, **kwargs)
     '''
-
+class LinkAdmin(admin.ModelAdmin):
+    fieldsets = (
+        (None, {
+            'fields': ('text', 'contestUrl', 'url'),
+            'description': "To create a seperator, create a Link with url \'seperator\' withouth slashes."
+        }),
+    )
 
 admin.site.register(Contest)
-admin.site.register(Link)
+admin.site.register(Link, LinkAdmin)
 admin.site.register(Team, TeamAdmin)
 admin.site.register(Sponsor)
 admin.site.register(Invite)

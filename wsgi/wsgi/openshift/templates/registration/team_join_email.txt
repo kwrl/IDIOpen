@@ -1,5 +1,0 @@
-{% load i18n %}
-{% trans "You have revieved an invite to join a team on" %} {{ site.name }}:
-
-You have been invited to join a team, visit your user profile to accept invite
-

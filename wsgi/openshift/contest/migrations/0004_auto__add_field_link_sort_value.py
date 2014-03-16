@@ -8,23 +8,15 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # Adding field 'Team.leader'
-        db.add_column(u'contest_team', 'leader',
-                      self.gf('django.db.models.fields.related.ForeignKey')(related_name='leader', null=True, to=orm['userregistration.CustomUser']),
-                      keep_default=False)
-
-        # Adding field 'Team.contest'
-        db.add_column(u'contest_team', 'contest',
-                      self.gf('django.db.models.fields.related.ForeignKey')(related_name='contest', null=True, to=orm['contest.Contest']),
+        # Adding field 'Link.sort_value'
+        db.add_column(u'contest_contest_links', 'sort_value',
+                      self.gf('django.db.models.fields.IntegerField')(default=1),
                       keep_default=False)
 
 
     def backwards(self, orm):
-        # Deleting field 'Team.leader'
-        db.delete_column(u'contest_team', 'leader_id')
-
-        # Deleting field 'Team.contest'
-        db.delete_column(u'contest_team', 'contest_id')
+        # Deleting field 'Link.sort_value'
+        db.delete_column(u'contest_link', 'sort_value')
 
 
     models = {
@@ -71,6 +63,7 @@ class Migration(SchemaMigration):
             'Meta': {'object_name': 'Link'},
             'contestUrl': ('django.db.models.fields.BooleanField', [], {}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'sort_value': ('django.db.models.fields.IntegerField', [], {'default': '1'}),
             'text': ('django.db.models.fields.CharField', [], {'max_length': '30'}),
             'url': ('django.db.models.fields.CharField', [], {'max_length': '50'})
         },
