@@ -7,8 +7,6 @@ from django.conf.urls import patterns, include, url
 from contest import views
 from article import views as articleview
 
-from .views import get_current_contest;
-
 urlpatterns = patterns('',
     # Examples:
     url(r'^$', views.index, name='contest_list'),
@@ -20,4 +18,7 @@ urlpatterns = patterns('',
     url(r'^registration/registrationComplete/$', views.registrationComplete, name = 'register_team_complete'),
     url(r'^team$', views.teamProfil, name = 'team_profile'),
     url(r'^editteam$', views.editTeamProfil, name = 'team_edit'),
+    url(r'^pages/(?P<article_url>[^/]+)/$', articleview.detail_url, name='article_detail_url'),
+    url(r'^viewteams/$', views.view_teams, name = 'view_teams'),
+    
 )

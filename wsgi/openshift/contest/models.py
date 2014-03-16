@@ -1,5 +1,6 @@
 #coding: utf-8
 
+from sortedm2m.fields import SortedManyToManyField
 from django.core.exceptions import ValidationError;
 from django.db import models
 from django.contrib.auth import get_user_model;
@@ -42,6 +43,7 @@ class Contest(models.Model):
                                            default=timezone.make_aware(
                                            datetime.datetime(2099, 1, 1, 0, 0),
                                            timezone.get_default_timezone()));
+    links= SortedManyToManyField('Link')
     links = models.ManyToManyField('Link')
     sponsors = models.ManyToManyField('Sponsor', blank=True)
     css = FileBrowseField('CSS', max_length=200, directory='css/',
@@ -64,17 +66,31 @@ class Contest(models.Model):
             
     def __str__(self):
         return self.title
-
+    
+    @property
+    def is_past_registration_day(self):
+        # if publish date is less than 
+        if timezone.make_aware(datetime.datetime.now(), timezone.get_default_timezone()) > self.publish_date:
+            return True
+        else:
+            return False
+        
+    
+     
 # Links for displaying in navigation for each contest    
 class Link(models.Model):
     #name of the link
-    text = models.CharField(max_length=30)
+    text = models.CharField(max_length=30, help_text='The display name for the link')
     # If true, url gets added to contest url
     # eg. url is 'article/1' if true gives '/open14/article/1'
-    contestUrl = models.BooleanField()
-    url = models.CharField(max_length=50)
+    contestUrl = models.BooleanField(help_text='If the url requires the contest url as prefix,' +
+                                     'example \'/open14/accounts/register/\'')
+    url = models.CharField(max_length=50, 
+                           help_text='Example \'/accounts/register/\','+
+                           ' make sure to have leading and trailing slashes.'+
+                           ' The url can also link to external web pages')
 
-    def __str__(self):
+    def __unicode__(self):
         return self.text
 
 
@@ -83,10 +99,6 @@ class Link(models.Model):
 class Team(models.Model):
     name = models.CharField(max_length=200, verbose_name = "Team name")
     onsite = models.BooleanField()
-    '''
-    TODO: Set leader 
-    NOTE: in order to implement leader we information about the logged in user. 
-    '''
     leader = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='leader', null = True)
     members = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='members')
     contest = models.ForeignKey(Contest, related_name='contest', null=True)
