@@ -3,8 +3,14 @@
 {% load link_tags %}
 {% block content %}
 
-
 {% if team %}
+
+	<script>
+	 	$(document).ready( function() {
+ 			$(document.getElementById("LeaveButton")).confirmation('toggle');
+ 		});
+	</script>
+	
 	<div class="row">
 		<div class="col-lg-9">
 			<h2>Team page</h2>
@@ -15,7 +21,7 @@
 		</div>
 		{% endif %}
 		<div class="col-lg-3">
-			<a href="{% url 'team_leave' contest.url %}" class="btn btn-primary btn-sm pull-right">{% trans 'Leave team' %}</a>
+			<a href="{% url 'team_leave' contest.url %}" id="LeaveButton" data-toggle="confirmation" class="btn btn-primary btn-sm pull-right">{% trans 'Leave team' %}</a>
 		</div>
 	</div>
 	<hr>
@@ -48,7 +54,7 @@
       </tbody>
     </table>
 	{% if is_leader %}    
-	<form class="form-horizontal" method="post" action="." role="form">
+	<form class="form-horizontal" method="POST" action="" role="form">
 	{% csrf_token %}
 		<div class="form-group">
             {{ addMemberForm.email.errors }}
