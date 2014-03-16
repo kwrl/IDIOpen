@@ -18,5 +18,6 @@ urlpatterns = patterns('',
     url(r'^registration/registrationComplete/$', views.registrationComplete, name = 'register_team_complete'),
     url(r'^team$', views.teamProfil, name = 'team_profile'),
     url(r'^editteam$', views.editTeamProfil, name = 'team_edit'),
+     url(r'^leaveteam$', views.leave_team, name = 'team_leave'),
     
 )
