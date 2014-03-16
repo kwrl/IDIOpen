@@ -10,6 +10,9 @@ from django import forms
 from django.template.loader import render_to_string
 from django.core.mail import send_mail
 from django.core.exceptions import ObjectDoesNotExist
+from django.utils import timezone
+import datetime
+
 
 # Create your models here.
 
@@ -31,6 +34,9 @@ class Contest(models.Model):
     start_date = models.DateTimeField(verbose_name='Start date')
     end_date = models.DateTimeField('End date')
     publish_date = models.DateTimeField('Publish date')
+    teamreg_end_date = models.DateTimeField('Team registration close date', 
+                default=timezone.make_aware(datetime.datetime(2099, 1, 1, 0, 0), 
+                                            timezone.get_default_timezone()));
     links = models.ManyToManyField('Link')
     sponsors = models.ManyToManyField('Sponsor', blank=True)
     css = FileBrowseField('CSS', max_length=200, directory='css/', 
@@ -46,7 +52,17 @@ class Contest(models.Model):
             
     def __str__(self):
         return self.title
-
+    
+    @property
+    def is_past_registration_day(self):
+        # if publish date is less than 
+        if timezone.make_aware(datetime.datetime.now(), timezone.get_default_timezone()) > self.publish_date:
+            return True
+        else:
+            return False
+        
+    
+     
 # Links for displaying in navigation for each contest    
 class Link(models.Model):
     #name of the link
@@ -65,10 +81,6 @@ class Link(models.Model):
 class Team(models.Model):
     name = models.CharField(max_length=200, verbose_name = "Team name")
     onsite = models.BooleanField()
-    '''
-    TODO: Set leader 
-    NOTE: in order to implement leader we information about the logged in user. 
-    '''
     leader = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='leader', null = True)
     members = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='members')
     contest = models.ForeignKey(Contest, related_name='contest', null=True)

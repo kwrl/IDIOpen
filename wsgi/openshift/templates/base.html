@@ -66,10 +66,34 @@
 			</div>
 		</div>
 	</div>
+	
 	<div class="container">
 		<div class="row">
 			<div class="col-lg-2">
 					{% if contest %}
+						<div class = "panel panel-default">
+							<div class = "panel-body">
+							{% block contestInfo %}
+									<b>Next Contest:</b>
+									<br>
+									{% if contest %}
+										{{contest.title}},
+										<small>
+										<br> 
+										Starting: {{contest.start_date | date:"N d"}}
+										Registration:
+										{% if contest.is_past_registration_day %}
+											<a href="{% url 'register_teams' contest.url %}"><b>Open</b></a>
+											<br>
+											Until: {{ contest.teamreg_end_date | date:"N d H:i" }}																					
+										{% else %}
+											<b>Closed</b>
+										{% endif %}
+										</small>
+									{% endif %}				
+							{% endblock %}
+							</div>
+						</div>
 						<div class="list-group">
 						{% for link in contest.links.all %}
 							<a class="list-group-item" href="{% if link.contestUrl %}/{{ contest.url }}{% endif %}{{ link.url }}">{{ link.text }}</a>

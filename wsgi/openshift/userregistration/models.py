@@ -21,6 +21,7 @@ except ImportError:
 '''
 class CustomUserManager(BaseUserManager):
     def _create_user(self, email, first_name, last_name, password,
+                    skill_level, gender, nickname,
                      is_staff, is_superuser, **extra_fields):
         """
         Creates and saves a User with the given email and password.
@@ -30,7 +31,8 @@ class CustomUserManager(BaseUserManager):
             raise ValueError('The given email must be set')
         email = self.normalize_email(email)
         user = self.model(email=email, first_name=first_name,
-                          last_name=last_name,
+                          last_name=last_name, nickname=nickname,
+                          gender=gender, skill_level=skill_level,
                           is_staff=is_staff, is_active=True,
                           is_superuser=is_superuser, last_login=now,
                           date_joined=now, **extra_fields)
@@ -39,14 +41,16 @@ class CustomUserManager(BaseUserManager):
         return user
 
     def create_user(self, email, first_name, last_name,
-                    password=None, **extra_fields):
+                    password, skill_level, gender, nickname, **extra_fields):
         return self._create_user(email, first_name, last_name, password,
+                                skill_level, gender, nickname,
                                  False, False, **extra_fields)
 
     def create_superuser(self, email,
                          first_name, last_name, password, **extra_fields):
         return self._create_user(email, first_name, last_name, password,
-                                True, True, **extra_fields)
+                                skill_level='1', gender='M', nickname="",
+                                is_staff=True, is_superuser=True, **extra_fields)
     def activate_user(self, activation_key):
         """
         Validate an activation key and activate the corresponding
@@ -82,7 +86,8 @@ class CustomUserManager(BaseUserManager):
         return False
 
     def create_inactive_user(self, email,first_name, last_name, password,
-                             site,url, send_email=True):
+                             site, url, skill_level, gender, nickname,
+                             send_email=True):
         """
         Create a new, inactive ``User``, generate a
         ``RegistrationProfile`` and email its activation key to the
@@ -96,7 +101,8 @@ class CustomUserManager(BaseUserManager):
         if isinstance(email, unicode):
             username = email.encode('utf-8')
         activation_key = hashlib.sha1(salt+username).hexdigest()
-        new_user = self.create_user(email,first_name, last_name, password)
+        new_user = self.create_user(email,first_name, last_name, password,
+                                    skill_level, gender, nickname);
         new_user.is_active = False
         new_user.activation_key = activation_key
         new_user.save()
@@ -104,9 +110,7 @@ class CustomUserManager(BaseUserManager):
         if send_email:
             new_user.send_activation_email(site, url)
 
-        return new_user
-
-    #create_inactive_user = transaction.commit_on_success(create_inactive_user)
+        return new_user;
 
 YEAR_OF_STUDY = (
         ('1', '1'),
