@@ -1,5 +1,6 @@
 #coding: utf-8
 
+from sortedm2m.fields import SortedManyToManyField
 from django.core.exceptions import ValidationError;
 from django.db import models
 from django.contrib.auth import get_user_model
@@ -34,10 +35,10 @@ class Contest(models.Model):
     start_date = models.DateTimeField(verbose_name='Start date')
     end_date = models.DateTimeField('End date')
     publish_date = models.DateTimeField('Publish date')
+    links= SortedManyToManyField('Link')
     teamreg_end_date = models.DateTimeField('Team registration close date', 
                 default=timezone.make_aware(datetime.datetime(2099, 1, 1, 0, 0), 
                                             timezone.get_default_timezone()));
-    links = models.ManyToManyField('Link')
     sponsors = models.ManyToManyField('Sponsor', blank=True)
     css = FileBrowseField('CSS', max_length=200, directory='css/', 
                           extensions=['.css',], blank=True, null=True)
@@ -66,13 +67,17 @@ class Contest(models.Model):
 # Links for displaying in navigation for each contest    
 class Link(models.Model):
     #name of the link
-    text = models.CharField(max_length=30)
+    text = models.CharField(max_length=30, help_text='The display name for the link')
     # If true, url gets added to contest url
     # eg. url is 'article/1' if true gives '/open14/article/1'
-    contestUrl = models.BooleanField()
-    url = models.CharField(max_length=50)
+    contestUrl = models.BooleanField(help_text='If the url requires the contest url as prefix,' +
+                                     'example \'/open14/accounts/register/\'')
+    url = models.CharField(max_length=50, 
+                           help_text='Example \'/accounts/register/\','+
+                           ' make sure to have leading and trailing slashes.'+
+                           ' The url can also link to external web pages')
 
-    def __str__(self):
+    def __unicode__(self):
         return self.text
 
 
