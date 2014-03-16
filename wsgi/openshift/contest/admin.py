@@ -1,12 +1,8 @@
 from django.contrib import admin
 from contest.models import Sponsor #weird error..Haakon 
-<<<<<<< HEAD
-from contest.models import Contest, Link, Team, Invite
 from django import forms
-=======
 from contest.models import Contest, Link, Team, Invite, ContactInformation
 
->>>>>>> b1767537c9ee01c09666d7788efb514109aabf77
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
