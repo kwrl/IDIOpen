@@ -182,7 +182,9 @@ def is_leader(request):
     else:
         return False
 
-# author: Haakon
+#===============================================================================
+# Check if user is on a team
+#===============================================================================
 def is_member_of_team(request):
     team = Team.objects.filter(members__id = request.user.id)
     if team.count() > 0:
@@ -226,3 +228,34 @@ def editTeamProfil(request):
         'team': instance,
     })
 
+
+def get_current_url(request):
+    try: 
+        url = request.path.split('/')[1]
+    except ObjectDoesNotExist as e: 
+        raise Http404
+    return url; 
+
+def get_current_contest(request):
+    try: 
+        current_contest = Contest.objects.get(url = get_current_url(request))
+    except ObjectDoesNotExist as e: 
+        raise Http404
+    return current_contest; 
+
+
+def view_teams(request):
+
+    try: 
+        team_list = Team.objects.filter(contest = get_current_contest(request))
+    except ObjectDoesNotExist as e:
+        messages.info(request, "Somethin went wrong trying to view teams. WHAAAAT :( ")    
+         
+    if len(team_list) < 1:
+        messages.info(request, "There are currento no team registeren for this contest. Why not be the first? :) ")
+        
+    return render(request, 'viewTeams/viewTeams.html',{
+                  'team_list': team_list,
+                  'number_of_teams': len(team_list)
+                  })
+    
