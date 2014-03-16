@@ -13,7 +13,6 @@ register = template.Library()
 
 @register.inclusion_tag('navigation.html')
 def navigation(contest):
-    #if os.environ['USER'] == 'andesil': import ipdb; ipdb.set_trace();
     links = ''
     if contest == '':
         links == 'ERROR: no links'
@@ -30,7 +29,6 @@ def contest(context):
     try:
         contest = Contest.objects.get(url=url)
         if not contest.isPublishable(): 
-            import ipdb; ipdb.set_trace();
             raise Http404;
     except ObjectDoesNotExist:
         raise Http404

@@ -43,14 +43,13 @@ class Contest(models.Model):
                                            default=timezone.make_aware(
                                            datetime.datetime(2099, 1, 1, 0, 0),
                                            timezone.get_default_timezone()));
-    links= SortedManyToManyField('Link')
-    links = models.ManyToManyField('Link')
+    links = models.ManyToManyField('Link');
     sponsors = models.ManyToManyField('Sponsor', blank=True)
     css = FileBrowseField('CSS', max_length=200, directory='css/',
                           extensions=['.css',], blank=True, null=True)
 
     def isPublishable(self):
-        return self.publish_date.__gt__(getTodayDate());
+        return self.publish_date.__lt__(getTodayDate());
 
 
     def isRegOpen(self):
