@@ -164,7 +164,6 @@ AUTHOR: Haakon, Tino, Filip
 def teamProfil(request):    
     user = request.user
     url = request.path.split('/')[1]
-
     site = get_current_site(request)
     # Need to give error if you dont have team (link to register team page)
     team = Team.objects.filter(members__id = user.id)
@@ -243,7 +242,6 @@ def leave_team(request):
     
 @login_required
 def editTeamProfil(request):
-    print("You are now in Edit Team Profil View")
     user = request.user
     url = request.path.split('/')[1]
     # Get the team or 404
@@ -253,7 +251,6 @@ def editTeamProfil(request):
     deleteForm = Team_Delete_Members(None, instance = instance)
     # Need to be leader to edit a profile
     if is_leader(request):
-        print ("You are the leader")
         if request.method == 'POST':
             if 'edit' in request.POST:
                 editForm = Team_Edit(request.POST, instance = instance)
@@ -261,14 +258,9 @@ def editTeamProfil(request):
                     messages.success(request, 'Profile details updated.')
                     editForm.save()
             if 'deletebutton' in request.POST:
-                print("deletebutton in post")
                 deleteForm = Team_Delete_Members(request.POST, instance = instance)
-                print (deleteForm)
-                print deleteForm.is_valid()
                 if deleteForm.is_valid():
-                    print("deletebutton is valid")                        
                     if deleteForm.save():
-                        print("deletebutton save")
                         messages.success(request, 'Members updated.')
                     else:
                         messages.error(request, 'Something went wrong')
@@ -292,7 +284,7 @@ def view_teams(request):
         messages.info(request, "Somethin went wrong trying to view teams. WHAAAAT :( ")    
          
     if len(team_list) < 1:
-        messages.info(request, "There are currento no team registeren for this contest. Why not be the first? :) ")
+        messages.info(request, "There are currents no team registeren for this contest. Why not be the first? :) ")
         
     return render(request, 'viewTeams/viewTeams.html',{
                   'team_list': team_list,
