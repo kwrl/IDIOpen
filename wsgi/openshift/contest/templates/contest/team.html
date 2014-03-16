@@ -5,11 +5,6 @@
 
 {% if team %}
 
-	<script>
-	 	$(document).ready( function() {
- 			$(document.getElementById("LeaveButton")).confirmation('toggle');
- 		});
-	</script>
 	
 	<div class="row">
 		<div class="col-lg-9">
@@ -21,9 +16,12 @@
 		</div>
 		{% endif %}
 		<div class="col-lg-3">
-			<a href="{% url 'team_leave' contest.url %}" id="LeaveButton" data-toggle="confirmation" class="btn btn-primary btn-sm pull-right">{% trans 'Leave team' %}</a>
+			<a href=# id="LeaveButton" data-toggle="confirmation" class="alert btn btn-danger btn-sm pull-right">{% trans 'Leave team' %}</a>
+        {# btn btn-primary btn-sm pull-right">{% trans 'Leave team' %}</a> #}
 		</div>
 	</div>
+
+
 	<hr>
 	<em><h3> {{ team.name }}</h3></em>
 	<p class="text-muted">
@@ -70,9 +68,38 @@
 	  		</div>
   		</div>
 	</form>
+
+    <script src="https://github.com/makeusabrew/bootbox/releases/download/v4.2.0/bootbox.min.js"></script>
+    <script>
+        $(document).on("click", ".alert", function(e) {
+             bootbox.dialog( 
+             {
+                message: "Are you sure?",
+                title:"Leaving team - confirmation", 
+                buttons: 
+                { 
+                    cancel:
+                    {
+                        label:"No - cancel",
+                        className: "btn-primary",
+                    },
+                    confirmLeave: 
+                    {
+                        label:"Yes - leave team",
+                        className: "btn-danger",
+                        callback: function() {
+                            document.location.href = "{% url 'team_leave' contest.url %}";
+                         }
+                    }, 
+                } 
+            });
+         });
+    </script>
 	{% endif %}
 {% else %}
 	<p> You are currently not member of any team. Want to participate in this contest? </p>
 	<a href=" {% url 'register_teams' contest.url %}">Registrer Team </a>
+
 {% endif %}	
+
 {% endblock content %}
