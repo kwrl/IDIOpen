@@ -190,6 +190,19 @@ def is_member_of_team(request):
     else:
         team = False
 
+def leave_team(request):
+    user = request.user
+    
+    if request.method == 'GET':
+        if is_leader(request): # If leader, delete the team
+            team = Team.objects.get(members__id = request.user.id)
+            team.remove()    
+        else: # else delete the member from the team
+            team = Team.objects.get(members__id = request.user.id)
+            team.members.remove(user.id)
+                    
+    return render(request, 'contest/team.html')
+    
 
 @login_required
 def editTeamProfil(request):
