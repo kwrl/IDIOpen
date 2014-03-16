@@ -13,12 +13,17 @@ Created on Feb 12, 2014
 TODO: add support for leader. We need the log in to do that.
 support for leader is added. This is done in the view
 '''
+
+
+ON_OR_OFF = ((True, 'Yes'), (False, 'No')) 
+
 class Team_Edit(forms.ModelForm):
     class Meta:
-        model = Team
+        model = Team      
         widgets = {
                 'name' : forms.TextInput(attrs={'placeholder' : 'Insert team name here'}),
-         
+                'onsite' : forms.RadioSelect(choices=ON_OR_OFF, 
+                                             attrs ={'onclick' : 'javascript:check_radio_button();'}),
         } 
         fields = ['name', 'onsite', 'offsite']
 
