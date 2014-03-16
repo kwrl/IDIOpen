@@ -278,7 +278,7 @@ def user_profile(request):
                     raise Exception
                 if submit == 'accept':
                     if not is_on_team(request):
-                        if invite.team.members.count() <= 3:
+                        if invite.team.members.count() < 3:
                             try:
                                 invite.team.members.add(User.objects.get(email=email))
                                 invite.is_member = True
