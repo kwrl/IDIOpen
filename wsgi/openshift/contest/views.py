@@ -240,7 +240,6 @@ def leave_team(request):
         
     return teamProfil(request)
     
-
 @login_required
 def editTeamProfil(request):
     print("You are now in Edit Team Profil View")
