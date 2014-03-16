@@ -6,6 +6,9 @@ from contest import views
 from filebrowser.sites import site
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.admin import UserAdmin
+
+from contest import models as contestModels;
+
 admin.autodiscover()
 
 urlpatterns = patterns('',
