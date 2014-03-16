@@ -70,6 +70,7 @@ INSTALLED_APPS = (
     'userregistration',
 	'django_jenkins',
     'south',
+    'sortedm2m',
 )
 '''
 if not ON_OPENSHIFT:

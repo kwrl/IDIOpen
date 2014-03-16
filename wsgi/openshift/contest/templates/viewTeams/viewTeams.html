@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% load link_tags %}
+{% load i18n %}
+{% block content %}
+
+<h2>Registered teams</h2>
+<hr>
+{% if contest %}
+	<p>Here will a list over all teams and their members show<p>
+	<p>There are currently {{ number_of_teams }} teams registered for {{contest.title}}
+	{% for team in team_list %} 
+    		<h4 class="list-group-item-heading">{{ team.name }}</h4>
+    		<p class="text-muted">{{ team.leader.first_name }}   <em> {{ team.leader.nickname }} </em> {{ team.leader.last_name }},
+    		{% for member in team.members.all%}    		   		
+	    		{% if member = team.leader %}
+	    		
+	    		{% else %}
+	    			{{ member.first_name }}   <em> {{ member.nickname }} </em> {{ member.last_name }},
+	    		{% endif %}
+	    	{% endfor %}
+	    	</p>
+	{% endfor %}
+	
+{% else %}
+	<p>Something weird has happened... Are you sure there is a contest!? :S <p>
+{% endif %}
+{% endblock %}
