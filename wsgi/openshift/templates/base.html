@@ -67,19 +67,43 @@
 			</div>
 		</div>
 	</div>
+	
 	<div class="container">
 		<div class="row">
 			<div class="col-lg-2">
 					{% if contest %}
+						<div class = "panel panel-default">
+							<div class = "panel-body">
+							{% block contestInfo %}
+									<b>Next Contest:</b>
+									<br>
+									{% if contest %}
+										{{contest.title}},
+										<small>
+										<br> 
+										Starting: {{contest.start_date | date:"N d"}}
+										Registration:
+										{% if contest.is_past_registration_day %}
+											<a href="{% url 'register_teams' contest.url %}"><b>Open</b></a>
+											<br>
+											Until: {{ contest.teamreg_end_date | date:"N d H:i" }}																					
+										{% else %}
+											<b>Closed</b>
+										{% endif %}
+										</small>
+									{% endif %}				
+							{% endblock %}
+							</div>
+						</div>
 						<div class="list-group">
 						{% for link in contest.links.all %}
+							{% if link.url == 'seperator' %}
+							</div>
+							<div class="list-group">
+							{% else %}
 							<a class="list-group-item" href="{% if link.contestUrl %}/{{ contest.url }}{% endif %}{{ link.url }}">{{ link.text }}</a>
+							{% endif %}
 						{% endfor %}
-						</div>
-						
-						<div class="list-group">
-							<a class="list-group-item" href="{% url "team_profile" contest.url %}">Team</a>
-							<a class="list-group-item" href="{% url "register_teams" contest.url %}">Register Team</a>
 						</div>
 						{% if contest.sponsors %}
 						<h4 class="text-center">Sponsors</h4>
@@ -153,8 +177,14 @@
     </div>
 	<div id="footer">
       <div class="container">
-        <p class="muted credit">IDI Open &copy; 2014
-        </p>
+		{% if contest %}
+            {% for info in contest.contact_infos.all %}
+                <h5 class="muted credit left_footer">{{info.email}}</h5>
+                <h5 class="muted credit right_footer">{{info.phone}}</h5>
+            {% endfor %} 
+		{% else %}
+        	<p class="muted credit">IDI Open &copy;</p>
+        {% endif %}
       </div>
     </div>
 
