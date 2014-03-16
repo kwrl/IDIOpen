@@ -34,12 +34,6 @@
             });
         </script>
     {% endif %}
-    {% if useremail.errors %}
-        <script>$(document).ready( function () {
-            document.getElementById("collapseEmail").classList.add("in");
-            });
-        </script>
-    {% endif %}
     {% if userpi.errors %}
         <script>$(document).ready( function () {
             document.getElementById("collapsePI").classList.add("in");
@@ -67,28 +61,6 @@
                     {% endfor %}
                     <button type="submit" name="submit" value="Save" class="btn btn-default btn-sm">
                         Change password
-                    </button>
-                </form>
-            </div>
-        </div>
-        <div class="panel-heading">
-        <a data-toggle="collapse" data-parent="#accordion" href="#collapseEmail">
-            <h4 class="panel-title">
-                    Change email
-            </h4>
-            </a>
-        </div>
-        <div id="collapseEmail" class="panel-collapse collapse">
-            <div class="panel-body">
-                <form id="contestant_edit_pw" METHOD="POST" action="../profileEditEmail/">
-                {% csrf_token %}
-                    {% for field in useremail %}
-                        {{ field.label_tag }} {{ field }}
-                        {{ field.errors }}
-                        <br />
-                    {% endfor %}
-                    <button type="submit" name="submit" value="Save" class="btn btn-default btn-sm">
-                        Change email
                     </button>
                 </form>
             </div>
