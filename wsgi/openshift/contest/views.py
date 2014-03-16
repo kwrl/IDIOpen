@@ -13,6 +13,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.http import Http404
 from django.contrib import messages
 
+import datetime;
+from django.utils import timezone;
 
 User = get_user_model()
 # Create your views here.
@@ -23,9 +25,6 @@ def index(request):
     context = {'article_list' : article_list, 
                }    
     return render(request, 'contest/index.html', context)
-
-def is_on_team(request):
-    pass
 
 def get_current_url(request):
     try: 
@@ -41,6 +40,11 @@ def get_current_contest(request):
         raise Http404
     return current_contest;
 
+def getTodayDate(request):
+    con = get_current_contest(request);
+    return timezone.make_aware(datetime.datetime.now(),
+                               timezone.get_default_timezone());
+
 # @login_required
 def registration(request):
     '''
@@ -50,7 +54,17 @@ def registration(request):
         return render(request, 'registerForContest/requireLogin.html')
 
     con = get_current_contest(request);
-       
+    today = getTodayDate(request);
+
+    if not con.isRegOpen():
+        messages.error(request, 'Registration is now closed');
+        request.GET = {}; request.POST = {};
+        tf = Team_Form();
+        tf.disable_fields();
+        return render(request, 'registerForContest/registration.html', {
+                    'form': tf,
+                    });
+
     if request.method == 'POST' and is_member_of_team(request):
         messages.warning(request, 'Unfortunately you can only be part of one team for this contest. :( ')
     
