@@ -1,7 +1,6 @@
 from django.shortcuts import redirect, render
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView
-from django.contrib.sites.models import RequestSite, Site
 from userregistration import signals
 from userregistration.forms import RegistrationForm, Invites_Form
 from django.core.urlresolvers import reverse
@@ -13,12 +12,10 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import ugettext_lazy as _
 from contest.models import Team, Contest
 from django.http import Http404
-from django.core.exceptions import ObjectDoesNotExist
 from django.contrib import messages
 from userregistration.forms import *
 from userregistration import signals
 from django.contrib.sites.models import RequestSite
-from django.shortcuts import redirect
 
 try:
     from django.contrib.auth import get_user_model
@@ -26,12 +23,16 @@ try:
 except ImportError:
     from openshift.userregistration.models import CustomUser as User
 
-class _RequestPassingFormView(FormView):
+class RegistrationView(FormView):
     """
-    A version of FormView which passes extra arguments to certain
-    methods, notably passing the HTTP request nearly everywhere, to
-    enable finer-grained processing.
+    Base class for user registration views.
+    admin/userregistration/cadmin/userregistration/customuser/ustomuser/
     """
+    disallowed_url = 'registration_disallowed'
+    form_class = RegistrationForm
+    http_method_names = ['get', 'post', 'head', 'options', 'trace']
+    success_url = None
+    template_name = 'registration/registration_form.html'
 
     def get(self, request, *args, **kwargs):
         # Pass request to get_form_class and get_form for per-request
@@ -52,51 +53,46 @@ class _RequestPassingFormView(FormView):
             return self.form_invalid(form)
 
     def get_form_class(self, request=None):
-        return super(_RequestPassingFormView, self).get_form_class()
+        return super(RegistrationView, self).get_form_class()
 
     def get_form_kwargs(self, request=None, form_class=None):
-        return super(_RequestPassingFormView, self).get_form_kwargs()
-
+        return super(RegistrationView, self).get_form_kwargs()
+    
     def get_initial(self, request=None):
-        return super(_RequestPassingFormView, self).get_initial()
+        return super(RegistrationView, self).get_initial()
 
-    def get_success_url(self, request=None, user=None):
-        # We need to be able to use the request and the new user when
-        # constructing success_url.
-        return super(_RequestPassingFormView, self).get_success_url()
+#     
+#     Anders
+#   
+#     def get_success_url(self, request=None, user=None):
+#         # We need to be able to use the request and the new user when
+#         # constructing success_url.
+#         return super(RegistrationView, self).get_success_url()
+# 
+#     
+    
 
-    def form_valid(self, form, request=None):
-        return super(_RequestPassingFormView, self).form_valid(form)
-
+    # def form_valid(self, form, request=None):
+    #     return super(RegistrationView, self).form_valid(form)
+    
     def form_invalid(self, form, request=None):
-        return super(_RequestPassingFormView, self).form_invalid(form)
-
-
-class RegistrationView(_RequestPassingFormView):
-    """
-    Base class for user registration views.
-    admin/userregistration/cadmin/userregistration/customuser/ustomuser/
-    """
-    disallowed_url = 'registration_disallowed'
-    form_class = RegistrationForm
-    http_method_names = ['get', 'post', 'head', 'options', 'trace']
-    success_url = None
-    template_name = 'registration/registration_form.html'
-
+        return super(RegistrationView, self).form_invalid(form)
+    
     def dispatch(self, request, *args, **kwargs):
         """
         Check that user signup is allowed before even bothering to
         dispatch or do other processing.
-        
+
         """
         if not self.registration_allowed(request):
             return redirect(self.disallowed_url)
         return super(RegistrationView, self).dispatch(request, *args, **kwargs)
 
     def form_valid(self, request, form):
-        new_user = self.register(request, **form.cleaned_data)
+        #new_user = self.register(request, **form.cleaned_data)
+        self.register(request, **form.cleaned_data)
         #success_url = self.get_success_url(request, new_user)
-        
+
         # success_url may be a simple string, or a tuple providing the
         # full argument set for redirect(). Attempting to unpack it
         # tells us which one it is.
@@ -106,41 +102,47 @@ class RegistrationView(_RequestPassingFormView):
         #except ValueError:
         #    return redirect(success_url)
         url = request.path.split('/')[1]
-        return HttpResponseRedirect(reverse('registration_complete', args=(url,)))
+        return HttpResponseRedirect(reverse('registration_complete',
+                                    args=(url,)))
 
     def registration_allowed(self, request):
         """
         Override this to enable/disable user registration, either
         globally or on a per-request basis.
-        
+
         """
-        return True
+        return True;
 
     def register(self, request, **cleaned_data):
         url = request.path.split('/')[1]
-        print url
-        email, first_name = cleaned_data['email'], cleaned_data['first_name'] 
-        last_name, password = cleaned_data['last_name'], cleaned_data['password1']
-        site = RequestSite(request)
-        new_user = User.objects.create_inactive_user(email, first_name, last_name, password, site, url)
-        signals.user_registered.send(sender=self.__class__, user=new_user, request=request)
-        return new_user
-    
-# TODO: This needs to return with contest url first
+        email       = cleaned_data['email'];
+        first_name  = cleaned_data['first_name'];
+        last_name   = cleaned_data['last_name'];
+        password    = cleaned_data['password1'];
+        skill_level = cleaned_data['skill_level'];
+        gender      = cleaned_data['gender'];
+        nickname    = cleaned_data['nickname'];
+        site        = RequestSite(request);
+        new_user = User.objects.create_inactive_user(email, first_name,
+                last_name, password, site, url, skill_level, gender, nickname);
+        signals.user_registered.send(sender=self.__class__, user=new_user,
+                                     request=request)
+        return new_user;
+
+    # TODO: This needs to return with contest url first
     def get_success_url(self, request, user):
         """
         Return the name of the URL to redirect to after successful
         user registration.
-        
+
         """
         url = request.path.split('/')[1]
-        print url
         return ('registration_complete', (), {'contest':url})
-    
+
 class ActivationView(TemplateView):
     """
     Base class for user activation views.
-    
+
     """
     http_method_names = ['get']
     template_name = 'registration/activate.html'
@@ -194,6 +196,7 @@ def updateProfilePw(request):
         form = PasswordForm(data=request.POST, instance=request.user);
         if form.is_valid():
             form.save();
+            messages.success(request, "Password updated");
     else:
         form = PasswordForm(instance=request.user);
     
@@ -204,11 +207,12 @@ def updateProfilePw(request):
 def updateProfileEmail(request):
     form = None;
     if request.method == 'POST':
-        form = EmailForm(data=request.POST, instance=request.user);
+        form = EmailForm(data=request.POST);
         if form.is_valid():
             form.save();
+            messages.success(request, "Email verification sent");
     else:
-        form = EmailForm(instance=request.user);
+        form = EmailForm();
     
     return retProfile(request, UserProfile(request,
                                            email=form));
@@ -220,6 +224,7 @@ def updateProfilePI(request):
         form = PIForm(data=request.POST, instance=request.user);
         if form.is_valid():
             form.save();
+            messages.success(request, "Personal information updated");
     else:
         form = PIForm(instance=request.user);
     
@@ -313,7 +318,7 @@ class UserProfile(object):
     def __init__(self, request, pw=None, pi=None, email=None):
         self.pwForm = pw or PasswordForm(instance=request.user);
         self.piForm = pi or PIForm(instance=request.user);
-        self.email = email or EmailForm(instance=request.user);
+        self.email = email or EmailForm();
         self.forms = [self.pwForm, self.piForm, self.email];
 
     def getDict(self):
