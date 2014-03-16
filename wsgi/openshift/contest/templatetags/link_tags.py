@@ -30,6 +30,7 @@ def contest(context):
     try:
         contest = Contest.objects.get(url=url)
         if not contest.isPublishable(): 
+            import ipdb; ipdb.set_trace();
             raise Http404;
     except ObjectDoesNotExist:
         raise Http404
