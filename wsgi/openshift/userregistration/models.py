@@ -167,6 +167,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         verbose_name = _('user')
         verbose_name_plural = _('users')
 
+    
     def get_absolute_url(self):
         return "/users/%s/" % urlquote(self.email)
 
@@ -175,6 +176,16 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         Returns the first_name plus the last_name, with a space in between.
         """
         full_name = '%s %s' % (self.first_name, self.last_name)
+        return full_name.strip()
+    
+    def get_name_nick(self):
+        """
+        Returns the first_name plus the last_name, with a space in between.
+        """
+        if self.nickname:
+            full_name = '%s \'%s\' %s' % (self.first_name,self.nickname, self.last_name)
+        else:
+            full_name = '%s %s' % (self.first_name, self.last_name)
         return full_name.strip()
 
     def get_short_name(self):
