@@ -12,6 +12,8 @@ from userregistration.models import CustomUser
 from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.debug import sensitive_variables
 
+from .models import YEAR_OF_STUDY, GENDER_CHOICES;
+
 try:
     from django.contrib.auth import get_user_model
     User = get_user_model()
@@ -77,10 +79,20 @@ class RegistrationForm(forms.Form):
     email = forms.EmailField(label=_("E-mail"))
     first_name = forms.CharField(label=_("First Name"))
     last_name = forms.CharField(label=_("Last Name"))
+    nickname = forms.CharField(label=
+                               _("Nickname (optional)"),
+                               required=False);
     password1 = forms.CharField(widget=forms.PasswordInput,
                                 label=_("Password"))
     password2 = forms.CharField(widget=forms.PasswordInput,
                                 label=_("Password (again)"))
+
+    skill_level = forms.ChoiceField(label="Year of study",
+                                  choices=YEAR_OF_STUDY,
+                                  initial=YEAR_OF_STUDY[-1][0]);
+    gender = forms.ChoiceField(label="Gender",
+                             choices=GENDER_CHOICES,
+                             initial=GENDER_CHOICES[0][0]);
 
     def clean_email(self):
         """
@@ -130,32 +142,44 @@ class PasswordForm(forms.ModelForm):
         Uses an extra field, password_validation, to prevent user errors.
     """
     password_validation = forms.CharField(widget=forms.PasswordInput(),
-                                          label="Password (confirm)");
+                                          label=u'Password (confirm)');
+    old_password = forms.CharField(widget=forms.PasswordInput(),
+                                   label=u'Old password');
 
     def __init__(self, *args, **kwargs):
         """ Initialize, and explicitly set the order of the fields
         """
         super(PasswordForm, self).__init__(*args, **kwargs);
-        self.fields.keyOrder = ['password', 'password_validation'];
+        self.fields.keyOrder = ['old_password',
+                'password', 'password_validation'];
+
         self.contextName = "userpw";
         """ For HTML context
         """
 
-    @sensitive_variables('password', 'password_validation')
+    @sensitive_variables('old_password', 'password', 'password_validation')
     def clean(self):
+        def append_field_error(field, message):
+            self.errors[field] = ErrorList();
+            self.errors[field].append(message);
+
         # Ensure fields are non-empty
+        if 'old_password' in self.cleaned_data:
+            oldpw = self.cleaned_data['old_password'];
+            if not self.instance.check_password(oldpw):
+                append_field_error('old_password', "Incorrect password");
+                raise ValidationError("");
+
+
         if  'password'            in self.cleaned_data \
         and 'password_validation' in self.cleaned_data:
             pw = self.cleaned_data['password'];
             pw_validation = self.cleaned_data['password_validation'];
 
             if pw != pw_validation:
-                self.errors['password'] = ErrorList();
-                self.errors['password_validation'] = ErrorList();
-                self.errors['password'].append("%s do not match"
-                                                % ("Passwords"));
-                self.errors['password_validation'].append("%s do not match"
-                                                           % ("Passwords"));
+                append_field_error('password', u"Passwords don\'t match");
+                append_field_error('password_validation',
+                                   u"Passwords don\'t match");
             else:
                 # in case someone adds other fields, we explicitly invoke
                 # super.clean. However, it is not needed per march
@@ -235,7 +259,8 @@ class PIForm(forms.ModelForm):
 
     class Meta:
         model   = CustomUser
-        fields  = ['first_name', 'last_name']
+        fields  = ['first_name', 'last_name', 'nickname',
+                   'skill_level', 'gender']
         help_text = {
                      'first_name': "First name",
                      'last_name':"Last name",
