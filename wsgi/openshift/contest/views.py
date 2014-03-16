@@ -50,7 +50,6 @@ def registration(request):
         return render(request, 'registerForContest/requireLogin.html')
 
     con = get_current_contest(request);
-    import ipdb; ipdb.set_trace();
        
     if request.method == 'POST' and is_member_of_team(request):
         messages.warning(request, 'Unfortunately you can only be part of one team for this contest. :( ')
@@ -244,21 +243,6 @@ def editTeamProfil(request):
         'deleteForm': deleteForm,
         'team': instance,
     })
-
-
-def get_current_url(request):
-    try: 
-        url = request.path.split('/')[1]
-    except ObjectDoesNotExist as e: 
-        raise Http404
-    return url; 
-
-def get_current_contest(request):
-    try: 
-        current_contest = Contest.objects.get(url = get_current_url(request))
-    except ObjectDoesNotExist as e: 
-        raise Http404
-    return current_contest; 
 
 
 def view_teams(request):
