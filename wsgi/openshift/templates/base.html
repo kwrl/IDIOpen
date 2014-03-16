@@ -176,8 +176,14 @@
     </div>
 	<div id="footer">
       <div class="container">
-        <p class="muted credit">IDI Open &copy; 2014
-        </p>
+		{% if contest %}
+            {% for info in contest.contact_infos.all %}
+                <h5 class="muted credit left_footer">{{info.email}}</h5>
+                <h5 class="muted credit right_footer">{{info.phone}}</h5>
+            {% endfor %} 
+		{% else %}
+        	<p class="muted credit">IDI Open &copy;</p>
+        {% endif %}
       </div>
     </div>
 
