@@ -1,6 +1,0 @@
-{% load i18n %}
-{% trans "You have revieved an invite to join a team on" %} {{ site.name }}:
-
-You need a user to join a team, please register at:
-http://{{ site.domain }}{% url 'registration_register' contest %}
-
