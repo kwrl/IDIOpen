@@ -166,7 +166,6 @@ def teamProfil(request):
     url = request.path.split('/')[1]
 
     site = get_current_site(request)
-
     # Need to give error if you dont have team (link to register team page)
     team = Team.objects.filter(members__id = user.id)
     # If you have a team
@@ -184,6 +183,7 @@ def teamProfil(request):
                             messages.success(request, 'Email has been sent to: ' + email)
                         else:   
                             messages.error(request, 'You already have the maximum number of members')
+
             # If request is not POST, add an empty form            
             else:        
                 addMemberForm = Team_Add_Members()
@@ -222,6 +222,26 @@ def is_member_of_team(request):
     else:
         team = False
 
+#===============================================================================
+# For when a contestant wants to leave a team
+#===============================================================================
+def leave_team(request):
+    user = request.user
+    con = get_current_contest(request)
+    is_RegOpen = con.isRegOpen()   
+    if request.method == 'GET':
+        if is_RegOpen: 
+            if is_leader(request): # If leader, delete the team
+                team = Team.objects.get(members__id = request.user.id)
+                team.delete()    
+            else: # else delete the member from the team
+                team = Team.objects.get(members__id = request.user.id)
+                team.members.remove(user.id)
+        else:
+            messages.error(request, 'Can\'t leave team after registration is closed')
+        
+    return teamProfil(request)
+    
 
 @login_required
 def editTeamProfil(request):

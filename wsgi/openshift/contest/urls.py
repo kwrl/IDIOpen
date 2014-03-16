@@ -20,5 +20,6 @@ urlpatterns = patterns('',
     url(r'^editteam$', views.editTeamProfil, name = 'team_edit'),
     url(r'^pages/(?P<article_url>[^/]+)/$', articleview.detail_url, name='article_detail_url'),
     url(r'^viewteams/$', views.view_teams, name = 'view_teams'),
+    url(r'^leaveteam$', views.leave_team, name = 'team_leave'),    
     
 )
