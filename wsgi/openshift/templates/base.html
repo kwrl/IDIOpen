@@ -30,6 +30,9 @@
 	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 	<script src="https://code.jquery.com/jquery.js"></script>
 	<script	src="//netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="{% static  "openshift/js/bootstrap-confirmation.js" %}"></script>
+	<script type="text/javascript" src="{% static  "openshift/js/check_radio_button.js" %}"></script>
+	
 	<div id="wrap">
 	<div id="logo">
 		<div class="container">
@@ -84,14 +87,14 @@
 										<br> 
 										Starting: {{contest.start_date | date:"N d"}}
 										Registration:
-										{% if contest.is_past_registration_day %}
+										{% if contest.isRegOpen %}
 											<a href="{% url 'register_teams' contest.url %}"><b>Open</b></a>
 											<br>
 											Until: {{ contest.teamreg_end_date | date:"N d H:i" }}																					
 										{% else %}
 											<b>Closed</b>
 										{% endif %}
-										</small>
+					isRegOpen					</small>
 									{% endif %}				
 							{% endblock %}
 							</div>

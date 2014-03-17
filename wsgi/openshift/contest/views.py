@@ -1,6 +1,6 @@
 #coding:utf-8
 from django.shortcuts import render, redirect, get_object_or_404
-from contest.forms import Team_Form, Team_Edit, Team_Delete_Members, Team_Add_Members
+from contest.forms import Team_Form, Team_Edit, Team_Add_Members
 from django.http import HttpResponseRedirect
 from article.models import Article
 from userregistration.models import CustomUser
@@ -85,12 +85,14 @@ def registration(request):
             '''
             We need to check if the emails are equal. You should not be able to use to equal emails.
             '''
-            if (email_one == email_two):
+            if (email_one == email_two and email_one != "" and email_two != ""):
                 messages.error(request, 'Please do not use equal emails')                
             
             #checks if you are trying to add yourself. It is no legal. 
             elif request.user.email == email_one or request.user.email == email_two:
-                messages.error(request, 'Please do not fill inn your own email. You will be added as leader by default.')
+                if(request.user.email == ""): 
+                    pass
+                messages.warning(request, 'Please do not fill inn your own email. You will be added as leader by default.')
                 pass                            
                 
             else: # if the emails do not equal each other
@@ -174,15 +176,16 @@ def team(request):
         # If you are leader
         if is_leader(request):
             if request.method == 'POST':
-                addMemberForm = Team_Add_Members(request.POST)
-                if addMemberForm.is_valid():
-                    email = addMemberForm.cleaned_data['email']
-                    if Team.objects.get(pk=team.id).members.count() < 3:  #TODO: Fix hard code      
-                        invite = Invite.objects.create_invite(email, team, url, site)
-                        invite.save()
-                        messages.success(request, 'Email has been sent to: ' + email)
-                    else:   
-                        messages.error(request, 'You already have the maximum number of members')
+                    addMemberForm = Team_Add_Members(request.POST)
+                    if addMemberForm.is_valid():
+                        email = addMemberForm.cleaned_data['email']
+                        if Team.objects.get(pk=team.id).members.count() < 3:  #TODO: Fix hard code      
+                            invite = Invite.objects.create_invite(email, team, url, site)
+                            invite.save()
+                            messages.success(request, 'Email has been sent to: ' + email)
+                        else:   
+                            messages.error(request, 'You already have the maximum number of members')
+
             # If request is not POST, add an empty form            
             else:        
                 addMemberForm = Team_Add_Members()
@@ -221,11 +224,31 @@ def is_member_of_team(request):
     else:
         team = False
 
-
+#===============================================================================
+# For when a contestant wants to leave a team
+#===============================================================================
+def leave_team(request):
+    user = request.user
+    con = get_current_contest(request)
+    is_RegOpen = con.isRegOpen()   
+    if request.method == 'GET':
+        if is_RegOpen: 
+            if is_leader(request): # If leader, delete the team
+                team = Team.objects.get(members__id = request.user.id)
+                team.delete()    
+            else: # else delete the member from the team
+                team = Team.objects.get(members__id = request.user.id)
+                team.members.remove(user.id)
+        else:
+            messages.error(request, 'Can\'t leave team after registration is closed')
+        
+    return team(request)
+    
 @login_required
 def editTeam(request):
     user = request.user
-    url = request.path.split('/')[1]
+    url = get_current_url(request)
+#  url = request.path.split('/')[1]
     # Get the team or 404
     instance = get_object_or_404(Team, members__in=CustomUser.objects.filter(pk=user.id))
     # make a new form, with the instance as its model
@@ -262,7 +285,7 @@ def view_teams(request):
                   })
 
 def deleteMember(request, member_id):
-    
+
     user = request.user
     url = request.path.split('/')[1]
     

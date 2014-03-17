@@ -52,7 +52,6 @@ class Contest(models.Model):
     def isPublishable(self):
         return self.publish_date.__lt__(getTodayDate());
 
-
     def isRegOpen(self):
         return self.teamreg_end_date.__gt__(getTodayDate());
 
@@ -67,13 +66,7 @@ class Contest(models.Model):
     def __str__(self):
         return self.title
     
-    @property
-    def is_past_registration_day(self):
-        # if publish date is less than 
-        if timezone.make_aware(datetime.datetime.now(), timezone.get_default_timezone()) > self.publish_date:
-            return True
-        else:
-            return False
+    
         
     
      
@@ -99,6 +92,10 @@ class Link(models.Model):
 class Team(models.Model):
     name = models.CharField(max_length=200, verbose_name = "Team name")
     onsite = models.BooleanField()
+    '''
+    TODO: Set leader 
+    NOTE: in order to implement leader we information about the logged in user. 
+    '''
     leader = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='leader', null = True)
     members = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='members')
     contest = models.ForeignKey(Contest, related_name='contest', null=True)
