@@ -8,18 +8,25 @@
         &lsquo;{{ user.nickname|escape }}&lsquo;
         {% endif %}
                 {{ user.last_name }} </p></em>
+    <br>
 	{% if team %}
-	<em><p style="font-size: 200%;">{{ team.name }}</p></em>
+	<ul class="list-inline">
+		<li><p class="text-muted"> Team: </p> </li>
+ 		<li><a style="font-size: 150%;" href="{% url 'team_profile' contest.url %}"> {{ team.name }}</a></li>	
+ 	</ul>
 	{% else %}
-	{{ team }}
+	<em>You are currently on no team</em>
 	{% endif %}
+	<br>
+	Your skill: <b><em>{{ user.skill_level}}</em></b>
+	<br>
+	Your gender:<b><em>{{ user.gender}}</em></b>
 	<br>    
-	Email:<em> {{ user.email }}</em>
+	Email:<b><em> {{ user.email }}</em></b>
 	<br>
-	Date joined:<em>
-            {{ user.date_joined|date:"d.m.Y"}}</em>
+	Date joined:<b><em>{{ user.date_joined|date:"d.m.Y"}}</em></b>
+	<br>
 	</p>
-	<br>
 <hr>
 
 <link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
@@ -93,25 +100,29 @@
 </div>
 	
 	<hr>
-	<h1>List over invites: </h1>
+	<h4>List over invites: </h4>
 	{% if invites %}
 		{% if have_team %}
-			<p> You already have a team </p>
+			<b><p> You already have a team</p></b>
+			<br>
 		{% endif %}
 			{% for invite in invites.all %}
-				<p>{{ invite }}</p>
-				<form action="." method="post"> {% csrf_token %}
-				<input type="hidden" value="{{ invite.id }}" name="id">
+				<ul class="list-inline">
+				<li><p>{{ invite.team.name }}. </p></li>
+				<li><small><p class="text-muted">Sent by: {{ invite.team.leader.get_full_name }}</p></small></li>
+				<li><form action="." method="post"> {% csrf_token %}</li>
+				<li><input type="hidden" value="{{ invite.id }}" name="id"></li>
 				{% if have_team %}
-					<button type="submit" name="submit" value="accept" disabled="disabled" class="btn btn-default btn-sm">Accept</button>
+				<li>	<button type="submit" name="submit" value="accept" disabled="disabled" class="btn btn-primary btn-sm">Accept</button></li>
 				{% elif invite.team.members.count >= 3 %}
-				<p>This team has reached the maximum number of members</p>
-				<button type="submit" name="submit" disabled="disabled" value="accept" class="btn btn-default btn-sm">Accept</button>
+				<li>	<p>This team has reached the maximum number of members</p> </li>
+				<li>	<button type="submit" name="submit" disabled="disabled" value="accept" class="btn btn-primar btn-sm">Accept</button></li>
 				{% else %}
-				<button type="submit" name="submit" value="accept" class="btn btn-default btn-sm">Accept</button>
+				<li>	<button type="submit" name="submit" value="accept" class="btn btn-primary btn-sm">Accept</button></li>
 				{% endif %}
-				<button type="submit" name="submit" value="decline" class="btn btn-default btn-sm">Decline</button>
+				<li> <button type="submit" name="submit" value="decline" class="btn btn-default btn-sm">Decline</button> </li>
 				</form>
+				</ul>
 			{% endfor %}
 	{% else %}
 		<p> You have no invites :( <p>

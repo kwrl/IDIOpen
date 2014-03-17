@@ -3,8 +3,9 @@
 {% load link_tags %}
 {% block content %}
 
-
 {% if team %}
+
+	
 	<div class="row">
 		<div class="col-lg-9">
 			<h2>Team page</h2>
@@ -14,7 +15,13 @@
 			<a href="{% url 'team_edit' contest.url %}" class="btn btn-primary btn-sm pull-right">{% trans 'Edit team' %}</a>
 		</div>
 		{% endif %}
+		<div class="col-lg-3">
+			<a href=# id="LeaveButton" data-toggle="confirmation" class="alert btn btn-danger btn-sm pull-right">{% trans 'Leave team' %}</a>
+        {# btn btn-primary btn-sm pull-right">{% trans 'Leave team' %}</a> #}
+		</div>
 	</div>
+
+
 	<hr>
 	<em><h3> {{ team.name }}</h3></em>
 	<p class="text-muted">
@@ -25,6 +32,10 @@
 		{{ team.offsite }}
 	{% endif %}
 	</p>
+	<p class="text-muted">
+	Leader: 
+	{{ team.leader.first_name }} {{ team.leader.last_name }} 
+	</p>
 	<hr>
 	<em><h4>Members</h4></em>
 	<table class="table table-striped">
@@ -33,6 +44,7 @@
           <th>First Name</th>
           <th>Last Name</th>
           <th>Email</th>
+          <th>Skill</th>
           {% if is_leader %} 
           <th>Delete</th>
           {% endif %}
@@ -44,6 +56,7 @@
           <td><a href="#">{{ member.first_name }}</a></td>
           <td><a href="#">{{ member.last_name }}</a></td>
           <td><a href="#">{{ member.email }}</a></td>
+          <td>{{ member.skill_level }}</a></td>
           {% if is_leader %} 
           <td>
           {% if not member == team.leader %}
@@ -56,8 +69,12 @@
 		{% endfor %}
       </tbody>
     </table>
+    {% if team.members.count >= 3 %}
+    <small><em><p> Your team is full </p></em></small>
+    {% endif %}
 	{% if is_leader %}    
-	<form class="form-horizontal" method="post" action="." role="form">
+	<hr>
+	<form class="form-horizontal" method="POST" action="" role="form">
 	{% csrf_token %}
 		<div class="form-group">
             {{ addMemberForm.email.errors }}
@@ -69,13 +86,47 @@
         </div>
 	    <div class="form-group">
 			<div class="col-lg-offset-3 col-lg-9">
+				{% if team.members.count >= 3 %}
 	  			<button type="submit" name='addMember' value="addMember" class="btn btn-default">{% trans 'Add new member' %}</button>
+	  			{% else %}
+	  			<button type="submit" name='addMember' value="addMember" class="btn btn-default">{% trans 'Add new member' %}</button>
+	  			{% endif %}
+	  			
 	  		</div>
   		</div>
 	</form>
+
+    <script src="https://github.com/makeusabrew/bootbox/releases/download/v4.2.0/bootbox.min.js"></script>
+    <script>
+        $(document).on("click", ".alert", function(e) {
+             bootbox.dialog( 
+             {
+                message: "Are you sure?",
+                title:"Leaving team - confirmation", 
+                buttons: 
+                { 
+                    cancel:
+                    {
+                        label:"No - cancel",
+                        className: "btn-primary",
+                    },
+                    confirmLeave: 
+                    {
+                        label:"Yes - leave team",
+                        className: "btn-danger",
+                        callback: function() {
+                            document.location.href = "{% url 'team_leave' contest.url %}";
+                         }
+                    }, 
+                } 
+            });
+         });
+    </script>
 	{% endif %}
 {% else %}
 	<p> You are currently not member of any team. Want to participate in this contest? </p>
 	<a href=" {% url 'register_teams' contest.url %}">Registrer Team </a>
+
 {% endif %}	
+
 {% endblock content %}
