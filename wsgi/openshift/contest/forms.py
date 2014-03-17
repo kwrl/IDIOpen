@@ -40,10 +40,9 @@ class Team_Edit(forms.ModelForm):
         model = Team      
         widgets = {
                 'name' : forms.TextInput(attrs={'placeholder' : 'Insert team name here'}),
-                # 'onsite' : forms.RadioSelect(choices=ON_OR_OFF, 
-                #                              attrs ={'onclick' : 'check_radio_button();'}),
                 'onsite' : _RadioSelect(choices=ON_OR_OFF, 
                                              attrs ={'onclick' : 'check_radio_button();'}),
+                'offsite' : forms.TextInput(attrs={'placeholder' : 'E.g UiO, Aarhus etc '}),
         } 
         fields = ['name', 'onsite', 'offsite']
 
@@ -78,3 +77,4 @@ class Team_Add_Members(forms.ModelForm):
         model = Invite
         fields = ['email']
                 
+

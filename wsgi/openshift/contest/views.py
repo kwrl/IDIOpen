@@ -85,12 +85,14 @@ def registration(request):
             '''
             We need to check if the emails are equal. You should not be able to use to equal emails.
             '''
-            if (email_one == email_two):
+            if (email_one == email_two and email_one != "" and email_two != ""):
                 messages.error(request, 'Please do not use equal emails')                
             
             #checks if you are trying to add yourself. It is no legal. 
             elif request.user.email == email_one or request.user.email == email_two:
-                messages.error(request, 'Please do not fill inn your own email. You will be added as leader by default.')
+                if(request.user.email == ""): 
+                    pass
+                messages.warning(request, 'Please do not fill inn your own email. You will be added as leader by default.')
                 pass                            
                 
             else: # if the emails do not equal each other
@@ -161,9 +163,10 @@ AUTHOR: Haakon, Tino, Filip
 
 '''
 @login_required
-def teamProfil(request):    
+def teamProfil(request):  
     user = request.user
     url = request.path.split('/')[1]
+
     site = get_current_site(request)
     # Need to give error if you dont have team (link to register team page)
     team = Team.objects.filter(members__id = user.id)
@@ -173,15 +176,16 @@ def teamProfil(request):
         # If you are leader
         if is_leader(request):
             if request.method == 'POST':
-                addMemberForm = Team_Add_Members(request.POST)
-                if addMemberForm.is_valid():
-                    email = addMemberForm.cleaned_data['email']
-                    if Team.objects.get(pk=team.id).members.count() < 3:  #TODO: Fix hard code      
-                        invite = Invite.objects.create_invite(email, team, url, site)
-                        invite.save()
-                        messages.success(request, 'Email has been sent to: ' + email)
-                    else:   
-                        messages.error(request, 'You already have the maximum number of members')
+                    addMemberForm = Team_Add_Members(request.POST)
+                    if addMemberForm.is_valid():
+                        email = addMemberForm.cleaned_data['email']
+                        if Team.objects.get(pk=team.id).members.count() < 3:  #TODO: Fix hard code      
+                            invite = Invite.objects.create_invite(email, team, url, site)
+                            invite.save()
+                            messages.success(request, 'Email has been sent to: ' + email)
+                        else:   
+                            messages.error(request, 'You already have the maximum number of members')
+
             # If request is not POST, add an empty form            
             else:        
                 addMemberForm = Team_Add_Members()
@@ -242,8 +246,10 @@ def leave_team(request):
     
 @login_required
 def editTeamProfil(request):
+    print("You are now in Edit Team Profil View")
     user = request.user
-    url = request.path.split('/')[1]
+    url = get_current_url(request)
+#  url = request.path.split('/')[1]
     # Get the team or 404
     instance = get_object_or_404(Team, members__in=CustomUser.objects.filter(pk=user.id))
     # make a new form, with the instance as its model
@@ -284,10 +290,11 @@ def view_teams(request):
         messages.info(request, "Somethin went wrong trying to view teams. WHAAAAT :( ")    
          
     if len(team_list) < 1:
-        messages.info(request, "There are currents no team registeren for this contest. Why not be the first? :) ")
+        messages.info(request, "There are currento no team registeren for this contest. Why not be the first? :) ")
         
     return render(request, 'viewTeams/viewTeams.html',{
                   'team_list': team_list,
                   'number_of_teams': len(team_list)
                   })
     
+
