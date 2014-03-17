@@ -193,12 +193,12 @@ class ActivationView(TemplateView):
 def updateProfilePw(request):
     form = None;
     if request.method == 'POST':
-        form = PasswordForm(data=request.POST, instance=request.user);
+        form = PasswordForm(data=request.POST);
         if form.is_valid():
             form.save();
             messages.success(request, "Password updated");
     else:
-        form = PasswordForm(instance=request.user);
+        form = PasswordForm();
     
     return retProfile(request, UserProfile(request,
                                             pw=form));
