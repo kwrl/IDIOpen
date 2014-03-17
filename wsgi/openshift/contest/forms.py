@@ -17,12 +17,32 @@ support for leader is added. This is done in the view
 
 ON_OR_OFF = ((True, 'Yes'), (False, 'No')) 
 
+class _RadioSelect(forms.RadioSelect):
+    def render(self, name, value, attrs=None):
+""" http://tothinkornottothink.com/post/10815277049/django-forms-i-custom-fields-and-widgets-in-detail """
+        pass;
+
+    def format_output(self, rendered_widgets):
+        """
+        Given a list of rendered widgets (as strings), returns a Unicode string
+        representing the HTML for the whole lot.
+
+        This hook allows you to format the HTML design of the widgets, if
+        needed.
+        """
+        rendered_widgets.insert(0, "<label for=\"id_address_field_0\">Street:</label>");
+        rendered_widgets.insert(0, "<label for=\"id_address_field_0\">Street:</label>");
+        rendered_widgets.insert(0, "<label for=\"id_address_field_0\">Street:</label>");
+        return u''.join(rendered_widgets)
+
 class Team_Edit(forms.ModelForm):
     class Meta:
         model = Team      
         widgets = {
                 'name' : forms.TextInput(attrs={'placeholder' : 'Insert team name here'}),
-                'onsite' : forms.RadioSelect(choices=ON_OR_OFF, 
+                # 'onsite' : forms.RadioSelect(choices=ON_OR_OFF, 
+                #                              attrs ={'onclick' : 'check_radio_button();'}),
+                'onsite' : _RadioSelect(choices=ON_OR_OFF, 
                                              attrs ={'onclick' : 'check_radio_button();'}),
         } 
         fields = ['name', 'onsite', 'offsite']
