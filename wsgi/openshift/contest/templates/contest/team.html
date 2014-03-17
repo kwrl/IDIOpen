@@ -33,6 +33,9 @@
           <th>First Name</th>
           <th>Last Name</th>
           <th>Email</th>
+          {% if is_leader %} 
+          <th>Delete</th>
+          {% endif %}
         </tr>
       </thead>
         <tbody>
@@ -41,6 +44,14 @@
           <td><a href="#">{{ member.first_name }}</a></td>
           <td><a href="#">{{ member.last_name }}</a></td>
           <td><a href="#">{{ member.email }}</a></td>
+          {% if is_leader %} 
+          <td>
+          {% if not member == team.leader %}
+          <a href="{% url 'team_delete_member' contest.url member.id %}">
+          <i class="fa fa-trash-o fa-lg text-danger"></i>
+          {% endif %}
+          </a></td>
+          {% endif %}
         </tr>
 		{% endfor %}
       </tbody>

@@ -1,44 +1,49 @@
 {% extends 'base.html' %}
-{% load link_tags %}
+{% load widget_tweaks %}
 {% load i18n %}
 {% block content %}
 <form class="form-horizontal" method="POST" action="" role="form">
 	{% csrf_token %}
 	<h3>Update team</h3>
-	{% for field in editForm %}
 	    <div class="form-group">
-            {{ field.errors }}
-            <label for="{{ field.id_for_label }}" class="col-lg-3 control-label">{{ field.label }}</label> 
+            {{ form.name.errors }}
+            <label for="{{ form.name.id_for_label }}" class="col-lg-3 control-label">{{ form.name.label }}</label> 
 	            <div class="col-lg-5">
-		            {{ field|addcss:"form-control"}}
+		            {{ form.name|add_class:"form-control" }}
 	            </div>
         </div>
-    {% endfor %}
+        <div class="form-group">
+            {{ form.offsite.errors }}
+            <label for="{{ form.offsite.id_for_label }}" class="col-lg-3 control-label">
+            	{{ form.offsite.label }}
+            </label> 
+            <div class="col-lg-5">
+	            {{ form.offsite|add_class:"form-control"}}
+            </div>
+        </div>
+        <div class="form-group">
+            {{ form.onsite.errors }}
+            <label for="{{ form.onsite.id_for_label }}" class="col-lg-3 control-label">
+            {{ form.onsite.label }}
+            </label> 
+            <div class="col-lg-5">
+            {% for radio in form.onsite %}
+            <div class="radio-inline">
+			  <label for="id_{{ forloop.counter0 }}">
+				{{ radio.tag }}
+			    {{ radio.choice_label }}
+			  </label>
+			</div>
+			{% endfor %}
+            </div>
+            
+        </div>
     <div class="form-group">
 		<div class="col-lg-offset-3 col-lg-9">
 	  		<button type="submit" name='edit' value="edit" class="btn btn-default">{% trans 'Update Team' %}</button>
 	  	</div>
   	</div>
 </form>
-<hr>
-<form class="form-horizontal" method="POST" action="" role="form">
-	{% csrf_token %}
-    {{ field.errors }}
-	<h3>Delete members</h3>
-        <div class="form-group">
-            <div class="col-lg-offset-3 col-lg-9">
-            {% for radio in deleteForm.members %}
-			<div class="myradio">
-			    {{ radio }}
-			</div>
-			{% endfor %}
-            </div>
-        </div>
-    <div class="form-group">
-	<div class="col-lg-offset-3 col-lg-10">
-  		<button type="submit" name='deletebutton' value="deletebutton" class="btn btn-default">{% trans 'Update Members' %}</button>
-  	</div>
-  	</div>
-</form>
+
 {% endblock content %}
 
