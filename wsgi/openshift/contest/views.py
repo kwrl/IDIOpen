@@ -85,12 +85,14 @@ def registration(request):
             '''
             We need to check if the emails are equal. You should not be able to use to equal emails.
             '''
-            if (email_one == email_two):
+            if (email_one == email_two and email_one != "" and email_two != ""):
                 messages.error(request, 'Please do not use equal emails')                
             
             #checks if you are trying to add yourself. It is no legal. 
             elif request.user.email == email_one or request.user.email == email_two:
-                messages.error(request, 'Please do not fill inn your own email. You will be added as leader by default.')
+                if(request.user.email == ""): 
+                    pass
+                messages.warning(request, 'Please do not fill inn your own email. You will be added as leader by default.')
                 pass                            
                 
             else: # if the emails do not equal each other

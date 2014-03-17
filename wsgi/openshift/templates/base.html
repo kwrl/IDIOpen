@@ -83,14 +83,14 @@
 										<br> 
 										Starting: {{contest.start_date | date:"N d"}}
 										Registration:
-										{% if contest.is_past_registration_day %}
+										{% if contest.isRegOpen %}
 											<a href="{% url 'register_teams' contest.url %}"><b>Open</b></a>
 											<br>
 											Until: {{ contest.teamreg_end_date | date:"N d H:i" }}																					
 										{% else %}
 											<b>Closed</b>
 										{% endif %}
-										</small>
+					isRegOpen					</small>
 									{% endif %}				
 							{% endblock %}
 							</div>
