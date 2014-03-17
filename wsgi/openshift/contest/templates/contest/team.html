@@ -7,17 +7,17 @@
 
 	
 	<div class="row">
-		<div class="col-lg-9">
+		<div class="col-lg-7">
 			<h2>Team page</h2>
 		</div>
+		<div class="col-lg-5">
+		<div class="btn-group pull-right">
+			<a href=# id="LeaveButton" data-toggle="confirmation" class="alert btn btn-danger btn-sm">{% trans 'Leave team' %}</a>
 		{% if is_leader %}    
-		<div class="col-lg-3">
-			<a href="{% url 'team_edit' contest.url %}" class="btn btn-primary btn-sm pull-right">{% trans 'Edit team' %}</a>
-		</div>
+			<a href="{% url 'team_edit' contest.url %}" class="btn btn-primary btn-sm">{% trans 'Edit team' %}</a>
 		{% endif %}
-		<div class="col-lg-3">
-			<a href=# id="LeaveButton" data-toggle="confirmation" class="alert btn btn-danger btn-sm pull-right">{% trans 'Leave team' %}</a>
         {# btn btn-primary btn-sm pull-right">{% trans 'Leave team' %}</a> #}
+		</div>
 		</div>
 	</div>
 
@@ -96,32 +96,7 @@
   		</div>
 	</form>
 
-    <script src="https://github.com/makeusabrew/bootbox/releases/download/v4.2.0/bootbox.min.js"></script>
-    <script>
-        $(document).on("click", ".alert", function(e) {
-             bootbox.dialog( 
-             {
-                message: "Are you sure?",
-                title:"Leaving team - confirmation", 
-                buttons: 
-                { 
-                    cancel:
-                    {
-                        label:"No - cancel",
-                        className: "btn-primary",
-                    },
-                    confirmLeave: 
-                    {
-                        label:"Yes - leave team",
-                        className: "btn-danger",
-                        callback: function() {
-                            document.location.href = "{% url 'team_leave' contest.url %}";
-                         }
-                    }, 
-                } 
-            });
-         });
-    </script>
+
 	{% endif %}
 {% else %}
 	<p> You are currently not member of any team. Want to participate in this contest? </p>

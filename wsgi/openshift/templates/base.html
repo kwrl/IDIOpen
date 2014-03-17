@@ -192,6 +192,31 @@
       </div>
     </div>
 
-
+    <script src="{% static 'openshift/js/bootbox.min.js' %}"></script>
+    <script>
+        $(document).on("click", ".alert", function(e) {
+             bootbox.dialog( 
+             {
+                message: "Are you sure?",
+                title:"Leaving team - confirmation", 
+                buttons: 
+                { 
+                    cancel:
+                    {
+                        label:"No - cancel",
+                        className: "btn-primary",
+                    },
+                    confirmLeave: 
+                    {
+                        label:"Yes - leave team",
+                        className: "btn-danger",
+                        callback: function() {
+                            document.location.href = "{% url 'team_leave' contest.url %}";
+                         }
+                    }, 
+                } 
+            });
+         });
+    </script>
 </body>
 </html>

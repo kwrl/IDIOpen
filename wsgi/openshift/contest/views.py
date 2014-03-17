@@ -163,7 +163,7 @@ AUTHOR: Haakon, Tino, Filip
 
 '''
 @login_required
-def team(request):    
+def team_profile(request):    
     user = request.user
     url = request.path.split('/')[1]
 
@@ -234,15 +234,15 @@ def leave_team(request):
     if request.method == 'GET':
         if is_RegOpen: 
             if is_leader(request): # If leader, delete the team
-                team = Team.objects.get(members__id = request.user.id)
+                team = Team.objects.filter(contest=con).get(members__id = request.user.id)
                 team.delete()    
             else: # else delete the member from the team
-                team = Team.objects.get(members__id = request.user.id)
+                team = Team.objects.filter(contest=con).get(members__id = request.user.id)
                 team.members.remove(user.id)
         else:
             messages.error(request, 'Can\'t leave team after registration is closed')
         
-    return team(request)
+    return redirect('team_profile', con.url)
     
 @login_required
 def editTeam(request):
