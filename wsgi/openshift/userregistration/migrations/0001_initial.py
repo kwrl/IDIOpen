@@ -14,13 +14,18 @@ class Migration(SchemaMigration):
             ('password', self.gf('django.db.models.fields.CharField')(max_length=128)),
             ('last_login', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now)),
             ('is_superuser', self.gf('django.db.models.fields.BooleanField')(default=False)),
+            ('skill_level', self.gf('django.db.models.fields.CharField')(default='1', max_length=4)),
+            ('gender', self.gf('django.db.models.fields.CharField')(default='M', max_length=1)),
             ('email', self.gf('django.db.models.fields.EmailField')(unique=True, max_length=254)),
+            ('temp_email', self.gf('django.db.models.fields.EmailField')(max_length=254, null=True, blank=True)),
+            ('email_activation_key', self.gf('django.db.models.fields.CharField')(max_length=40, null=True)),
             ('first_name', self.gf('django.db.models.fields.CharField')(max_length=30)),
             ('last_name', self.gf('django.db.models.fields.CharField')(max_length=30)),
             ('is_staff', self.gf('django.db.models.fields.BooleanField')(default=False)),
             ('is_active', self.gf('django.db.models.fields.BooleanField')(default=True)),
             ('date_joined', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now)),
             ('activation_key', self.gf('django.db.models.fields.CharField')(max_length=40)),
+            ('nickname', self.gf('django.db.models.fields.CharField')(default='', max_length=20, null=True, blank=True)),
         ))
         db.send_create_signal(u'userregistration', ['CustomUser'])
 
@@ -80,7 +85,9 @@ class Migration(SchemaMigration):
             'activation_key': ('django.db.models.fields.CharField', [], {'max_length': '40'}),
             'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
             'email': ('django.db.models.fields.EmailField', [], {'unique': 'True', 'max_length': '254'}),
+            'email_activation_key': ('django.db.models.fields.CharField', [], {'max_length': '40', 'null': 'True'}),
             'first_name': ('django.db.models.fields.CharField', [], {'max_length': '30'}),
+            'gender': ('django.db.models.fields.CharField', [], {'default': "'M'", 'max_length': '1'}),
             'groups': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'related_name': "u'user_set'", 'blank': 'True', 'to': u"orm['auth.Group']"}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
@@ -88,7 +95,10 @@ class Migration(SchemaMigration):
             'is_superuser': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'last_login': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
             'last_name': ('django.db.models.fields.CharField', [], {'max_length': '30'}),
+            'nickname': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '20', 'null': 'True', 'blank': 'True'}),
             'password': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
+            'skill_level': ('django.db.models.fields.CharField', [], {'default': "'1'", 'max_length': '4'}),
+            'temp_email': ('django.db.models.fields.EmailField', [], {'max_length': '254', 'null': 'True', 'blank': 'True'}),
             'user_permissions': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'related_name': "u'user_set'", 'blank': 'True', 'to': u"orm['auth.Permission']"})
         }
     }

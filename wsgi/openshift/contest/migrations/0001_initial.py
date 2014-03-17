@@ -8,6 +8,14 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
+        # Adding model 'ContactInformation'
+        db.create_table(u'contest_contactinformation', (
+            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('email', self.gf('django.db.models.fields.EmailField')(max_length=75)),
+            ('phone', self.gf('django.db.models.fields.IntegerField')(max_length=12)),
+        ))
+        db.send_create_signal(u'contest', ['ContactInformation'])
+
         # Adding model 'Contest'
         db.create_table(u'contest_contest', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
@@ -16,19 +24,29 @@ class Migration(SchemaMigration):
             ('start_date', self.gf('django.db.models.fields.DateTimeField')()),
             ('end_date', self.gf('django.db.models.fields.DateTimeField')()),
             ('publish_date', self.gf('django.db.models.fields.DateTimeField')()),
+            ('teamreg_end_date', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime(2099, 1, 1, 0, 0))),
             ('css', self.gf('filebrowser.fields.FileBrowseField')(max_length=200, null=True, blank=True)),
         ))
         db.send_create_signal(u'contest', ['Contest'])
 
-        # Adding M2M table for field links on 'Contest'
-        m2m_table_name = db.shorten_name(u'contest_contest_links')
+        # Adding M2M table for field contact_infos on 'Contest'
+        m2m_table_name = db.shorten_name(u'contest_contest_contact_infos')
         db.create_table(m2m_table_name, (
             ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
             ('contest', models.ForeignKey(orm[u'contest.contest'], null=False)),
-            ('link', models.ForeignKey(orm[u'contest.link'], null=False))
+            ('contactinformation', models.ForeignKey(orm[u'contest.contactinformation'], null=False))
         ))
-        db.create_unique(m2m_table_name, ['contest_id', 'link_id'])
+        db.create_unique(m2m_table_name, ['contest_id', 'contactinformation_id'])
 
+
+        # Adding SortedM2M table for field links on 'Contest'
+        db.create_table(u'contest_contest_links', (
+            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
+            ('contest', models.ForeignKey(orm[u'contest.contest'], null=False)),
+            ('link', models.ForeignKey(orm[u'contest.link'], null=False)),
+            ('sort_value', models.IntegerField())
+        ))
+        db.create_unique(u'contest_contest_links', ['contest_id', 'link_id'])
         # Adding M2M table for field sponsors on 'Contest'
         m2m_table_name = db.shorten_name(u'contest_contest_sponsors')
         db.create_table(m2m_table_name, (
@@ -52,6 +70,8 @@ class Migration(SchemaMigration):
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('name', self.gf('django.db.models.fields.CharField')(max_length=200)),
             ('onsite', self.gf('django.db.models.fields.BooleanField')()),
+            ('leader', self.gf('django.db.models.fields.related.ForeignKey')(related_name='leader', null=True, to=orm['userregistration.CustomUser'])),
+            ('contest', self.gf('django.db.models.fields.related.ForeignKey')(related_name='contest', null=True, to=orm['contest.Contest'])),
             ('offsite', self.gf('django.db.models.fields.CharField')(max_length=200, blank=True)),
         ))
         db.send_create_signal(u'contest', ['Team'])
@@ -77,15 +97,22 @@ class Migration(SchemaMigration):
         # Adding model 'Sponsor'
         db.create_table(u'contest_sponsor', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('url', self.gf('django.db.models.fields.CharField')(max_length=200)),
+            ('name', self.gf('django.db.models.fields.CharField')(default='Logo', max_length=50)),
+            ('url', self.gf('django.db.models.fields.URLField')(max_length=200)),
             ('image', self.gf('filebrowser.fields.FileBrowseField')(max_length=200)),
         ))
         db.send_create_signal(u'contest', ['Sponsor'])
 
 
     def backwards(self, orm):
+        # Deleting model 'ContactInformation'
+        db.delete_table(u'contest_contactinformation')
+
         # Deleting model 'Contest'
         db.delete_table(u'contest_contest')
+
+        # Removing M2M table for field contact_infos on 'Contest'
+        db.delete_table(db.shorten_name(u'contest_contest_contact_infos'))
 
         # Removing M2M table for field links on 'Contest'
         db.delete_table(db.shorten_name(u'contest_contest_links'))
@@ -130,15 +157,23 @@ class Migration(SchemaMigration):
             'model': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
         },
+        u'contest.contactinformation': {
+            'Meta': {'object_name': 'ContactInformation'},
+            'email': ('django.db.models.fields.EmailField', [], {'max_length': '75'}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'phone': ('django.db.models.fields.IntegerField', [], {'max_length': '12'})
+        },
         u'contest.contest': {
             'Meta': {'object_name': 'Contest'},
+            'contact_infos': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['contest.ContactInformation']", 'symmetrical': 'False'}),
             'css': ('filebrowser.fields.FileBrowseField', [], {'max_length': '200', 'null': 'True', 'blank': 'True'}),
             'end_date': ('django.db.models.fields.DateTimeField', [], {}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'links': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['contest.Link']", 'symmetrical': 'False'}),
+            'links': ('sortedm2m.fields.SortedManyToManyField', [], {'to': u"orm['contest.Link']", 'symmetrical': 'False'}),
             'publish_date': ('django.db.models.fields.DateTimeField', [], {}),
-            'sponsors': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['contest.Sponsor']", 'symmetrical': 'False'}),
+            'sponsors': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['contest.Sponsor']", 'symmetrical': 'False', 'blank': 'True'}),
             'start_date': ('django.db.models.fields.DateTimeField', [], {}),
+            'teamreg_end_date': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2099, 1, 1, 0, 0)'}),
             'title': ('django.db.models.fields.CharField', [], {'max_length': '200'}),
             'url': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '20'})
         },
@@ -160,11 +195,14 @@ class Migration(SchemaMigration):
             'Meta': {'object_name': 'Sponsor'},
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'image': ('filebrowser.fields.FileBrowseField', [], {'max_length': '200'}),
-            'url': ('django.db.models.fields.CharField', [], {'max_length': '200'})
+            'name': ('django.db.models.fields.CharField', [], {'default': "'Logo'", 'max_length': '50'}),
+            'url': ('django.db.models.fields.URLField', [], {'max_length': '200'})
         },
         u'contest.team': {
             'Meta': {'object_name': 'Team'},
+            'contest': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'contest'", 'null': 'True', 'to': u"orm['contest.Contest']"}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'leader': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'leader'", 'null': 'True', 'to': u"orm['userregistration.CustomUser']"}),
             'members': ('django.db.models.fields.related.ManyToManyField', [], {'related_name': "'members'", 'symmetrical': 'False', 'to': u"orm['userregistration.CustomUser']"}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '200'}),
             'offsite': ('django.db.models.fields.CharField', [], {'max_length': '200', 'blank': 'True'}),
@@ -175,7 +213,9 @@ class Migration(SchemaMigration):
             'activation_key': ('django.db.models.fields.CharField', [], {'max_length': '40'}),
             'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
             'email': ('django.db.models.fields.EmailField', [], {'unique': 'True', 'max_length': '254'}),
+            'email_activation_key': ('django.db.models.fields.CharField', [], {'max_length': '40', 'null': 'True'}),
             'first_name': ('django.db.models.fields.CharField', [], {'max_length': '30'}),
+            'gender': ('django.db.models.fields.CharField', [], {'default': "'M'", 'max_length': '1'}),
             'groups': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'related_name': "u'user_set'", 'blank': 'True', 'to': u"orm['auth.Group']"}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
@@ -183,7 +223,10 @@ class Migration(SchemaMigration):
             'is_superuser': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'last_login': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
             'last_name': ('django.db.models.fields.CharField', [], {'max_length': '30'}),
+            'nickname': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '20', 'null': 'True', 'blank': 'True'}),
             'password': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
+            'skill_level': ('django.db.models.fields.CharField', [], {'default': "'1'", 'max_length': '4'}),
+            'temp_email': ('django.db.models.fields.EmailField', [], {'max_length': '254', 'null': 'True', 'blank': 'True'}),
             'user_permissions': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'related_name': "u'user_set'", 'blank': 'True', 'to': u"orm['auth.Permission']"})
         }
     }
