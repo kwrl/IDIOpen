@@ -106,24 +106,50 @@
 			<b><p> You already have a team</p></b>
 			<br>
 		{% endif %}
+			<table class="table table-striped">
+			<tr>
+			<td> Team </td>
+			<td> Sendt by</td>
+			<td> Skill </td>
+			<td> Choices </td>
+			<td> Full </td>
+			</tr>
 			{% for invite in invites.all %}
-				<ul class="list-inline">
-				<li><p>{{ invite.team.name }}. </p></li>
-				<li><small><p class="text-muted">Sent by: {{ invite.team.leader.get_full_name }}</p></small></li>
-				<li><form action="." method="post"> {% csrf_token %}</li>
-				<li><input type="hidden" value="{{ invite.id }}" name="id"></li>
+			<tr>
+				<td><p>{{ invite.team.name }}. </p></td>
+				<td><small><p class="text-muted">{{ invite.team.leader.get_full_name }}</p></small></td>
+				<td>
+				<small><p class="text-muted">
+				(
+				{% for members in invite.team.members.all %}
+					 {{ members.skill_level }}	
+				{% endfor %}
+				)
+				</p></small>
+				</td>
+				<td>
+				<form action="." method="post"> {% csrf_token %}
+				<input type="hidden" value="{{ invite.id }}" name="id">
 				{% if have_team %}
-				<li>	<button type="submit" name="submit" value="accept" disabled="disabled" class="btn btn-primary btn-sm">Accept</button></li>
+					<button type="submit" name="submit" value="accept" disabled="disabled" class="btn btn-primary btn-sm">Accept</button>
 				{% elif invite.team.members.count >= 3 %}
-				<li>	<p>This team has reached the maximum number of members</p> </li>
-				<li>	<button type="submit" name="submit" disabled="disabled" value="accept" class="btn btn-primar btn-sm">Accept</button></li>
+					<p>This team has reached the maximum number of members</p>
+					<button type="submit" name="submit" disabled="disabled" value="accept" class="btn btn-primar btn-sm">Accept</button><
 				{% else %}
-				<li>	<button type="submit" name="submit" value="accept" class="btn btn-primary btn-sm">Accept</button></li>
+					<button type="submit" name="submit" value="accept" class="btn btn-primary btn-sm">Accept</button>
 				{% endif %}
-				<li> <button type="submit" name="submit" value="decline" class="btn btn-default btn-sm">Decline</button> </li>
+				 <button type="submit" name="submit" value="decline" class="btn btn-default btn-sm">Decline</button> 
 				</form>
-				</ul>
+				</td>
+				{% if invite.team.members.count >= 3 %}
+					<td> Yes </td>
+				{% else %}
+					<td> No </td>
+				{% endif %}
+				
+			</tr>				
 			{% endfor %}
+			</table>
 	{% else %}
 		<p> You have no invites :( <p>
 	{% endif %}
