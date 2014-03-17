@@ -18,9 +18,9 @@ support for leader is added. This is done in the view
 ON_OR_OFF = ((True, 'Yes'), (False, 'No')) 
 
 class _RadioSelect(forms.RadioSelect):
-    def render(self, name, value, attrs=None):
-""" http://tothinkornottothink.com/post/10815277049/django-forms-i-custom-fields-and-widgets-in-detail """
-        pass;
+    def render(self, name, value, attrs=None, choices = ()):
+        """ http://tothinkornottothink.com/post/10815277049/django-forms-i-custom-fields-and-widgets-in-detail """
+        return super(_RadioSelect, self).render(name, value, attrs, choices);
 
     def format_output(self, rendered_widgets):
         """
