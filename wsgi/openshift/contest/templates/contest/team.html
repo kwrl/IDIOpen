@@ -32,6 +32,10 @@
 		{{ team.offsite }}
 	{% endif %}
 	</p>
+	<p class="text-muted">
+	Leader: 
+	{{ team.leader.first_name }} {{ team.leader.last_name }} 
+	</p>
 	<hr>
 	<em><h4>Members</h4></em>
 	<table class="table table-striped">
@@ -40,6 +44,7 @@
           <th>First Name</th>
           <th>Last Name</th>
           <th>Email</th>
+          <th>Skill</th>
         </tr>
       </thead>
         <tbody>
@@ -48,11 +53,16 @@
           <td><a href="#">{{ member.first_name }}</a></td>
           <td><a href="#">{{ member.last_name }}</a></td>
           <td><a href="#">{{ member.email }}</a></td>
+          <td>{{ member.skill_level }}</a></td>
         </tr>
 		{% endfor %}
       </tbody>
     </table>
+    {% if team.members.count >= 3 %}
+    <small><em><p> Your team is full </p></em></small>
+    {% endif %}
 	{% if is_leader %}    
+	<hr>
 	<form class="form-horizontal" method="POST" action="" role="form">
 	{% csrf_token %}
 		<div class="form-group">
@@ -65,7 +75,12 @@
         </div>
 	    <div class="form-group">
 			<div class="col-lg-offset-3 col-lg-9">
+				{% if team.members.count >= 3 %}
 	  			<button type="submit" name='addMember' value="addMember" class="btn btn-default">{% trans 'Add new member' %}</button>
+	  			{% else %}
+	  			<button type="submit" name='addMember' value="addMember" class="btn btn-default">{% trans 'Add new member' %}</button>
+	  			{% endif %}
+	  			
 	  		</div>
   		</div>
 	</form>
