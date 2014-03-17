@@ -20,7 +20,19 @@ please specify what city you are participating from in in the offsite field
 		            {{ field.errors }}
 		            <label for="{{ field.id_for_label }}" class="col-lg-3 control-label">{{ field.label }}</label> 
 		            <div class="col-lg-5">
+		            {% if field.label == 'Onsite' %}
+		            	{% for radio in form.onsite %}
+			            <div class="radio-inline">
+						  <label for="id_onsite_{{ forloop.counter0 }}">
+							{{ radio.tag }}
+						    {{ radio.choice_label }}
+						  </label>
+						</div>
+						{% endfor %}
+					{% else %}
 		            {{ field|addcss:"form-control"}}
+					
+		            {% endif %}
 		            </div>
 		        </div>
 		    {% endfor %}

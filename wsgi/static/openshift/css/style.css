@@ -46,12 +46,19 @@ body {
 }
 #footer {
   background-color: #193C59;
+  margin-top: 20px;
 }
 
 #logo {
 	background-color: #193C59;
 	margin-bottom: 10px;
 }
+
+#footer * .left_footer
+{ float:left; }
+
+#footer * .right_footer
+{ float:right; }
 
 /* Lastly, apply responsive CSS fixes as necessary */
 @media (max-width: 767px) {
