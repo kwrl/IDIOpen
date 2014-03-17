@@ -11,6 +11,8 @@
 <title>{{ contest.title }} - {% block title %}My amasing site{% endblock %}</title>
 
 <!-- Bootstrap -->
+<link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+
 <link href="{% static 'openshift/css/bootstrap.css' %}" rel="stylesheet">
 {% if contest.css %}
 	<link href="/media/{{ contest.css.path}}" rel="stylesheet">

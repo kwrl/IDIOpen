@@ -161,12 +161,11 @@ AUTHOR: Haakon, Tino, Filip
 
 '''
 @login_required
-def teamProfil(request):    
+def team(request):    
     user = request.user
     url = request.path.split('/')[1]
 
     site = get_current_site(request)
-
     # Need to give error if you dont have team (link to register team page)
     team = Team.objects.filter(members__id = user.id)
     # If you have a team
@@ -224,37 +223,25 @@ def is_member_of_team(request):
 
 
 @login_required
-def editTeamProfil(request):
-    print("You are now in Edit Team Profil View")
+def editTeam(request):
     user = request.user
     url = request.path.split('/')[1]
     # Get the team or 404
     instance = get_object_or_404(Team, members__in=CustomUser.objects.filter(pk=user.id))
     # make a new form, with the instance as its model
-    editForm = Team_Edit(None, instance = instance)
-    deleteForm = Team_Delete_Members(None, instance = instance)
+    form = Team_Edit(None, instance = instance)
     # Need to be leader to edit a profile
     if is_leader(request):
-        print ("You are the leader")
         if request.method == 'POST':
-            if 'edit' in request.POST:
-                editForm = Team_Edit(request.POST, instance = instance)
-                if editForm.is_valid():
-                    messages.success(request, 'Profile details updated.')
-                    editForm.save()
-            if 'deletebutton' in request.POST:
-                deleteForm = Team_Delete_Members(request.POST, instance = instance)
-                if deleteForm.is_valid():
-                    if deleteForm.save():
-                        messages.success(request, 'Members updated.')
-                    else:
-                        messages.error(request, 'Something went wrong')
+            form = Team_Edit(request.POST, instance = instance)
+            if form.is_valid():
+                messages.success(request, 'Profile details updated.')
+                form.save()
     else:
         messages.error(request, 'You are not the team leader')                    
     
     return render(request, 'contest/editTeam.html', {
-        'editForm': editForm,
-        'deleteForm': deleteForm,
+        'form': form,
         'team': instance,
     })
 
@@ -273,4 +260,18 @@ def view_teams(request):
                   'team_list': team_list,
                   'number_of_teams': len(team_list)
                   })
+
+def deleteMember(request, member_id):
     
+    user = request.user
+    url = request.path.split('/')[1]
+    
+    if is_leader(request):
+        team = get_object_or_404(Team, leader=CustomUser.objects.get(pk=user.id))
+        member = CustomUser.objects.get(pk=member_id)
+        team.members.remove(member)
+        messages.success(request, 'Member deleted')
+    else:
+        messages.warning(request, 'Only the leader can delete members')
+        
+    return redirect('team_profile', url)
