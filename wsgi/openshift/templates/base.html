@@ -193,8 +193,8 @@
     </div>
 
     <script src="{% static 'openshift/js/bootbox.min.js' %}"></script>
-    <script>
-        $(document).on("click", ".alert", function(e) {
+       <script>
+        $(document.getElementById("LeaveButton")).on("click", function(e) {
              bootbox.dialog( 
              {
                 message: "Are you sure?",
@@ -218,5 +218,6 @@
             });
          });
     </script>
+
 </body>
 </html>
