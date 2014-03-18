@@ -4,13 +4,20 @@
 {% load i18n %}
 
 {% block content %}
+<br>
+Register a user  
+<br>
+<br>
+
 		<form class="form-horizontal" method="post" action="." role="form">
 		  {% csrf_token %}
 		  
 		  {% for field in form %}
 		        <div class="form-group">
-		            {{ field.errors }}
-		            <label for="{{ field.id_for_label }}" class="col-lg-3 control-label">{{ field.label }}</label> 
+                    {% for error in field.errors %}
+		            <div class="alert alert-danger">{{error}}</div>
+                    {% endfor %}
+                    <label for="{{ field.id_for_label }}" class="col-lg-3 control-label">{{ field.label }}</label> 
 		            <div class="col-lg-5">
 		            {{ field|addcss:"form-control"}}
 		            </div>
