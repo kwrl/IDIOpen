@@ -62,7 +62,7 @@ class Team_Edit(forms.ModelForm):
     #====================================================================
     # If name only contains white-spaces, raise ValidationError 
     #====================================================================
-    def clean_name(self):
+    def clean_name(self):   
         name = self.cleaned_data['name']
         if name.isspace():
             raise forms.ValidationError('You need a team name')
