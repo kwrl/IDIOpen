@@ -89,10 +89,11 @@ class Link(models.Model):
                            help_text=' Internal links need leading and trailing slashes.'+
                            ' External links are required to start with "http://"')
 
+    separator = models.BooleanField()
     def __unicode__(self):
         return self.text
 
-
+    
  
     
 class Team(models.Model):
