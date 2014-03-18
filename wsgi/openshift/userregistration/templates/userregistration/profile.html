@@ -15,6 +15,7 @@
  	</ul>
 	{% else %}
 	<em>You are currently on no team</em>
+	<br>
 	{% endif %}
 
 	Year of study: <b><em>{{ user.skill_level }}</em></b>
@@ -77,6 +78,7 @@
         </div>
         <div id="collapsePI" class="panel-collapse collapse">
             <div class="panel-body">
+
                 <form class="form-horizontal" role="form" id="contestant_edit_pw" METHOD="POST" action="{% url 'profile_edit_info' contest.url %}">
                 	{% include 'form_snippet.html' with form=userpi %}
                     <div class="form-group">
