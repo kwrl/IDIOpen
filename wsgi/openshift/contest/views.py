@@ -235,7 +235,10 @@ def leave_team(request):
         if is_RegOpen: 
             if is_leader(request): # If leader, delete the team
                 team = Team.objects.filter(contest=con).get(members__id = request.user.id)
-                team.delete()    
+                if team.members.all().count() > 1: # If member count is > 1
+                    messages.error(request, 'You need to transfer leadership before you can leave the team.')
+                else:
+                    team.delete()    
             else: # else delete the member from the team
                 team = Team.objects.filter(contest=con).get(members__id = request.user.id)
                 team.members.remove(user.id)
@@ -261,7 +264,7 @@ def editTeam(request):
             if form.is_valid():
                 messages.success(request, 'Profile details updated.')
                 form.save()
-                return redirect('team_profile', con)
+                return redirect('team_profile', con.url)
     else:
         messages.error(request, 'You are not the team leader')                    
     
