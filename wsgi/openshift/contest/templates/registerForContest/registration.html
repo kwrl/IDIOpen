@@ -13,10 +13,6 @@ Note that by registering for this site, you also sign up for the contest.
 If you are going to participate online (not being present at NTNU), 
 please specify what city you are participating from in in the offsite field
 </p>
-<script>$(document).ready( function () {
-	document.getElementById("id_onsite_1").checked = true;
-	});
-</script>
 		<form class="form-horizontal" method="post" action="." role="form">
 		  {% csrf_token %}
 		  {% for field in form %}
@@ -70,6 +66,9 @@ please specify what city you are participating from in in the offsite field
  <a href=" {% url 'auth_login' contest.url %}">Log in </a> / <a href=" {% url 'registration_register' contest.url %}">Registrer </a>
 
 {% endif %}
-
+<script>$(document).ready( function () {
+	document.getElementById("id_onsite_1").checked = true;
+	});
+</script>
 {% endblock content %}
 
