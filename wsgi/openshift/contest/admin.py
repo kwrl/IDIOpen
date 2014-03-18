@@ -2,7 +2,7 @@ from django.contrib import admin
 from contest.models import Sponsor #weird error..Haakon 
 from django import forms
 from contest.models import Contest, Link, Team, Invite, ContactInformation
-
+from contest.forms import LinkForm
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
@@ -22,16 +22,8 @@ class TeamAdmin(admin.ModelAdmin):
     
     
 class LinkAdmin(admin.ModelAdmin):
-    fieldsets = (
-        (None, {
-            'fields': ('text', 'contestUrl', 'url'),
-            'description': "Collections of links can be separated into several blocks by adding a separator block. Simply type 'separator' in the url field to make a separator."
-        }),
-    )
-    list_display = ('text', 'contestUrl', 'url',)
-    search_fields = ('text','url',)
-    ordering = ('text',)
-    
+    form = LinkForm    
+
 class ContestAdmin(admin.ModelAdmin):
     list_display = ('title', 'url', 'start_date','end_date','publish_date')
     search_fields = ('title', 'url',)
