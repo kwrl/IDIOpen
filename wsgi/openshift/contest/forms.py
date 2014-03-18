@@ -36,6 +36,11 @@ class _RadioSelect(forms.RadioSelect):
         return u''.join(rendered_widgets)
 
 class Team_Edit(forms.ModelForm):
+    
+    def __init__(self, *args, **kwargs):
+        super(Team_Edit, self).__init__(*args, **kwargs)
+        self.fields['leader'].queryset = self.instance.members.all()
+    
     class Meta:
         model = Team      
         widgets = {
@@ -45,7 +50,7 @@ class Team_Edit(forms.ModelForm):
                                                      'id':'id_onsite',}),
                 'offsite' : forms.TextInput(attrs={'placeholder' : 'E.g UiO, Aarhus etc '}),
         } 
-        fields = ['name', 'onsite', 'offsite']
+        fields = ['name', 'onsite', 'offsite','leader']
 
 class Team_Form(Team_Edit):
     member_one = forms.EmailField(required=False, widget=forms.TextInput(attrs= {'placeholder':'Insert email for team member 1'}));
