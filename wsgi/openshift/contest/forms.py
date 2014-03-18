@@ -1,5 +1,5 @@
 from django import forms
-from models import Team, Invite
+from models import Team, Invite, Link
 from django.forms.widgets import CheckboxSelectMultiple, Widget
 from django.forms.models import ModelMultipleChoiceField
 from userregistration.models import CustomUser
@@ -51,10 +51,9 @@ class Team_Form(forms.ModelForm):
             del cleaned_data['offsite']
             #raise forms.ValidationError("Offsite is required")
             
-        name = cleaned_data['name']
-        if name.isspace():
+        name = cleaned_data.get('name')
+        if not name or name.isspace():
             self._errors['name'] = self.error_class(["Name is required"])
-            del cleaned_data['name']
             
         return cleaned_data
     
@@ -110,23 +109,22 @@ class Team_Edit(forms.ModelForm):
         cleaned_data = super(Team_Edit, self).clean()
         onsite = cleaned_data.get('onsite')
         offsite = cleaned_data.get('offsite')
+        name = cleaned_data.get('name')
         if onsite:
             cleaned_data['offsite'] = ''
         elif not offsite or offsite.isspace():
             self._errors['offsite'] = self.error_class(["Offsite is required"])
             del cleaned_data['offsite']
             #raise forms.ValidationError("Offsite is required")
-        name = cleaned_data['name']
-        if name.isspace():
+        if not name or name.isspace():
             self._errors['name'] = self.error_class(["Name is required"])
-            del cleaned_data['name']    
         
         return cleaned_data
     
     class Meta:
         model = Team 
         widgets = {
-                'name' : forms.TextInput(attrs={'placeholder' : 'Insert team name here'}),
+                'name' : forms.TextInput(attrs={'placeholder' : 'Insert team name here'} ),
                 'onsite' : _RadioSelect(choices=ON_OR_OFF, 
                                              attrs ={'onclick' : 'check_radio_button();',
                                                      'id':'id_onsite',}),
@@ -144,4 +142,39 @@ class Team_Add_Members(forms.ModelForm):
         model = Invite
         fields = ['email']
                 
+class LinkForm(forms.ModelForm):
+
+    def __init__(self, *args, **kargs):
+        super(LinkForm, self).__init__(*args, **kargs)
+        self.fields["text"].required = False
+        self.fields["url"].required = False 
+
+    
+
+    def clean(self):
+        if self.cleaned_data['separator']:
+            #import ipdb
+            #ipdb.set_trace()
+            self.cleaned_data['text'] = u"--------"
+            self.cleaned_data['url'] = u"--------"
+            #ipdb.set_trace()
+            return self.cleaned_data
+        elif self.cleaned_data['text'] == None or len(self.cleaned_data['text']) <= 0:
+            raise forms.ValidationError("Non-separator links need a text and url field.")
+        elif self.cleaned_data['url'] == None or len(self.cleaned_data['url']) <= 0:
+            raise forms.ValidationError("Non-separator links need a text and url field.")
+        else:
+            return self.cleaned_data
+
+    class Meta:
+        model   = Link
+        fields  = ("url","text","contestUrl","separator")
+
+
+
+
+
+
+
+
 

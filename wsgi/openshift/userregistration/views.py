@@ -38,6 +38,8 @@ class RegistrationView(FormView):
     Base class for user registration views.
     admin/userregistration/cadmin/userregistration/customuser/ustomuser/
     """
+    
+    
     disallowed_url = 'registration_disallowed'
     form_class = RegistrationForm
     http_method_names = ['get', 'post', 'head', 'options', 'trace']
@@ -45,6 +47,9 @@ class RegistrationView(FormView):
     template_name = 'registration/registration_form.html'
 
     def get(self, request, *args, **kwargs):
+        if request.user.is_authenticated():
+            return render(request, 'contest/alreadyContestant.html')
+
         # Pass request to get_form_class and get_form for per-request
         # form control.
         form_class = self.get_form_class(request)
@@ -71,20 +76,6 @@ class RegistrationView(FormView):
     def get_initial(self, request=None):
         return super(RegistrationView, self).get_initial()
 
-#     
-#     Anders
-#   
-#     def get_success_url(self, request=None, user=None):
-#         # We need to be able to use the request and the new user when
-#         # constructing success_url.
-#         return super(RegistrationView, self).get_success_url()
-# 
-#     
-    
-
-    # def form_valid(self, form, request=None):
-    #     return super(RegistrationView, self).form_valid(form)
-    
     def form_invalid(self, form, request=None):
         return super(RegistrationView, self).form_invalid(form)
     

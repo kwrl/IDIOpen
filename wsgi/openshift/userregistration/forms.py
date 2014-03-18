@@ -24,6 +24,11 @@ try:
 except ImportError:
     from django.contrib.auth.models import User
 
+
+def append_field_error(instance, field, message):
+    instance.errors[field] = ErrorList();
+    instance.errors[field].append(message);
+
 class CustomUserCreationForm(UserCreationForm):
     """
     A form that creates a user, with no privileges, from the given email and
@@ -132,10 +137,17 @@ class RegistrationForm(forms.Form):
         password2 = self.cleaned_data.get('password2', None)
         if password1 and password2:
             if password1 == password2:
-                return self.cleaned_data
-                
-        raise forms.ValidationError(
-                        _("The two password fields didn't match."))
+                try:
+                    tmpCU = User();
+                    tmpCU.clean_password(password1);
+                except ValidationError as ve:
+                    append_field_error(self, 'password1',
+                                       _(ve.message));
+                    raise forms.ValidationError('');
+                return self.cleaned_data;
+    
+        append_field_error(self, 'password1',_("The two passwords didn't match"));
+        raise forms.ValidationError('');
 '''
 Form for showing the invites
 '''
@@ -174,15 +186,11 @@ class PasswordForm(forms.ModelForm):
 
     @sensitive_variables('old_password', 'password', 'password_validation')
     def clean(self):
-        def append_field_error(field, message):
-            self.errors[field] = ErrorList();
-            self.errors[field].append(message);
-
         # Ensure fields are non-empty
         if 'old_password' in self.cleaned_data:
             oldpw = self.cleaned_data['old_password'];
             if not self.instance.check_password(oldpw):
-                append_field_error('old_password', "Incorrect password");
+                append_field_error(self, 'old_password', "Incorrect password");
                 raise ValidationError("");
 
 
@@ -192,13 +200,17 @@ class PasswordForm(forms.ModelForm):
             pw_validation = self.cleaned_data['password_validation'];
 
             if pw != pw_validation:
-                append_field_error('password', u"Passwords don\'t match");
-                append_field_error('password_validation',
+                append_field_error(self, 'password', u"Passwords don\'t match");
+                append_field_error(self, 'password_validation',
                                    u"Passwords don\'t match");
             else:
                 # in case someone adds other fields, we explicitly invoke
                 # super.clean. However, it is not needed per march
                 super(PasswordForm, self).clean();
+                try:
+                    self.instance.clean_password(pw);
+                except ValidationError as ve:
+                    append_field_error(self, 'password', _(ve.message));
                 return self.cleaned_data;
 
         raise ValidationError("Fields cannot be empty");
@@ -206,8 +218,9 @@ class PasswordForm(forms.ModelForm):
     def save(self):
         """ Ensure that the password is hashed before updating it in the model
         """
-        self.instance.set_password(self.cleaned_data['password']);
-        super(PasswordForm, self).save();
+        pw = self.cleaned_data['password']
+
+        self.instance.set_password(pw);
 
     class Meta:
         model = CustomUser;
@@ -325,6 +338,4 @@ class PasswordResetForm(forms.Form):
             subject = ''.join(subject.splitlines())
             email = loader.render_to_string(email_template_name, c)
             send_mail(subject, email, from_email, [user.email])
-
-
 # EOF

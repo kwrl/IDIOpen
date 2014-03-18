@@ -8,23 +8,15 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # Deleting field 'ContactInformation.phone'
-        db.delete_column(u'contest_contactinformation', 'phone')
-
-        # Adding field 'ContactInformation.name'
-        db.add_column(u'contest_contactinformation', 'name',
-                      self.gf('django.db.models.fields.CharField')(default=datetime.datetime(2014, 3, 18, 0, 0), max_length=30),
+        # Adding field 'Link.separator'
+        db.add_column(u'contest_link', 'separator',
+                      self.gf('django.db.models.fields.BooleanField')(default=datetime.datetime(2014, 3, 18, 0, 0)),
                       keep_default=False)
 
 
     def backwards(self, orm):
-        # Adding field 'ContactInformation.phone'
-        db.add_column(u'contest_contactinformation', 'phone',
-                      self.gf('django.db.models.fields.IntegerField')(default=datetime.datetime(2014, 3, 18, 0, 0), max_length=12),
-                      keep_default=False)
-
-        # Deleting field 'ContactInformation.name'
-        db.delete_column(u'contest_contactinformation', 'name')
+        # Deleting field 'Link.separator'
+        db.delete_column(u'contest_link', 'separator')
 
 
     models = {
@@ -79,6 +71,7 @@ class Migration(SchemaMigration):
             'Meta': {'object_name': 'Link'},
             'contestUrl': ('django.db.models.fields.BooleanField', [], {}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'separator': ('django.db.models.fields.BooleanField', [], {}),
             'text': ('django.db.models.fields.CharField', [], {'max_length': '30'}),
             'url': ('django.db.models.fields.CharField', [], {'max_length': '50'})
         },
