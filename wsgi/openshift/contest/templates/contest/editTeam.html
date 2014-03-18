@@ -13,7 +13,7 @@
 		            {{ form.leader|add_class:"form-control" }}
             {% if form.leader.errors %}
             	{% for error in form.leader.errors %}
-            	<p class="help-block">{{ error|escape }}</p>
+            	<p class="text-danger">{{ error|escape }}</p>
 			    {% endfor %}
 			{% endif %}
 	            </div>

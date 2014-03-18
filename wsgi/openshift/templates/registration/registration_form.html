@@ -7,16 +7,17 @@
 <h2>Register new account</h2>
 <hr>
 		<form class="form-horizontal" method="post" action="." role="form">
-		  {% csrf_token %}
-		  
+		  {% csrf_token %} 
 		  {% for field in form %}
 		        <div class="form-group">
-                    {% for error in field.errors %}
-		            <div class="alert alert-danger">{{error}}</div>
-                    {% endfor %}
                     <label for="{{ field.id_for_label }}" class="col-lg-3 control-label">{{ field.label }}</label> 
 		            <div class="col-lg-5">
-		            {{ field|addcss:"form-control"}}
+                    {{ field|addcss:"form-control"}}
+		            {% if field.errors %}
+            			{% for error in field.errors %}
+            				<p class="text-danger">{{ error|escape }}</p>
+			    		{% endfor %}
+			    	{% endif %}
 		            </div>
 		        </div>
 		    {% endfor %}
