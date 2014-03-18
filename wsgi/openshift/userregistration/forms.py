@@ -112,6 +112,15 @@ class RegistrationForm(forms.Form):
         else:
             return self.cleaned_data['email']
 
+    def clean_nickname(self):
+        """Ensures that nicknames are not all spaces"""
+        if len(self.cleaned_data['nickname'])<= 0:        
+            raise ValidationError("Nickname not set")
+        elif ' ' in self.cleaned_data['nickname']:
+            raise ValidationError("Nicknames can not contain spaces")
+        else:
+            return self.cleaned_data['nickname'] 
+
     def clean(self):
         """
         Verifiy that the values entered into the two password fields
