@@ -25,7 +25,7 @@ class LinkAdmin(admin.ModelAdmin):
     fieldsets = (
         (None, {
             'fields': ('text', 'contestUrl', 'url'),
-            'description': "To create a seperator, create a Link with url \'seperator\' withouth slashes."
+            'description': "Collections of links can be separated into several blocks by adding a separator block. Simply type 'separator' in the url field to make a separator."
         }),
     )
     list_display = ('text', 'contestUrl', 'url',)
