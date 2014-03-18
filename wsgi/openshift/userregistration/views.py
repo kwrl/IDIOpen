@@ -313,6 +313,7 @@ def user_profile(request):
     context.update(u.getDict());
     return render(request, 'userregistration/profile.html', context)
 
+
 class UserProfile(object):
     def __init__(self, request, pw=None, pi=None, email=None):
         self.pwForm = pw or PasswordForm();

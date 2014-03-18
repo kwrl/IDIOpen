@@ -5,7 +5,7 @@ from django.http import HttpResponseRedirect
 from article.models import Article
 from userregistration.models import CustomUser
 from userregistration.models import CustomUserManager
-from contest.models import Team, Invite, Contest
+from contest.models import Team, Invite, Contest, Link
 from django.contrib.auth import get_user_model
 from django.contrib.sites.models import get_current_site
 from django.contrib.auth.decorators import login_required
@@ -272,7 +272,6 @@ def editTeam(request):
 
 
 def view_teams(request):
-
     try: 
         team_list = Team.objects.filter(contest = get_current_contest(request))
     except ObjectDoesNotExist as e:
@@ -287,7 +286,6 @@ def view_teams(request):
                   })
 
 def deleteMember(request, member_id):
-
     user = request.user
     url = request.path.split('/')[1]
     
