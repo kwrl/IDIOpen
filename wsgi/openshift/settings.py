@@ -118,6 +118,7 @@ if 'REDISCLOUD_URL' in os.environ and 'REDISCLOUD_PORT' in os.environ and 'REDIS
 ROOT_URLCONF = 'urls'
 
 LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/'
 
 WSGI_APPLICATION = 'wsgi.application'
 
