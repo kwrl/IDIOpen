@@ -5,7 +5,7 @@ from django.http import HttpResponseRedirect
 from article.models import Article
 from userregistration.models import CustomUser
 from userregistration.models import CustomUserManager
-from contest.models import Team, Invite, Contest
+from contest.models import Team, Invite, Contest, Link
 from django.contrib.auth import get_user_model
 from django.contrib.sites.models import get_current_site
 from django.contrib.auth.decorators import login_required
