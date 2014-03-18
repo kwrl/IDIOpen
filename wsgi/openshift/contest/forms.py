@@ -158,7 +158,7 @@ class LinkForm(forms.ModelForm):
             #import ipdb
             #ipdb.set_trace()
             self.cleaned_data['text'] = u"--------"
-            self.cleaned_data['url'] = u"--------"
+            self.cleaned_data['url'] = u"separator"
             #ipdb.set_trace()
             return self.cleaned_data
         elif self.cleaned_data['text'] == None or len(self.cleaned_data['text']) <= 0:
