@@ -63,7 +63,7 @@ class Migration(SchemaMigration):
             'Meta': {'object_name': 'ContactInformation'},
             'email': ('django.db.models.fields.EmailField', [], {'max_length': '75'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'phone': ('django.db.models.fields.IntegerField', [], {'max_length': '12'})
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '30'})
         },
         u'contest.contest': {
             'Meta': {'object_name': 'Contest'},

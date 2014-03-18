@@ -38,6 +38,8 @@ class RegistrationView(FormView):
     Base class for user registration views.
     admin/userregistration/cadmin/userregistration/customuser/ustomuser/
     """
+    
+    
     disallowed_url = 'registration_disallowed'
     form_class = RegistrationForm
     http_method_names = ['get', 'post', 'head', 'options', 'trace']
@@ -45,6 +47,9 @@ class RegistrationView(FormView):
     template_name = 'registration/registration_form.html'
 
     def get(self, request, *args, **kwargs):
+        if request.user.is_authenticated():
+            return render(request, 'contest/alreadyContestant.html')
+
         # Pass request to get_form_class and get_form for per-request
         # form control.
         form_class = self.get_form_class(request)
