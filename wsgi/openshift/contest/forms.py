@@ -58,6 +58,14 @@ class Team_Form(forms.ModelForm):
             
         return cleaned_data
     
+    
+    def disable_fields(self):
+        '''
+        If the registration deadline has passed, then disable all fields
+        '''
+        for _, field in self.fields.items():
+            field.widget.attrs['readonly'] = True;
+    
     class Meta:
         model = Team      
         widgets = {
