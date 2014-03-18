@@ -5,6 +5,13 @@
 <form class="form-horizontal" method="POST" action="" role="form">
 	{% csrf_token %}
 	<h3>Update team</h3>
+		<div class="form-group">
+            {{ form.leader.errors }}
+            <label for="{{ form.name.id_for_label }}" class="col-lg-3 control-label">{{ form.leader.label }}</label> 
+	            <div class="col-lg-5">
+		            {{ form.leader|add_class:"form-control" }}
+	            </div>
+        </div>
 	    <div class="form-group">
             {{ form.name.errors }}
             <label for="{{ form.name.id_for_label }}" class="col-lg-3 control-label">{{ form.name.label }}</label> 
