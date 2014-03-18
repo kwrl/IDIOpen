@@ -46,11 +46,16 @@ class Contest(models.Model):
     start_date = models.DateTimeField(verbose_name='Start date');
     end_date = models.DateTimeField('End date');
     publish_date = models.DateTimeField('Publish date');
-    teamreg_end_date = models.DateTimeField("Team registration close date", default=timezone.make_aware(datetime.datetime(2099, 1, 1, 0), timezone.get_default_timezone()));
+    teamreg_end_date = models.DateTimeField("Team registration close date",
+                    default=timezone.make_aware(datetime.datetime(2099, 1, 1, 0),
+                    timezone.get_default_timezone()));
     links = SortedManyToManyField('Link');
     sponsors = models.ManyToManyField('Sponsor', blank=True)
     css = FileBrowseField('CSS', max_length=200, directory='css/',
                           extensions=['.css',], blank=True, null=True)
+    logo = FileBrowseField('Logo', max_length=200, directory='logo/', 
+                          extensions=['.jpg','.jpeg','.png','.gif'], blank=True, null=True,
+                          help_text='Select logo image, allowed formats jpg, jpeg, png, gif')
 
     def isPublishable(self):
         return self.publish_date.__lt__(getTodayDate());
@@ -84,10 +89,11 @@ class Link(models.Model):
                            help_text=' Internal links need leading and trailing slashes.'+
                            ' External links are required to start with "http://"')
 
+    separator = models.BooleanField()
     def __unicode__(self):
         return self.text
 
-
+    
  
     
 class Team(models.Model):

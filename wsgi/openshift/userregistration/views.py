@@ -76,20 +76,6 @@ class RegistrationView(FormView):
     def get_initial(self, request=None):
         return super(RegistrationView, self).get_initial()
 
-#     
-#     Anders
-#   
-#     def get_success_url(self, request=None, user=None):
-#         # We need to be able to use the request and the new user when
-#         # constructing success_url.
-#         return super(RegistrationView, self).get_success_url()
-# 
-#     
-    
-
-    # def form_valid(self, form, request=None):
-    #     return super(RegistrationView, self).form_valid(form)
-    
     def form_invalid(self, form, request=None):
         return super(RegistrationView, self).form_invalid(form)
     

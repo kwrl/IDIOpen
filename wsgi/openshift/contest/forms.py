@@ -1,5 +1,5 @@
 from django import forms
-from models import Team, Invite
+from models import Team, Invite, Link
 from django.forms.widgets import CheckboxSelectMultiple, Widget
 from django.forms.models import ModelMultipleChoiceField
 from userregistration.models import CustomUser
@@ -142,4 +142,37 @@ class Team_Add_Members(forms.ModelForm):
         model = Invite
         fields = ['email']
                 
+class LinkForm(forms.ModelForm):
+
+    def __init__(self, *args, **kargs):
+        super(LinkForm, self).__init__(*args, **kargs)
+        self.fields["text"].required = False
+        self.fields["url"].required = False 
+
+    
+
+    def clean(self):
+        if self.cleaned_data['separator']:
+            #import ipdb
+            #ipdb.set_trace()
+            self.cleaned_data['text'] = u"--------"
+            self.cleaned_data['url'] = u"--------"
+            #ipdb.set_trace()
+            return self.cleaned_data
+        elif self.cleaned_data['text'] == None or len(self.cleaned_data['text']) <= 0:
+            raise forms.ValidationError("Non-separator links need a text and url field.")
+        elif self.cleaned_data['url'] == None or len(self.cleaned_data['url']) <= 0:
+            raise forms.ValidationError("Non-separator links need a text and url field.")
+
+    class Meta:
+        model   = Link
+        fields  = ("url","text","contestUrl","separator")
+
+
+
+
+
+
+
+
 
