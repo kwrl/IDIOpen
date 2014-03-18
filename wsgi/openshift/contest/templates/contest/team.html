@@ -60,8 +60,8 @@
           {% if is_leader %} 
           <td>
           {% if not member == team.leader %}
-          <a href="{% url 'team_delete_member' contest.url member.id %}">
-          <i class="fa fa-trash-o fa-lg text-danger"></i>
+          	<a href="{% url 'team_delete_member' contest.url member.id %}">
+          	<i class="fa fa-trash-o fa-lg text-danger"></i>
           {% endif %}
           </a></td>
           {% endif %}
@@ -87,9 +87,9 @@
 	    <div class="form-group">
 			<div class="col-lg-offset-3 col-lg-9">
 				{% if team.members.count >= 3 %}
-	  			<button type="submit" name='addMember' value="addMember" class="btn btn-default">{% trans 'Add new member' %}</button>
+	  				<button type="submit" name='addMember' value="addMember" class="btn btn-default">{% trans 'Add new member' %}</button>
 	  			{% else %}
-	  			<button type="submit" name='addMember' value="addMember" class="btn btn-default">{% trans 'Add new member' %}</button>
+	  				<button type="submit" name='addMember' value="addMember" class="btn btn-default">{% trans 'Add new member' %}</button>
 	  			{% endif %}
 	  			
 	  		</div>
