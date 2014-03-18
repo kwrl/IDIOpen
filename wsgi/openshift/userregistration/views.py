@@ -193,7 +193,7 @@ class ActivationView(TemplateView):
 def updateProfilePw(request):
     form = None;
     if request.method == 'POST':
-        form = PasswordForm(data=request.POST);
+        form = PasswordForm(instance=request.user, data=request.POST);
         if form.is_valid():
             form.save();
             messages.success(request, "Password updated");
@@ -315,7 +315,7 @@ def user_profile(request):
 
 class UserProfile(object):
     def __init__(self, request, pw=None, pi=None, email=None):
-        self.pwForm = pw or PasswordForm(instance=request.user);
+        self.pwForm = pw or PasswordForm();
         self.piForm = pi or PIForm(instance=request.user);
         self.email = email or EmailForm();
         self.forms = [self.pwForm, self.piForm, self.email];
