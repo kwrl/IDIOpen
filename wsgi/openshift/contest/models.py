@@ -53,6 +53,9 @@ class Contest(models.Model):
     sponsors = models.ManyToManyField('Sponsor', blank=True)
     css = FileBrowseField('CSS', max_length=200, directory='css/',
                           extensions=['.css',], blank=True, null=True)
+    logo = FileBrowseField('Logo', max_length=200, directory='logo/', 
+                          extensions=['.jpg','.jpeg','.png','.gif'], blank=True, null=True,
+                          help_text='Select logo image, allowed formats jpg, jpeg, png, gif')
 
     def isPublishable(self):
         return self.publish_date.__lt__(getTodayDate());
