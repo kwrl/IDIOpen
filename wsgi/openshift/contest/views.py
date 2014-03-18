@@ -248,6 +248,7 @@ def leave_team(request):
 def editTeam(request):
     user = request.user
     url = get_current_url(request)
+    con = get_current_contest(request)
 #  url = request.path.split('/')[1]
     # Get the team or 404
     instance = get_object_or_404(Team, members__in=CustomUser.objects.filter(pk=user.id))
@@ -260,6 +261,7 @@ def editTeam(request):
             if form.is_valid():
                 messages.success(request, 'Profile details updated.')
                 form.save()
+                return redirect('team_profile', con)
     else:
         messages.error(request, 'You are not the team leader')                    
     
