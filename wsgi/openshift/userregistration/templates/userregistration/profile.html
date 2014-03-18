@@ -8,7 +8,6 @@
         &lsquo;{{ user.nickname|escape }}&lsquo;
         {% endif %}
                 {{ user.last_name }} </p></em>
-    <br>
 	{% if team %}
 	<ul class="list-inline">
 		<li><p class="text-muted"> Team: </p> </li>
@@ -17,14 +16,14 @@
 	{% else %}
 	<em>You are currently on no team</em>
 	{% endif %}
+
+	Year of study: <b><em>{{ user.skill_level }}</em></b>
 	<br>
-	Year of study: <b><em>{{ user.skill_level}}</em></b>
-	<br>
-	Your gender:<b><em>{{ user.gender}}</em></b>
+	Your gender: <b><em>{{ user.gender}}</em></b>
 	<br>    
-	Email:<b><em> {{ user.email }}</em></b>
+	Email: <b><em>{{ user.email }}</em></b>
 	<br>
-	Date joined:<b><em>{{ user.date_joined|date:"d.m.Y"}}</em></b>
+	Date joined: <b><em>{{ user.date_joined|date:"d.m.Y"}}</em></b>
 	<br>
 	</p>
 <hr>
@@ -59,16 +58,13 @@
         </div>
         <div id="collapsePw" class="panel-collapse collapse ">
             <div class="panel-body">
-                <form id="contestant_edit_pw" METHOD="POST" action="../profileEditPw/">
-                {% csrf_token %}
-                    {% for field in userpw %}
-                        {{ field.label_tag }} {{ field }}
-                        {{ field.errors }}
-                        <br />
-                    {% endfor %}
-                    <button type="submit" name="submit" value="Save" class="btn btn-default btn-sm">
-                        Change password
-                    </button>
+                <form class="form-horizontal" role="form" id="contestant_edit_pw" METHOD="POST" action="{% url 'profile_edit_password' contest.url %}">
+                    {% include 'form_snippet.html' with form=userpw %}
+                    <div class="form-group">
+						<div class="col-lg-offset-3 col-lg-10">
+					  		<button type="submit" class="btn btn-default">Save</button>
+					  	</div>
+				  	</div>
                 </form>
             </div>
         </div>
@@ -81,16 +77,13 @@
         </div>
         <div id="collapsePI" class="panel-collapse collapse">
             <div class="panel-body">
-                <form id="contestant_edit_pw" METHOD="POST" action="../profileEditPI/">
-                {% csrf_token %}
-                    {% for field in userpi %}
-                        {{ field.label_tag }} {{ field }}
-                        {{ field.errors }}
-                        <br />
-                    {% endfor %}
-                    <button type="submit" name="submit" value="Save" class="btn btn-default btn-sm">
-                        Update user information
-                    </button>
+                <form class="form-horizontal" role="form" id="contestant_edit_pw" METHOD="POST" action="{% url 'profile_edit_info' contest.url %}">
+                	{% include 'form_snippet.html' with form=userpi %}
+                    <div class="form-group">
+						<div class="col-lg-offset-3 col-lg-10">
+					  		<button type="submit" class="btn btn-default">Save</button>
+					  	</div>
+				  	</div>
                 </form>
             </div>
         </div>
