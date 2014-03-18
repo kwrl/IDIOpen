@@ -43,7 +43,7 @@ class Contest(models.Model):
     start_date = models.DateTimeField(verbose_name='Start date');
     end_date = models.DateTimeField('End date');
     publish_date = models.DateTimeField('Publish date');
-    teamreg_end_date = models.DateTimeField("Team registration close date", default=timezone.make_aware(datetime.datetime(2099, 1, 1, 0), timezone.get_default_timezone()));
+    teamreg_end_date = models.DateTimeField("Team registration close date");
     links = SortedManyToManyField('Link');
     sponsors = models.ManyToManyField('Sponsor', blank=True)
     css = FileBrowseField('CSS', max_length=200, directory='css/',

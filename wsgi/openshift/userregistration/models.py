@@ -118,9 +118,11 @@ YEAR_OF_STUDY = (
         ('3', '3'),
         ('4', '4'),
         ('5', '5'),
-        ('N/A', 'Not a student'),
+        ('6', '6'),
+        ('Pro', 'Pro'),
     );
 GENDER_CHOICES = (
+            (' ', 'Not specified'),
             ('M', 'Male'),
             ('F', 'Female'),
     );
@@ -183,7 +185,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         Returns the first_name plus the last_name, with a space in between.
         """
         if self.nickname:
-            full_name = '%s \'%s\' %s' % (self.first_name,self.nickname, self.last_name)
+            full_name = '%s "%s" %s' % (self.first_name, self.nickname, self.last_name)
         else:
             full_name = '%s %s' % (self.first_name, self.last_name)
         return full_name.strip()

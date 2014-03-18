@@ -25,7 +25,7 @@ class LinkAdmin(admin.ModelAdmin):
     fieldsets = (
         (None, {
             'fields': ('text', 'contestUrl', 'url'),
-            'description': "To create a seperator, create a Link with url \'seperator\' withouth slashes."
+            'description': "To create a separator, create a Link with url \'separator\' without slashes."
         }),
     )
     list_display = ('text', 'contestUrl', 'url',)
