@@ -37,9 +37,15 @@
 	<div id="logo">
 		<div class="container">
 			<div class="row">
-				<div class="col-lg-7" onClick="javascript:location.href='/{{ contest.url }}'">
+				<div class="col-lg-7">
 					{% if contest %}
-						<h1 class="logo">{{ contest.title }}</h1>
+						{% if contest.logo %}
+						<h1 class="logo" style="background : url(/media/{{ contest.logo.path}}) no-repeat 0 0;">
+						<a href="/{{ contest.url}}">{{ contest.title }}</a>
+						</h1>
+						{% else %}
+						{{ contest.title }}
+						{% endif %}
 					{% endif %}
 				</div>
 				<div class="col-lg-5">
