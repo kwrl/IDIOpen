@@ -58,7 +58,7 @@
         </div>
         <div id="collapsePw" class="panel-collapse collapse ">
             <div class="panel-body">
-                <form class="form-horizontal" role="form" id="contestant_edit_pw" METHOD="POST" action="../profileEditPw/">
+                <form class="form-horizontal" role="form" id="contestant_edit_pw" METHOD="POST" action="{% url 'profile_edit_password' contest.url %}">
                     {% include 'form_snippet.html' with form=userpw %}
                     <div class="form-group">
 						<div class="col-lg-offset-3 col-lg-10">
@@ -77,7 +77,7 @@
         </div>
         <div id="collapsePI" class="panel-collapse collapse">
             <div class="panel-body">
-                <form class="form-horizontal" role="form" id="contestant_edit_pw" METHOD="POST" action="../profileEditPI/">
+                <form class="form-horizontal" role="form" id="contestant_edit_pw" METHOD="POST" action="{% url 'profile_edit_info' contest.url %}">
                 	{% include 'form_snippet.html' with form=userpi %}
                     <div class="form-group">
 						<div class="col-lg-offset-3 col-lg-10">
