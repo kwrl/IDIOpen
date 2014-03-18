@@ -35,11 +35,23 @@ class _RadioSelect(forms.RadioSelect):
         rendered_widgets.insert(0, "<label for=\"id_address_field_0\">Street:</label>");
         return u''.join(rendered_widgets)
 
-class Team_Edit(forms.ModelForm):
-    
-    def __init__(self, *args, **kwargs):
-        super(Team_Edit, self).__init__(*args, **kwargs)
-        self.fields['leader'].queryset = self.instance.members.all()
+class Team_Form(forms.ModelForm):
+
+    member_one = forms.EmailField(required=False, widget=forms.TextInput(attrs= {'placeholder':'Insert email for team member 1'}));
+    member_two = forms.EmailField(required=False, widget=forms.TextInput(attrs= {'placeholder':'Insert email for team member 2'}));
+        
+    def clean(self):
+        cleaned_data = super(Team_Form, self).clean()
+        onsite = cleaned_data.get('onsite')
+        offsite = cleaned_data.get('offsite')
+        if onsite:
+            cleaned_data['offsite'] = ''
+        elif not offsite:
+            self._errors['offsite'] = self.error_class(["Offsite is required"])
+            del cleaned_data['offsite']
+            #raise forms.ValidationError("Offsite is required")
+            
+        return cleaned_data
     
     class Meta:
         model = Team      
@@ -50,15 +62,44 @@ class Team_Edit(forms.ModelForm):
                                                      'id':'id_onsite',}),
                 'offsite' : forms.TextInput(attrs={'placeholder' : 'E.g UiO, Aarhus etc '}),
         } 
-        fields = ['name', 'onsite', 'offsite','leader']
-
-class Team_Form(Team_Edit):
+        fields = ['name', 'onsite', 'offsite']
+'''
+class Team_Form(Team_Base):
     member_one = forms.EmailField(required=False, widget=forms.TextInput(attrs= {'placeholder':'Insert email for team member 1'}));
     member_two = forms.EmailField(required=False, widget=forms.TextInput(attrs= {'placeholder':'Insert email for team member 2'}));
 
     def disable_fields(self):
         for _, field in self.fields.items():
             field.widget.attrs['readonly'] = True;
+ '''           
+class Team_Edit(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(Team_Edit, self).__init__(*args, **kwargs)
+        self.fields['leader'].queryset = self.instance.members.all()
+    
+    def clean(self):
+        cleaned_data = super(Team_Edit, self).clean()
+        onsite = cleaned_data.get('onsite')
+        offsite = cleaned_data.get('offsite')
+        if onsite:
+            cleaned_data['offsite'] = ''
+        elif not offsite:
+            self._errors['offsite'] = self.error_class(["Offsite is required"])
+            del cleaned_data['offsite']
+            #raise forms.ValidationError("Offsite is required")
+            
+        return cleaned_data
+    
+    class Meta:
+        model = Team 
+        widgets = {
+                'name' : forms.TextInput(attrs={'placeholder' : 'Insert team name here'}),
+                'onsite' : _RadioSelect(choices=ON_OR_OFF, 
+                                             attrs ={'onclick' : 'check_radio_button();',
+                                                     'id':'id_onsite',}),
+                'offsite' : forms.TextInput(attrs={'placeholder' : 'E.g UiO, Aarhus etc '}),
+        } 
+        fields = ['name', 'onsite', 'offsite','leader']
     
 class CustomSelectMultiple(ModelMultipleChoiceField):
     def label_from_instance(self, obj):
