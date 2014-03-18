@@ -32,7 +32,7 @@ def getTodayDate():
 
 class ContactInformation(models.Model):
     email = models.EmailField()
-    name = models.CharField()
+    name = models.CharField(max_length=30)
 
 class Contest(models.Model):
     title = models.CharField(max_length=200)
