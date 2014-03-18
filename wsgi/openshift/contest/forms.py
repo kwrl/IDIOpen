@@ -148,21 +148,20 @@ class LinkForm(forms.ModelForm):
         super(LinkForm, self).__init__(*args, **kargs)
         self.fields["text"].required = False
         self.fields["url"].required = False 
-
+        
     
 
     def clean(self):
         if self.cleaned_data['separator']:
-            #import ipdb
-            #ipdb.set_trace()
             self.cleaned_data['text'] = u"--------"
             self.cleaned_data['url'] = u"separator"
-            #ipdb.set_trace()
             return self.cleaned_data
         elif self.cleaned_data['text'] == None or len(self.cleaned_data['text']) <= 0:
             raise forms.ValidationError("Non-separator links need a text and url field.")
         elif self.cleaned_data['url'] == None or len(self.cleaned_data['url']) <= 0:
             raise forms.ValidationError("Non-separator links need a text and url field.")
+        else:
+            return self.clean_data
 
     class Meta:
         model   = Link
