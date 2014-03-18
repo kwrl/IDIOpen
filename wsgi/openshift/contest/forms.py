@@ -47,6 +47,28 @@ class Team_Edit(forms.ModelForm):
         } 
         fields = ['name', 'onsite', 'offsite']
 
+    #===========================================================================
+    # If onsite is false and offsite is empty, raise ValidationError
+    #===========================================================================
+    def clean_offsite(self):
+        cleaned_data = self.cleaned_data
+        onsite = self.cleaned_data['onsite']
+        offsite = self.cleaned_data['offsite']
+        if not onsite: # if onsite is false
+            if not offsite or offsite.isspace(): # if offsite is empty or only contain spaces
+                raise forms.ValidationError("You need to fill out your offsite location")
+        return offsite
+        
+    #====================================================================
+    # If name only contains white-spaces, raise ValidationError 
+    #====================================================================
+    def clean_name(self):
+        name = self.cleaned_data['name']
+        if name.isspace():
+            raise forms.ValidationError('You need a team name')
+        return name
+
+
 class Team_Form(Team_Edit):
     member_one = forms.EmailField(required=False, widget=forms.TextInput(attrs= {'placeholder':'Insert email for team member 1'}));
     member_two = forms.EmailField(required=False, widget=forms.TextInput(attrs= {'placeholder':'Insert email for team member 2'}));
