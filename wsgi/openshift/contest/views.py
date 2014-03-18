@@ -5,7 +5,7 @@ from django.http import HttpResponseRedirect
 from article.models import Article
 from userregistration.models import CustomUser
 from userregistration.models import CustomUserManager
-from contest.models import Team, Invite, Contest
+from contest.models import Team, Invite, Contest, Link
 from django.contrib.auth import get_user_model
 from django.contrib.sites.models import get_current_site
 from django.contrib.auth.decorators import login_required
@@ -135,9 +135,9 @@ def registration(request):
                 
                 return render(request, 'registerForContest/registrationComplete.html')
                 #end else
-            return render(request, 'registerForContest/registration.html', {
-                    'form': form,
-                    })
+        return render(request, 'registerForContest/registration.html', {
+                'form': form,
+                })
 
     form = Team_Form() # a new form
         
@@ -251,6 +251,7 @@ def leave_team(request):
 def editTeam(request):
     user = request.user
     url = get_current_url(request)
+    con = get_current_contest(request)
 #  url = request.path.split('/')[1]
     # Get the team or 404
     instance = get_object_or_404(Team, members__in=CustomUser.objects.filter(pk=user.id))
@@ -263,6 +264,7 @@ def editTeam(request):
             if form.is_valid():
                 messages.success(request, 'Profile details updated.')
                 form.save()
+                return redirect('team_profile', con.url)
     else:
         messages.error(request, 'You are not the team leader')                    
     
@@ -273,7 +275,6 @@ def editTeam(request):
 
 
 def view_teams(request):
-
     try: 
         team_list = Team.objects.filter(contest = get_current_contest(request))
     except ObjectDoesNotExist as e:
@@ -288,7 +289,6 @@ def view_teams(request):
                   })
 
 def deleteMember(request, member_id):
-
     user = request.user
     url = request.path.split('/')[1]
     

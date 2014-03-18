@@ -46,10 +46,15 @@ class Team_Form(forms.ModelForm):
         offsite = cleaned_data.get('offsite')
         if onsite:
             cleaned_data['offsite'] = ''
-        elif not offsite:
+        elif not offsite or offsite.isspace():
             self._errors['offsite'] = self.error_class(["Offsite is required"])
             del cleaned_data['offsite']
             #raise forms.ValidationError("Offsite is required")
+            
+        name = cleaned_data['name']
+        if name.isspace():
+            self._errors['name'] = self.error_class(["Name is required"])
+            del cleaned_data['name']
             
         return cleaned_data
     
@@ -65,12 +70,28 @@ class Team_Form(forms.ModelForm):
         fields = ['name', 'onsite', 'offsite']
 '''
 class Team_Form(Team_Base):
-    member_one = forms.EmailField(required=False, widget=forms.TextInput(attrs= {'placeholder':'Insert email for team member 1'}));
-    member_two = forms.EmailField(required=False, widget=forms.TextInput(attrs= {'placeholder':'Insert email for team member 2'}));
+=======
 
-    def disable_fields(self):
-        for _, field in self.fields.items():
-            field.widget.attrs['readonly'] = True;
+    #===========================================================================
+    # If onsite is false and offsite is empty, raise ValidationError
+    #===========================================================================
+    def clean_offsite(self):
+        cleaned_data = self.cleaned_data
+        onsite = self.cleaned_data['onsite']
+        offsite = self.cleaned_data['offsite']
+        if not onsite: # if onsite is false
+            if not offsite or offsite.isspace(): # if offsite is empty or only contain spaces
+                raise forms.ValidationError("You need to fill out your offsite location")
+        return offsite
+        
+    #====================================================================
+    # If name only contains white-spaces, raise ValidationError 
+    #====================================================================
+    def clean_name(self):   
+        name = self.cleaned_data['name']
+        if name.isspace():
+            raise forms.ValidationError('You need a team name')
+        return name
  '''           
 class Team_Edit(forms.ModelForm):
     def __init__(self, *args, **kwargs):
@@ -83,11 +104,15 @@ class Team_Edit(forms.ModelForm):
         offsite = cleaned_data.get('offsite')
         if onsite:
             cleaned_data['offsite'] = ''
-        elif not offsite:
+        elif not offsite or offsite.isspace():
             self._errors['offsite'] = self.error_class(["Offsite is required"])
             del cleaned_data['offsite']
             #raise forms.ValidationError("Offsite is required")
-            
+        name = cleaned_data['name']
+        if name.isspace():
+            self._errors['name'] = self.error_class(["Name is required"])
+            del cleaned_data['name']    
+        
         return cleaned_data
     
     class Meta:
