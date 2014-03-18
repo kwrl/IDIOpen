@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% load link_tags %}
+{% load i18n %}
+{% block content %}
+
+<br>
+You already have a User.
+<br>
+<br>
+<a href=" {% url 'profile' contest.url %}">Go To Your Profile </a>
+<br>
+<br>
+{% endblock %}

@@ -51,10 +51,9 @@ class Team_Form(forms.ModelForm):
             del cleaned_data['offsite']
             #raise forms.ValidationError("Offsite is required")
             
-        name = cleaned_data['name']
-        if name.isspace():
+        name = cleaned_data.get('name')
+        if not name or name.isspace():
             self._errors['name'] = self.error_class(["Name is required"])
-            del cleaned_data['name']
             
         return cleaned_data
     
@@ -110,23 +109,22 @@ class Team_Edit(forms.ModelForm):
         cleaned_data = super(Team_Edit, self).clean()
         onsite = cleaned_data.get('onsite')
         offsite = cleaned_data.get('offsite')
+        name = cleaned_data.get('name')
         if onsite:
             cleaned_data['offsite'] = ''
         elif not offsite or offsite.isspace():
             self._errors['offsite'] = self.error_class(["Offsite is required"])
             del cleaned_data['offsite']
             #raise forms.ValidationError("Offsite is required")
-        name = cleaned_data['name']
-        if name.isspace():
+        if not name or name.isspace():
             self._errors['name'] = self.error_class(["Name is required"])
-            del cleaned_data['name']    
         
         return cleaned_data
     
     class Meta:
         model = Team 
         widgets = {
-                'name' : forms.TextInput(attrs={'placeholder' : 'Insert team name here'}),
+                'name' : forms.TextInput(attrs={'placeholder' : 'Insert team name here'} ),
                 'onsite' : _RadioSelect(choices=ON_OR_OFF, 
                                              attrs ={'onclick' : 'check_radio_button();',
                                                      'id':'id_onsite',}),
