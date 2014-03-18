@@ -163,6 +163,8 @@ class LinkForm(forms.ModelForm):
             raise forms.ValidationError("Non-separator links need a text and url field.")
         elif self.cleaned_data['url'] == None or len(self.cleaned_data['url']) <= 0:
             raise forms.ValidationError("Non-separator links need a text and url field.")
+        else:
+            return self.cleaned_data
 
     class Meta:
         model   = Link
