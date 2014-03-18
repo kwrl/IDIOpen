@@ -135,9 +135,9 @@ def registration(request):
                 
                 return render(request, 'registerForContest/registrationComplete.html')
                 #end else
-            return render(request, 'registerForContest/registration.html', {
-                    'form': form,
-                    })
+        return render(request, 'registerForContest/registration.html', {
+                'form': form,
+                })
 
     form = Team_Form() # a new form
         
