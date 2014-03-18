@@ -5,27 +5,40 @@
 <form class="form-horizontal" method="POST" action="" role="form">
 	{% csrf_token %}
 	<h3>Update team</h3>
+		{{ form.non_field_errors }}
 		<div class="form-group">
-            {{ form.leader.errors }}
             <label for="{{ form.name.id_for_label }}" class="col-lg-3 control-label">{{ form.leader.label }}</label> 
 	            <div class="col-lg-5">
 		            {{ form.leader|add_class:"form-control" }}
+            {% if form.leader.errors %}
+            	{% for error in form.leader.errors %}
+            	<p class="help-block">{{ error|escape }}</p>
+			    {% endfor %}
+			{% endif %}
 	            </div>
         </div>
 	    <div class="form-group">
-            {{ form.name.errors }}
             <label for="{{ form.name.id_for_label }}" class="col-lg-3 control-label">{{ form.name.label }}</label> 
 	            <div class="col-lg-5">
 		            {{ form.name|add_class:"form-control" }}
+		            {% if form.name.errors %}
+		            	{% for error in form.name.errors %}
+		            	<p class="help-block">{{ error|escape }}</p>
+					    {% endfor %}
+					{% endif %}
 	            </div>
         </div>
         <div class="form-group">
-            {{ form.offsite.errors }}
             <label for="{{ form.offsite.id_for_label }}" class="col-lg-3 control-label">
             	{{ form.offsite.label }}
             </label> 
             <div class="col-lg-5">
 	            {{ form.offsite|add_class:"form-control"}}
+	            {% if form.offsite.errors %}
+	            	{% for error in form.offsite.errors %}
+	            	<p class="help-block">{{ error|escape }}</p>
+				    {% endfor %}
+				{% endif %}
             </div>
         </div>
         <div class="form-group">
