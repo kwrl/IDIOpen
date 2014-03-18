@@ -29,11 +29,11 @@
     		</p>
     		</small>
     		</li>    		
-    		<small><p class="text-muted">{{ team.leader.first_name }}   <em> {{ team.leader.nickname }} </em> {{ team.leader.last_name }},</small>
+    		<small><p class="text-muted">{{ team.leader.get_name_nick }},</small>
     		{% for member in team.members.all%}    	
 	    		{% if member = team.leader %}
 	    		{% else %}
-	    			{{ member.first_name }}   <em> {{ member.nickname }} </em> {{ member.last_name }},
+	    			{{ member.get_name_nick }},
 	    		{% endif %}
 	    	{% endfor %}
     		</ul>	    	
