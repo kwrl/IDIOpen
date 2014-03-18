@@ -25,7 +25,7 @@
 		            {{ form.name|add_class:"form-control" }}
 		            {% if form.name.errors %}
 		            	{% for error in form.name.errors %}
-		            	<p class="help-block">{{ error|escape }}</p>
+		            	<p class="text-danger">{{ error|escape }}</p>
 					    {% endfor %}
 					{% endif %}
 	            </div>
@@ -45,7 +45,7 @@
 			{% endfor %}
             {% if form.onsite.errors %}
             	{% for error in form.onsite.errors %}
-            	<p class="help-block">{{ error|escape }}</p>
+            	<p class="text-danger">{{ error|escape }}</p>
 			    {% endfor %}
 			{% endif %}
             </div>
@@ -58,7 +58,7 @@
 	            {{ form.offsite|add_class:"form-control"}}
 	            {% if form.offsite.errors %}
 	            	{% for error in form.offsite.errors %}
-	            	<p class="help-block">{{ error|escape }}</p>
+	            	<p class="text-danger">{{ error|escape }}</p>
 				    {% endfor %}
 				{% endif %}
             </div>
