@@ -34,7 +34,7 @@ class ContactInformation(models.Model):
     email = models.EmailField()
     name = models.CharField(max_length=30)
 
-    def __str__(self):
+    def __unicode__(self):
         return self.name
 
 class Contest(models.Model):
