@@ -270,7 +270,6 @@ def editTeam(request):
 
 
 def view_teams(request):
-
     try: 
         team_list = Team.objects.filter(contest = get_current_contest(request))
     except ObjectDoesNotExist as e:
@@ -285,7 +284,6 @@ def view_teams(request):
                   })
 
 def deleteMember(request, member_id):
-
     user = request.user
     url = request.path.split('/')[1]
     
