@@ -11,7 +11,8 @@ class TeamForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(TeamForm, self).__init__(*args, **kwargs)
-        self.fields['members'].queryset = User.objects.all().exclude(
+        if self.instance:
+            self.fields['members'].queryset = User.objects.all().exclude(
                 members__in=Team.objects.filter(contest = self.instance.contest).exclude(
                 id=self.instance.id)).exclude(is_staff=True)
         
