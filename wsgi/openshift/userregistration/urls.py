@@ -10,6 +10,7 @@ from django.views.generic.base import TemplateView
 from django.contrib.auth import views as auth_views;
 from userregistration.views import *;
 from userregistration.views import updateProfilePw;
+from changeemail.views import ChangeEmailView;
 
 urlpatterns = patterns('',
         url(r'^activate/complete/$',
@@ -23,6 +24,12 @@ urlpatterns = patterns('',
         url(r'^activate/(?P<activation_key>\w+)/$',
             ActivationView.as_view(),
             name='registration_activate'),
+        
+        # Writte by Haakon and Anders
+        url(r'^profile/editEmail/(?P<activation_key>\w+)/$',
+            ChangeEmailView.as_view(),
+            name='registration_email'),
+                       
         url(r'^register/$',
             RegistrationView.as_view(),
             name='registration_register'),
@@ -36,7 +43,7 @@ urlpatterns = patterns('',
             name='registration_disallowed'),
         url(r'^profile/', user_profile, name='profile'),
         url(r'^profileEditPw/', updateProfilePw, name='profile'),
-        # url(r'^profileEditEmail/', updateProfileEmail, name='profile'),
+        url(r'^profileEditEmail/', updateProfileEmail, name='profile'),
         url(r'^profileEditPI/', updateProfilePI, name='profile'),
         url(r'^profileEdit/', user_profile, name='profile'),
         url(r'^login/$',

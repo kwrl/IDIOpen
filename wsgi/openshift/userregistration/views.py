@@ -114,7 +114,7 @@ class RegistrationView(FormView):
         return True;
 
     def register(self, request, **cleaned_data):
-        url = request.path.split('/')[1]
+        url = request.path.split('/')[1];
         email       = cleaned_data['email'];
         first_name  = cleaned_data['first_name'];
         last_name   = cleaned_data['last_name'];
@@ -207,7 +207,7 @@ def updateProfilePw(request):
 def updateProfileEmail(request):
     form = None;
     if request.method == 'POST':
-        form = EmailForm(data=request.POST);
+        form = EmailForm(request, data=request.POST);
         if form.is_valid():
             form.save();
             messages.success(request, "Email verification sent");
