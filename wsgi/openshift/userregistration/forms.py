@@ -17,7 +17,7 @@ from django.template import loader
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
 from .models import YEAR_OF_STUDY, GENDER_CHOICES
-
+from changeemail.models import ChangeEmail
 try:
     from django.contrib.auth import get_user_model
     User = get_user_model()
@@ -131,7 +131,7 @@ class RegistrationForm(forms.Form):
         match. Note that an error here will end up in
         ``non_field_errors()`` because it doesn't apply to a single
         field.
-        
+
         """
         cleaned_data = super(RegistrationForm, self).clean()
         print cleaned_data
@@ -244,9 +244,10 @@ class PasswordForm(forms.ModelForm):
                 'password' : forms.PasswordInput()
             };
 
-class EmailForm(forms.ModelForm):
+class EmailForm(forms.Form):
     """ Form to update the email of activated contestants
     """
+    email = forms.EmailField()
     email_validation = forms.EmailField()
 
     def __init__(self, *args, **kwargs):
@@ -276,14 +277,13 @@ class EmailForm(forms.ModelForm):
 
         raise ValidationError("Fields cannot be empty")
 
-    def save(self):
+    def save(self, user, request):
         """ We want to send an email, instead of saving to model right away
         """
-        self.instance.add_new_email(self.cleaned_data['email_validation'])
-
-    class Meta:
-        model = CustomUser;
-        fields =['email'];
+        realUser = User.objects.get(pk=user.pk);
+        new_email = ChangeEmail();
+        new_email.save(realUser, self.cleaned_data['email']);
+        new_email.send_confirmation_mail(request);
 
 class PIForm(forms.ModelForm):
     """ Form to update the personal information of activated contestants
@@ -353,3 +353,4 @@ class PasswordResetForm(forms.Form):
 
 
 # EOF
+

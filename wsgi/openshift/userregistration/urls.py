@@ -10,6 +10,10 @@ from django.views.generic.base import TemplateView
 from django.contrib.auth import views as auth_views;
 from userregistration.views import *;
 from userregistration.views import updateProfilePw;
+from changeemail.views import ChangeEmailView;
+
+# prefix in here is contest/accounts/
+# as per Wed 19 Mar 2014 11:27:26 PM CET
 
 urlpatterns = patterns('',
         url(r'^activate/complete/$',
@@ -23,6 +27,12 @@ urlpatterns = patterns('',
         url(r'^activate/(?P<activation_key>\w+)/$',
             ActivationView.as_view(),
             name='registration_activate'),
+        
+        # Writte by Haakon and Anders
+        url(r'^profile/update/email/(?P<activation_key>\w+)/$',
+            ChangeEmailView.as_view(),
+            name='update_email'),
+                       
         url(r'^register/$',
             RegistrationView.as_view(),
             name='registration_register'),
@@ -36,9 +46,9 @@ urlpatterns = patterns('',
             name='registration_disallowed'),
         url(r'^profile/$', user_profile, name='profile'),
         url(r'^profile/edit/password/$', updateProfilePw, name='profile_edit_password'),
-        # url(r'^profileEditEmail/', updateProfileEmail, name='profile'),
+        url(r'^profile/edit/email/', updateProfileEmail, name='profile_edit_email'),
         url(r'^profile/edit/info/$', updateProfilePI, name='profile_edit_info'),
-        #url(r'^profile/edit/$', user_profile, name='profile'),
+        url(r'^profile/edit/$', user_profile, name='profile'),
         url(r'^login/$',
             auth_views.login,
             {'template_name': 'registration/login.html'},
@@ -61,3 +71,4 @@ urlpatterns = patterns('',
             name='password_reset_done'),
         )
 # EOF
+
