@@ -25,7 +25,6 @@ class ChangeEmailManager(models.Manager):
 
             if SHA1_RE.search(activation_key):
                 try:
-                    import ipdb; ipdb.set_trace();
                     instance = self.get(activation_key=activation_key);
                 except self.model.DoesNotExist:
                     return False
@@ -41,8 +40,8 @@ class ChangeEmail(models.Model):
     """        
     new_email = models.EmailField(unique=False);
     created_date = models.DateTimeField(auto_now_add=True, unique=False);
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, 
-            related_name='contestant', null = True,
+    refuser = models.ForeignKey(settings.AUTH_USER_MODEL, 
+            related_name='contestant', null = False,
             );
     activation_key = models.CharField(max_length=40, null=False, unique=True);
 
@@ -52,15 +51,23 @@ class ChangeEmail(models.Model):
         verbose_name = _('email address change request');
         verbose_name_plural = _('email address change requests');
         
-    def __init__(self, user, new_email, *args, **kwargs):
-        super(ChangeEmail, self).__init__(*args, **kwargs);
-        self.user = user;
-        self.new_email = new_email;
-        self.activation_key = self.__make_activation_key();
-      
     def __make_activation_key(self):
         salt = hashlib.sha1(str(random.random())).hexdigest()[:5];
-        return hashlib.sha1(salt+self.user.email.encode('utf-8')).hexdigest();    
+        return hashlib.sha1(salt+self.refuser.email.encode('utf-8')).hexdigest();    
+
+    def save(self, user, new_email, *args, **kwargs):
+        self.refuser = user;
+        self.new_email = new_email;
+        self.activation_key = self.__make_activation_key();
+        super(ChangeEmail, self).save(*args, **kwargs);
+
+    def updateUser(self):
+        self.refuser.email = self.new_email;
+        self.refuser.save();
+        #TODO: should there be a post-save signal here? See django-docs.
+        #    : this is to verify that the user email is actually updated.
+
+
 
 
     def send_confirmation_mail(self, request):
@@ -75,7 +82,7 @@ class ChangeEmail(models.Model):
         ctx_dict = {'activation_key': self.activation_key,
                     'contest':url,
                     'new_email': self.new_email,
-                    'user':self.user.get_full_name(),
+                    'user':self.refuser.get_full_name(),
                     'date': self.created_date,
                     'site': site,
                     };
@@ -84,23 +91,5 @@ class ChangeEmail(models.Model):
         content = render_to_string('changeEmail/change_email_content.txt', ctx_dict)
         print content;
         send_mail(subject, content, 'penis', [self.new_email]);
-
-
-    # def activate_email(self, activation_key):
-    #     SHA1_RE = re.compile('^[a-f0-9]{40}$');
-    #     user = None;
-    #     if SHA1_RE.search(activation_key):
-    #         try:
-    #             print ChangeEmail.objects.get(activation_key=activation_key)
-    #             ce = ChangeEmail.objects.get(activation_key=activation_key)
-    #             user = User.objects.get(pk=ce.User)
-    #             print user
-    #             user.email = ce.new_email
-    #         except self.DoesNotExist:
-    #             return False;
-    #         user.is_active = True;
-    #         user.activation_key = self.model.ACTIVATED;
-    #         user.save();
-    #     return user;
         
 # EOF        

@@ -251,8 +251,8 @@ class EmailForm(forms.Form):
         """ We want to send an email, instead of saving to model right away
         """
         realUser = User.objects.get(pk=user.pk);
-        new_email = ChangeEmail(realUser, self.cleaned_data['email']);
-        new_email.save();
+        new_email = ChangeEmail();
+        new_email.save(realUser, self.cleaned_data['email']);
         #new_email.send_confirmation_mail(request);
 
 class PIForm(forms.ModelForm):
