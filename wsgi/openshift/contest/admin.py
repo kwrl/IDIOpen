@@ -24,7 +24,7 @@ class TeamAdmin(admin.ModelAdmin):
 class LinkAdmin(admin.ModelAdmin):
     fieldsets = (
         (None, {
-            'fields': ('text', 'contestUrl', 'url'),
+            'fields': ('text', 'contestUrl', 'url','separator'),
             'description': "To create a separator, create a Link with url \'separator\' without slashes."
         }),
     )
