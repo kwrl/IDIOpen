@@ -71,10 +71,6 @@ class Contest(models.Model):
             
     def __str__(self):
         return self.title
-    
-    
-        
-    
      
 # Links for displaying in navigation for each contest    
 class Link(models.Model):

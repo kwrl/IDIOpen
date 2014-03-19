@@ -12,6 +12,9 @@ from userregistration.views import *;
 from userregistration.views import updateProfilePw;
 from changeemail.views import ChangeEmailView;
 
+# prefix in here is contest/accounts/
+# as per Wed 19 Mar 2014 11:27:26 PM CET
+
 urlpatterns = patterns('',
         url(r'^activate/complete/$',
             TemplateView.as_view(template_name=
@@ -26,9 +29,9 @@ urlpatterns = patterns('',
             name='registration_activate'),
         
         # Writte by Haakon and Anders
-        url(r'^profile/editEmail/(?P<activation_key>\w+)/$',
+        url(r'^profile/update/email/(?P<activation_key>\w+)/$',
             ChangeEmailView.as_view(),
-            name='registration_email'),
+            name='update_email'),
                        
         url(r'^register/$',
             RegistrationView.as_view(),

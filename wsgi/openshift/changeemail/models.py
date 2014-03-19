@@ -37,6 +37,16 @@ class ChangeEmailManager(models.Manager):
 class ChangeEmail(models.Model):
     """
     A model to temporarily store an email adress change request.
+
+    USAGE:
+        #1 invoke the model as an instance,
+        #2 invoke model.save() with user, new email
+        #3 invoke model.send_confirmation_mail(request) (request for emails)
+
+        --
+        #1 When the user accesses the url in the email, he will be directed to
+             a view. From the view, invoke model.get(activation_key...)
+        #2 invoke updateUser, which will delete $THIS and update the email.
     """        
     new_email = models.EmailField(unique=False);
     created_date = models.DateTimeField(auto_now_add=True, unique=False);
@@ -68,8 +78,6 @@ class ChangeEmail(models.Model):
         #    : this is to verify that the user email is actually updated.
 
 
-
-
     def send_confirmation_mail(self, request):
         try: 
             url = request.path.split('/')[1]
@@ -90,6 +98,6 @@ class ChangeEmail(models.Model):
         # ubject = ''.join(subject.splitlines())
         content = render_to_string('changeEmail/change_email_content.txt', ctx_dict)
         print content;
-        send_mail(subject, content, 'penis', [self.new_email]);
+        send_mail(subject, content, '', [self.new_email]);
         
 # EOF        
