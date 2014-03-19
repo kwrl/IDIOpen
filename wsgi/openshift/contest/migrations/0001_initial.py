@@ -24,8 +24,9 @@ class Migration(SchemaMigration):
             ('start_date', self.gf('django.db.models.fields.DateTimeField')()),
             ('end_date', self.gf('django.db.models.fields.DateTimeField')()),
             ('publish_date', self.gf('django.db.models.fields.DateTimeField')()),
-            ('teamreg_end_date', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime(2099, 1, 1, 0, 0))),
+            ('teamreg_end_date', self.gf('django.db.models.fields.DateTimeField')()),
             ('css', self.gf('filebrowser.fields.FileBrowseField')(max_length=200, null=True, blank=True)),
+            ('logo', self.gf('filebrowser.fields.FileBrowseField')(max_length=200, null=True, blank=True)),
         ))
         db.send_create_signal(u'contest', ['Contest'])
 
@@ -62,6 +63,7 @@ class Migration(SchemaMigration):
             ('text', self.gf('django.db.models.fields.CharField')(max_length=30)),
             ('contestUrl', self.gf('django.db.models.fields.BooleanField')()),
             ('url', self.gf('django.db.models.fields.CharField')(max_length=50)),
+            ('separator', self.gf('django.db.models.fields.BooleanField')()),
         ))
         db.send_create_signal(u'contest', ['Link'])
 
@@ -170,10 +172,11 @@ class Migration(SchemaMigration):
             'end_date': ('django.db.models.fields.DateTimeField', [], {}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'links': ('sortedm2m.fields.SortedManyToManyField', [], {'to': u"orm['contest.Link']", 'symmetrical': 'False'}),
+            'logo': ('filebrowser.fields.FileBrowseField', [], {'max_length': '200', 'null': 'True', 'blank': 'True'}),
             'publish_date': ('django.db.models.fields.DateTimeField', [], {}),
             'sponsors': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['contest.Sponsor']", 'symmetrical': 'False', 'blank': 'True'}),
             'start_date': ('django.db.models.fields.DateTimeField', [], {}),
-            'teamreg_end_date': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2099, 1, 1, 0, 0)'}),
+            'teamreg_end_date': ('django.db.models.fields.DateTimeField', [], {}),
             'title': ('django.db.models.fields.CharField', [], {'max_length': '200'}),
             'url': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '20'})
         },
@@ -188,6 +191,7 @@ class Migration(SchemaMigration):
             'Meta': {'object_name': 'Link'},
             'contestUrl': ('django.db.models.fields.BooleanField', [], {}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'separator': ('django.db.models.fields.BooleanField', [], {}),
             'text': ('django.db.models.fields.CharField', [], {'max_length': '30'}),
             'url': ('django.db.models.fields.CharField', [], {'max_length': '50'})
         },
@@ -215,7 +219,7 @@ class Migration(SchemaMigration):
             'email': ('django.db.models.fields.EmailField', [], {'unique': 'True', 'max_length': '254'}),
             'email_activation_key': ('django.db.models.fields.CharField', [], {'max_length': '40', 'null': 'True'}),
             'first_name': ('django.db.models.fields.CharField', [], {'max_length': '30'}),
-            'gender': ('django.db.models.fields.CharField', [], {'default': "'M'", 'max_length': '1'}),
+            'gender': ('django.db.models.fields.CharField', [], {'default': "' '", 'max_length': '1'}),
             'groups': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'related_name': "u'user_set'", 'blank': 'True', 'to': u"orm['auth.Group']"}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),

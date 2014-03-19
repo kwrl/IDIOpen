@@ -79,7 +79,7 @@
         </div>
          <div id="collapseEmail" class="panel-collapse collapse">
              <div class="panel-body">
-                 <form id="contestant_edit_pw" METHOD="POST" action="../profileEditEmail/">
+                 <form id="contestant_edit_pw" METHOD="POST" action="{% url 'profile_edit_email' contest.url %}">
                  {% csrf_token %}
                      {% for field in useremail %}
                          {{ field.label_tag }} {{ field }}

@@ -13,7 +13,7 @@ class Migration(SchemaMigration):
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('new_email', self.gf('django.db.models.fields.EmailField')(max_length=75)),
             ('created_date', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
-            ('user', self.gf('django.db.models.fields.related.ForeignKey')(related_name='contestant', null=True, to=orm['userregistration.CustomUser'])),
+            ('refuser', self.gf('django.db.models.fields.related.ForeignKey')(related_name='contestant', to=orm['userregistration.CustomUser'])),
             ('activation_key', self.gf('django.db.models.fields.CharField')(unique=True, max_length=40)),
         ))
         db.send_create_signal(u'changeemail', ['ChangeEmail'])
@@ -44,7 +44,7 @@ class Migration(SchemaMigration):
             'created_date': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'new_email': ('django.db.models.fields.EmailField', [], {'max_length': '75'}),
-            'user': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'contestant'", 'null': 'True', 'to': u"orm['userregistration.CustomUser']"})
+            'refuser': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'contestant'", 'to': u"orm['userregistration.CustomUser']"})
         },
         u'contenttypes.contenttype': {
             'Meta': {'ordering': "('name',)", 'unique_together': "(('app_label', 'model'),)", 'object_name': 'ContentType', 'db_table': "'django_content_type'"},
@@ -60,7 +60,7 @@ class Migration(SchemaMigration):
             'email': ('django.db.models.fields.EmailField', [], {'unique': 'True', 'max_length': '254'}),
             'email_activation_key': ('django.db.models.fields.CharField', [], {'max_length': '40', 'null': 'True'}),
             'first_name': ('django.db.models.fields.CharField', [], {'max_length': '30'}),
-            'gender': ('django.db.models.fields.CharField', [], {'default': "'M'", 'max_length': '1'}),
+            'gender': ('django.db.models.fields.CharField', [], {'default': "' '", 'max_length': '1'}),
             'groups': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'related_name': "u'user_set'", 'blank': 'True', 'to': u"orm['auth.Group']"}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
