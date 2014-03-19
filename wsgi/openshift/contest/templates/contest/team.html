@@ -4,15 +4,12 @@
 {% block content %}
 
 {% if team %}
-
-	
 	<div class="row">
 		<div class="col-lg-7">
 			<h2>Team page</h2>
 		</div>
 		<div class="col-lg-5">
 		<div class="btn-group pull-right">
-			<a href=# id="LeaveButton" data-toggle="confirmation" class="alert btn btn-danger btn-sm">{% trans 'Leave team' %}</a>
 		{% if is_leader %}    
 			<a href="{% url 'team_edit' contest.url %}" class="btn btn-primary btn-sm">{% trans 'Edit team' %}</a>
 		{% endif %}
@@ -20,8 +17,6 @@
 		</div>
 		</div>
 	</div>
-
-
 	<hr>
 	<em><h3> {{ team.name }}</h3></em>
 	<p class="text-muted">
@@ -60,8 +55,8 @@
           {% if is_leader %} 
           <td>
           {% if not member == team.leader %}
-          <a href="{% url 'team_delete_member' contest.url member.id %}">
-          <i class="fa fa-trash-o fa-lg text-danger"></i>
+          	<a href="{% url 'team_delete_member' contest.url member.id %}">
+          	<i class="fa fa-trash-o fa-lg text-danger"></i>
           {% endif %}
           </a></td>
           {% endif %}
@@ -99,20 +94,22 @@
 	    <div class="form-group">
 			<div class="col-lg-offset-3 col-lg-9">
 				{% if team.members.count >= 3 %}
-	  			<button type="submit" name='addMember' value="addMember" class="btn btn-default">{% trans 'Add new member' %}</button>
+	  				<button type="submit" name='addMember' value="addMember" class="btn btn-default">{% trans 'Add new member' %}</button>
 	  			{% else %}
-	  			<button type="submit" name='addMember' value="addMember" class="btn btn-default">{% trans 'Add new member' %}</button>
-	  			{% endif %}
-	  			
+	  				<button type="submit" name='addMember' value="addMember" class="btn btn-default">{% trans 'Add new member' %}</button>
+	  			{% endif %}	
 	  		</div>
   		</div>
 	</form>
-
+	<hr>
+		<div class="btn-group pull-right">
+			<a href=# id="LeaveButton" data-toggle="confirmation" class="alert btn btn-danger btn-sm">{% trans 'Leave team' %}</a>
+		</div>
 
 	{% endif %}
 {% else %}
 	<p> You are currently not member of any team. Want to participate in this contest? </p>
-	<a href=" {% url 'register_teams' contest.url %}">Registrer Team </a>
+	<a href=" {% url 'register_teams' contest.url %}">Register a Team </a>
 
 {% endif %}	
 

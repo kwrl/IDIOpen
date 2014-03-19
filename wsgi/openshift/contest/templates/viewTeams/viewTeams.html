@@ -21,7 +21,10 @@
     		{{ team.leader.skill_level }}
     		{% for member in team.members.all%}    	
 	    		{% if member = team.leader %}
-	    		{% else %}
+	    			{% comment %}
+	    				We want the team leaders skill to show first. 
+	    			{% endcomment %}
+	    		{% else %} 
 	    			, {{ member.skill_level }}
 	    		{% endif %}
 	    	{% endfor %} 
