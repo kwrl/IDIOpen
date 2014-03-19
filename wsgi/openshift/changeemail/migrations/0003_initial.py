@@ -60,7 +60,7 @@ class Migration(SchemaMigration):
             'email': ('django.db.models.fields.EmailField', [], {'unique': 'True', 'max_length': '254'}),
             'email_activation_key': ('django.db.models.fields.CharField', [], {'max_length': '40', 'null': 'True'}),
             'first_name': ('django.db.models.fields.CharField', [], {'max_length': '30'}),
-            'gender': ('django.db.models.fields.CharField', [], {'default': "'M'", 'max_length': '1'}),
+            'gender': ('django.db.models.fields.CharField', [], {'default': "' '", 'max_length': '1'}),
             'groups': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'related_name': "u'user_set'", 'blank': 'True', 'to': u"orm['auth.Group']"}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
