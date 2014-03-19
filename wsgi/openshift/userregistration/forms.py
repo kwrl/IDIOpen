@@ -253,7 +253,7 @@ class EmailForm(forms.Form):
         realUser = User.objects.get(pk=user.pk);
         new_email = ChangeEmail();
         new_email.save(realUser, self.cleaned_data['email']);
-        #new_email.send_confirmation_mail(request);
+        new_email.send_confirmation_mail(request);
 
 class PIForm(forms.ModelForm):
     """ Form to update the personal information of activated contestants
