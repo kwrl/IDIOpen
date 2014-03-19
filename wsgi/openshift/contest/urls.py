@@ -24,3 +24,4 @@ urlpatterns = patterns('',
     url(r'^team/leave/$', views.leave_team, name = 'team_leave'),    
     
 )
+

@@ -13,6 +13,8 @@ from django.core.mail import send_mail
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.contrib.auth.models import BaseUserManager
 from django.template.loader import render_to_string
+
+
 '''
 try:
     from django.contrib.auth import get_user_model
@@ -266,15 +268,9 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         """
         Sends an email to this User.
         """
-        send_mail(subject, message, from_email, [self.email])
+        send_mail(subject, message, from_email, [self.email]);
 
-    """Adds a new email to be swapped in"""
-    def add_new_email(self, new_email):
-        self.temp_email = new_email
-        salt = hashlib.sha1(str(random.random())).hexdigest()[:5]
-        email_activation_key = hashlib.sha1(salt+self.email.encode('utf-8')).\
-                                                                    hexdigest()
-        self.email_user("Fis", email_activation_key)
+
 
     """Swaps in the new email"""
     def activate_new_email(self, key):

@@ -1,0 +1,2 @@
+ {% load i18n %} You have received this email because you have altered your email on your accounts settings.
+ http://{{ site.domain }}{% url 'update_email' contest activation_key %}
