@@ -2,7 +2,7 @@ from django.contrib import admin
 from contest.models import Sponsor #weird error..Haakon 
 from django import forms
 from contest.models import Contest, Link, Team, Invite, ContactInformation
-
+from contest.forms import LinkForm
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
@@ -32,6 +32,8 @@ class LinkAdmin(admin.ModelAdmin):
     search_fields = ('text','url',)
     ordering = ('text',)
     
+    form = LinkForm    
+
 class ContestAdmin(admin.ModelAdmin):
     list_display = ('title', 'url', 'start_date','end_date','publish_date')
     search_fields = ('title', 'url',)

@@ -20,7 +20,7 @@ urlpatterns = patterns('',
     url(r'^team/edit/$', views.editTeam, name = 'team_edit'),
     url(r'^team/member/delete/(?P<member_id>\d+)/$', views.deleteMember, name = 'team_delete_member'),
     url(r'^pages/(?P<article_url>[^/]+)/$', articleview.detail_url, name='article_detail_url'),
-    url(r'^viewteams/$', views.view_teams, name = 'view_teams'),
-    url(r'^leaveteam$', views.leave_team, name = 'team_leave'),    
+    url(r'^teams/$', views.view_teams, name = 'view_teams'),
+    url(r'^team/leave/$', views.leave_team, name = 'team_leave'),    
     
 )

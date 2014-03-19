@@ -15,9 +15,9 @@ please specify what city you are participating from in in the offsite field
 </p>
 		<form class="form-horizontal" method="post" action="." role="form">
 		  {% csrf_token %}
+		    
 		  {% for field in form %}
 		        <div class="form-group">
-		            {{ field.errors }}
 		            <label for="{{ field.id_for_label }}" class="col-lg-3 control-label">{{ field.label }}</label> 
 		            <div class="col-lg-5">
 		            {% if field.label == 'Onsite' %}
@@ -30,9 +30,13 @@ please specify what city you are participating from in in the offsite field
 						</div>
 						{% endfor %}
 					{% else %}
-		            {{ field|addcss:"form-control"}}
-					
+		            {{ field|addcss:"form-control"}}					
 		            {% endif %}
+		            {% if field.errors %}
+            			{% for error in field.errors %}
+            				<p class="text-danger">{{ error|escape }}</p>
+			    		{% endfor %}
+					{% endif %}
 		            </div>
 		        </div>
 		    {% endfor %}
@@ -42,30 +46,18 @@ please specify what city you are participating from in in the offsite field
 		  	</div>
 		  	</div>
 		</form>
-		<script type="text/javascript">
-    		function check_radio_button() {
-    			var id_onsite= document.getElementById('id_onsite_0');
-    			var id_offsite = document.getElementById('id_onsite_1');
-				var id_offsite_textfield = document.getElementById('id_offsite');
 
-				
-				if (id_onsite.checked == true) {
-    				id_offsite_textfield.setAttribute('disabled', 'disabled');
-    				id_offsite_textfield.removeAttribute('name');
-    			}
-    			if (id_offsite.checked == true) {
-    				id_offsite_textfield.removeAttribute('disabled', 'disabled');
-    				id_offsite_textfield.setAttribute('name', 'offsite');
-    			}			
-    		}
-    	</script>
 {% else %}
 
 <p> You have to log in/register in order to create team <p>
 
- <a href=" {% url 'auth_login' contest.url %}">Log in </a> / <a href=" {% url 'registration_register' contest.url %}">Registrer </a>
+ <a href=" {% url 'login' contest.url %}">Log in </a> / <a href=" {% url 'registration_register' contest.url %}">Registrer </a>
 
 {% endif %}
 
+<script>$(document).ready( function () {
+	document.getElementById("id_onsite_1").checked = true;
+	});
+</script>
 {% endblock content %}
 

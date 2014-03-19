@@ -11,14 +11,23 @@ from django.forms.util import ErrorList
 from userregistration.models import CustomUser
 from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.debug import sensitive_variables
-
-from .models import YEAR_OF_STUDY, GENDER_CHOICES;
+from django.contrib.auth.tokens import default_token_generator
+from django.contrib.sites.models import get_current_site
+from django.template import loader
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
+from .models import YEAR_OF_STUDY, GENDER_CHOICES
 
 try:
     from django.contrib.auth import get_user_model
     User = get_user_model()
 except ImportError:
     from django.contrib.auth.models import User
+
+
+def append_field_error(instance, field, message):
+    instance.errors[field] = ErrorList();
+    instance.errors[field].append(message);
 
 class CustomUserCreationForm(UserCreationForm):
     """
@@ -107,6 +116,15 @@ class RegistrationForm(forms.Form):
         else:
             return self.cleaned_data['email']
 
+    def clean_nickname(self):
+        """Ensures that nicknames are not all spaces"""
+        if len(self.cleaned_data['nickname'])<= 0:        
+            raise ValidationError("Nickname not set")
+        elif ' ' in self.cleaned_data['nickname']:
+            raise ValidationError("Nicknames can not contain spaces")
+        else:
+            return self.cleaned_data['nickname'] 
+
     def clean(self):
         """
         Verifiy that the values entered into the two password fields
@@ -118,9 +136,19 @@ class RegistrationForm(forms.Form):
         if 'password1' in self.cleaned_data \
         and 'password2' in self.cleaned_data:
             if self.cleaned_data['password1'] != self.cleaned_data['password2']:
-                raise forms.ValidationError(
-                                    _("The two password fields didn't match."))
-        return self.cleaned_data
+                append_field_error(self, 'password1',
+                        _("The two passwords didn't match"));
+                append_field_error(self, 'password2',
+                        _("The two passwords didn't match"));
+                raise forms.ValidationError('');
+        try:
+            tmpCU = User();
+            tmpCU.clean_password(self.cleaned_data['password1']);
+        except ValidationError as ve:
+            append_field_error(self, 'password1',
+                               _(ve.message));
+            raise forms.ValidationError('');
+        return self.cleaned_data;
 '''
 Form for showing the invites
 '''
@@ -159,15 +187,12 @@ class PasswordForm(forms.ModelForm):
 
     @sensitive_variables('old_password', 'password', 'password_validation')
     def clean(self):
-        def append_field_error(field, message):
-            self.errors[field] = ErrorList();
-            self.errors[field].append(message);
 
         # Ensure fields are non-empty
         if 'old_password' in self.cleaned_data:
             oldpw = self.cleaned_data['old_password'];
             if not self.instance.check_password(oldpw):
-                append_field_error('old_password', "Incorrect password");
+                append_field_error(self, 'old_password', "Incorrect password");
                 raise ValidationError("");
 
 
@@ -177,13 +202,17 @@ class PasswordForm(forms.ModelForm):
             pw_validation = self.cleaned_data['password_validation'];
 
             if pw != pw_validation:
-                append_field_error('password', u"Passwords don\'t match");
-                append_field_error('password_validation',
+                append_field_error(self, 'password', u"Passwords don\'t match");
+                append_field_error(self, 'password_validation',
                                    u"Passwords don\'t match");
             else:
                 # in case someone adds other fields, we explicitly invoke
                 # super.clean. However, it is not needed per march
                 super(PasswordForm, self).clean();
+                try:
+                    self.instance.clean_password(pw);
+                except ValidationError as ve:
+                    append_field_error(self, 'password', _(ve.message));
                 return self.cleaned_data;
 
         raise ValidationError("Fields cannot be empty");
@@ -191,8 +220,9 @@ class PasswordForm(forms.ModelForm):
     def save(self):
         """ Ensure that the password is hashed before updating it in the model
         """
-        self.instance.set_password(self.cleaned_data['password']);
-        super(PasswordForm, self).save();
+        pw = self.cleaned_data['password']
+
+        self.instance.set_password(pw);
 
     class Meta:
         model = CustomUser;
@@ -265,5 +295,51 @@ class PIForm(forms.ModelForm):
                      'first_name': "First name",
                      'last_name':"Last name",
                      }
+        
+class PasswordResetForm(forms.Form):
+    email = forms.EmailField(label=_("Email"), max_length=254)
+
+    def save(self, domain_override=None,
+             subject_template_name='registration/password_reset_subject.txt',
+             email_template_name='registration/password_reset_email.html',
+             use_https=False, token_generator=default_token_generator,
+             from_email=None, request=None):
+        """
+        Generates a one-use only link for resetting password and sends to the
+        user.
+        """
+        from django.core.mail import send_mail
+        UserModel = get_user_model()
+        email = self.cleaned_data["email"]
+        active_users = UserModel._default_manager.filter(
+            email__iexact=email, is_active=True)
+        url = request.path.split('/')[1]
+        for user in active_users:
+            # Make sure that no email is sent to a user that actually has
+            # a password marked as unusable
+            if not user.has_usable_password():
+                continue
+            if not domain_override:
+                current_site = get_current_site(request)
+                site_name = current_site.name
+                domain = current_site.domain
+            else:
+                site_name = domain = domain_override
+            c = {
+                'email': user.email,
+                'domain': domain,
+                'site_name': site_name,
+                'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                'user': user,
+                'token': token_generator.make_token(user),
+                'protocol': 'https' if use_https else 'http',
+                'url': url,
+            }
+            subject = loader.render_to_string(subject_template_name, c)
+            # Email subject *must not* contain newlines
+            subject = ''.join(subject.splitlines())
+            email = loader.render_to_string(email_template_name, c)
+            send_mail(subject, email, from_email, [user.email])
+
 
 # EOF

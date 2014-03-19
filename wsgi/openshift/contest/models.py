@@ -32,14 +32,17 @@ def getTodayDate():
 
 class ContactInformation(models.Model):
     email = models.EmailField()
-    phone = models.IntegerField(max_length=12)
+    name = models.CharField(max_length=30)
+
+    def __unicode__(self):
+        return self.name
 
 class Contest(models.Model):
     title = models.CharField(max_length=200)
     contact_infos = models.ManyToManyField(ContactInformation)
     """ The url is saved as the suffix from root, only, not the entire url
     """
-    url = models.CharField(max_length=20, unique=True);
+    url = models.CharField(max_length=20, unique=True, help_text='Defines the url used to access the contest. E.g. sample.site.com/[the value inserted here]');
     start_date = models.DateTimeField(verbose_name='Start date');
     end_date = models.DateTimeField('End date');
     publish_date = models.DateTimeField('Publish date');
@@ -48,6 +51,9 @@ class Contest(models.Model):
     sponsors = models.ManyToManyField('Sponsor', blank=True)
     css = FileBrowseField('CSS', max_length=200, directory='css/',
                           extensions=['.css',], blank=True, null=True)
+    logo = FileBrowseField('Logo', max_length=200, directory='logo/', 
+                          extensions=['.jpg','.jpeg','.png','.gif'], blank=True, null=True,
+                          help_text='Select logo image, allowed formats jpg, jpeg, png, gif')
 
     def isPublishable(self):
         return self.publish_date.__lt__(getTodayDate());
@@ -76,17 +82,16 @@ class Link(models.Model):
     text = models.CharField(max_length=30, help_text='The display name for the link')
     # If true, url gets added to contest url
     # eg. url is 'article/1' if true gives '/open14/article/1'
-    contestUrl = models.BooleanField(help_text='If the url requires the contest url as prefix,' +
-                                     'example \'/open14/accounts/register/\'')
+    contestUrl = models.BooleanField(help_text='Contest URLs are extensions of the contest root URL. '             'Example: \'/idiopen14/accounts/register/\'')
     url = models.CharField(max_length=50, 
-                           help_text='Example \'/accounts/register/\','+
-                           ' make sure to have leading and trailing slashes.'+
-                           ' The url can also link to external web pages')
+                           help_text=' Internal links need leading and trailing slashes.'+
+                           ' External links are required to start with "http://"')
 
+    separator = models.BooleanField()
     def __unicode__(self):
         return self.text
 
-
+    
  
     
 class Team(models.Model):
