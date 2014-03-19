@@ -27,11 +27,11 @@ class ChangeEmailManager(models.Manager):
                 try:
                     instance = self.get(activation_key=activation_key);
                 except self.model.DoesNotExist:
-                    return False
+                    return None;
 
                 return instance
             else:
-                return False
+                return None;
         
     
 class ChangeEmail(models.Model):
