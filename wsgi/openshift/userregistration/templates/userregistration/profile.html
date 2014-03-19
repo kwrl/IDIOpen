@@ -56,6 +56,7 @@
             </h4>
             </a>
         </div>
+        
         <div id="collapsePw" class="panel-collapse collapse ">
             <div class="panel-body">
                 <form class="form-horizontal" role="form" id="contestant_edit_pw" METHOD="POST" action="{% url 'profile_edit_password' contest.url %}">
@@ -68,6 +69,30 @@
                 </form>
             </div>
         </div>
+        
+	<div class="panel-heading">
+        <a data-toggle="collapse" data-parent="#accordion" href="#collapseEmail">
+             <h4 class="panel-title">
+                     Change email
+             </h4>
+             </a>
+        </div>
+         <div id="collapseEmail" class="panel-collapse collapse">
+             <div class="panel-body">
+                 <form id="contestant_edit_pw" METHOD="POST" action="{% url 'profile_edit_email' contest.url %}">
+                 {% csrf_token %}
+                     {% for field in useremail %}
+                         {{ field.label_tag }} {{ field }}
+                         {{ field.errors }}
+                         <br /> 
+                     {% endfor %}
+                     <button type="submit" name="submit" value="Save" class="btn btn-default btn-sm">
+                         Change email
+                     </button>
+                 </form>
+             </div>
+         </div>
+
          <div class="panel-heading">
          <a data-toggle="collapse" data-parent="#accordion" href="#collapsePI">
             <h4 class="panel-title">
@@ -152,6 +177,6 @@
 			{% endfor %}
 			</table>
 	{% else %}
-		<p> You have no invites :( <p>
+		<p class="text-muted"> Empty </p>
 	{% endif %}
 {% endblock content %}
