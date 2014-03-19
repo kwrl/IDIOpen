@@ -71,6 +71,7 @@ INSTALLED_APPS = (
 	'django_jenkins',
     'south',
     'sortedm2m',
+    'changeemail',
 )
 '''
 if not ON_OPENSHIFT:

@@ -12,8 +12,9 @@ from userregistration.models import CustomUser
 from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.debug import sensitive_variables
 
-from .models import YEAR_OF_STUDY, GENDER_CHOICES;
 
+from .models import YEAR_OF_STUDY, GENDER_CHOICES
+from changeemail.models import ChangeEmail
 try:
     from django.contrib.auth import get_user_model
     User = get_user_model()
@@ -213,16 +214,18 @@ class PasswordForm(forms.ModelForm):
                 'password' : forms.PasswordInput()
             };
 
-class EmailForm(forms.ModelForm):
+class EmailForm(forms.Form):
     """ Form to update the email of activated contestants
     """
+    email = forms.EmailField()
     email_validation = forms.EmailField()
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, request=None, *args, **kwargs):
         super(EmailForm, self).__init__(*args, **kwargs);
         """ HTML context name
         """
         self.contextName = "useremail";
+        self.request = request;
 
     def clean(self):
         # Ensure fields are non-empty
@@ -248,11 +251,16 @@ class EmailForm(forms.ModelForm):
     def save(self):
         """ We want to send an email, instead of saving to model right away
         """
-        self.instance.add_new_email(self.cleaned_data['email_validation'])
+        self.add_new_email(self.cleaned_data['email_validation'])
 
-    class Meta:
-        model = CustomUser;
-        fields =['email'];
+    """Adds a new email to be swapped in"""
+    def add_new_email(self, new_email):
+        new_email = ChangeEmail(self.request.user, self.cleaned_data['email']);
+        new_email.make_activation_key();
+        
+        new_email.save();
+        new_email.send_confirmation_mail(self.request);
+
 
 class PIForm(forms.ModelForm):
     """ Form to update the personal information of activated contestants
