@@ -37,9 +37,15 @@
 	<div id="logo">
 		<div class="container">
 			<div class="row">
-				<div class="col-lg-7" onClick="javascript:location.href='/{{ contest.url }}'">
+				<div class="col-lg-7">
 					{% if contest %}
-						<h1 class="logo">{{ contest.title }}</h1>
+						{% if contest.logo %}
+						<h1 class="logo" style="background : url(/media/{{ contest.logo.path}}) no-repeat 0 0;">
+						<a href="/{{ contest.url}}">{{ contest.title }}</a>
+						</h1>
+						{% else %}
+						{{ contest.title }}
+						{% endif %}
 					{% endif %}
 				</div>
 				<div class="col-lg-5">
@@ -47,10 +53,10 @@
 					<br>
 					{% if user.is_authenticated %}
 						<a class="btn btn-default btn-sm" href="{% url 'profile' contest.url %}" role="button">Profile</a>
-						<a class="btn btn-default btn-sm" href="{% url 'auth_logout' contest.url %}" role="button">Logout</a>
+						<a class="btn btn-default btn-sm" href="{% url 'logout' contest.url %}" role="button">Logout</a>
 						
 					{% else %}
-					<form class="form-inline" role="form" method="post" action="{% url 'auth_login' contest.url %}">
+					<form class="form-inline" role="form" method="post" action="{% url 'login' contest.url %}">
 						{% csrf_token %}
 					  	<div class="form-group">
 					    	<label class="sr-only" for="id_username">Email address</label>
@@ -101,7 +107,7 @@
 						</div>
 						<div class="list-group">
 						{% for link in contest.links.all %}
-							{% if link.url == 'separator' %}
+							{% if link.separator %}
 							</div>
 							<div class="list-group">
 							{% else %}
@@ -216,6 +222,10 @@
                 } 
             });
          });
+        
+        $( document ).ready(function() {
+        	check_radio_button();
+        	});
     </script>
 
 </body>

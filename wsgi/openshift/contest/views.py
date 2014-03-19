@@ -172,7 +172,8 @@ def team_profile(request):
     team = Team.objects.filter(members__id = user.id)
     # If you have a team
     if team.count() > 0:
-        team = team[0]     
+        team = team[0]
+        invites = Invite.objects.filter(team=team).filter(is_member = False)
         # If you are leader
         if is_leader(request):
             if request.method == 'POST':
@@ -191,10 +192,17 @@ def team_profile(request):
                 addMemberForm = Team_Add_Members()
         
             # send team, addMemberForm and is_leader with context        
-            context = {'team':team, 'addMemberForm' : addMemberForm, 'is_leader' : is_leader(request)}
+            context = {'team':team,
+                       'addMemberForm' : addMemberForm,
+                       'is_leader' : is_leader(request),
+                       'invites' : invites,
+                       }
         # If user is not leader, send context without addMemberForm
         else:
-            context = {'team':team, 'is_leader' : is_leader(request),}
+            context = {'team':team,
+                       'is_leader' : is_leader(request),
+                       'invites' : invites,
+                       }
     # If you don't have team, send an empty context
     else:
         context = {}
@@ -235,7 +243,10 @@ def leave_team(request):
         if is_RegOpen: 
             if is_leader(request): # If leader, delete the team
                 team = Team.objects.filter(contest=con).get(members__id = request.user.id)
-                team.delete()    
+                if team.members.all().count() > 1: # If member count is > 1
+                    messages.error(request, 'You need to transfer leadership before you can leave the team.')
+                else:
+                    team.delete()    
             else: # else delete the member from the team
                 team = Team.objects.filter(contest=con).get(members__id = request.user.id)
                 team.members.remove(user.id)
@@ -248,6 +259,7 @@ def leave_team(request):
 def editTeam(request):
     user = request.user
     url = get_current_url(request)
+    con = get_current_contest(request)
 #  url = request.path.split('/')[1]
     # Get the team or 404
     instance = get_object_or_404(Team, members__in=CustomUser.objects.filter(pk=user.id))
@@ -260,6 +272,7 @@ def editTeam(request):
             if form.is_valid():
                 messages.success(request, 'Profile details updated.')
                 form.save()
+                return redirect('team_profile', con.url)
     else:
         messages.error(request, 'You are not the team leader')                    
     

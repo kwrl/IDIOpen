@@ -4,6 +4,8 @@ import random
 import re
 
 from django.db import models
+from django.core.exceptions import ValidationError;
+from django.core.validators import MinLengthValidator;
 from django.utils import timezone
 from django.utils.http import urlquote
 from django.utils.translation import ugettext_lazy as _
@@ -120,12 +122,15 @@ YEAR_OF_STUDY = (
         ('3', '3'),
         ('4', '4'),
         ('5', '5'),
-        ('N/A', 'Not a student'),
+        ('6', '6'),
+        ('Pro', 'Pro'),
     );
 GENDER_CHOICES = (
+            (' ', 'Not specified'),
             ('M', 'Male'),
             ('F', 'Female'),
     );
+MINIMUM_PASSWORD_LENGTH = 6;
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     skill_level = models.CharField(max_length=4, choices=YEAR_OF_STUDY,
@@ -165,6 +170,21 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['first_name', 'last_name']
 
+    # password = models.CharField(_('password'), max_length=128,
+    #                             validators=[MinLengthValidator(
+    #                                                  MINIMUM_PASSWORD_LENGTH)]);
+
+    def clean_password(self, pw):
+        #FIXME: this method is not implicitly invoked.
+        """ Set the password, with the given algorithms
+            param pw is assumed clean and safe, and 
+            is validated for length
+        """
+        if len(pw) < MINIMUM_PASSWORD_LENGTH:
+            raise ValidationError("Given password is to short, " \
+                                  + "minimum length is %d characters"
+                                  % (MINIMUM_PASSWORD_LENGTH));
+
     class Meta:
         verbose_name = _('user')
         verbose_name_plural = _('users')
@@ -185,7 +205,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         Returns the first_name plus the last_name, with a space in between.
         """
         if self.nickname:
-            full_name = '%s \'%s\' %s' % (self.first_name,self.nickname, self.last_name)
+            full_name = '%s "%s" %s' % (self.first_name, self.nickname, self.last_name)
         else:
             full_name = '%s %s' % (self.first_name, self.last_name)
         return full_name.strip()
