@@ -131,24 +131,32 @@ class RegistrationForm(forms.Form):
         match. Note that an error here will end up in
         ``non_field_errors()`` because it doesn't apply to a single
         field.
-
+        
         """
-        if 'password1' in self.cleaned_data \
-        and 'password2' in self.cleaned_data:
-            if self.cleaned_data['password1'] != self.cleaned_data['password2']:
+        password1 = self.cleaned_data.get('password1')
+        password2 = self.cleaned_data.get('password2')
+        
+        if password1 and password2:
+            if password1 != password2:
                 append_field_error(self, 'password1',
                         _("The two passwords didn't match"));
                 append_field_error(self, 'password2',
                         _("The two passwords didn't match"));
                 raise forms.ValidationError('');
-        try:
-            tmpCU = User();
-            tmpCU.clean_password(self.cleaned_data['password1']);
-        except ValidationError as ve:
-            append_field_error(self, 'password1',
+            
+            try:
+                tmpCU = User();
+                tmpCU.clean_password(password1);
+            except ValidationError as ve:
+                append_field_error(self, 'password1',
                                _(ve.message));
-            raise forms.ValidationError('');
-        return self.cleaned_data;
+                raise forms.ValidationError('');
+            return self.cleaned_data;
+            
+        else:
+            append_field_error(self, 'password1',
+                        _("Please write a password"));
+                        
 '''
 Form for showing the invites
 '''
