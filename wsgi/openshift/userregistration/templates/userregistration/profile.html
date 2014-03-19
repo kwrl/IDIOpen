@@ -3,11 +3,10 @@
 
 	<h2> Profile page</h2>
 	<hr>
-    <em><p style="font-size: 250%;">{{ user.first_name }}
-        {% if user.nickname %} 
-        &lsquo;{{ user.nickname|escape }}&lsquo;
-        {% endif %}
-                {{ user.last_name }} </p></em>
+
+    <em><p style="font-size: 250%;">{{ user.get_name_nick }}</p></em>
+    <br>
+    
 	{% if team %}
 	<ul class="list-inline">
 		<li><p class="text-muted"> Team: </p> </li>

@@ -172,7 +172,8 @@ def team_profile(request):
     team = Team.objects.filter(members__id = user.id)
     # If you have a team
     if team.count() > 0:
-        team = team[0]     
+        team = team[0]
+        invites = Invite.objects.filter(team=team).filter(is_member = False)
         # If you are leader
         if is_leader(request):
             if request.method == 'POST':
@@ -191,10 +192,17 @@ def team_profile(request):
                 addMemberForm = Team_Add_Members()
         
             # send team, addMemberForm and is_leader with context        
-            context = {'team':team, 'addMemberForm' : addMemberForm, 'is_leader' : is_leader(request)}
+            context = {'team':team,
+                       'addMemberForm' : addMemberForm,
+                       'is_leader' : is_leader(request),
+                       'invites' : invites,
+                       }
         # If user is not leader, send context without addMemberForm
         else:
-            context = {'team':team, 'is_leader' : is_leader(request),}
+            context = {'team':team,
+                       'is_leader' : is_leader(request),
+                       'invites' : invites,
+                       }
     # If you don't have team, send an empty context
     else:
         context = {}

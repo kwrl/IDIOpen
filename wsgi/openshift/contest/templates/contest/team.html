@@ -67,6 +67,18 @@
     {% if team.members.count >= 3 %}
     <small><em><p> Your team is full </p></em></small>
     {% endif %}
+    <em><h4>Pending Invites</h4></em>
+	<table class="table table-striped">
+        <tbody>
+	    {% if invites %}
+	    	{% for invite in invites.all %}
+	        <tr>
+	        <td><a href="#">{{ invite.email }}</a></td>
+	        </tr>
+			{% endfor %}
+		{% endif %}
+      </tbody>
+    </table>
 	{% if is_leader %}    
 	<hr>
 	<form class="form-horizontal" method="POST" action="" role="form">

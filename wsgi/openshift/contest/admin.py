@@ -22,6 +22,16 @@ class TeamAdmin(admin.ModelAdmin):
     
     
 class LinkAdmin(admin.ModelAdmin):
+    fieldsets = (
+        (None, {
+            'fields': ('text', 'contestUrl', 'url'),
+            'description': "To create a separator, create a Link with url \'separator\' without slashes."
+        }),
+    )
+    list_display = ('text', 'contestUrl', 'url',)
+    search_fields = ('text','url',)
+    ordering = ('text',)
+    
     form = LinkForm    
 
 class ContestAdmin(admin.ModelAdmin):
