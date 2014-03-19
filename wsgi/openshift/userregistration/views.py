@@ -120,12 +120,12 @@ class RegistrationView(FormView):
         first_name  = cleaned_data['first_name'];
         last_name   = cleaned_data['last_name'];
         password    = cleaned_data['password1'];
-        year_of_study = cleaned_data['year_of_study'];
+        skill_level = cleaned_data['skill_level'];
         gender      = cleaned_data['gender'];
         nickname    = cleaned_data['nickname'];
         site        = RequestSite(request);
         new_user = User.objects.create_inactive_user(email, first_name,
-                last_name, password, site, url, year_of_study, gender, nickname);
+                last_name, password, site, url, skill_level, gender, nickname);
         signals.user_registered.send(sender=self.__class__, user=new_user,
                                      request=request)
         return new_user;
