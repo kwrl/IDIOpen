@@ -207,9 +207,9 @@ def updateProfilePw(request):
 def updateProfileEmail(request):
     form = None;
     if request.method == 'POST':
-        form = EmailForm(request, data=request.POST);
+        form = EmailForm(data=request.POST);
         if form.is_valid():
-            form.save();
+            form.save(request.user, request);
             messages.success(request, "Email verification sent");
     else:
         form = EmailForm();

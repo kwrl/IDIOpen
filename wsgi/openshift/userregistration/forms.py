@@ -220,12 +220,11 @@ class EmailForm(forms.Form):
     email = forms.EmailField()
     email_validation = forms.EmailField()
 
-    def __init__(self, request=None, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         super(EmailForm, self).__init__(*args, **kwargs);
         """ HTML context name
         """
         self.contextName = "useremail";
-        self.request = request;
 
     def clean(self):
         # Ensure fields are non-empty
@@ -248,19 +247,13 @@ class EmailForm(forms.Form):
 
         raise ValidationError("Fields cannot be empty")
 
-    def save(self):
+    def save(self, user, request):
         """ We want to send an email, instead of saving to model right away
         """
-        self.add_new_email(self.cleaned_data['email_validation'])
-
-    """Adds a new email to be swapped in"""
-    def add_new_email(self, new_email):
-        new_email = ChangeEmail(self.request.user, self.cleaned_data['email']);
-        new_email.make_activation_key();
-        
+        realUser = User.objects.get(pk=user.pk);
+        new_email = ChangeEmail(realUser, self.cleaned_data['email']);
         new_email.save();
-        new_email.send_confirmation_mail(self.request);
-
+        #new_email.send_confirmation_mail(request);
 
 class PIForm(forms.ModelForm):
     """ Form to update the personal information of activated contestants

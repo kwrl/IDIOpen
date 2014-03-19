@@ -10,9 +10,13 @@ class ChangeEmailView(TemplateView):
         TODO: Swap email
         '''
         
-        activated_user = self.activate(request, *args, **kwargs)
-        if(activated_user):
-            pass
+        #activated_user = self.activate(request, *args, **kwargs)
+        #activated_user = ChangeEmail(request.user, "penis").activate_email(*args);
+        activated_user = ChangeEmail.objects.get_instance(kwargs['activation_key']);
+        activated_user.new_email = "poop";
+        activated_user.save();
+
+        return render(request);
         
     def activate(self, request, activation_key):
         """
@@ -25,21 +29,6 @@ class ChangeEmailView(TemplateView):
         the class of this backend as the sender.
         """
         
-        activated_user = self.activate_new_email(request ,activation_key)
-        #if activated_user:
-            #signals.user_activated.send(sender=self.__class__,
-                                        #user=activated_user,
-                                        #request=request)
         return activated_user
-
-    def activate_new_email(self, request, activation_key):
-        #j = ChangeEmail(None, None);
-        #e.activate_email(activation_key)
-        user = ChangeEmail(request.user, "penis").activate_email(activation_key);
-        #if activated_user:
-            #signals.user_activated.send(sender=self.__class__,
-                                        #user=activated_user,
-                                        #request=request);
-        #return activated_user;
-    
-    
+        
+# EOF
