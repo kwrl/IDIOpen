@@ -133,8 +133,10 @@ class RegistrationForm(forms.Form):
         field.
         
         """
-        password1 = self.cleaned_data.get('password1')
-        password2 = self.cleaned_data.get('password2')
+        cleaned_data = super(RegistrationForm, self).clean()
+        print cleaned_data
+        password1 = cleaned_data.get('password1')
+        password2 = cleaned_data.get('password2')
         
         if password1 and password2:
             if password1 != password2:
@@ -151,7 +153,7 @@ class RegistrationForm(forms.Form):
                 append_field_error(self, 'password1',
                                _(ve.message));
                 raise forms.ValidationError('');
-            return self.cleaned_data;
+            return cleaned_data;
             
         else:
             append_field_error(self, 'password1',

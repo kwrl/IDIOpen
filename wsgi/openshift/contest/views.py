@@ -20,7 +20,7 @@ User = get_user_model()
 # Create your views here.
 
 def index(request):
-    url = request.path.split('/')[1]
+    url = get_current_url(request)
     article_list = Article.objects.all().filter(contest__url = url).exclude(visible_article_list = False).order_by("-created_at")
     context = {'article_list' : article_list, 
                }    
@@ -54,7 +54,6 @@ def registration(request):
         return render(request, 'registerForContest/requireLogin.html')
 
     con = get_current_contest(request);
-    today = getTodayDate(request);
 
     if not con.isRegOpen():
         messages.error(request, 'Registration is now closed');
@@ -65,10 +64,10 @@ def registration(request):
                     'form': tf,
                     });
 
-    if request.method == 'POST' and is_member_of_team(request):
+    if request.method == 'POST' and is_member_of_team(request, con):
         messages.warning(request, 'Unfortunately you can only be part of one team for this contest. :( ')
     
-    elif is_member_of_team(request):
+    elif is_member_of_team(request, con):
         messages.info(request, 'Unfortunately you can only be part of one team for this contest. :( ')
     
     elif request.method == 'POST': # If the form has been submitted...
@@ -97,18 +96,8 @@ def registration(request):
                 
             else: # if the emails do not equal each other
                     
-                try: 
-                    url = request.path.split('/')[1]
-                except ObjectDoesNotExist as e: 
-                    raise Http404
-                
-                try: 
-                    current_contest = Contest.objects.get(url = url)
-                except ObjectDoesNotExist as e: 
-                    raise Http404
-                
                 team = Team.objects.create(name=form.cleaned_data['name'], onsite=form.cleaned_data['onsite'], 
-                                           offsite=form.cleaned_data['offsite'], contest = current_contest, leader = request.user)
+                                           offsite=form.cleaned_data['offsite'], contest = con, leader = request.user)
                 team.members.add(request.user)
                 '''
                 Clearifaction: We have decided to add the current user as a leader AND as a member. 
@@ -120,11 +109,11 @@ def registration(request):
                 site = get_current_site(request)
                 
                 if email_one:
-                    invite_1 =Invite.objects.create_invite(email = email_one, team=team, url=url, site=site); # adding "user" (a.k.a the email) to invite list.
+                    invite_1 =Invite.objects.create_invite(email = email_one, team=team, url=con.url, site=site); # adding "user" (a.k.a the email) to invite list.
                     invite_1.save()
                 
                 if email_two:
-                    invite_2 = Invite.objects.create_invite(email = email_two, team=team, url=url, site=site); # adding "user" (a.k.a the email) to invite list. 
+                    invite_2 = Invite.objects.create_invite(email = email_two, team=team, url=con.url, site=site); # adding "user" (a.k.a the email) to invite list. 
                     invite_2.save()
                     
                 '''
@@ -162,26 +151,29 @@ def user_exist(email):
 AUTHOR: Haakon, Tino, Filip
 
 '''
-@login_required
+#@login_required
 def team_profile(request):    
     user = request.user
-    url = request.path.split('/')[1]
+    con = get_current_contest(request);
+    if not user.is_authenticated():
+        return redirect('login', con.url)
 
     site = get_current_site(request)
     # Need to give error if you dont have team (link to register team page)
-    team = Team.objects.filter(members__id = user.id)
+    team = Team.objects.filter(contest=con).filter(members__id = user.id)
     # If you have a team
     if team.count() > 0:
         team = team[0]
         invites = Invite.objects.filter(team=team).filter(is_member = False)
         # If you are leader
-        if is_leader(request):
+        leader = is_leader(request,con)
+        if leader:
             if request.method == 'POST':
                     addMemberForm = Team_Add_Members(request.POST)
                     if addMemberForm.is_valid():
                         email = addMemberForm.cleaned_data['email']
                         if Team.objects.get(pk=team.id).members.count() < 3:  #TODO: Fix hard code      
-                            invite = Invite.objects.create_invite(email, team, url, site)
+                            invite = Invite.objects.create_invite(email, team, con.url, site)
                             invite.save()
                             messages.success(request, 'Email has been sent to: ' + email)
                         else:   
@@ -194,13 +186,13 @@ def team_profile(request):
             # send team, addMemberForm and is_leader with context        
             context = {'team':team,
                        'addMemberForm' : addMemberForm,
-                       'is_leader' : is_leader(request),
+                       'is_leader' : leader,
                        'invites' : invites,
                        }
         # If user is not leader, send context without addMemberForm
         else:
             context = {'team':team,
-                       'is_leader' : is_leader(request),
+                       'is_leader' : leader,
                        'invites' : invites,
                        }
     # If you don't have team, send an empty context
@@ -215,8 +207,8 @@ AUTHOR: Tino, Filip
 #===============================================================================
 # Check if user is Team leader
 #===============================================================================
-def is_leader(request):
-    team = Team.objects.get(members__id = request.user.id)
+def is_leader(request, contest):
+    team = Team.objects.filter(contest=contest).get(members__id = request.user.id)
     if team.leader.id == request.user.id:
         return True
     else:
@@ -225,8 +217,8 @@ def is_leader(request):
 #===============================================================================
 # Check if user is on a team
 #===============================================================================
-def is_member_of_team(request):
-    team = Team.objects.filter(members__id = request.user.id)
+def is_member_of_team(request, contest):
+    team = Team.objects.filter(contest=contest).filter(members__id = request.user.id)
     if team.count() > 0:
         return team[0]
     else:
@@ -241,7 +233,7 @@ def leave_team(request):
     is_RegOpen = con.isRegOpen()   
     if request.method == 'GET':
         if is_RegOpen: 
-            if is_leader(request): # If leader, delete the team
+            if is_leader(request, con): # If leader, delete the team
                 team = Team.objects.filter(contest=con).get(members__id = request.user.id)
                 if team.members.all().count() > 1: # If member count is > 1
                     messages.error(request, 'You need to transfer leadership before you can leave the team.')
@@ -255,24 +247,27 @@ def leave_team(request):
         
     return redirect('team_profile', con.url)
     
-@login_required
+#@login_required
 def editTeam(request):
     user = request.user
     url = get_current_url(request)
     con = get_current_contest(request)
-#  url = request.path.split('/')[1]
+    
+    if not user.is_authenticated():
+        return redirect('login', url)
     # Get the team or 404
-    instance = get_object_or_404(Team, members__in=CustomUser.objects.filter(pk=user.id))
+    queryset = Team.objects.filter(contest=con).filter(members__in = [user])
+    instance = get_object_or_404(queryset)
     # make a new form, with the instance as its model
     form = Team_Edit(None, instance = instance)
     # Need to be leader to edit a profile
-    if is_leader(request):
+    if is_leader(request, con):
         if request.method == 'POST':
             form = Team_Edit(request.POST, instance = instance)
             if form.is_valid():
                 messages.success(request, 'Profile details updated.')
                 form.save()
-                return redirect('team_profile', con.url)
+                return redirect('team_profile', url)
     else:
         messages.error(request, 'You are not the team leader')                    
     
@@ -299,9 +294,11 @@ def view_teams(request):
 def deleteMember(request, member_id):
     user = request.user
     url = request.path.split('/')[1]
+    con = get_current_contest(request)
     
-    if is_leader(request):
-        team = get_object_or_404(Team, leader=CustomUser.objects.get(pk=user.id))
+    if is_leader(request, con):
+        queryset = Team.objects.filter(contest=con).filter(members__in = [user])
+        team = get_object_or_404(queryset)
         member = CustomUser.objects.get(pk=member_id)
         team.members.remove(member)
         messages.success(request, 'Member deleted')
