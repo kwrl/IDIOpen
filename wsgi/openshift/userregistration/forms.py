@@ -277,7 +277,7 @@ class EmailForm(forms.Form):
                     append_field_error(self, 'email',
                                         "Email already exists in the database"
                                         + ", please use another");
-                    raise ValidationError();
+                    raise ValidationError("");
                 return self.cleaned_data;
 
         raise ValidationError("Fields cannot be empty")
