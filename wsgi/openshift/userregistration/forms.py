@@ -273,9 +273,23 @@ class EmailForm(forms.Form):
                                                            % ("emails"));
             else:
                 super(EmailForm, self).clean();
+                if not self.__isEmailUnique(email):
+                    append_field_error(self, 'email',
+                                        "Email already exists in the database"
+                                        + ", please use another");
+                    raise ValidationError();
                 return self.cleaned_data;
 
         raise ValidationError("Fields cannot be empty")
+
+    def __isEmailUnique(self, sug_email):
+        """ Verify that the suggested email does not already exist in the
+            userbase
+        """
+        #FIXME: or the changeemail base.
+        if User.objects.filter(email=sug_email).count():
+            return False;
+        return True;
 
     def save(self, user, request):
         """ We want to send an email, instead of saving to model right away
