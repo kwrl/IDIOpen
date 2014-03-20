@@ -84,7 +84,7 @@ class Team_Form(forms.ModelForm):
     def clean_offsite(self):
         offsite = self.cleaned_data.get('offsite')
         
-        if not offsite or offsite.isspace():
+        if offsite and offsite.isspace():
             self._errors['offsite'] = self.error_class(["Offsite is required"])    
         else:
             return self.cleaned_data['offsite'].strip()
