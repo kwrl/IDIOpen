@@ -20,20 +20,20 @@ import re;
 
 class ChangeEmailManager(models.Manager):
     def get_instance(self, activation_key):
-            SHA1_RE = re.compile('^[a-f0-9]{40}$');
-            instance = None;
+        SHA1_RE = re.compile('^[a-f0-9]{40}$');
+        instance = None;
 
-            if SHA1_RE.search(activation_key):
-                try:
-                    instance = self.get(activation_key=activation_key);
-                except self.model.DoesNotExist:
-                    return None;
-
-                return instance
-            else:
+        if SHA1_RE.search(activation_key):
+            try:
+                instance = self.get(activation_key=activation_key);
+            except self.model.DoesNotExist:
                 return None;
-        
+
+            return instance
+        else:
+            return None;
     
+
 class ChangeEmail(models.Model):
     """
     A model to temporarily store an email adress change request.
