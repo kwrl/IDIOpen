@@ -117,13 +117,36 @@ class RegistrationForm(forms.Form):
                     _("A user with that email already exists."))
         else:
             return self.cleaned_data['email']
-
+ 
+ #===============================================================================
+ # Strips trailing whitespace from first_name, last_name and nickname.
+ # Note: Not the best solution, but didn't manage to do this in the model instead.
+ #===============================================================================
+ 
+    def clean_first_name(self):        
+        first_name = self.cleaned_data.get('first_name')
+        
+        if first_name.isspace():        
+            raise ValidationError("First name not set")
+        else:
+            return self.cleaned_data['first_name'].strip()   
+            
+    def clean_last_name(self):
+        last_name = self.cleaned_data.get('last_name')
+        
+        if last_name.isspace():
+            raise ValidationError("Last name not set")
+        else:
+            return self.cleaned_data['last_name'].strip()
+        
     def clean_nickname(self):
         """Ensures that nicknames are not all spaces"""
-        if ' ' in self.cleaned_data['nickname']:
-            raise ValidationError("Nicknames can not contain spaces")
+        nickname = self.cleaned_data.get('nickname')
+        
+        if nickname.isspace():        
+            raise ValidationError("Nickname not set")
         else:
-            return self.cleaned_data['nickname'] 
+            return self.cleaned_data['nickname'].strip() 
 
     def clean(self):
         """
