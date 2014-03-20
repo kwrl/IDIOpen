@@ -13,6 +13,7 @@ from django.core.mail import send_mail
 from django.db import models;
 
 from userregistration.models import CustomUser as User;
+from contest.models import Invite;
 
 from django.conf import settings;
 
@@ -72,11 +73,17 @@ class ChangeEmail(models.Model):
         super(ChangeEmail, self).save(*args, **kwargs);
 
     def updateUser(self):
-        self.refuser.email = self.new_email;
-        self.refuser.save();
         #TODO: should there be a post-save signal here? See django-docs.
         #    : this is to verify that the user email is actually updated.
+        old_email = self.refuser.email;
+        self.refuser.email = self.new_email;
+        self.refuser.save();
 
+        assert self.refuser.email != old_email;
+
+        for invite in Invite.objects.filter(email=old_email):
+            invite.email = self.new_email;
+            invite.save();
 
     def send_confirmation_mail(self, request):
         try: 
@@ -98,6 +105,6 @@ class ChangeEmail(models.Model):
         # ubject = ''.join(subject.splitlines())
         content = render_to_string('changeEmail/change_email_content.txt', ctx_dict)
         print content;
-        send_mail(subject, content, '', [self.new_email]);
+        #send_mail(subject, content, '', [self.new_email]);
         
 # EOF        
