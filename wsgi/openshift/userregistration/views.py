@@ -2,7 +2,7 @@ from django.shortcuts import redirect, render
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView
 from userregistration import signals
-from userregistration.forms import RegistrationForm, Invites_Form
+from userregistration.forms import RegistrationForm, Invites_Form, PasswordResetForm
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from contest.models import Invite
