@@ -101,12 +101,12 @@
 	  		</div>
   		</div>
 	</form>
+	{% endif %}
 	<hr>
 		<div class="btn-group pull-right">
 			<a href=# id="LeaveButton" data-toggle="confirmation" class="alert btn btn-danger btn-sm">{% trans 'Leave team' %}</a>
 		</div>
 
-	{% endif %}
 {% else %}
 	<p> You are currently not member of any team. Want to participate in this contest? </p>
 	<a href=" {% url 'register_teams' contest.url %}">Register a Team </a>
