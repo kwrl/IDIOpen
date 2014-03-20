@@ -170,6 +170,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['first_name', 'last_name']
 
+
     # password = models.CharField(_('password'), max_length=128,
     #                             validators=[MinLengthValidator(
     #                                                  MINIMUM_PASSWORD_LENGTH)]);
