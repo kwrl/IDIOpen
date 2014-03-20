@@ -301,8 +301,6 @@ def user_profile(request):
         else:
             messages.error(request, 'Validation failed')
         
-        
-        
     invites = Invite.objects.filter(email=useremail).filter(is_member = False)
     context = {'invites' : invites,
                'team' : get_current_team(request), 
