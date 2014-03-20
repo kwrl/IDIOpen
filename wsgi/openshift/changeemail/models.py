@@ -13,7 +13,6 @@ from django.conf import settings
 from django.contrib.sites.models import RequestSite
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import send_mail
-from django.db import models
 from django.template.loader import render_to_string
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
@@ -108,7 +107,7 @@ class ChangeEmail(models.Model):
         self.__removeDuplicates()
 
 
-    def __updateInvites(self, user):
+    def __updateInvites(self, old_email):
         """ Verify that all updates reflect the email-change of the user
             
             Should be invoked only after updating the user!
