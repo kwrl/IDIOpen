@@ -211,7 +211,7 @@ def updateProfileEmail(request):
         form = EmailForm(data=request.POST);
         if form.is_valid():
             form.save(request.user, request);
-            messages.success(request, "Email verification sent");
+            messages.success(request, "Email-activation sent to new address");
     else:
         form = EmailForm();
     
@@ -265,7 +265,7 @@ def get_current_team(request):
 
 @login_required
 def user_profile(request):
-    email = request.user.email
+    useremail = request.user.email
     if request.method == 'POST':
         form = Invites_Form(request.POST)
         submit = form.data['submit']
@@ -273,7 +273,7 @@ def user_profile(request):
         if id.isdigit():
             try:
                 try:
-                    invite = Invite.objects.filter(email=email).filter(is_member=False, ).get(pk=id)
+                    invite = Invite.objects.filter(email=useremail).filter(is_member=False, ).get(pk=id)
                 except ObjectDoesNotExist:
                     messages.error(request, 'Invalid invite')
                     raise Exception
@@ -281,7 +281,7 @@ def user_profile(request):
                     if not is_on_team(request):
                         if invite.team.members.count() < 3:
                             try:
-                                invite.team.members.add(User.objects.get(email=email))
+                                invite.team.members.add(User.objects.get(email=useremail))
                                 invite.is_member = True
                             except ObjectDoesNotExist:
                                 raise forms.ValidationError(_("The form did not validate"))
@@ -301,9 +301,7 @@ def user_profile(request):
         else:
             messages.error(request, 'Validation failed')
         
-        
-        
-    invites = Invite.objects.filter(email=email).filter(is_member = False)
+    invites = Invite.objects.filter(email=useremail).filter(is_member = False)
     context = {'invites' : invites,
                'team' : get_current_team(request), 
                'user': request.user,

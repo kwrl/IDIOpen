@@ -71,4 +71,3 @@ urlpatterns = patterns('',
             name='password_reset_done'),
         )
 # EOF
-
