@@ -285,7 +285,8 @@ class EmailForm(forms.Form):
             userbase
         """
         #FIXME: or the changeemail base.
-        if User.objects.filter(email=sug_email).count():
+        if User.objects.filter(email=sug_email).count() \
+        or ChangeEmail.objects.filter(new_email=sug_email).count():
             return False;
         return True;
 
