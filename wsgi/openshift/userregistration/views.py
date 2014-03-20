@@ -334,6 +334,7 @@ def retProfile(request, userProfile):
     context = {'invites' : invites,
                'user': request.user,
                'have_team': is_on_team(request),
+               'team' : get_current_team(request),
                }
 
     context.update(userProfile.getDict());
