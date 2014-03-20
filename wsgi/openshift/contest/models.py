@@ -103,8 +103,21 @@ class Team(models.Model):
     offsite = models.CharField(max_length=200, blank = True)
     def __unicode__(self):
         return self.name
+    
+    #===============================================================================
+    # Removes trailing whitespace from all CharFields and TextFields in Team Model
+    # 
+    # Note: For some reason this only works for Team_Edit form and not for Team_Form
+    #===============================================================================
+    def clean(self):
+        for field in self._meta.fields:
+            if isinstance(field, (models.CharField, models.TextField)):
+                value = getattr(self, field.name)
+                if value:
+                    print ("stripping value" + value)
+                    setattr(self, field.name, value.strip())
 
-        
+                                      
 class InviteManager(models.Manager):
     def create_invite(self, email, team, url, site):
         invite = self.create(email=email, team=team)
