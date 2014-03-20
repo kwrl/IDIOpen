@@ -285,9 +285,19 @@ class EmailForm(forms.Form):
             userbase
         """
         #FIXME: or the changeemail base.
-        if User.objects.filter(email=sug_email).count() \
-        or ChangeEmail.objects.filter(new_email=sug_email).count():
+        if User.objects.filter(email=sug_email).count():
             return False;
+
+        """
+            #1 See if other entries are < 1 day old. If so, delete them.
+                
+            #2 Insert this entry, pretend like nothing. 
+               When the activation key is triggered, delete all others.
+
+        """
+        if ChangeEmail.objects.filter(new_email=sug_email).count():
+            pass;
+
         return True;
 
     def save(self, user, request):
