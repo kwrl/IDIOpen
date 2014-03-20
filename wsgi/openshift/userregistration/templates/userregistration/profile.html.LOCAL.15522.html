@@ -13,23 +13,12 @@
  		<li><a style="font-size: 150%;" href="{% url 'team_profile' contest.url %}"> {{ team.name }}</a></li>	
  	</ul>
 	{% else %}
-	<em>You are currently not on a team</em>
+	<em>You are currently on no team</em>
 	<br>
 	{% endif %}
 
-	<p>
 	Year of study: <b><em>{{ user.skill_level }}</em></b>
 	<br>
-	Your gender: <b><em>
-	{% if user.gender = M %}
-		Male
-	{% elif user.gender = F %}
-		Female
-	{% else %}
-		Not Specified	
-	{% endif %}
-	 
-	{{ user.gender }}
 	Your gender: <b><em>{{ user.gender}}</em></b>
 	<br>    
 	Email: <b><em>{{ user.email }}</em></b>
@@ -160,7 +149,7 @@
 			<table class="table table-striped">
 			<tr>
 			<td> Team </td>
-			<td> Sent by</td>
+			<td> Sendt by</td>
 			<td> Skill </td>
 			<td> Full </td>
 			<td> </td>					
@@ -212,4 +201,3 @@
 		<p class="text-muted"> Empty </p>
 	{% endif %}
 {% endblock content %}
-

@@ -7,11 +7,12 @@
     <em><p style="font-size: 250%;">{{ user.get_name_nick }}</p></em>
     <br>
     
+   	
 	{% if team %}
-	<ul class="list-inline">
+	<ul class="list-inline">   
 		<li><p class="text-muted"> Team: </p> </li>
  		<li><a style="font-size: 150%;" href="{% url 'team_profile' contest.url %}"> {{ team.name }}</a></li>	
- 	</ul>
+	</ul> 
 	{% else %}
 	<em>You are currently not on a team</em>
 	<br>
@@ -30,7 +31,7 @@
 	{% endif %}
 	 
 	{{ user.gender }}
-	Your gender: <b><em>{{ user.gender}}</em></b>
+	</em></b>
 	<br>    
 	Email: <b><em>{{ user.email }}</em></b>
 	<br>
@@ -102,6 +103,7 @@
             </div>
      
         
+<<<<<<< HEAD
 	{# <div class="panel-heading"> #}
         {# <a data-toggle="collapse" data-parent="#accordion" href="#collapseEmail"> #}
         {#      <h4 class="panel-title"> #}
@@ -124,6 +126,28 @@
         {#          </form> #}
         {#      </div> #}
         {#  </div> #}
+=======
+	<div class="panel-heading">
+        <a data-toggle="collapse" data-parent="#accordion" href="#collapseEmail">
+             <h4 class="panel-title"> Change email     </h4>
+        </a>
+        </div>
+         <div id="collapseEmail" class="panel-collapse collapse">
+             <div class="panel-body">
+                 <form id="contestant_edit_pw" METHOD="POST" action="{% url 'profile_edit_email' contest.url %}">
+                 {% csrf_token %}
+                     {% for field in useremail %}
+                         {{ field.label_tag }} {{ field }}
+                         {{ field.errors }}
+                         <br /> 
+                     {% endfor %}
+                     <button type="submit" name="submit" value="Save" class="btn btn-default btn-sm">
+                         Change email
+                     </button>
+                 </form>
+             </div>
+         </div>
+>>>>>>> c077d6ce6992fcf71f8045f903917936adf69829
 
          <div class="panel-heading">
          <a data-toggle="collapse" data-parent="#accordion" href="#collapsePI">
@@ -212,4 +236,3 @@
 		<p class="text-muted"> Empty </p>
 	{% endif %}
 {% endblock content %}
-

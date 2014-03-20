@@ -13,23 +13,12 @@
  		<li><a style="font-size: 150%;" href="{% url 'team_profile' contest.url %}"> {{ team.name }}</a></li>	
  	</ul>
 	{% else %}
-	<em>You are currently not on a team</em>
+	<em>You are currently on no team</em>
 	<br>
 	{% endif %}
 
-	<p>
 	Year of study: <b><em>{{ user.skill_level }}</em></b>
 	<br>
-	Your gender: <b><em>
-	{% if user.gender = M %}
-		Male
-	{% elif user.gender = F %}
-		Female
-	{% else %}
-		Not Specified	
-	{% endif %}
-	 
-	{{ user.gender }}
 	Your gender: <b><em>{{ user.gender}}</em></b>
 	<br>    
 	Email: <b><em>{{ user.email }}</em></b>
@@ -51,13 +40,6 @@
             });
         </script>
     {% endif %}
-    {% if useremail.errors %}
-        <script>$(document).ready( function () {
-            document.getElementById("collapseEmail").classList.add("in");
-            });
-        </script>
-    {% endif %}
-
     {% if userpi.errors %}
         <script>$(document).ready( function () {
             document.getElementById("collapsePI").classList.add("in");
@@ -87,43 +69,29 @@
                 </form>
             </div>
         </div>
-
-     <div id="collapseEmail" class="panel-collapse collapse ">
-                <div class="panel-body">
-                    <form class="form-horizontal" role="form" id="contestant_edit_email" METHOD="POST" action="{% url 'profile_edit_email' contest.url %}">
-                        {% include 'form_snippet.html' with form=useremail %}
-                        <div class="form-group">
-                            <div class="col-lg-offset-3 col-lg-10">
-                                <button type="submit" class="btn btn-default">Save</button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-     
         
-	{# <div class="panel-heading"> #}
-        {# <a data-toggle="collapse" data-parent="#accordion" href="#collapseEmail"> #}
-        {#      <h4 class="panel-title"> #}
-        {#              Change email #}
-        {#      </h4> #}
-        {#      </a> #}
-        {# </div> #}
-        {#  <div id="collapseEmail" class="panel-collapse collapse"> #}
-        {#      <div class="panel-body"> #}
-        {#          <form id="contestant_edit_pw" METHOD="POST" action="{% url 'profile_edit_email' contest.url %}"> #}
-        {#          {% csrf_token %} #}
-        {#              {% for field in useremail %} #}
-        {#                  {{ field.label_tag }} {{ field }} #}
-        {#                  {{ field.errors }} #}
-        {#                  <br />  #}
-        {#              {% endfor %} #}
-        {#              <button type="submit" name="submit" value="Save" class="btn btn-default btn-sm"> #}
-        {#                  Change email #}
-        {#              </button> #}
-        {#          </form> #}
-        {#      </div> #}
-        {#  </div> #}
+	<div class="panel-heading">
+        <a data-toggle="collapse" data-parent="#accordion" href="#collapseEmail">
+             <h4 class="panel-title">
+                     Change email
+             </h4>
+             </a>
+        </div>
+         <div id="collapseEmail" class="panel-collapse collapse">
+             <div class="panel-body">
+                 <form id="contestant_edit_pw" METHOD="POST" action="{% url 'profile_edit_email' contest.url %}">
+                 {% csrf_token %}
+                     {% for field in useremail %}
+                         {{ field.label_tag }} {{ field }}
+                         {{ field.errors }}
+                         <br /> 
+                     {% endfor %}
+                     <button type="submit" name="submit" value="Save" class="btn btn-default btn-sm">
+                         Change email
+                     </button>
+                 </form>
+             </div>
+         </div>
 
          <div class="panel-heading">
          <a data-toggle="collapse" data-parent="#accordion" href="#collapsePI">
@@ -160,7 +128,7 @@
 			<table class="table table-striped">
 			<tr>
 			<td> Team </td>
-			<td> Sent by</td>
+			<td> Sendt by</td>
 			<td> Skill </td>
 			<td> Full </td>
 			<td> </td>					
@@ -212,4 +180,3 @@
 		<p class="text-muted"> Empty </p>
 	{% endif %}
 {% endblock content %}
-
