@@ -7,19 +7,31 @@
     <em><p style="font-size: 250%;">{{ user.get_name_nick }}</p></em>
     <br>
     
+   	
 	{% if team %}
-	<ul class="list-inline">
+	<ul class="list-inline">   
 		<li><p class="text-muted"> Team: </p> </li>
  		<li><a style="font-size: 150%;" href="{% url 'team_profile' contest.url %}"> {{ team.name }}</a></li>	
- 	</ul>
+	</ul> 
 	{% else %}
 	<em>You are currently on no team</em>
 	<br>
 	{% endif %}
 
+	<p>
 	Year of study: <b><em>{{ user.skill_level }}</em></b>
 	<br>
-	Your gender: <b><em>{{ user.gender}}</em></b>
+	Your gender: <b><em>
+	{% if user.gender = M %}
+		Male
+	{% elif user.gender = F %}
+		Female
+	{% else %}
+		Not Specified	
+	{% endif %}
+	 
+	{{ user.gender }}
+	</em></b>
 	<br>    
 	Email: <b><em>{{ user.email }}</em></b>
 	<br>
@@ -72,10 +84,8 @@
         
 	<div class="panel-heading">
         <a data-toggle="collapse" data-parent="#accordion" href="#collapseEmail">
-             <h4 class="panel-title">
-                     Change email
-             </h4>
-             </a>
+             <h4 class="panel-title"> Change email     </h4>
+        </a>
         </div>
          <div id="collapseEmail" class="panel-collapse collapse">
              <div class="panel-body">
@@ -128,7 +138,7 @@
 			<table class="table table-striped">
 			<tr>
 			<td> Team </td>
-			<td> Sendt by</td>
+			<td> Sent by</td>
 			<td> Skill </td>
 			<td> Full </td>
 			<td> </td>					

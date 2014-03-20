@@ -50,14 +50,15 @@
 						{% endif %}
 					{% endif %}
 				</div>
+				
 				<div class="col-lg-5">
 					<div class="pull-right">
 					<br>
 					{% if user.is_authenticated %}
 						<a class="btn btn-default btn-sm" href="{% url 'profile' contest.url %}" role="button">Profile</a>
 						<a class="btn btn-default btn-sm" href="{% url 'logout' contest.url %}" role="button">Logout</a>
-						
 					{% else %}
+					
 					<form class="form-inline" role="form" method="post" action="{% url 'login' contest.url %}">
 						{% csrf_token %}
 					  	<div class="form-group">
@@ -130,18 +131,17 @@
 			<div class="col-lg-7">
 				{% if messages %}
 				<div class="row">
-				<ul class="messages">
 				    {% for message in messages %}
 				    <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissable">
 				  		<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
 				  		 {{ message }}
 					</div>
 				    {% endfor %}
-				</ul>
 				</div>
 				{% endif %}
 				<div class="row">
-				{% block content %}{% endblock content %}
+				{% block content %}
+				{% endblock content %}
 				</div>				
 			</div>
 			<div class="col-lg-3">
@@ -198,7 +198,9 @@
         {% endif %}
       </div>
     </div>
-
+	
+	<!-- HELP, I AM TRAPPED IN A HTML FILE! blub blub  -->
+	
     <script src="{% static 'openshift/js/bootbox.min.js' %}"></script>
        <script>
         $(document.getElementById("LeaveButton")).on("click", function(e) {
