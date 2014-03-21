@@ -18,39 +18,26 @@
 	{% endif %}
 
     <p>
-    <table class="table" >
-            <tbody>
-            <col width="100">
-            <tr>
-                <td >Gender:</td>
-                <td>
-                            {% if user.gender = 'M' %}
-                                Male
-                            {% elif user.gender = 'F' %}
-                                Female
-                            {% else %}
-                                Not Specified	
-                            {% endif %}
-                    </b>
-                    </div>
-            </td>
-            </tr>
-            <tr>
-                <td >Email:</td>
-                <td><b> {{ user.email }} </b> </td>
-            </tr>
-            <tr>
-                <td >Year of study:</td>
-                <td><b> {{ user.skill_level}}</b> </td>
-            </tr>
-            <tr>
-                <td >Date joined:</td>
-                <td><b> {{user.date_joined }}</b> </td>
-            </tr>
-        </tbody>
-    </table>
-    </p>
-<hr>
+    Year of study: <b><em>{{ user.skill_level }}</em></b>
+   <br>
+   Your gender: <b><em>
+    {% if user.gender = 'M' %}
+        Male
+    {% elif user.gender = 'F' %}
+        Female
+    {% else %}
+        Not Specified	
+    {% endif %}
+    </b></em>
+
+   <br>    
+   Email: <b><em>{{ user.email }}</em></b>
+   <br>
+   Date joined: <b><em>{{ user.date_joined|date:"d.m.Y"}}</em></b>
+   <br>
+   </p> 
+
+   <hr>
 
 <link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
   <script src="//code.jquery.com/jquery-1.9.1.js"></script>
