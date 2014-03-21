@@ -17,26 +17,54 @@
 	<br>
 	{% endif %}
 
-	<p>
-	Year of study: <b><em>{{ user.skill_level }}</em></b>
-	<br>
-	Your gender: <b><em>
-	{% if user.gender = M %}
-		Male
-	{% elif user.gender = F %}
-		Female
-	{% else %}
-		Not Specified	
-	{% endif %}
-	 
-	{{ user.gender }}
-	Your gender: <b><em>{{ user.gender}}</em></b>
-	<br>    
-	Email: <b><em>{{ user.email }}</em></b>
-	<br>
-	Date joined: <b><em>{{ user.date_joined|date:"d.m.Y"}}</em></b>
-	<br>
-	</p>
+    {% load staticfiles %}
+
+    <style>
+    .dots{
+        background:url("{% static 'dot.gif' %}") repeat-x bottom;
+        }
+
+    .field{
+        background-color: #FFFFFF;
+    }
+    </style>
+
+    <p>
+    <table class="table" >
+            <tbody>
+            <col width="100">
+            <tr>
+                <td >Gender:</td>
+                <td>
+                    <div class="dots"><b>
+                        <span class="field">
+                            {% if user.gender = 'M' %}
+                                Male
+                            {% elif user.gender = 'F' %}
+                                Female
+                            {% else %}
+                                Not Specified	
+                            {% endif %}
+                        </span>
+                    </b>
+                    </div>
+            </td>
+            </tr>
+            <tr>
+                <td >Email:</td>
+                <td><b> {{ user.email }} </b> </td>
+            </tr>
+            <tr>
+                <td >Year of study:</td>
+                <td><b> {{ user.skill_level}}</b> </td>
+            </tr>
+            <tr>
+                <td >Date joined:</td>
+                <td><b> {{user.date_joined }}</b> </td>
+            </tr>
+        </tbody>
+    </table>
+    </p>
 <hr>
 
 <link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">

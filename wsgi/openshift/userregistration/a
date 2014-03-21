@@ -1,0 +1,598 @@
+let SessionLoad = 1
+if &cp | set nocp | endif
+let s:cpo_save=&cpo
+set cpo&vim
+inoremap <F10> :w !clear :!python % 
+inoremap <silent> <S-Tab> =BackwardsSnippet()
+map! <F5> =strftime('%c')
+inoremap <expr> <Nul> jedi#complete_string(0)
+imap <C-Space> 
+nnoremap  :set invpaste paste?
+snoremap <silent> 	 i<Right>=TriggerSnippet()
+nmap <silent>  <Plug>SetMainScript
+nnoremap  zz
+nmap <silent>  <Plug>ExecuteScript
+snoremap  b<BS>
+vnoremap <silent> 9 :TCommentMaybeInline count=9
+nnoremap <silent> 9 :TComment count=9
+onoremap <silent> 9 :TComment count=9
+vnoremap <silent> 8 :TCommentMaybeInline count=8
+nnoremap <silent> 8 :TComment count=8
+onoremap <silent> 8 :TComment count=8
+vnoremap <silent> 7 :TCommentMaybeInline count=7
+nnoremap <silent> 7 :TComment count=7
+onoremap <silent> 7 :TComment count=7
+vnoremap <silent> 6 :TCommentMaybeInline count=6
+nnoremap <silent> 6 :TComment count=6
+onoremap <silent> 6 :TComment count=6
+vnoremap <silent> 5 :TCommentMaybeInline count=5
+nnoremap <silent> 5 :TComment count=5
+onoremap <silent> 5 :TComment count=5
+vnoremap <silent> 4 :TCommentMaybeInline count=4
+nnoremap <silent> 4 :TComment count=4
+onoremap <silent> 4 :TComment count=4
+vnoremap <silent> 3 :TCommentMaybeInline count=3
+nnoremap <silent> 3 :TComment count=3
+onoremap <silent> 3 :TComment count=3
+vnoremap <silent> 2 :TCommentMaybeInline count=2
+nnoremap <silent> 2 :TComment count=2
+onoremap <silent> 2 :TComment count=2
+vnoremap <silent> 1 :TCommentMaybeInline count=1
+nnoremap <silent> 1 :TComment count=1
+onoremap <silent> 1 :TComment count=1
+noremap ca :call tcomment#SetOption("as", input("Comment as: ", &filetype, "customlist,tcomment#Complete"))
+noremap <silent> cc :call tcomment#SetOption("count", v:count1)
+noremap s :TCommentAs =&ft_
+noremap n :TCommentAs =&ft 
+noremap a :TCommentAs 
+noremap b :TCommentBlock
+noremap <silent> i v:TCommentInline mode=I#
+noremap <silent> r :TCommentRight
+noremap   :TComment 
+noremap <silent> p m`vip:TComment``
+vnoremap <silent>  :TCommentMaybeInline
+nnoremap <silent>  :TComment
+onoremap <silent>  :TComment
+nnoremap # #zz
+snoremap % b<BS>%
+snoremap ' b<BS>'
+nnoremap * *zz
+nmap ++ :call VMATH_Analyse()
+vmap <expr> ++ VMATH_YankAndAnalyse()
+noremap ,_s :TCommentAs =&ft_
+noremap ,_n :TCommentAs =&ft 
+noremap ,_a :TCommentAs 
+noremap ,_b :TCommentBlock
+noremap <silent> ,_r :TCommentRight
+xnoremap <silent> ,_i :TCommentInline
+noremap ,_  :TComment 
+noremap <silent> ,_p vip:TComment
+xnoremap <silent> ,__ :TCommentMaybeInline
+nnoremap <silent> ,__ :TComment
+snoremap <silent> ,__ :TComment
+onoremap <silent> ,__ :TComment
+nnoremap <silent> ,b :CommandTBuffer
+nnoremap <silent> ,t :CommandT
+nmap <silent> ,w,t <Plug>VimwikiTabMakeDiaryNote
+nmap <silent> ,w,w <Plug>VimwikiMakeDiaryNote
+nmap <silent> ,w,i <Plug>VimwikiDiaryGenerateLinks
+nmap <silent> ,wi <Plug>VimwikiDiaryIndex
+nmap <silent> ,ws <Plug>VimwikiUISelect
+nmap <silent> ,wt <Plug>VimwikiTabIndex
+nmap <silent> ,ww <Plug>VimwikiIndex
+nmap <silent> 0 <Plug>ToggleOutputWindow
+noremap :W :w
+noremap :Q :q
+nnoremap <silent> <nop> :call conque_term#exec_file()
+nnoremap <silent> N N:call HLNext(0.4)
+snoremap U b<BS>U
+snoremap \ b<BS>\
+snoremap ^ b<BS>^
+snoremap ` b<BS>`
+nmap cr <Plug>Coerce
+nmap gx <Plug>NetrwBrowseX
+xnoremap <silent> gC :TCommentMaybeInline!
+nnoremap <silent> gCb :let w:tcommentPos = getpos(".") | call tcomment#SetOption("mode_extra", "B") | set opfunc=tcomment#OperatorLineg@
+nnoremap <silent> gCc :let w:tcommentPos = getpos(".") | set opfunc=tcomment#OperatorLineAnywayg@$
+nnoremap <silent> gC :let w:tcommentPos = getpos(".") | set opfunc=tcomment#OperatorAnywayg@
+xnoremap <silent> gc :TCommentMaybeInline
+nnoremap <silent> gcb :let w:tcommentPos = getpos(".") | call tcomment#SetOption("mode_extra", "B") | set opfunc=tcomment#OperatorLineg@
+nnoremap <silent> gcc :let w:tcommentPos = getpos(".") | set opfunc=tcomment#OperatorLineg@$
+nnoremap <silent> gc9c :let w:tcommentPos = getpos(".") | call tcomment#SetOption("count", 9) | set opfunc=tcomment#Operatorg@
+nnoremap <silent> gc8c :let w:tcommentPos = getpos(".") | call tcomment#SetOption("count", 8) | set opfunc=tcomment#Operatorg@
+nnoremap <silent> gc7c :let w:tcommentPos = getpos(".") | call tcomment#SetOption("count", 7) | set opfunc=tcomment#Operatorg@
+nnoremap <silent> gc6c :let w:tcommentPos = getpos(".") | call tcomment#SetOption("count", 6) | set opfunc=tcomment#Operatorg@
+nnoremap <silent> gc5c :let w:tcommentPos = getpos(".") | call tcomment#SetOption("count", 5) | set opfunc=tcomment#Operatorg@
+nnoremap <silent> gc4c :let w:tcommentPos = getpos(".") | call tcomment#SetOption("count", 4) | set opfunc=tcomment#Operatorg@
+nnoremap <silent> gc3c :let w:tcommentPos = getpos(".") | call tcomment#SetOption("count", 3) | set opfunc=tcomment#Operatorg@
+nnoremap <silent> gc2c :let w:tcommentPos = getpos(".") | call tcomment#SetOption("count", 2) | set opfunc=tcomment#Operatorg@
+nnoremap <silent> gc1c :let w:tcommentPos = getpos(".") | call tcomment#SetOption("count", 1) | set opfunc=tcomment#Operatorg@
+nnoremap <silent> gc :if v:count > 0 | call tcomment#SetOption("count", v:count) | endif | let w:tcommentPos = getpos(".") | set opfunc=tcomment#Operatorg@
+nnoremap gi gizzi
+nnoremap g# g#zz
+nnoremap g* g*zz
+omap ic :normal vic
+vnoremap ic :silent call tcomment#TextObjectInlineComment()
+nnoremap <silent> n n:call HLNext(0.4)
+vnoremap n nzz
+onoremap n nzz
+snoremap <Left> bi
+snoremap <Right> a
+snoremap <BS> b<BS>
+snoremap <silent> <S-Tab> i<Right>=BackwardsSnippet()
+nnoremap <silent> <Plug>NetrwBrowseX :call netrw#NetrwBrowseX(expand("<cWORD>"),0)
+map <F5> :MRU
+nnoremap <F10> <Nop>
+nmap <silent> <F7> :call ToggleSpell()
+nmap <F8> :TagbarToggle
+nnoremap <F4> :UndotreeToggle
+nnoremap <Right> <Nop>
+xnoremap <Right> <Nop>
+onoremap <Right> <Nop>
+nnoremap <Left> <Nop>
+xnoremap <Left> <Nop>
+onoremap <Left> <Nop>
+noremap <Down> <Nop>
+noremap <Up> <Nop>
+map <S-F3> :set nonumber
+map <S-F2> :set number
+nnoremap <F3> <F3>zz
+imap  :set invpaste paste?i
+inoremap <silent> 	 =TriggerSnippet()
+inoremap <expr>  ShowDigraphs()
+inoremap <silent> 	 =ShowAvailableSnips()
+inoremap <silent> 9 :TComment count=9
+inoremap <silent> 8 :TComment count=8
+inoremap <silent> 7 :TComment count=7
+inoremap <silent> 6 :TComment count=6
+inoremap <silent> 5 :TComment count=5
+inoremap <silent> 4 :TComment count=4
+inoremap <silent> 3 :TComment count=3
+inoremap <silent> 2 :TComment count=2
+inoremap <silent> 1 :TComment count=1
+inoremap s :TCommentAs =&ft_
+inoremap n :TCommentAs =&ft 
+inoremap a :TCommentAs 
+inoremap b :TCommentBlock
+inoremap <silent> i v:TCommentInline mode=#
+inoremap <silent> r :TCommentRight
+inoremap   :TComment 
+inoremap <silent> p :norm! m`vip:TComment``
+inoremap <silent>  :TComment
+let &cpo=s:cpo_save
+unlet s:cpo_save
+set backspace=indent,eol,start
+set balloonexpr=SyntasticBalloonsExprNotifier()
+set comments=s:<!--,m:\ \ \ \ ,e:-->
+set commentstring=<!--%s-->
+set completeopt=menuone,longest,preview
+set directory=~/.vim/swap
+set expandtab
+set fileencodings=ucs-bom,utf-8,default,latin1
+set helplang=en
+set history=700
+set hlsearch
+set ignorecase
+set incsearch
+set laststatus=2
+set listchars=tab:»»,trail:·,nbsp:~
+set pastetoggle=<C-C>
+set runtimepath=~/.vim,~/.vim/bundle/jedi-vim,~/.vim/bundle/syntastic,~/.vim/bundle/tabular,~/.vim/bundle/tagbar,~/.vim/bundle/tcomment_vim,~/.vim/bundle/vim-abolish,~/.vim/bundle/vim-autoformat,~/.vim/bundle/vim-powerline,~/.vim/bundle/xterm-color-table.vim,/usr/local/share/vim/vimfiles,/usr/local/share/vim/vim74,/usr/local/share/vim/vimfiles/after,~/.vim/bundle/jedi-vim/after,~/.vim/bundle/tabular/after,~/.vim/after
+set shiftwidth=4
+set showcmd
+set showmatch
+set smartcase
+set softtabstop=4
+set noswapfile
+set tabstop=4
+set wildignore=*.pyc
+let s:so_save = &so | let s:siso_save = &siso | set so=0 siso=0
+let v:this_session=expand("<sfile>:p")
+silent only
+cd ~/gentlecoding/IDIOpen/wsgi/openshift/userregistration
+if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
+  let s:wipebuf = bufnr('%')
+endif
+set shortmess=aoO
+badd +0 templates/userregistration/profile.html
+badd +0 views.py
+badd +0 ../templates/form_snippet.html
+args templates/userregistration/profile.html
+edit ../templates/form_snippet.html
+set splitbelow splitright
+wincmd _ | wincmd |
+vsplit
+wincmd _ | wincmd |
+vsplit
+2wincmd h
+wincmd w
+wincmd w
+set nosplitbelow
+set nosplitright
+wincmd t
+set winheight=1 winwidth=1
+exe 'vert 1resize ' . ((&columns * 121 + 182) / 364)
+exe 'vert 2resize ' . ((&columns * 121 + 182) / 364)
+exe 'vert 3resize ' . ((&columns * 120 + 182) / 364)
+argglobal
+setlocal keymap=
+setlocal noarabic
+setlocal noautoindent
+setlocal balloonexpr=
+setlocal nobinary
+setlocal bufhidden=
+setlocal buflisted
+setlocal buftype=
+setlocal nocindent
+setlocal cinkeys=0{,0},0),:,0#,!^F,o,O,e
+setlocal cinoptions=
+setlocal cinwords=if,else,while,do,for,switch
+set colorcolumn=81
+setlocal colorcolumn=81
+setlocal comments=s:<!--,m:\ \ \ \ ,e:-->
+setlocal commentstring=<!--%s-->
+setlocal complete=.,w,b,u,t,i
+setlocal concealcursor=
+setlocal conceallevel=0
+setlocal completefunc=
+setlocal nocopyindent
+setlocal cryptmethod=
+setlocal nocursorbind
+setlocal nocursorcolumn
+set cursorline
+setlocal cursorline
+setlocal define=
+setlocal dictionary=
+setlocal nodiff
+setlocal equalprg=
+setlocal errorformat=
+setlocal expandtab
+if &filetype != 'htmldjango'
+setlocal filetype=htmldjango
+endif
+setlocal foldcolumn=0
+setlocal foldenable
+setlocal foldexpr=0
+setlocal foldignore=#
+set foldlevel=99
+setlocal foldlevel=99
+setlocal foldmarker={{{,}}}
+set foldmethod=indent
+setlocal foldmethod=indent
+setlocal foldminlines=1
+setlocal foldnestmax=20
+setlocal foldtext=foldtext()
+setlocal formatexpr=
+setlocal formatoptions=tcq
+setlocal formatlistpat=^\\s*\\d\\+[\\]:.)}\\t\ ]\\s*
+setlocal grepprg=
+setlocal iminsert=2
+setlocal imsearch=2
+setlocal include=
+setlocal includeexpr=
+setlocal indentexpr=HtmlIndent()
+setlocal indentkeys=o,O,<Return>,<>>,{,},!^F
+setlocal noinfercase
+setlocal iskeyword=@,48-57,_,192-255
+setlocal keywordprg=
+setlocal nolinebreak
+setlocal nolisp
+setlocal nolist
+setlocal makeprg=
+setlocal matchpairs=(:),{:},[:],<:>
+setlocal modeline
+setlocal modifiable
+setlocal nrformats=octal,hex
+set number
+setlocal number
+setlocal numberwidth=4
+setlocal omnifunc=htmlcomplete#CompleteTags
+setlocal path=
+setlocal nopreserveindent
+setlocal nopreviewwindow
+setlocal quoteescape=\\
+setlocal noreadonly
+setlocal norelativenumber
+setlocal norightleft
+setlocal rightleftcmd=search
+setlocal noscrollbind
+setlocal shiftwidth=4
+setlocal noshortname
+setlocal nosmartindent
+setlocal softtabstop=4
+setlocal nospell
+setlocal spellcapcheck=[.?!]\\_[\\])'\"\	\ ]\\+
+setlocal spellfile=
+setlocal spelllang=en
+setlocal statusline=%!Pl#Statusline(0,0)
+setlocal suffixesadd=
+setlocal noswapfile
+setlocal synmaxcol=3000
+if &syntax != 'htmldjango'
+setlocal syntax=htmldjango
+endif
+setlocal tabstop=4
+setlocal tags=
+setlocal textwidth=0
+setlocal thesaurus=
+setlocal noundofile
+setlocal nowinfixheight
+setlocal nowinfixwidth
+setlocal wrap
+setlocal wrapmargin=0
+let s:l = 7 - ((6 * winheight(0) + 36) / 73)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+7
+normal! 0
+wincmd w
+argglobal
+edit views.py
+let s:cpo_save=&cpo
+set cpo&vim
+inoremap <buffer> <expr> <C-Space> jedi#complete_string(0)
+nnoremap <buffer>  :call jedi#usages()
+nnoremap <buffer> ,g :call jedi#goto_assignments()
+nnoremap <buffer> <silent> K :call jedi#show_documentation()
+nnoremap <buffer> <F2> :call jedi#rename()
+nnoremap <buffer> <F3> :call jedi#goto_definitions()
+inoremap <buffer> <silent> . .=jedi#complete_string(1)
+let &cpo=s:cpo_save
+unlet s:cpo_save
+setlocal keymap=
+setlocal noarabic
+setlocal autoindent
+setlocal balloonexpr=
+setlocal nobinary
+setlocal bufhidden=
+setlocal buflisted
+setlocal buftype=
+setlocal nocindent
+setlocal cinkeys=0{,0},0),:,!^F,o,O,e
+setlocal cinoptions=
+setlocal cinwords=if,else,while,do,for,switch
+set colorcolumn=81
+setlocal colorcolumn=81
+setlocal comments=s1:/*,mb:*,ex:*/,://,b:#,:XCOMM,n:>,fb:-
+setlocal commentstring=#%s
+setlocal complete=.,w,b,u,t,i
+setlocal concealcursor=
+setlocal conceallevel=2
+setlocal completefunc=
+setlocal nocopyindent
+setlocal cryptmethod=
+setlocal nocursorbind
+setlocal nocursorcolumn
+set cursorline
+setlocal cursorline
+setlocal define=
+setlocal dictionary=
+setlocal nodiff
+setlocal equalprg=
+setlocal errorformat=
+setlocal expandtab
+if &filetype != 'python'
+setlocal filetype=python
+endif
+setlocal foldcolumn=0
+setlocal foldenable
+setlocal foldexpr=0
+setlocal foldignore=#
+set foldlevel=99
+setlocal foldlevel=99
+setlocal foldmarker={{{,}}}
+set foldmethod=indent
+setlocal foldmethod=indent
+setlocal foldminlines=1
+setlocal foldnestmax=20
+setlocal foldtext=foldtext()
+setlocal formatexpr=
+setlocal formatoptions=tcq
+setlocal formatlistpat=^\\s*\\d\\+[\\]:.)}\\t\ ]\\s*
+setlocal grepprg=
+setlocal iminsert=2
+setlocal imsearch=2
+setlocal include=s*\\(from\\|import\\)
+setlocal includeexpr=substitute(v:fname,'\\.','/','g')
+setlocal indentexpr=GetPythonIndent(v:lnum)
+setlocal indentkeys=0{,0},:,!^F,o,O,e,<:>,=elif,=except
+setlocal noinfercase
+setlocal iskeyword=@,48-57,_,192-255
+setlocal keywordprg=
+setlocal nolinebreak
+setlocal nolisp
+setlocal nolist
+setlocal makeprg=
+setlocal matchpairs=(:),{:},[:]
+setlocal modeline
+setlocal modifiable
+setlocal nrformats=octal,hex
+set number
+setlocal number
+setlocal numberwidth=4
+setlocal omnifunc=jedi#completions
+setlocal path=
+setlocal nopreserveindent
+setlocal nopreviewwindow
+setlocal quoteescape=\\
+setlocal noreadonly
+setlocal norelativenumber
+setlocal norightleft
+setlocal rightleftcmd=search
+setlocal noscrollbind
+setlocal shiftwidth=4
+setlocal noshortname
+setlocal nosmartindent
+setlocal softtabstop=4
+setlocal nospell
+setlocal spellcapcheck=[.?!]\\_[\\])'\"\	\ ]\\+
+setlocal spellfile=
+setlocal spelllang=en
+setlocal statusline=%!Pl#Statusline(0,0)
+setlocal suffixesadd=.py
+setlocal noswapfile
+setlocal synmaxcol=3000
+if &syntax != 'python'
+setlocal syntax=python
+endif
+setlocal tabstop=4
+setlocal tags=
+setlocal textwidth=0
+setlocal thesaurus=
+setlocal noundofile
+setlocal nowinfixheight
+setlocal nowinfixwidth
+setlocal wrap
+setlocal wrapmargin=0
+let s:l = 6 - ((5 * winheight(0) + 36) / 73)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+6
+normal! 0
+wincmd w
+argglobal
+edit templates/userregistration/profile.html
+let s:cpo_save=&cpo
+set cpo&vim
+inoremap <buffer> <silent> <S-F9> :BuildAndViewTexPdf
+inoremap <buffer> <silent> <F9> :BuildTexPdf
+noremap <buffer> <silent> ,r :BuildAndViewTexPdf
+noremap <buffer> <silent> ,m :BuildTexPdf
+noremap <buffer> <silent> <S-F9> :BuildAndViewTexPdf
+noremap <buffer> <silent> <F9> :BuildTexPdf
+let &cpo=s:cpo_save
+unlet s:cpo_save
+setlocal keymap=
+setlocal noarabic
+setlocal noautoindent
+setlocal balloonexpr=
+setlocal nobinary
+setlocal bufhidden=
+setlocal buflisted
+setlocal buftype=
+setlocal nocindent
+setlocal cinkeys=0{,0},0),:,0#,!^F,o,O,e
+setlocal cinoptions=
+setlocal cinwords=if,else,while,do,for,switch
+set colorcolumn=81
+setlocal colorcolumn=81
+setlocal comments=s:<!--,m:\ \ \ \ ,e:-->
+setlocal commentstring=<!--%s-->
+setlocal complete=.,w,b,u,t,i
+setlocal concealcursor=
+setlocal conceallevel=0
+setlocal completefunc=
+setlocal nocopyindent
+setlocal cryptmethod=
+setlocal nocursorbind
+setlocal nocursorcolumn
+set cursorline
+setlocal cursorline
+setlocal define=
+setlocal dictionary=
+setlocal nodiff
+setlocal equalprg=
+setlocal errorformat=
+setlocal expandtab
+if &filetype != 'htmldjango'
+setlocal filetype=htmldjango
+endif
+setlocal foldcolumn=0
+setlocal foldenable
+setlocal foldexpr=0
+setlocal foldignore=#
+set foldlevel=99
+setlocal foldlevel=99
+setlocal foldmarker={{{,}}}
+set foldmethod=indent
+setlocal foldmethod=indent
+setlocal foldminlines=1
+setlocal foldnestmax=20
+setlocal foldtext=foldtext()
+setlocal formatexpr=
+setlocal formatoptions=tcq
+setlocal formatlistpat=^\\s*\\d\\+[\\]:.)}\\t\ ]\\s*
+setlocal grepprg=
+setlocal iminsert=2
+setlocal imsearch=2
+setlocal include=
+setlocal includeexpr=
+setlocal indentexpr=HtmlIndent()
+setlocal indentkeys=o,O,<Return>,<>>,{,},!^F
+setlocal noinfercase
+setlocal iskeyword=@,48-57,_,192-255
+setlocal keywordprg=
+setlocal nolinebreak
+setlocal nolisp
+setlocal nolist
+setlocal makeprg=
+setlocal matchpairs=(:),{:},[:],<:>
+setlocal modeline
+setlocal modifiable
+setlocal nrformats=octal,hex
+set number
+setlocal number
+setlocal numberwidth=4
+setlocal omnifunc=htmlcomplete#CompleteTags
+setlocal path=
+setlocal nopreserveindent
+setlocal nopreviewwindow
+setlocal quoteescape=\\
+setlocal noreadonly
+setlocal norelativenumber
+setlocal norightleft
+setlocal rightleftcmd=search
+setlocal noscrollbind
+setlocal shiftwidth=4
+setlocal noshortname
+setlocal nosmartindent
+setlocal softtabstop=4
+setlocal nospell
+setlocal spellcapcheck=[.?!]\\_[\\])'\"\	\ ]\\+
+setlocal spellfile=
+setlocal spelllang=en
+setlocal statusline=%!Pl#Statusline(0,1)
+setlocal suffixesadd=
+setlocal noswapfile
+setlocal synmaxcol=3000
+if &syntax != 'htmldjango'
+setlocal syntax=htmldjango
+endif
+setlocal tabstop=4
+setlocal tags=
+setlocal textwidth=0
+setlocal thesaurus=
+setlocal noundofile
+setlocal nowinfixheight
+setlocal nowinfixwidth
+setlocal wrap
+setlocal wrapmargin=0
+4
+normal! zo
+let s:l = 26 - ((25 * winheight(0) + 36) / 73)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+26
+normal! 05|
+wincmd w
+3wincmd w
+exe 'vert 1resize ' . ((&columns * 121 + 182) / 364)
+exe 'vert 2resize ' . ((&columns * 121 + 182) / 364)
+exe 'vert 3resize ' . ((&columns * 120 + 182) / 364)
+tabnext 1
+if exists('s:wipebuf')
+  silent exe 'bwipe ' . s:wipebuf
+endif
+unlet! s:wipebuf
+set winheight=1 winwidth=20 shortmess=filnxtToO
+let s:sx = expand("<sfile>:p:r")."x.vim"
+if file_readable(s:sx)
+  exe "source " . fnameescape(s:sx)
+endif
+let &so = s:so_save | let &siso = s:siso_save
+doautoall SessionLoadPost
+unlet SessionLoad
+" vim: set ft=vim :
