@@ -284,7 +284,7 @@ def view_teams(request):
         messages.info(request, "Something went wrong :(")    
          
     if len(team_list) < 1:
-        messages.info(request, "There are current no team registeren for this contest. Why not be the first? :) ")
+        messages.info(request, "There are current no team registered for this contest. Why not be the first?")
         
     return render(request, 'viewTeams/viewTeams.html',{
                   'team_list': team_list,
