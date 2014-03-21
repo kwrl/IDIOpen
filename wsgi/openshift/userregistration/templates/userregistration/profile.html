@@ -17,18 +17,6 @@
 	<br>
 	{% endif %}
 
-    {% load staticfiles %}
-
-    <style>
-    .dots{
-        background:url("{% static 'dot.gif' %}") repeat-x bottom;
-        }
-
-    .field{
-        background-color: #FFFFFF;
-    }
-    </style>
-
     <p>
     <table class="table" >
             <tbody>
@@ -36,8 +24,6 @@
             <tr>
                 <td >Gender:</td>
                 <td>
-                    <div class="dots"><b>
-                        <span class="field">
                             {% if user.gender = 'M' %}
                                 Male
                             {% elif user.gender = 'F' %}
@@ -45,7 +31,6 @@
                             {% else %}
                                 Not Specified	
                             {% endif %}
-                        </span>
                     </b>
                     </div>
             </td>
