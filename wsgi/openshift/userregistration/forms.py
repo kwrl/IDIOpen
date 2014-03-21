@@ -283,6 +283,9 @@ class PIForm(forms.ModelForm):
         model   = CustomUser
         fields  = ['first_name', 'last_name', 'nickname',
                    'skill_level', 'gender']
+        labels = {
+                'skill_level': "Year of Study",
+                    };
         help_text = {
                      'first_name': "First name",
                      'last_name':"Last name",
