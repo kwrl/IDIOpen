@@ -161,10 +161,25 @@
       </div>
     </div>
 	
-	<!-- HELP, I AM TRAPPED IN A HTML FILE! blub blub  -->
-	
     <script src="{% static 'openshift/js/bootbox.min.js' %}"></script>
-       <script>
+    <script>
+           function post_to_url(path) {
+                method = "post"; 
+
+                var form = document.createElement("form");
+                form.setAttribute("method", method);
+                form.setAttribute("action", path);
+
+                var csrf_field = document.createElement("input");
+                csrf_field.setAttribute("type", "hidden");
+                csrf_field.setAttribute("name", "csrfmiddlewaretoken");
+                csrf_field.setAttribute("value", "{{ csrf_token }}" );
+                form.appendChild(csrf_field);
+                
+                document.body.appendChild(form);
+                form.submit();
+                } 
+
         $(document.getElementById("LeaveButton")).on("click", function(e) {
              bootbox.dialog( 
              {
@@ -182,8 +197,8 @@
                         label:"Yes - leave team",
                         className: "btn-danger",
                         callback: function() {
-                            document.location.href = "{% url 'team_leave' contest.url %}";
-                         }
+                            post_to_url("{% url 'team_leave' contest.url %}");
+                            }
                     }, 
                 } 
             });
