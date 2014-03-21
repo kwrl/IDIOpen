@@ -157,7 +157,6 @@ class RegistrationForm(forms.Form):
 
         """
         cleaned_data = super(RegistrationForm, self).clean()
-        print cleaned_data
         password1 = cleaned_data.get('password1')
         password2 = cleaned_data.get('password2')
         
@@ -283,6 +282,9 @@ class PIForm(forms.ModelForm):
         model   = CustomUser
         fields  = ['first_name', 'last_name', 'nickname',
                    'skill_level', 'gender']
+        labels = {
+                'skill_level': "Year of Study",
+                    };
         help_text = {
                      'first_name': "First name",
                      'last_name':"Last name",
