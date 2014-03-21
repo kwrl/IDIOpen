@@ -3,4 +3,3 @@
 
 http://{{ site.domain }}{% url 'registration_activate' contest activation_key %}
 
-{% blocktrans %}Link is valid for {{ expiration_days }} days.{% endblocktrans %}
