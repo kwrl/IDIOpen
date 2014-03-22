@@ -117,6 +117,17 @@
 							<a class="list-group-item" href="{% if link.contestUrl %}/{{ contest.url }}{% endif %}{{ link.url }}">{{ link.text }}</a>
 							{% endif %}
 						{% endfor %}
+
+                        </div>
+                        <div class="list-group">
+                            {% if not user.is_authenticated %}
+                            <a class="list-group-item" href="{% url 'registration_register' contest.url  %}">Register user</a>
+                            {% endif %}
+                            {% if not team %}
+                            <a class="list-group-item" href="{% url 'register_teams' contest.url %}">Register team</a>
+                            {% endif %}
+
+
 						</div>
 						{% if contest.sponsors %}
 						<h4 class="text-center">Sponsors</h4>
