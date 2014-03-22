@@ -24,8 +24,7 @@ except ImportError:
 
 '''
 class CustomUserManager(BaseUserManager):
-    def _create_user(self, email, first_name, last_name, password,
-                    skill_level, gender, nickname,
+    def _create_user(self, email, first_name, last_name, password, skill_level, gender, nickname,
                      is_staff, is_superuser, **extra_fields):
         """
         Creates and saves a User with the given email and password.
@@ -261,7 +260,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         # Email subject *must not* contain newlines
         subject = ''.join(subject.splitlines())
 
-        message = render_to_string('registration/activation_email.txt',
+        message = render_to_string('registration/activation_email_messagebody.txt',
                                    ctx_dict)
         self.email_user(subject, message)
 
