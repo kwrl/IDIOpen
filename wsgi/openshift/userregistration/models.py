@@ -24,8 +24,8 @@ except ImportError:
 
 '''
 class CustomUserManager(BaseUserManager):
-    def _create_user(self, email, first_name, last_name, password, skill_level, gender, nickname,
-                     is_staff, is_superuser, **extra_fields):
+    def _create_user(self, email, first_name, last_name, password, skill_level, 
+                     gender, nickname, is_staff, is_superuser, **extra_fields):
         """
         Creates and saves a User with the given email and password.
         """
