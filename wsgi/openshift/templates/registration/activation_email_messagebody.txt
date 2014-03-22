@@ -1,0 +1,5 @@
+{% load i18n %}
+{% trans "Thanks for registering for" %} {{ contest.title }}.
+{% trans "To complete the user-registration, please click on the link below, or copy/paste it into the address bar." %}
+
+http://{{ site.domain }}{% url 'registration_activate' contest activation_key %}
