@@ -7,19 +7,16 @@ function genLetter()
     printf \\$(printf '%03o' "${letterNum}")
 }
 
-function genRandomEmail()
-{
-    local length=${1:-3}
-    genEmail ${length} genLetter
-}
+function genWord()
+{    
+    local word=""
 
-function genEmails()
-{
-    local length=${1:-3}
-    local email=""
+    for i in $(seq 1 1 ${length})
+    do
+        word+="$($@)"
+    done
 
-    local range=$(echo {97..122})
-
+    printf "%s" "${word}"
 }
 
 function genEmail()
@@ -35,21 +32,34 @@ function genEmail()
         esac
     fi
 
-    for i in $(seq 1 1 ${length})
-    do
-        email+="$($@)"
-    done
-
+    email+="$(genWord $@)"
     email+="@"
-    for i in $(seq 1 1 ${length})
-    do
-        email+="$($@)"
-    done
-
+    email+="$(genWord $@)"
     email+=".com"
-
+    
     printf "%s\n" "${email}"
 }
+
+function genRandomEmail()
+{
+    local length=${1:-3}
+    genEmail ${length} genLetter
+}
+
+function genEmails()
+{
+    local length=${1:-3}
+    local email=""
+
+    local range=$(echo {97..122})
+
+    for i in $(seq 1 1 ${range})
+    do
+        echo
+    done
+}
+
+
 
 genRandomEmail
 genEmails
