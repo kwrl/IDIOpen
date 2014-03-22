@@ -78,7 +78,10 @@ class Link(models.Model):
     text = models.CharField(max_length=30, help_text='The display name for the link')
     # If true, url gets added to contest url
     # eg. url is 'article/1' if true gives '/open14/article/1'
-    contestUrl = models.BooleanField(help_text='Contest URLs are extensions of the contest root URL. '             'Example: \'/idiopen14/accounts/register/\'')
+    # contestUrl = models.BooleanField(help_text='Contest URLs are extensions of the contest root URL. '             'Example: \'/idiopen14/accounts/register/\'')
+    contestUrl = models.BooleanField(help_text=
+    '''Contest URLs are extensions of the contest root URL. Example: /idiopen14/accounts/register/...
+    Note that registration links are now added per default in the HTML''')
     url = models.CharField(max_length=50, 
                            help_text=' Internal links need leading and trailing slashes.'+
                            ' External links are required to start with "http://"')
