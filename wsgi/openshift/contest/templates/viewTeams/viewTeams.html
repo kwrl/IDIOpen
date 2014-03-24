@@ -33,13 +33,20 @@
     		</small>
     		</li>    		
     		<small><p class="text-muted">{{ team.leader.get_name_nick }},</small>
-    		{% for member in team.members.all%}    	
-	    		{% if member = team.leader %}
-	    		{% else %}
-	    			{{ member.get_name_nick }},
-	    		{% endif %}
-	    	{% endfor %}
-    		</ul>	    	
+
+            {% for member in team.members.all%}      
+                {% if member = team.leader %}
+                {% else %}
+                    {% if not forloop.last %}
+                        {{ member.get_name_nick }},
+                    {% else %}
+                        {{ member.get_name_nick }}
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
+        </ul>        
+
+       		</ul>	    	
 	    	</p>
 	    	<br>
 	{% endfor %}
