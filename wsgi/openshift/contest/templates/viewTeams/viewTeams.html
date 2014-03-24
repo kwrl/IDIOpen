@@ -32,7 +32,12 @@
     		</p>
     		</small>
     		</li>    		
-    		<small><p class="text-muted">{{ team.leader.get_name_nick }},</small>
+    		<small><p class="text-muted">
+                {% if team.members.all|length > 1 %}
+                    {{ team.leader.get_name_nick }},
+                {% else %}
+                    {{ team.leader.get_name_nick }}
+                {% endif %}
 
             {% for member in team.members.all%}      
                 {% if member = team.leader %}
@@ -45,6 +50,7 @@
                 {% endif %}
             {% endfor %}
         </ul>        
+    </small>
 
        		</ul>	    	
 	    	</p>
