@@ -66,7 +66,6 @@ class ContestFormTestCase(TestCase):
     def test_registerUser_Form(self):
         registerURL = "/open14/accounts/register/"
         # TODO: Testing the login Form
-        
         #Empty input in all fields
         response = self.client.post(registerURL, {'':''})
         self.assertFormError(response, 'form', 'email', 'This field is required.')
@@ -75,15 +74,50 @@ class ContestFormTestCase(TestCase):
         response = self.client.post(registerURL, {'email':'invalid_email@'})
         self.assertFormError(response, 'form', 'email', 'Enter a valid email address.')
 
-    def test_registerUser_invalid_Form(self):
+    def test_registerUser_invalid_form(self):
         data = {'email' : '}{±±±'}        
         form = RegistrationForm(data=data)
         self.assertFalse(form.is_valid())
         
-                  
-    def test_registerUser_valid_Form(self):
-        data = {'email' : 'tino111111@hotmail.com', 'first_name' : 'Tino', 'last_name' : 'Lazreg', 
-                'password1' : 'tino123', 'password2' : 'tino123', 'skill_level' : 'Pro', 'gender' : 'Male'}
+        # Skill_level and Gender with values not included in the choiceField
+        data = {'email' : 'TheCage@hotmail.com', 'first_name' : 'Nicolas', 'last_name' : 'Cage', 
+                'password1' : 'kim123', 'password2' : 'kim123', 'skill_level' : 'Pro', 
+                'gender' : '\'); Drop table teams;--'}
+        form = RegistrationForm(data=data)
+        self.assertFalse(form.is_valid())
+        
+        data = {'email' : 'TheCage@hotmail.com', 'first_name' : 'Nicolas', 'last_name' : 'Cage', 
+                'password1' : 'kim123', 'password2' : 'kim123', 'skill_level' : 'invalidInput', 
+                'gender' : 'M'}
+        form = RegistrationForm(data=data)
+        self.assertFalse(form.is_valid())
+        
+        # First name with only spaces
+        data = {'email' : 'TheCage@hotmail.com', 'first_name' : '     ', 'last_name' : 'Cage', 
+                'password1' : 'kim123', 'password2' : 'kim1234', 'skill_level' : 'invalidInput', 
+                'gender' : 'M'}
+        form = RegistrationForm(data=data)
+        self.assertFalse(form.is_valid())
+        
+        # Last name with only spaces
+        data = {'email' : 'TheCage@hotmail.com', 'first_name' : 'Nicolas', 'last_name' : '       ', 
+                'password1' : 'kim123', 'password2' : 'kim1234', 'skill_level' : 'invalidInput', 
+                'gender' : 'M'}
+        form = RegistrationForm(data=data)
+        self.assertFalse(form.is_valid())
+        
+        # Password with only spaces
+        data = {'email' : 'TheCage@hotmail.com', 'first_name' : 'Nicolas', 'last_name' : 'Cage', 
+                'password1' : '          ', 'password2' : '          ', 'skill_level' : 'invalidInput', 
+                'gender' : 'M'}
+        form = RegistrationForm(data=data)
+        self.assertFalse(form.is_valid())
+            
+    def test_registerUser_valid_form(self):
+        data = {'email' : 'TheCage@hotmail.com', 'first_name' : 'Nicolas', 'last_name' : 'Cage', 
+                'password1' : 'kim123', 'password2' : 'kim123', 'skill_level' : 'Pro', 'gender' : 'M'}
         form = RegistrationForm(data=data)
         self.assertTrue(form.is_valid())
+        
+        
         
