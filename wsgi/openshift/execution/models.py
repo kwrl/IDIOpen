@@ -1,5 +1,11 @@
 from django.db import models
 
+import os
+
+""" Located in media folder (prefix ../media)
+"""
+PROBLEM_ROOT_DIR = 'problems'
+
 class FileExtension(models.Model):
     extension = models.CharField(max_length=4)
 
@@ -15,17 +21,26 @@ class CompilerProfile(models.Model):
 class Tiss(models.Model):
     text = models.CharField(max_length=1)
 
+    def __unicode__(self):
+        return "%s" % self.text
+
 def get_upload_path(instance, filename):
-    return os.path.join("%s/case" 
-                        % (instance.problem), filename);
+    """ Dynamically decide where to upload the case,
+        based on the foreign key in instance, which is required to be 
+        a testcase.
+    """
+    # path.join appends a trailing / in between each argument
+    return os.path.join("%s" % PROBLEM_ROOT_DIR,
+                        "%s/case" % (instance.problem),
+                        filename);
 
 class TestCase(models.Model):
     """ We're assuming error cases are defined elsewhere...
         As a python test
     """
-    inputFile = models.FileField(upload_to='casefile',
+    inputFile = models.FileField(upload_to=get_upload_path,
                        verbose_name="Input data (file)")
-    outputFile = models.FileField(upload_to='casefile',
+    outputFile = models.FileField(upload_to=get_upload_path,
                        verbose_name="Output data (file)")
     # inputFile = models.FileField(upload_to=get_upload_path)
     short_description = models.CharField(max_length=40,
