@@ -15,7 +15,7 @@
 			Published: {{article.created_at|date:"d.m.Y - H.i"}}, 
 			Author: {{article.author.get_name_nick }}
 			</p>    		
-	    	<div class="list-group-item-text">{{ article.text|truncatewords_html:40|safe}}</div>
+	    	{# <div class="list-group-item-text">{{ article.text|truncatewords_html:40|safe}}</div> #}
 	  	</a>
 	{% endfor %}
 	</div>
