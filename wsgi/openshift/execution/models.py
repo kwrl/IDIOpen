@@ -12,4 +12,17 @@ class CompilerProfile(models.Model):
 
     package_name = models.CharField(max_length=30)
 
+class Tiss(models.Model):
+    def __init__(self, *args, **kwargs):
+        raise NotImplementedError()
+
+class TestCase(models.Model):
+    """ We're assuming error cases are defined elsewhere...
+        As a python test
+    """
+    inputFile = models.FileField(upload_to='')
+    outputFile = models.FileField(upload_to='')
+
+    problem = models.ForeignKey(Tiss)
+
 # EOF
