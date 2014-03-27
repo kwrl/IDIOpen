@@ -36,11 +36,9 @@ class _RadioSelect(forms.RadioSelect):
         return u''.join(rendered_widgets)
 
 class Team_Form(forms.ModelForm):
-
     member_one = forms.EmailField(required=False, widget=forms.TextInput(attrs= {'placeholder':'(Optional)Insert email to add a team member.'}));
     member_two = forms.EmailField(required=False, widget=forms.TextInput(attrs= {'placeholder':'(Optional)Insert email to add another team member.'}));
-        
-    
+          
     def disable_fields(self):
         '''
         If the registration deadline has passed, then disable all fields
@@ -63,33 +61,16 @@ class Team_Form(forms.ModelForm):
         cleaned_data = super(Team_Form, self).clean()
         onsite = cleaned_data.get('onsite')
         offsite = cleaned_data.get('offsite')
+        name = cleaned_data.get('name')
         if onsite:
             cleaned_data['offsite'] = ''
-            #raise forms.ValidationError("Offsite is required")            
-        return cleaned_data
- 
- 
-    #===========================================================================
-    # The clean method for the Team Model, didn't work for register team, only
-    # for edit team, so I strip whitespace manually here for name and offsite.
-    #===========================================================================
-    
-    def clean_name(self):        
-        name = self.cleaned_data.get('name')       
+        elif not offsite or offsite.isspace():
+            self._errors['offsite'] = self.error_class(["Offsite is required"]) 
+            del cleaned_data['offsite']   
         if not name or name.isspace():
-            self._errors['name'] = self.error_class(["Team name is required"])        
-        else:
-            return self.cleaned_data['name'].strip()   
+            self._errors['name'] = self.error_class(["Name is required"])     
+        return cleaned_data
             
-    def clean_offsite(self):
-        offsite = self.cleaned_data.get('offsite')
-        
-        if offsite and offsite.isspace():
-            self._errors['offsite'] = self.error_class(["Offsite is required"])    
-        else:
-            return self.cleaned_data['offsite'].strip()
- 
- 
 '''
 class Team_Form(Team_Base):
 =======
