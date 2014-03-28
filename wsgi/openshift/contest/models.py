@@ -28,7 +28,7 @@ from django.db import models
 from django.core.urlresolvers import reverse
 
 def getTodayDate():
-     return timezone.make_aware(datetime.datetime.now(), timezone.get_default_timezone());
+    return timezone.make_aware(datetime.datetime.now(), timezone.get_default_timezone());
 
 class ContactInformation(models.Model):
     email = models.EmailField()
