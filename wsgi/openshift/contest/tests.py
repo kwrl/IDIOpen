@@ -82,11 +82,8 @@ class ContestFormTestCase(TestCase):
         
                   
     def test_registerUser_valid_Form(self):
-        data = {'email' : 'tinois@hotmail.com', 'first_name' : 'Tino', 'last_name' : 'Lazreg', 
+        data = {'email' : 'tino111111@hotmail.com', 'first_name' : 'Tino', 'last_name' : 'Lazreg', 
                 'password1' : 'tino123', 'password2' : 'tino123', 'skill_level' : 'Pro', 'gender' : 'Male'}
         form = RegistrationForm(data=data)
         self.assertTrue(form.is_valid())
         
-        
-
-
