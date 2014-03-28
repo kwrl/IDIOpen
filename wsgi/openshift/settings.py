@@ -206,9 +206,8 @@ GRAPPELLI_ADMIN_TITLE = 'IDI Open'
 
 ACCOUNT_ACTIVATION_DAYS = 7
 
-EMAIL_USE_TLS = True
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_HOST_USER = 'idi@filip0.com'
-EMAIL_HOST_PASSWORD = 'adminadmin'
+EMAIL_USE_TLS = False
+EMAIL_HOST = 'smtp.idi.ntnu.no'
+EMAIL_PORT = 25
+DEFAULT_FROM_EMAIL = 'IDI Open <no-reply@idi.ntnu.no>'
 
