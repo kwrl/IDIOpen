@@ -32,14 +32,27 @@
     		</p>
     		</small>
     		</li>    		
-    		<small><p class="text-muted">{{ team.leader.get_name_nick }},</small>
-    		{% for member in team.members.all%}    	
-	    		{% if member = team.leader %}
-	    		{% else %}
-	    			{{ member.get_name_nick }},
-	    		{% endif %}
-	    	{% endfor %}
-    		</ul>	    	
+    		<small><p class="text-muted">
+                {% if team.members.all|length > 1 %}
+                    {{ team.leader.get_name_nick }},
+                {% else %}
+                    {{ team.leader.get_name_nick }}
+                {% endif %}
+
+            {% for member in team.members.all%}      
+                {% if member = team.leader %}
+                {% else %}
+                    {% if not forloop.last %}
+                        {{ member.get_name_nick }},
+                    {% else %}
+                        {{ member.get_name_nick }}
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
+        </ul>        
+    </small>
+
+       		</ul>	    	
 	    	</p>
 	    	<br>
 	{% endfor %}
