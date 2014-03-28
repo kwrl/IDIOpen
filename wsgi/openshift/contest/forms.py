@@ -69,8 +69,7 @@ class Team_Form(forms.ModelForm):
             del cleaned_data['offsite']   
         if not name or name.isspace():
             self._errors['name'] = self.error_class(["Name is required"])     
-        return cleaned_data
-            
+        return cleaned_data      
 '''
 class Team_Form(Team_Base):
 =======
