@@ -51,7 +51,8 @@ class Team_Form(forms.ModelForm):
     class Meta:
         model = Team      
         widgets = {
-                'name' : forms.TextInput(attrs={'placeholder' : 'Insert team name here'}),
+                'name'
+                 : forms.TextInput(attrs={'placeholder' : 'Insert team name here'}),
                 'onsite' : _RadioSelect(choices=ON_OR_OFF, 
                                              attrs ={'onclick' : 'check_radio_button();',
                                                      'id':'id_onsite',}),
@@ -84,7 +85,7 @@ class Team_Form(forms.ModelForm):
     def clean_offsite(self):
         offsite = self.cleaned_data.get('offsite')
         
-        if offsite and offsite.isspace():
+        if not offsite or offsite.isspace():
             self._errors['offsite'] = self.error_class(["Offsite is required"])    
         else:
             return self.cleaned_data['offsite'].strip()
@@ -136,6 +137,7 @@ class Team_Edit(forms.ModelForm):
         
         return cleaned_data
     
+    
     class Meta:
         model = Team 
         widgets = {
@@ -146,6 +148,7 @@ class Team_Edit(forms.ModelForm):
                 'offsite' : forms.TextInput(attrs={'placeholder' : 'E.g UiO, Aarhus etc '}),
         } 
         fields = ['name', 'onsite', 'offsite','leader']
+    
     
 class CustomSelectMultiple(ModelMultipleChoiceField):
     def label_from_instance(self, obj):
