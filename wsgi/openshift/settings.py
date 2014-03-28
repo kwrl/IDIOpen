@@ -205,9 +205,11 @@ GRAPPELLI_ADMIN_TITLE = 'IDI Open'
 
 
 ACCOUNT_ACTIVATION_DAYS = 7
-
-EMAIL_USE_TLS = False
-EMAIL_HOST = 'smtp.idi.ntnu.no'
-EMAIL_PORT = 25
-DEFAULT_FROM_EMAIL = 'IDI Open <no-reply@idi.ntnu.no>'
+if DEBUG:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+else:
+    EMAIL_USE_TLS = False
+    EMAIL_HOST = 'smtp.idi.ntnu.no'
+    EMAIL_PORT = 25
+    DEFAULT_FROM_EMAIL = 'IDI Open <no-reply@idi.ntnu.no>'
 
