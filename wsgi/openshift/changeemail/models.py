@@ -1,5 +1,5 @@
-""" Change the email for a given user. 
-    The model defined in this class stores the old user, new email 
+""" Change the email for a given user.
+    The model defined in this class stores the old user, new email
     and activation key.
 
     The manager is to access the entires in a safe and defined manner..
@@ -134,7 +134,7 @@ class ChangeEmail(models.Model):
         try: 
             url = request.path.split('/')[1]
         except ObjectDoesNotExist as e: 
-            raise error
+            raise ValidationError("");
         
         site = RequestSite(request)
         ctx_dict = {'activation_key': self.activation_key,
