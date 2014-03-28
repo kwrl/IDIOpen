@@ -4,8 +4,8 @@ from django.views.generic.edit import FormView
 from userregistration import signals
 from userregistration.forms import RegistrationForm, Invites_Form, PasswordResetForm
 from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect
 from contest.models import Invite
+from django.http import HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django import forms
 from django.contrib.auth.forms import SetPasswordForm
