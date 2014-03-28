@@ -1,8 +1,12 @@
 # coding=utf8
 from django.test import TestCase, Client
 from userregistration.forms import RegistrationForm
+from contest.forms import * 
 
 # Create your tests here.
+'''
+This tests redirects
+'''
 class ContestURLTestCase(TestCase):
     fixtures = ['contest_testdata.json', 'contest_testdata']
     
@@ -40,6 +44,10 @@ class ContestURLTestCase(TestCase):
         resp = self.client.get('open14/team/register/', follow=True)
         # What happens next?
 
+
+'''
+Tests the forms
+'''
 class ContestFormTestCase(TestCase):
     fixtures = ['contest_testdata.json', 'contest_testdata']
     
@@ -83,7 +91,85 @@ class ContestFormTestCase(TestCase):
                   
     def test_registerUser_valid_Form(self):
         data = {'email' : 'tino111111@hotmail.com', 'first_name' : 'Tino', 'last_name' : 'Lazreg', 
-                'password1' : 'tino123', 'password2' : 'tino123', 'skill_level' : 'Pro', 'gender' : 'Male'}
+                'password1' : 'tino123', 'password2' : 'tino123', 'skill_level' : 'Pro', 'gender' : 'Female'}
         form = RegistrationForm(data=data)
         self.assertTrue(form.is_valid())
+    
+    
+    '''
+    Here starts testing of teams
+    Simple indicates a team without members
+    '''
+    
+    
+    def test_create_simple_team_onsite_valid_form(self):
+        '''
+        First test for the simplest case
+        '''
+        data = {'name' : 'TestTeamName', 'onsite':'True'}
+        form = Team_Form(data=data)    
+        self.assertTrue(form.is_valid())
         
+        #test for spaces in team name
+        data = { 'name' : 'Test TeamName', 'onsite':'True'}
+        form = Team_Form(data=data)    
+        self.assertTrue(form.is_valid())
+        
+        #testing for spaces AFTER team name, should no be legal
+        data = { 'name' : 'Test TeamName        ', 'onsite':'True'}
+        form = Team_Form(data=data)
+        self.assertEqual(form.clean_name(), 'Test TeamName')
+        
+    
+    def test_create_simple_team_onsite_invalid_form(self):
+        #Test for names onsite false without setting offsite
+        data = { 'name' : 'GentleCoding', 'onsite':'False'}
+        form = Team_Form(data=data)    
+        self.assertFalse(form.is_valid())
+    
+        
+        #-----------------Spaces--------------------------------
+        #test for only space in team name
+        data = { 'name' : '  ', 'onsite':'True'}
+        form = Team_Form(data=data)    
+        self.assertFalse(form.is_valid())
+        
+        #test for only space
+        data = { 'name' : '  ', 'onsite':'False'}
+        form = Team_Form(data=data)    
+        self.assertFalse(form.is_valid())
+
+        
+    '''
+    Here start simple testing for UPDATEteam registration 
+    '''
+        
+    def test_update_simple_team_onsite_valid_form(self):
+        data = { 'name':'GentleCoding', 'onsite':'True'}
+        form = Team_Edit(data=data)
+        self.assertTrue(form.is_valid())
+        
+        #test for spaces in team name
+        data = { 'name' : 'Test TeamName', 'onsite':'True'}
+        form = Team_Edit(data=data)    
+        self.assertTrue(form.is_valid())
+        
+        #testing for spaces AFTER team name, should no be legal
+        data = { 'name' : 'Test TeamName        ', 'onsite':'True'}
+        form = Team_Edit(data=data)
+        self.assertEqual(form.clean_name(), 'Test TeamName')
+        
+        data = { 'name' : 'Test TeamName        ', 'onsite':'False','ofsite':'Bergen'}
+        form = Team_Edit(data=data)
+        self.assertTrue(form.clean())
+        
+    def test_update_simple_team_onsite_invalid_form(self):
+        
+        #Testing that you need to speicify ofstire
+        data = { 'name':'GentleCoding', 'onsite':'False'}
+        form = Team_Edit(data=data)
+        self.assertFalse(form.IsValid())
+    
+    
+    
+    
