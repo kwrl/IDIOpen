@@ -52,7 +52,7 @@ class ContestFormTestCase(TestCase):
     # Check that you are successful with valid login information
     #=======================================================================
         c = Client()
-        resp = c.post('/open14/', {'username' : 'tinolazreg@gmail.com', 'password' : 'tino'})
+        resp = c.post('/open14/', {'username' : 'nic@gmail.com', 'password' : 'kim123'})
         self.assertEqual(resp.status_code, 200)
         
         # TODO: Doesn't work atm? You get redirected (302), does that mean we don't get logged in?
