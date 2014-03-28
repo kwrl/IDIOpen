@@ -18,7 +18,7 @@ class CompilerProfile(models.Model):
 
     package_name = models.CharField(max_length=30)
 
-class Tiss(models.Model):
+class Problem(models.Model):
     text = models.CharField(max_length=1)
 
     def __unicode__(self):
