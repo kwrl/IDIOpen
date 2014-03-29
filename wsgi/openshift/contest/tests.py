@@ -171,8 +171,7 @@ class ContestFormTestCase(TestCase):
         data = { 'name' : '  ', 'onsite':'False'}
         form = Team_Form(data=data)    
         self.assertFalse(form.is_valid())
-
-        
+ 
     '''
     Here start simple testing for UPDATEteam registration 
     '''
