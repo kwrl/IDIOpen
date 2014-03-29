@@ -118,7 +118,6 @@ class Team(models.Model):
                 value = getattr(self, field.name)
                 if value:
                     setattr(self, field.name, value.strip())
-
                                       
 class InviteManager(models.Manager):
     def create_invite(self, email, team, url, site):

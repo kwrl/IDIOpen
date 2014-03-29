@@ -1,4 +1,4 @@
-# coding=utf8
+#coding:utf8
 from django.test import TestCase, Client
 from userregistration.forms import RegistrationForm
 from contest.forms import * 
@@ -60,7 +60,7 @@ class ContestFormTestCase(TestCase):
     # Check that you are successful with valid login information
     #=======================================================================
         c = Client()
-        resp = c.post('/open14/', {'username' : 'tinolazreg@gmail.com', 'password' : 'tino'})
+        resp = c.post('/open14/', {'username' : 'nic@gmail.com', 'password' : 'kim123'})
         self.assertEqual(resp.status_code, 200)
         
         # TODO: Doesn't work atm? You get redirected (302), does that mean we don't get logged in?
@@ -70,7 +70,7 @@ class ContestFormTestCase(TestCase):
         # TODO: Need to test Logout better  
         #resp = c.logout()
         #self.assertEqual(resp.status_code, 200)
-      
+       
     def test_registerUser_Form(self):
         registerURL = "/open14/accounts/register/"
         # TODO: Testing the login Form
@@ -103,24 +103,25 @@ class ContestFormTestCase(TestCase):
         
         # First name with only spaces
         data = {'email' : 'TheCage@hotmail.com', 'first_name' : '     ', 'last_name' : 'Cage', 
-                'password1' : 'kim123', 'password2' : 'kim1234', 'skill_level' : 'invalidInput', 
+                'password1' : 'kim123', 'password2' : 'kim123', 'skill_level' : 'Pro', 
                 'gender' : 'M'}
         form = RegistrationForm(data=data)
         self.assertFalse(form.is_valid())
         
         # Last name with only spaces
         data = {'email' : 'TheCage@hotmail.com', 'first_name' : 'Nicolas', 'last_name' : '       ', 
-                'password1' : 'kim123', 'password2' : 'kim1234', 'skill_level' : 'invalidInput', 
+                'password1' : 'kim123', 'password2' : 'kim123', 'skill_level' : 'Pro', 
                 'gender' : 'M'}
         form = RegistrationForm(data=data)
         self.assertFalse(form.is_valid())
         
-        # Password with only spaces
-        data = {'email' : 'TheCage@hotmail.com', 'first_name' : 'Nicolas', 'last_name' : 'Cage', 
-                'password1' : '          ', 'password2' : '          ', 'skill_level' : 'invalidInput', 
+        # Password1 != Password2
+        data = {'email' : 'TheCage@hotmail.com', 'first_name' : 'Nicolas', 'last_name' : '       ', 
+                'password1' : 'nic123', 'password2' : 'kim123', 'skill_level' : 'Pro', 
                 'gender' : 'M'}
         form = RegistrationForm(data=data)
         self.assertFalse(form.is_valid())
+        
             
     def test_registerUser_valid_form(self):
         data = {'email' : 'TheCage@hotmail.com', 'first_name' : 'Nicolas', 'last_name' : 'Cage', 
