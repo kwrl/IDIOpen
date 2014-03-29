@@ -117,7 +117,6 @@ class Team(models.Model):
             if isinstance(field, (models.CharField, models.TextField)):
                 value = getattr(self, field.name)
                 if value:
-                    print ("stripping value" + value)
                     setattr(self, field.name, value.strip())
 
                                       

@@ -74,7 +74,6 @@ class ContestFormTestCase(TestCase):
     def test_registerUser_Form(self):
         registerURL = "/open14/accounts/register/"
         # TODO: Testing the login Form
-        
         #Empty input in all fields
         response = self.client.post(registerURL, {'':''})
         self.assertFormError(response, 'form', 'email', 'This field is required.')
@@ -83,37 +82,70 @@ class ContestFormTestCase(TestCase):
         response = self.client.post(registerURL, {'email':'invalid_email@'})
         self.assertFormError(response, 'form', 'email', 'Enter a valid email address.')
 
-    def test_registerUser_invalid_Form(self):
+    def test_registerUser_invalid_form(self):
         data = {'email' : '}{±±±'}        
         form = RegistrationForm(data=data)
         self.assertFalse(form.is_valid())
         
-                  
-    def test_registerUser_valid_Form(self):
-        data = {'email' : 'tino111111@hotmail.com', 'first_name' : 'Tino', 'last_name' : 'Lazreg', 
-                'password1' : 'tino123', 'password2' : 'tino123', 'skill_level' : 'Pro', 'gender' : 'Female'}
+
+        # Skill_level and Gender with values not included in the choiceField
+        data = {'email' : 'TheCage@hotmail.com', 'first_name' : 'Nicolas', 'last_name' : 'Cage', 
+                'password1' : 'kim123', 'password2' : 'kim123', 'skill_level' : 'Pro', 
+                'gender' : '\'); Drop table teams;--'}
+        form = RegistrationForm(data=data)
+        self.assertFalse(form.is_valid())
+        
+        data = {'email' : 'TheCage@hotmail.com', 'first_name' : 'Nicolas', 'last_name' : 'Cage', 
+                'password1' : 'kim123', 'password2' : 'kim123', 'skill_level' : 'invalidInput', 
+                'gender' : 'M'}
+        form = RegistrationForm(data=data)
+        self.assertFalse(form.is_valid())
+        
+        # First name with only spaces
+        data = {'email' : 'TheCage@hotmail.com', 'first_name' : '     ', 'last_name' : 'Cage', 
+                'password1' : 'kim123', 'password2' : 'kim1234', 'skill_level' : 'invalidInput', 
+                'gender' : 'M'}
+        form = RegistrationForm(data=data)
+        self.assertFalse(form.is_valid())
+        
+        # Last name with only spaces
+        data = {'email' : 'TheCage@hotmail.com', 'first_name' : 'Nicolas', 'last_name' : '       ', 
+                'password1' : 'kim123', 'password2' : 'kim1234', 'skill_level' : 'invalidInput', 
+                'gender' : 'M'}
+        form = RegistrationForm(data=data)
+        self.assertFalse(form.is_valid())
+        
+        # Password with only spaces
+        data = {'email' : 'TheCage@hotmail.com', 'first_name' : 'Nicolas', 'last_name' : 'Cage', 
+                'password1' : '          ', 'password2' : '          ', 'skill_level' : 'invalidInput', 
+                'gender' : 'M'}
+        form = RegistrationForm(data=data)
+        self.assertFalse(form.is_valid())
+            
+    def test_registerUser_valid_form(self):
+        data = {'email' : 'TheCage@hotmail.com', 'first_name' : 'Nicolas', 'last_name' : 'Cage', 
+                'password1' : 'kim123', 'password2' : 'kim123', 'skill_level' : 'Pro', 'gender' : 'M'}
         form = RegistrationForm(data=data)
         self.assertTrue(form.is_valid())
-    
-    
-    '''
-    Here starts testing of teams
-    Simple indicates a team without members
-    '''
+        
+        
     
     
     def test_create_simple_team_onsite_valid_form(self):
         '''
         First test for the simplest case
         '''
+        '''
         data = {'name' : 'TestTeamName', 'onsite':'True'}
         form = Team_Form(data=data)    
         self.assertTrue(form.is_valid())
-        
+        '''
+        '''
         #test for spaces in team name
         data = { 'name' : 'Test TeamName', 'onsite':'True'}
         form = Team_Form(data=data)    
         self.assertTrue(form.is_valid())
+        '''
         
         #testing for spaces AFTER team name, should no be legal
         data = { 'name' : 'Test TeamName        ', 'onsite':'True'}
@@ -144,8 +176,8 @@ class ContestFormTestCase(TestCase):
     Here start simple testing for UPDATEteam registration 
     '''
         
-    def test_update_simple_team_onsite_valid_form(self):
-        data = { 'name':'GentleCoding', 'onsite':'True'}
+    def test_update_simple_team_valid_form(self):
+        data = { 'name' : 'GentleCoding', 'onsite' : 'True'}
         form = Team_Edit(data=data)
         self.assertTrue(form.is_valid())
         
@@ -163,13 +195,29 @@ class ContestFormTestCase(TestCase):
         form = Team_Edit(data=data)
         self.assertTrue(form.clean())
         
-    def test_update_simple_team_onsite_invalid_form(self):
+        #empty offsite
+        data = { 'name' : 'Test TeamName', 'onsite':'False','ofsite':''}
+        form = Team_Edit(data=data)
+        self.assertTrue(form.clean())
         
-        #Testing that you need to speicify ofstire
+        data = { 'name' : 'Test TeamName', 'onsite':'False','ofsite':'  '}
+        form = Team_Edit(data=data)
+        self.assertTrue(form.clean())
+        
+        
+        
+    def test_update_simple_team_invalid_form(self):
+        #Testing that you need to speicify ofsite
         data = { 'name':'GentleCoding', 'onsite':'False'}
         form = Team_Edit(data=data)
         self.assertFalse(form.IsValid())
-    
-    
-    
+        
+        data = { 'name':'', 'onsite':'True'}
+        form = Team_Edit(data=data)
+        self.assertFalse(form.IsValid())
+        
+        data = { 'name':' ', 'onsite':'True'}
+        form = Team_Edit(data=data)
+        self.assertFalse(form.IsValid())
+        
     
