@@ -17,11 +17,11 @@ def get_upload_path(instance, filename):
 
 class Submission(models.Model):
     team = models.ForeignKey(Team)
-    problem = models.ForeignKey(Problem)
+    problem = models.ForeignKey(Problem)    
     
     submission = models.FileField(upload_to=get_upload_path)
     date_uploaded = models.DateTimeField()
-    
+
     validated = models.BooleanField()
     text_feedback = models.CharField(max_length=50)
 

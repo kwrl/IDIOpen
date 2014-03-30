@@ -39,7 +39,7 @@ class ContactInformation(models.Model):
 
 class Contest(models.Model):
     title = models.CharField(max_length=200)
-    contact_infos = models.ManyToManyField(ContactInformation)
+    contact_infos = models.ManyToManyField(ContactInformation, null = True)
     """ The url is saved as the suffix from root, only, not the entire url
     """
     url = models.CharField(max_length=20, unique=True, help_text='Defines the url used to access the contest. E.g. sample.site.com/[the value inserted here]');

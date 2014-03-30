@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import TestCase
+from .models import TestCase, Problem
 
 class TestCaseAdmin(admin.ModelAdmin):
     # list_display = ('short_description')
@@ -9,3 +9,8 @@ class TestCaseAdmin(admin.ModelAdmin):
                 'outputFile', 'outputDescription')
 
 admin.site.register(TestCase, TestCaseAdmin)
+
+class ProblemAdmin(admin.ModelAdmin):
+    ordering = ('title', 'description', 'textFile')
+    
+admin.site.register(Problem, ProblemAdmin)
