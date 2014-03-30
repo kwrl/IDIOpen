@@ -1,3 +1,9 @@
 from django.shortcuts import render
 
-# Create your views here.
+def submission_view(request):
+    context = {
+                   # 'article_list' : article_list, 
+               }    
+    return render(request, 'submission_home.html', context)
+
+# EOF

@@ -16,8 +16,8 @@ def get_upload_path(instance, filename):
                         filename);
 
 class Submission(models.Model):
-    team = models.ManyToOneRel(Team)
-    problem = models.ManyToOneRel(Team)
+    team = models.ForeignKey(Team)
+    problem = models.ForeignKey(Problem)
     
     submission = models.FileField(upload_to=get_upload_path)
     date_uploaded = models.DateTimeField()

@@ -73,6 +73,7 @@ INSTALLED_APPS = (
     'sortedm2m',
     'changeemail',
     'execution',
+    'teamsubmission'
 )
 '''
 if not ON_OPENSHIFT:
