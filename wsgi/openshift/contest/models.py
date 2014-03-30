@@ -28,7 +28,7 @@ from django.db import models
 from django.core.urlresolvers import reverse
 
 def getTodayDate():
-     return timezone.make_aware(datetime.datetime.now(), timezone.get_default_timezone());
+    return timezone.make_aware(datetime.datetime.now(), timezone.get_default_timezone());
 
 class ContactInformation(models.Model):
     email = models.EmailField()
@@ -117,9 +117,7 @@ class Team(models.Model):
             if isinstance(field, (models.CharField, models.TextField)):
                 value = getattr(self, field.name)
                 if value:
-                    print ("stripping value" + value)
                     setattr(self, field.name, value.strip())
-
                                       
 class InviteManager(models.Manager):
     def create_invite(self, email, team, url, site):
