@@ -36,9 +36,11 @@ class _RadioSelect(forms.RadioSelect):
         return u''.join(rendered_widgets)
 
 class Team_Form(forms.ModelForm):
+
     member_one = forms.EmailField(required=False, widget=forms.TextInput(attrs= {'placeholder':'(Optional)Insert email to add a team member.'}));
     member_two = forms.EmailField(required=False, widget=forms.TextInput(attrs= {'placeholder':'(Optional)Insert email to add another team member.'}));
-          
+        
+    
     def disable_fields(self):
         '''
         If the registration deadline has passed, then disable all fields
@@ -49,7 +51,8 @@ class Team_Form(forms.ModelForm):
     class Meta:
         model = Team      
         widgets = {
-                'name' : forms.TextInput(attrs={'placeholder' : 'Insert team name here'}),
+                'name'
+                 : forms.TextInput(attrs={'placeholder' : 'Insert team name here'}),
                 'onsite' : _RadioSelect(choices=ON_OR_OFF, 
                                              attrs ={'onclick' : 'check_radio_button();',
                                                      'id':'id_onsite',}),
@@ -70,6 +73,7 @@ class Team_Form(forms.ModelForm):
         if not name or name.isspace():
             self._errors['name'] = self.error_class(["Name is required"])     
         return cleaned_data      
+
 '''
 class Team_Form(Team_Base):
 =======
@@ -116,6 +120,7 @@ class Team_Edit(forms.ModelForm):
         
         return cleaned_data
     
+    
     class Meta:
         model = Team 
         widgets = {
@@ -126,6 +131,7 @@ class Team_Edit(forms.ModelForm):
                 'offsite' : forms.TextInput(attrs={'placeholder' : 'E.g UiO, Aarhus etc '}),
         } 
         fields = ['name', 'onsite', 'offsite','leader']
+    
     
 class CustomSelectMultiple(ModelMultipleChoiceField):
     def label_from_instance(self, obj):

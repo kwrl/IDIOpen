@@ -258,7 +258,7 @@ def editTeam(request):
         return redirect('login', url)
     # Get the team or 404
     queryset = Team.objects.filter(contest=con).filter(members__in = [user])
-    instance = get_object_or_404(queryset)
+    instance = get_object_or_404(queryset)#team
     # make a new form, with the instance as its model
     form = Team_Edit(None, instance = instance)
     # Need to be leader to edit a profile
