@@ -53,7 +53,7 @@ class TestCase(models.Model):
                             verbose_name="Description of the" \
                                          " output:")
 
-    problem = models.ForeignKey(Tiss)
+    problem = models.ForeignKey(Problem)
 
     def __unicode__(self):
         return "%s" % (self.short_description)

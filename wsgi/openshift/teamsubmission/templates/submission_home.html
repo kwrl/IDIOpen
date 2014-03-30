@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% load staticfiles %} 
+
+<!--   <script type="text/javascript" src="{%jquery-latest.js"></script> --> 
+<script type="text/javascript" src="{% static 'openshift/js/tablesorter/jquery.tablesorter.js' %}"></script> 
+<script >
+$(function() {
+$("table#tableProblems").tablesorter({ sortList: [[1,0]] });
+});
+</script>
+
+
+<table id="tableProblems" class="table table-bordered table-hover table-condensed tablesorter">
+	<thead>
+            <tr>
+            <th>Problem</th>
+            <th>Last Submission</th>
+            <th>Feedback</th>
+            <th>Done</th>
+            </tr>
+    </thead>
+    <tbody>
+            <tr>
+            <td>1</td>
+            <td>Thomas bell</td>
+            <td>Brick lane, London</td>
+            <td>thomas@yahoo.com</td>
+            </tr>
+            <tr>
+            <td height="29">2</td>
+            <td>Yan Chapel</td>
+            <td>Toronto Australia</td>
+            <td>Yan@yahoo.com</td>
+            </tr>
+            <tr>
+            <td>3</td>
+            <td>Pit Sampras</td>
+            <td>Berlin, Germany</td>
+            <td>Pit @yahoo.com</td>
+            </tr>
+    </tbody>
+</table>
+{% endblock content %}
