@@ -191,6 +191,12 @@ STATICFILES_DIRS = (
                     PROJECT_ROOT + '/static/',
                     )
 
+# Fixture Directory
+
+FIXTURE_DIRS = (
+   PROJECT_ROOT + '/fixtures/',
+)
+
 
 def uploaded_filepath(instance, filename):
     ext = filename.split('.')[-1]

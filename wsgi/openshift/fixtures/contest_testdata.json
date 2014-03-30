@@ -1,0 +1,296 @@
+[
+{
+  "pk": "450cbtmd3ksknnf819px5vz614eibjhr", 
+  "model": "sessions.session", 
+  "fields": {
+    "expire_date": "2014-04-02T17:31:41Z", 
+    "session_data": "YWYyZGM0OTY4MmM0MzljMGQ3YjQ3NThhYWQ5YWY0MGM3YjY0NTFlMzp7fQ=="
+  }
+},
+{
+  "pk": "7441r4u54b9ybnu1yzhsughbs4u9iokv", 
+  "model": "sessions.session", 
+  "fields": {
+    "expire_date": "2014-04-10T11:30:20Z", 
+    "session_data": "YWYyZGM0OTY4MmM0MzljMGQ3YjQ3NThhYWQ5YWY0MGM3YjY0NTFlMzp7fQ=="
+  }
+},
+{
+  "pk": "ac56tno61qzr3c8y3xbiv5wx47ll1yjw", 
+  "model": "sessions.session", 
+  "fields": {
+    "expire_date": "2014-04-10T22:37:34Z", 
+    "session_data": "NWQ3ZDM1YTZhYjcxYjdhOTdlNjc3MmQ5NTNmMjE2ZTMyZDJhZDI1NDp7Il9hdXRoX3VzZXJfYmFja2VuZCI6ImRqYW5nby5jb250cmliLmF1dGguYmFja2VuZHMuTW9kZWxCYWNrZW5kIiwiX2F1dGhfdXNlcl9pZCI6MX0="
+  }
+},
+{
+  "pk": "amlcrnyxljgwdeiryqcqsrvqw7lv6l8j", 
+  "model": "sessions.session", 
+  "fields": {
+    "expire_date": "2014-04-01T19:45:25Z", 
+    "session_data": "NWQ3ZDM1YTZhYjcxYjdhOTdlNjc3MmQ5NTNmMjE2ZTMyZDJhZDI1NDp7Il9hdXRoX3VzZXJfYmFja2VuZCI6ImRqYW5nby5jb250cmliLmF1dGguYmFja2VuZHMuTW9kZWxCYWNrZW5kIiwiX2F1dGhfdXNlcl9pZCI6MX0="
+  }
+},
+{
+  "pk": "sdq5dbps7ap3goli9jprva66tg1hjq9e", 
+  "model": "sessions.session", 
+  "fields": {
+    "expire_date": "2014-04-02T22:56:10Z", 
+    "session_data": "YWYyZGM0OTY4MmM0MzljMGQ3YjQ3NThhYWQ5YWY0MGM3YjY0NTFlMzp7fQ=="
+  }
+},
+{
+  "pk": "vxtbe59vtckvgk4544f0c6kcr0h6es7h", 
+  "model": "sessions.session", 
+  "fields": {
+    "expire_date": "2014-04-03T15:03:59Z", 
+    "session_data": "YWYyZGM0OTY4MmM0MzljMGQ3YjQ3NThhYWQ5YWY0MGM3YjY0NTFlMzp7fQ=="
+  }
+},
+{
+  "pk": "yks1qu25zi2ax1ezngipaqkajrug6wpy", 
+  "model": "sessions.session", 
+  "fields": {
+    "expire_date": "2014-04-03T13:54:15Z", 
+    "session_data": "YWYyZGM0OTY4MmM0MzljMGQ3YjQ3NThhYWQ5YWY0MGM3YjY0NTFlMzp7fQ=="
+  }
+},
+{
+  "pk": 1, 
+  "model": "contest.contactinformation", 
+  "fields": {
+    "email": "nic@gmail.com", 
+    "name": "Cage"
+  }
+},
+{
+  "pk": 1, 
+  "model": "contest.contest", 
+  "fields": {
+    "links": [
+      6, 
+      7, 
+      8
+    ], 
+    "end_date": "2014-03-27T11:00:00Z", 
+    "title": "open14", 
+    "url": "open14", 
+    "sponsors": [], 
+    "teamreg_end_date": "2098-12-31T23:00:00Z", 
+    "logo": "", 
+    "publish_date": "2014-03-18T11:48:00Z", 
+    "start_date": "2014-03-18T11:48:00Z", 
+    "css": "", 
+    "contact_infos": [
+      1
+    ]
+  }
+},
+{
+  "pk": 1, 
+  "model": "contest.link", 
+  "fields": {
+    "url": "/registration", 
+    "text": "team", 
+    "separator": true, 
+    "contestUrl": true
+  }
+},
+{
+  "pk": 2, 
+  "model": "contest.link", 
+  "fields": {
+    "url": "/registration", 
+    "text": "RegisterTeam", 
+    "separator": true, 
+    "contestUrl": true
+  }
+},
+{
+  "pk": 3, 
+  "model": "contest.link", 
+  "fields": {
+    "url": "/registration", 
+    "text": "RegisterTeam", 
+    "separator": true, 
+    "contestUrl": true
+  }
+},
+{
+  "pk": 4, 
+  "model": "contest.link", 
+  "fields": {
+    "url": "/accounts/register/", 
+    "text": "RegisterUser", 
+    "separator": true, 
+    "contestUrl": true
+  }
+},
+{
+  "pk": 5, 
+  "model": "contest.link", 
+  "fields": {
+    "url": "/team", 
+    "text": "team", 
+    "separator": true, 
+    "contestUrl": true
+  }
+},
+{
+  "pk": 6, 
+  "model": "contest.link", 
+  "fields": {
+    "url": "/registration/", 
+    "text": "Register Team", 
+    "separator": false, 
+    "contestUrl": true
+  }
+},
+{
+  "pk": 7, 
+  "model": "contest.link", 
+  "fields": {
+    "url": "/accounts/register/", 
+    "text": "Register user", 
+    "separator": false, 
+    "contestUrl": true
+  }
+},
+{
+  "pk": 8, 
+  "model": "contest.link", 
+  "fields": {
+    "url": "/team/", 
+    "text": "Team Profile", 
+    "separator": false, 
+    "contestUrl": true
+  }
+},
+{
+  "pk": 1, 
+  "model": "userregistration.customuser", 
+  "fields": {
+    "first_name": "nicolas", 
+    "last_name": "cage", 
+    "gender": "M", 
+    "email_activation_key": null, 
+    "is_active": true, 
+    "activation_key": "", 
+    "is_superuser": true, 
+    "is_staff": true, 
+    "last_login": "2014-03-27T22:37:34Z", 
+    "groups": [], 
+    "skill_level": "4", 
+    "user_permissions": [], 
+    "temp_email": null, 
+    "password": "pbkdf2_sha256$12000$zeIL7xL28hbN$VEY9kVW3HyUO+a3zZdaCPYu9onFItAzkxUh2pSxlrvY=", 
+    "nickname": "", 
+    "email": "test@gmail.com", 
+    "date_joined": "2014-03-18T11:38:48Z"
+  }
+},
+{
+  "pk": 38, 
+  "model": "userregistration.customuser", 
+  "fields": {
+    "first_name": "Kim", 
+    "last_name": "Cage", 
+    "gender": " ", 
+    "email_activation_key": null, 
+    "is_active": true, 
+    "activation_key": "", 
+    "is_superuser": false, 
+    "is_staff": false, 
+    "last_login": "2014-03-28T10:20:17Z", 
+    "groups": [], 
+    "skill_level": "1", 
+    "user_permissions": [], 
+    "temp_email": null, 
+    "password": "pbkdf2_sha256$12000$wEcyfa01YWPd$wpDxlilBCu2gm7KJRR4Hwgo0ZkaabX3N0vWSsnBipxc=", 
+    "nickname": "", 
+    "email": "nic@gmail.com", 
+    "date_joined": "2014-03-28T10:20:17Z"
+  }
+},
+{
+  "pk": 1, 
+  "model": "south.migrationhistory", 
+  "fields": {
+    "applied": "2014-03-18T11:37:13Z", 
+    "app_name": "contest", 
+    "migration": "0001_initial"
+  }
+},
+{
+  "pk": 2, 
+  "model": "south.migrationhistory", 
+  "fields": {
+    "applied": "2014-03-18T11:37:15Z", 
+    "app_name": "article", 
+    "migration": "0001_initial"
+  }
+},
+{
+  "pk": 3, 
+  "model": "south.migrationhistory", 
+  "fields": {
+    "applied": "2014-03-18T11:37:18Z", 
+    "app_name": "userregistration", 
+    "migration": "0001_initial"
+  }
+},
+{
+  "pk": 6, 
+  "model": "south.migrationhistory", 
+  "fields": {
+    "applied": "2014-03-20T13:58:07Z", 
+    "app_name": "changeemail", 
+    "migration": "0001_initial"
+  }
+},
+{
+  "pk": 7, 
+  "model": "south.migrationhistory", 
+  "fields": {
+    "applied": "2014-03-20T14:14:54Z", 
+    "app_name": "contest", 
+    "migration": "0002_auto__del_field_contactinformation_phone__add_field_contactinformation"
+  }
+},
+{
+  "pk": 8, 
+  "model": "south.migrationhistory", 
+  "fields": {
+    "applied": "2014-03-20T14:16:22Z", 
+    "app_name": "contest", 
+    "migration": "0003_auto__add_field_contest_logo"
+  }
+},
+{
+  "pk": 9, 
+  "model": "south.migrationhistory", 
+  "fields": {
+    "applied": "2014-03-20T14:16:48Z", 
+    "app_name": "contest", 
+    "migration": "0003_auto__add_field_link_separator"
+  }
+},
+{
+  "pk": 10, 
+  "model": "south.migrationhistory", 
+  "fields": {
+    "applied": "2014-03-20T14:17:12Z", 
+    "app_name": "changeemail", 
+    "migration": "0002_initial"
+  }
+},
+{
+  "pk": 11, 
+  "model": "south.migrationhistory", 
+  "fields": {
+    "applied": "2014-03-20T14:17:16Z", 
+    "app_name": "changeemail", 
+    "migration": "0003_initial"
+  }
+}
+]
