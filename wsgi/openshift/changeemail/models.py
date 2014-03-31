@@ -134,7 +134,7 @@ class ChangeEmail(models.Model):
         try: 
             url = request.path.split('/')[1]
         except ObjectDoesNotExist as e: 
-            raise error
+            raise Exception
         
         site = RequestSite(request)
         ctx_dict = {'activation_key': self.activation_key,
@@ -148,6 +148,6 @@ class ChangeEmail(models.Model):
                                    ctx_dict)
         content = render_to_string('changeEmail/change_email_content.txt',
                                    ctx_dict)
-        send_mail(subject, content, '', [self.new_email])
+        send_mail(subject, content, None, [self.new_email])
         
 # EOF        
