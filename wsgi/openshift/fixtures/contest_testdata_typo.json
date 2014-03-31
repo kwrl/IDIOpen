@@ -1,0 +1,161 @@
+[
+{
+  "pk": "mtk88ujn1r12zt9p6kuefj0f1zus1noh", 
+  "model": "sessions.session", 
+  "fields": {
+    "expire_date": "2014-04-11T21:14:06Z", 
+    "session_data": "NWQ3ZDM1YTZhYjcxYjdhOTdlNjc3MmQ5NTNmMjE2ZTMyZDJhZDI1NDp7Il9hdXRoX3VzZXJfYmFja2VuZCI6ImRqYW5nby5jb250cmliLmF1dGguYmFja2VuZHMuTW9kZWxCYWNrZW5kIiwiX2F1dGhfdXNlcl9pZCI6MX0="
+  }
+},
+{
+  "pk": 1, 
+  "model": "contest.contactinformation", 
+  "fields": {
+    "email": "test@test.no", 
+    "name": "testStuff"
+  }
+},
+{
+  "pk": 1, 
+  "model": "contest.contest", 
+  "fields": {
+    "links": [
+      1
+    ], 
+    "end_date": "2015-03-28T22:34:00Z", 
+    "title": "open14", 
+    "url": "open14", 
+    "sponsors": [], 
+    "teamreg_end_date": "2099-01-01T11:00:00Z", 
+    "logo": "", 
+    "publish_date": "2014-03-28T11:00:00Z", 
+    "start_date": "2014-03-28T21:15:00Z", 
+    "css": "", 
+    "contact_infos": [
+      1
+    ]
+  }
+},
+{
+  "pk": 1, 
+  "model": "contest.link", 
+  "fields": {
+    "url": "/team/", 
+    "text": "Link", 
+    "separator": false, 
+    "contestUrl": true
+  }
+},
+{
+  "pk": 1, 
+  "model": "userregistration.customuser", 
+  "fields": {
+    "first_name": "Taco", 
+    "last_name": "Sushi", 
+    "gender": "M", 
+    "email_activation_key": null, 
+    "is_active": true, 
+    "activation_key": "", 
+    "is_superuser": true, 
+    "is_staff": true, 
+    "last_login": "2014-03-28T21:14:06Z", 
+    "groups": [], 
+    "skill_level": "1", 
+    "user_permissions": [], 
+    "temp_email": null, 
+    "password": "pbkdf2_sha256$12000$zM0xIOVrzZHk$8lLypnDbI1p0ZOOvASL53Bvs+5rkALHqBrYe2szss/s=", 
+    "nickname": "", 
+    "email": "taco.sushi@gmail.com", 
+    "date_joined": "2014-03-28T21:14:01Z"
+  }
+},
+{
+  "pk": 1, 
+  "model": "south.migrationhistory", 
+  "fields": {
+    "applied": "2014-03-25T20:41:17Z", 
+    "app_name": "contest", 
+    "migration": "0001_initial"
+  }
+},
+{
+  "pk": 2, 
+  "model": "south.migrationhistory", 
+  "fields": {
+    "applied": "2014-03-25T20:41:20Z", 
+    "app_name": "article", 
+    "migration": "0001_initial"
+  }
+},
+{
+  "pk": 3, 
+  "model": "south.migrationhistory", 
+  "fields": {
+    "applied": "2014-03-25T20:41:23Z", 
+    "app_name": "userregistration", 
+    "migration": "0001_initial"
+  }
+},
+{
+  "pk": 4, 
+  "model": "south.migrationhistory", 
+  "fields": {
+    "applied": "2014-03-25T20:41:24Z", 
+    "app_name": "changeemail", 
+    "migration": "0001_initial"
+  }
+},
+{
+  "pk": 2, 
+  "model": "contest.team", 
+  "fields": {
+    "onsite": false, 
+    "name": "GentleCoding", 
+    "contest": 1, 
+    "offsite": "NTNU", 
+    "members": [
+      1
+    ], 
+    "leader": 1
+  }
+},
+{
+  "pk": 1, 
+  "model": "admin.logentry", 
+  "fields": {
+    "action_flag": 1, 
+    "action_time": "2014-03-28T21:16:00Z", 
+    "object_repr": "testStuff", 
+    "object_id": "1", 
+    "change_message": "", 
+    "user": 1, 
+    "content_type": 9
+  }
+},
+{
+  "pk": 2, 
+  "model": "admin.logentry", 
+  "fields": {
+    "action_flag": 1, 
+    "action_time": "2014-03-28T21:17:30Z", 
+    "object_repr": "Link", 
+    "object_id": "1", 
+    "change_message": "", 
+    "user": 1, 
+    "content_type": 11
+  }
+},
+{
+  "pk": 3, 
+  "model": "admin.logentry", 
+  "fields": {
+    "action_flag": 1, 
+    "action_time": "2014-03-28T21:17:59Z", 
+    "object_repr": "open14", 
+    "object_id": "1", 
+    "change_message": "", 
+    "user": 1, 
+    "content_type": 10
+  }
+}
+]

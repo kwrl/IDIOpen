@@ -64,7 +64,7 @@ class Team_Form(forms.ModelForm):
         cleaned_data = super(Team_Form, self).clean()
         onsite = cleaned_data.get('onsite')
         offsite = cleaned_data.get('offsite')
-        name = cleaned_data.get('name')
+        name = cleaned_data.get('')
         if onsite:
             cleaned_data['offsite'] = ''
         elif not offsite or offsite.isspace():
