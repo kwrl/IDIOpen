@@ -64,7 +64,7 @@ class Team_Form(forms.ModelForm):
         cleaned_data = super(Team_Form, self).clean()
         onsite = cleaned_data.get('onsite')
         offsite = cleaned_data.get('offsite')
-        name = cleaned_data.get('')
+        name = cleaned_data.get('name')
         if onsite:
             cleaned_data['offsite'] = ''
         elif not offsite or offsite.isspace():
@@ -73,6 +73,7 @@ class Team_Form(forms.ModelForm):
         if not name or name.isspace():
             self._errors['name'] = self.error_class(["Name is required"])     
         return cleaned_data      
+
 '''
 class Team_Form(Team_Base):
 =======
