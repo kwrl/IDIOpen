@@ -18,29 +18,24 @@ $("table#tableProblems").tablesorter({ sortList: [[1,0]] });
             <tr>
             <th>Problem</th>
             <th>Last Submission</th>
+            <th>Date Uploaded</th>
             <th>Feedback</th>
             <th>Done</th>
             </tr>
     </thead>
+	{% if problems %}
     <tbody>
+			{% for probsub in prob_sub %}
             <tr>
-            <td>1</td>
-            <td>Thomas bell</td>
-            <td>Brick lane, London</td>
-            <td>thomas@yahoo.com</td>
+            <td>{{probsub.problem.title}}</td>
+            <td>{{probsub.submission.submission}}</td>
+            <td>{{probsub.submission.date_uploaded}}</td>
+            <td class="bg-danger">aaadwadaw</td>
+            <td>{{probsub.submission.validated}}</td>
+            
             </tr>
-            <tr>
-            <td height="29">2</td>
-            <td>Yan Chapel</td>
-            <td>Toronto Australia</td>
-            <td>Yan@yahoo.com</td>
-            </tr>
-            <tr>
-            <td>3</td>
-            <td>Pit Sampras</td>
-            <td>Berlin, Germany</td>
-            <td>Pit @yahoo.com</td>
-            </tr>
+			{% endfor %}
     </tbody>
+	{% endif %}
 </table>
 {% endblock content %}
