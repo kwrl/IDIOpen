@@ -25,5 +25,4 @@ class Submission(models.Model):
     validated = models.BooleanField()
     text_feedback = models.CharField(max_length=50)
 
-
 # EOF

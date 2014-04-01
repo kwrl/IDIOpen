@@ -12,6 +12,7 @@ urlpatterns = patterns('',
     url(r'^$', views.index, name='contest_list'),
     url(r'^accounts/', include('userregistration.urls')),
     url(r'^submission/', include('teamsubmission.urls')),       
+    url(r'^problem/', include('teamsubmission.urls')),       
 
     # url(r'^blog/', include('blog.urls')),
     url(r'^article/(?P<article_id>\d+)/$', articleview.detail, name='article_detail'),

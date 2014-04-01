@@ -30,12 +30,21 @@ def get_upload_path(instance, filename):
                         "%s/case" % (instance.problem),
                         filename);
 
+def get_upload_path2(instance, filename):
+    """ Dynamically decide where to upload the case,
+        based on the foreign key in instance, which is required to be 
+        a testcase.
+    """
+    # path.join appends a trailing / in between each argument
+    return os.path.join("%s" % PROBLEM_ROOT_DIR,
+                        "problemDesc",
+                        filename);
+
 #Author: Tino, Typo
-class Problem(models.Model):
-    
+class Problem(models.Model):  
     title = models.CharField(max_length=200)
     description = models.TextField()
-    textFile = models.FileField(upload_to=get_upload_path,
+    textFile = models.FileField(upload_to=get_upload_path2,
                        verbose_name="Text file (file)", blank = True)
     date_uploaded = models.DateTimeField()
     author = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.SET_NULL, null = True)
