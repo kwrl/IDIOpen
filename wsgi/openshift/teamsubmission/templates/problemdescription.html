@@ -1,14 +1,41 @@
 {% extends 'base.html' %}
-
+{% load link_tags %}
+{% load fileprint %}
 {% block content %}
-{{submission.submission}}
-(File upload) - browse	[Feedback]
 
-Submit		back 
+<div class="col-lg-10">
 
-PDF-file for download
+<h3>{{problem.title}}</h3>
+<br />
+<hr>
+<form id="fileUpload" method="POST" action="" enctype="multipart/form-data">
+  {% csrf_token %}
+  {% for field in submission_form %}
+  	{% for error in field.errors %}
+            <div class="alert alert-danger">{{error}}</div>
+    {% endfor %}
+    <div class="col-lg-5">
+		{{ field|filename}}
+    </div>
+  {% endfor %}
+Feedback: 
+{% if submission.validated %}
+	<span class="bg-success">{{submission.text_feedback}}</span>
+{% else %}
+	<span class="bg-danger">{{submission.text_feedback}}</span>
+{% endif %}
+<br />
+  <span class="glyphicon glyphicon-ok">{{submission.validated}}</span> 
+  <div class="form-group">
+	<div class="col-lg-10">
+		<button type="submit" class="btn btn-default">Save</button>
+  </div>
+	</div>
+</form>
 
-
+<br />
+<hr />
+<br />
 {{problem.description}}
 Problem description
 lkdsklsdklds
@@ -16,5 +43,6 @@ kldskldslkds
 kldslksdlkdslk
 sdlkklds
 
+</div>
 
 {% endblock content %}

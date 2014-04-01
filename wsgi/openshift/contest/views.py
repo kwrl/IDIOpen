@@ -266,7 +266,6 @@ def editTeam(request):
         if request.method == 'POST':
             form = Team_Edit(request.POST, instance = instance)
             if form.is_valid():
-                temp = form.cleaned_data['offsite']
                 messages.success(request, 'Profile details updated.')
                 form.save()
                 return redirect('team_profile', url)
