@@ -1,5 +1,5 @@
-""" Change the email for a given user. 
-    The model defined in this class stores the old user, new email 
+""" Change the email for a given user.
+    The model defined in this class stores the old user, new email
     and activation key.
 
     The manager is to access the entires in a safe and defined manner..
