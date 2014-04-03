@@ -4,12 +4,14 @@
 
 {% load staticfiles %} 
 
-<!--   <script type="text/javascript" src="{%jquery-latest.js"></script> --> 
-<script type="text/javascript" src="{% static 'openshift/js/tablesorter/jquery.tablesorter.js' %}"></script> 
-<script >
-$(function() {
-$("table#tableProblems").tablesorter({ sortList: [[1,0]] });
-});
+<script type="text/javascript" src="{% static 'openshift/js/jquery.tablesorter.js' %}"></script> 
+<script>
+$(document).ready(function() 
+    { 
+        $("#tableProblems").tablesorter( {sortList: [[0,0], [1,0]]} ); 
+    } 
+); 
+
 </script>
 <table id="tableProblems" class="table table-bordered table-hover table-condensed tablesorter">
 	<thead>
