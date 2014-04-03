@@ -5,8 +5,7 @@
 
 <div class="col-lg-10">
 
-<h3>{{problem.title}}</h3>
-<br />
+<h2>{{problem.title}}</h2>
 <hr>
 <form id="fileUpload" method="POST" action="" enctype="multipart/form-data">
   {% csrf_token %}
@@ -25,7 +24,8 @@ Feedback:
 	<span class="bg-danger">{{submission.text_feedback}}</span>
 {% endif %}
 <br />
-  <span class="glyphicon glyphicon-ok">{{submission.validated}}</span> 
+<br />
+  <span class="glyphicon glyphicon-thumps-up"></span> {{submission.validated}}
   <div class="form-group">
 	<div class="col-lg-10">
 		<button type="submit" class="btn btn-default">Save</button>
