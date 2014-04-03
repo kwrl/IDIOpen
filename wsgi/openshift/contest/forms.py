@@ -51,7 +51,8 @@ class Team_Form(forms.ModelForm):
     class Meta:
         model = Team      
         widgets = {
-                'name' : forms.TextInput(attrs={'placeholder' : 'Insert team name here'}),
+                'name'
+                 : forms.TextInput(attrs={'placeholder' : 'Insert team name here'}),
                 'onsite' : _RadioSelect(choices=ON_OR_OFF, 
                                              attrs ={'onclick' : 'check_radio_button();',
                                                      'id':'id_onsite',}),
@@ -63,33 +64,16 @@ class Team_Form(forms.ModelForm):
         cleaned_data = super(Team_Form, self).clean()
         onsite = cleaned_data.get('onsite')
         offsite = cleaned_data.get('offsite')
+        name = cleaned_data.get('name')
         if onsite:
             cleaned_data['offsite'] = ''
-            #raise forms.ValidationError("Offsite is required")            
-        return cleaned_data
- 
- 
-    #===========================================================================
-    # The clean method for the Team Model, didn't work for register team, only
-    # for edit team, so I strip whitespace manually here for name and offsite.
-    #===========================================================================
-    
-    def clean_name(self):        
-        name = self.cleaned_data.get('name')       
+        elif not offsite or offsite.isspace():
+            self._errors['offsite'] = self.error_class(["Offsite is required"]) 
+            del cleaned_data['offsite']   
         if not name or name.isspace():
-            self._errors['name'] = self.error_class(["Team name is required"])        
-        else:
-            return self.cleaned_data['name'].strip()   
-            
-    def clean_offsite(self):
-        offsite = self.cleaned_data.get('offsite')
-        
-        if offsite and offsite.isspace():
-            self._errors['offsite'] = self.error_class(["Offsite is required"])    
-        else:
-            return self.cleaned_data['offsite'].strip()
- 
- 
+            self._errors['name'] = self.error_class(["Name is required"])     
+        return cleaned_data      
+
 '''
 class Team_Form(Team_Base):
 =======
@@ -136,6 +120,7 @@ class Team_Edit(forms.ModelForm):
         
         return cleaned_data
     
+    
     class Meta:
         model = Team 
         widgets = {
@@ -146,6 +131,7 @@ class Team_Edit(forms.ModelForm):
                 'offsite' : forms.TextInput(attrs={'placeholder' : 'E.g UiO, Aarhus etc '}),
         } 
         fields = ['name', 'onsite', 'offsite','leader']
+    
     
 class CustomSelectMultiple(ModelMultipleChoiceField):
     def label_from_instance(self, obj):

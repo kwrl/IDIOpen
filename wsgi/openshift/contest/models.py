@@ -28,7 +28,7 @@ from django.db import models
 from django.core.urlresolvers import reverse
 
 def getTodayDate():
-     return timezone.make_aware(datetime.datetime.now(), timezone.get_default_timezone());
+    return timezone.make_aware(datetime.datetime.now(), timezone.get_default_timezone());
 
 class ContactInformation(models.Model):
     email = models.EmailField()
@@ -39,7 +39,7 @@ class ContactInformation(models.Model):
 
 class Contest(models.Model):
     title = models.CharField(max_length=200)
-    contact_infos = models.ManyToManyField(ContactInformation)
+    contact_infos = models.ManyToManyField(ContactInformation, null = True)
     """ The url is saved as the suffix from root, only, not the entire url
     """
     url = models.CharField(max_length=20, unique=True, help_text='Defines the url used to access the contest. E.g. sample.site.com/[the value inserted here]');
@@ -117,9 +117,7 @@ class Team(models.Model):
             if isinstance(field, (models.CharField, models.TextField)):
                 value = getattr(self, field.name)
                 if value:
-                    print ("stripping value" + value)
                     setattr(self, field.name, value.strip())
-
                                       
 class InviteManager(models.Manager):
     def create_invite(self, email, team, url, site):
