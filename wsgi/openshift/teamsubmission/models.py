@@ -7,6 +7,11 @@ import os
 
 from execution.models import Problem
 from contest.models import Team
+from django.core.files.storage import FileSystemStorage
+
+private_media = FileSystemStorage(location=settings.PRIVATE_MEDIA_ROOT,
+                                  base_url=settings.PRIVATE_MEDIA_URL,
+                                  )
 
 def get_upload_path(instance, filename):
     """ Dynamically decide where to upload the case,
@@ -18,29 +23,8 @@ def get_upload_path(instance, filename):
                         "%s/submissions" % (instance.problem),
                         filename);
 
-
-class MyStorage(Storage):
-    def __init__(self, option=None):
-        if not option:
-            option = settings.CUSTOM_STORAGE_OPTIONS
-            
-    def delete(self, *args, **kwargs):
-        pass
-
-    def exists(self, *args, **kwargs):
-        pass
-
-    def listdir(self, *args, **kwargs):
-        pass
-
-    def size(self, *args, **kwargs):
-        pass
-
-    def url(self, *args, **kwargs):
-        return None
-
 class Submission(models.Model):
-    submission = models.FileField(upload_to=get_upload_path)
+    submission = models.FileField(storage=private_media, upload_to='submissions')
     date_uploaded = models.DateTimeField(auto_now = True)
 
     validated = models.BooleanField(default=False)
