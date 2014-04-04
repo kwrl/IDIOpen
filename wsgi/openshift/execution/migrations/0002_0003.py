@@ -11,6 +11,11 @@ class Migration(SchemaMigration):
         # Deleting field 'CompilerProfile.flags'
         db.delete_column(u'execution_compilerprofile', 'flags')
 
+        # Adding field 'CompilerProfile.name'
+        db.add_column(u'execution_compilerprofile', 'name',
+                      self.gf('django.db.models.fields.CharField')(default='name', max_length=100),
+                      keep_default=False)
+
         # Adding field 'CompilerProfile.compiler_flags'
         db.add_column(u'execution_compilerprofile', 'compiler_flags',
                       self.gf('django.db.models.fields.CharField')(max_length=100, null=True, blank=True),
@@ -36,8 +41,11 @@ class Migration(SchemaMigration):
     def backwards(self, orm):
         # Adding field 'CompilerProfile.flags'
         db.add_column(u'execution_compilerprofile', 'flags',
-                      self.gf('django.db.models.fields.CharField')(default='', max_length=100),
+                      self.gf('django.db.models.fields.CharField')(default='name', max_length=100),
                       keep_default=False)
+
+        # Deleting field 'CompilerProfile.name'
+        db.delete_column(u'execution_compilerprofile', 'name')
 
         # Deleting field 'CompilerProfile.compiler_flags'
         db.delete_column(u'execution_compilerprofile', 'compiler_flags')
@@ -118,6 +126,7 @@ class Migration(SchemaMigration):
             'compiler_name_cmd': ('django.db.models.fields.CharField', [], {'max_length': '10', 'null': 'True', 'blank': 'True'}),
             'extensions': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['execution.FileExtension']", 'symmetrical': 'False'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'package_name': ('django.db.models.fields.CharField', [], {'max_length': '30'}),
             'run_cmd': ('django.db.models.fields.CharField', [], {'max_length': '10'}),
             'run_flags': ('django.db.models.fields.CharField', [], {'max_length': '100', 'null': 'True', 'blank': 'True'})

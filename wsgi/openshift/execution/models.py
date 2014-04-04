@@ -15,7 +15,7 @@ class FileExtension(models.Model):
         return self.extension
 
 class CompilerProfile(models.Model):
-    #name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100)
     extensions = models.ManyToManyField(FileExtension)
     compiler_name_cmd = models.CharField(max_length=10, blank=True, null=True)
 
@@ -29,7 +29,7 @@ class CompilerProfile(models.Model):
     package_name = models.CharField(max_length=30)
     
     def __unicode__(self):
-        return self.package_name
+        return self.name
 
 def get_upload_path(instance, filename):
     """ Dynamically decide where to upload the case,
