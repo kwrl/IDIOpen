@@ -5,7 +5,7 @@ from django.core.files.storage import Storage
 import os
 
 from execution.models import Problem
-from contest.models import Team
+from contest.models import Team, Contest
 
 def get_upload_path(instance, filename):
     """ Dynamically decide where to upload the case,
@@ -38,6 +38,19 @@ class MyStorage(Storage):
     def url(self, *args, **kwargs):
         return None
 
+class ScoreManager(models.Manager):
+    def get_problem_score(self, team, problem):
+        """ This constant is the penalty
+            for delivering incorrect submissions.
+        """
+        submission_penalty = 2
+        submissions = Submission.objects.filter(team=team).filter(problem=problem).order_by('-date_uploaded')
+        timeScore = (submissions[0].date_uploaded - problem.contest.start_date).total_seconds()
+        print(timeScore)
+        submissionScore = len(submissions) * submission_penalty
+        print(submissionScore)
+        return timeScore + submissionScore
+
 class Submission(models.Model):
     submission = models.FileField(upload_to=get_upload_path)
     date_uploaded = models.DateTimeField(auto_now = True)
@@ -45,6 +58,7 @@ class Submission(models.Model):
     validated = models.BooleanField(default=False)
     text_feedback = models.CharField(max_length=50)
     team = models.ForeignKey(Team)
-    problem = models.ForeignKey(Problem)    
+    problem = models.ForeignKey(Problem)   
+    objects = ScoreManager()
     
 # EOF
