@@ -4,8 +4,8 @@ from django.views.generic.edit import FormView
 from userregistration import signals
 from userregistration.forms import RegistrationForm, Invites_Form, PasswordResetForm
 from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect
 from contest.models import Invite
+from django.http import HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django import forms
 from django.contrib.auth.forms import SetPasswordForm
@@ -190,8 +190,13 @@ class ActivationView(TemplateView):
         url = request.path.split('/')[1]
         return ('registration_activation_complete', (), {'contest':url})
 
-@login_required
+#@login_required
+@sensitive_post_parameters('password_validation','old_password','password')
 def updateProfilePw(request):
+    user = request.user
+    con = get_current_contest(request);
+    if not user.is_authenticated():
+        return redirect('login', con.url)
     form = None;
     if request.method == 'POST':
         form = PasswordForm(instance=request.user, data=request.POST);
@@ -204,8 +209,12 @@ def updateProfilePw(request):
     return retProfile(request, UserProfile(request,
                                             pw=form));
 
-@login_required
+#@login_required
 def updateProfileEmail(request):
+    user = request.user
+    con = get_current_contest(request);
+    if not user.is_authenticated():
+        return redirect('login', con.url)
     form = None;
     if request.method == 'POST':
         form = EmailForm(data=request.POST);
@@ -218,8 +227,12 @@ def updateProfileEmail(request):
     return retProfile(request, UserProfile(request,
                                            email=form));
 
-@login_required
+#@login_required
 def updateProfilePI(request):
+    user = request.user
+    con = get_current_contest(request);
+    if not user.is_authenticated():
+        return redirect('login', con.url)
     form = None;
     if request.method == 'POST':
         form = PIForm(data=request.POST, instance=request.user);
@@ -238,7 +251,7 @@ def get_current_contest(request):
     url = request.path.split('/')[1]    
     try:
         current_contest =  Contest.objects.get(url = url)
-    except Exception.ObjectDoesNotExist as e:
+    except ObjectDoesNotExist:
         raise Http404; 
      
     return current_contest
@@ -263,45 +276,57 @@ def get_current_team(request):
     else:
         return None 
 
-@login_required
 def user_profile(request):
-    useremail = request.user.email
+    user = request.user
+    con = get_current_contest(request);
+    if not user.is_authenticated():
+        return redirect('login', con.url)
     if request.method == 'POST':
         form = Invites_Form(request.POST)
         submit = form.data['submit']
-        id = form.data['id']
-        if id.isdigit():
+        invite_id = form.data['id']
+        try:
+            # If the invite id is not a digit throw exception
+            if not invite_id.isdigit():
+                messages.error(request, 'Invalid invite')
+                raise Exception
+            
+            # Check if the invite is valid, and belongs to the current user
             try:
-                try:
-                    invite = Invite.objects.filter(email=useremail).filter(is_member=False, ).get(pk=id)
-                except ObjectDoesNotExist:
-                    messages.error(request, 'Invalid invite')
+                invite = Invite.objects.filter(email=user.email).filter(is_member=False, ).get(pk=invite_id)
+            except Exception:
+                messages.error(request, 'Invalid invite')
+                raise Exception
+               
+            # If the submit value is accept    
+            if submit == 'accept':
+                print 'accept'
+                # If the user already has a team
+                if is_on_team(request):
+                    messages.info(request, 'You are already a member of a team!')
                     raise Exception
-                if submit == 'accept':
-                    if not is_on_team(request):
-                        if invite.team.members.count() < 3:
-                            try:
-                                invite.team.members.add(User.objects.get(email=useremail))
-                                invite.is_member = True
-                            except ObjectDoesNotExist:
-                                raise forms.ValidationError(_("The form did not validate"))
-                            invite.save()
-                            messages.success(request, 'Invite accepted')
-                        else:
-                            messages.error(request, 'The team you tried to join has the maximum allowed members')
-                    else:
-                        messages.info(request, 'You are already a member of a team!')
-                elif submit == 'decline':
-                    invite.delete()
-                    messages.info(request, 'Invite declined')
-                else:
-                    messages.error(request, 'Validation failed')
-            except:
-                pass
-        else:
-            messages.error(request, 'Validation failed')
+                # If the team already has the maximum allowed members
+                if invite.team.members.count() >= 3:
+                    messages.error(request, 'The team you tried to join has the maximum allowed members')
+                    raise Exception
+                try:
+                    invite.team.members.add(User.objects.get(email=user.email))
+                    invite.is_member = True
+                except ObjectDoesNotExist:
+                    raise forms.ValidationError(_("The form did not validate"))
+                invite.save()
+                messages.success(request, 'Invite accepted')
+                    
+            elif submit == 'decline':
+                print 'decline'
+                invite.delete()
+                messages.info(request, 'Invite declined')
+            else:
+                messages.error(request, 'Validation failed')
+        except:
+            pass
         
-    invites = Invite.objects.filter(email=useremail).filter(is_member = False)
+    invites = Invite.objects.filter(email=user.email).filter(is_member = False)
     context = {'invites' : invites,
                'team' : get_current_team(request), 
                'user': request.user,

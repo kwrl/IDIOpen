@@ -115,7 +115,6 @@
         </div>
         <div id="collapsePI" class="panel-collapse collapse">
             <div class="panel-body">
-
                 <form class="form-horizontal" role="form" id="contestant_edit_pw" METHOD="POST" action="{% url 'profile_edit_info' contest.url %}">
                 	{% include 'form_snippet.html' with form=userpi %}
                     <div class="form-group">
@@ -126,71 +125,66 @@
                 </form>
             </div>
         </div>
-
-
     </div>
 </div>
-	
 	<hr>
 	<h4>List over invites: </h4>
 	{% if invites %}
 		{% if have_team %}
-			<b><p> You already have a team</p></b>
+			<p><strong> You already have a team</strong></p>
 			<br>
 		{% endif %}
 			<table class="table table-striped">
-			<tr>
-			<td> Team </td>
-			<td> Sent by</td>
-			<td> Skill </td>
-			<td> Full </td>
-			<td> </td>					
-			</tr>
-			{% for invite in invites.all %}
-			<tr>
-				<td><p>{{ invite.team.name }}. </p></td>
-				<td><small><p class="text-muted">{{ invite.team.leader.get_full_name }}</p></small></td>
-				<td>
-				<small><p class="text-muted">
-				(
-				{% for members in invite.team.members.all %}
-					{% if forloop.last %}
-						{{ members.skill_level }}
-					{% else %}
-						{{ members.skill_level }}, 
-					{% endif %}	
-				{% endfor %}
-				)
-				</p></small>
-				</td>
-				{% if invite.team.members.count >= 3 %}
-					<td> Yes </td>
-				{% else %}
-				<td>
-				<small><p class="text-muted"> No </p></small>
-				</td>
-				{% endif %}
-				<td>
-				<form action="." method="post"> {% csrf_token %}
-				<input type="hidden" value="{{ invite.id }}" name="id">
-				{% if have_team %}
-					<button type="submit" name="submit" value="accept" disabled="disabled" class="btn btn-primary btn-xs">Accept</button>
-				{% elif invite.team.members.count >= 3 %}
-					<p>This team has reached the maximum number of members</p>
-					<button type="submit" name="submit" disabled="disabled" value="accept" class="btn btn-primar btn-xs">Accept</button><
-				{% else %}
-					<button type="submit" name="submit" value="accept" class="btn btn-primary btn-xs">Accept</button>
-				{% endif %}
-					<button type="submit" name="submit" value="decline" class="btn btn-default btn-xs">
-					Decline 
-					</button> 
-				</td> 
-				</form>
-			</tr>				
-			{% endfor %}
+				<thead>
+					<tr>
+						<th> Team </th>
+						<th> Sent by</th>
+						<th> Skill </th>
+						<th> Full </th>
+						<th> </th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for invite in invites.all %}
+					<tr>
+						<td><p>{{ invite.team.name }}</p></td>
+						<td><p class="text-muted">{{ invite.team.leader.get_full_name }}</p></td>
+						<td><p class="text-muted">
+							({% for members in invite.team.members.all %}
+								{% if forloop.last %}
+									{{ members.skill_level }}
+								{% else %}
+									{{ members.skill_level }}, 
+								{% endif %}	
+							{% endfor %})
+						</p></td>
+						{% if invite.team.members.count >= 3 %}
+							<td>Yes</td>
+						{% else %}
+							<td><p class="text-muted">No</p></td>
+						{% endif %}
+						<td>
+						<form action="." method="post"> {% csrf_token %}
+							<input type="hidden" value="{{ invite.id }}" name="id">
+							{% if have_team %}
+								<button type="submit" name="submit" value="accept" disabled="disabled" class="btn btn-primary btn-xs">Accept</button>
+							{% elif invite.team.members.count >= 3 %}
+								<p>This team has reached the maximum number of members</p>
+								<button type="submit" name="submit" disabled="disabled" value="accept" class="btn btn-primar btn-xs">Accept</button><
+							{% else %}
+								<button type="submit" name="submit" value="accept" class="btn btn-primary btn-xs">Accept</button>
+							{% endif %}
+								<button type="submit" name="submit" value="decline" class="btn btn-default btn-xs">
+								Decline 
+								</button> 
+						</form>
+						</td> 
+					</tr>				
+					{% endfor %}
+				</tbody>
 			</table>
 	{% else %}
-		<p class="text-muted"> Empty </p>
+		<p class="text-muted">Empty</p>
 	{% endif %}
 {% endblock content %}
 

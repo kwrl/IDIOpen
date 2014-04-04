@@ -78,9 +78,7 @@ def registration(request):
             #new_team = form.save(commit=False)
             email_one = form.cleaned_data['member_one']
             email_two = form.cleaned_data['member_two'] 
-            
-            print request.user.email
-            
+             
             '''
             We need to check if the emails are equal. You should not be able to use to equal emails.
             '''
@@ -95,9 +93,12 @@ def registration(request):
                 pass                            
                 
             else: # if the emails do not equal each other
-                    
-                team = Team.objects.create(name=form.cleaned_data['name'], onsite=form.cleaned_data['onsite'], 
-                                           offsite=form.cleaned_data['offsite'], contest = con, leader = request.user)
+                
+                # Removes whitespace from name and offsite
+                name = form.cleaned_data['name'].strip()
+                offsite = form.cleaned_data['offsite'].strip() 
+                team = Team.objects.create(name=name, onsite=form.cleaned_data['onsite'], 
+                                           offsite=offsite, contest = con, leader = request.user)
                 team.members.add(request.user)
                 '''
                 Clearifaction: We have decided to add the current user as a leader AND as a member. 
@@ -257,7 +258,7 @@ def editTeam(request):
         return redirect('login', url)
     # Get the team or 404
     queryset = Team.objects.filter(contest=con).filter(members__in = [user])
-    instance = get_object_or_404(queryset)
+    instance = get_object_or_404(queryset)#team
     # make a new form, with the instance as its model
     form = Team_Edit(None, instance = instance)
     # Need to be leader to edit a profile
@@ -265,6 +266,7 @@ def editTeam(request):
         if request.method == 'POST':
             form = Team_Edit(request.POST, instance = instance)
             if form.is_valid():
+                temp = form.cleaned_data['offsite']
                 messages.success(request, 'Profile details updated.')
                 form.save()
                 return redirect('team_profile', url)
