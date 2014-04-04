@@ -1,5 +1,4 @@
 from django.db import models
-
 import os
 
 from execution.models import Problem
