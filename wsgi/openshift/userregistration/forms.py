@@ -17,8 +17,11 @@ from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
 
 from .models import YEAR_OF_STUDY, GENDER_CHOICES
-from changeemail.models import ChangeEmail
-from changeemail.forms import EmailForm
+'''
+#By: Typo. As far as i can tell this import is not used. And i have to remove them in order to make testing work..
+'''  
+# from changeemail.models import ChangeEmail
+# from changeemail.forms import EmailForm
 
 try:
     from django.contrib.auth import get_user_model

@@ -1,4 +1,6 @@
-from django.db import models
+from django.db import models    
+from contest.models import Contest
+from django.conf import settings 
 
 import os
 
@@ -14,15 +16,9 @@ class CompilerProfile(models.Model):
     compiler_name_cmd = models.CharField(max_length=10)
 
     flags = models.CharField(max_length=100)
-    # How do we handle output filename
+    # How do we handle output filename?
 
     package_name = models.CharField(max_length=30)
-
-class Problem(models.Model):
-    text = models.CharField(max_length=1)
-
-    def __unicode__(self):
-        return "%s" % self.text
 
 def get_upload_path(instance, filename):
     """ Dynamically decide where to upload the case,
@@ -33,6 +29,20 @@ def get_upload_path(instance, filename):
     return os.path.join("%s" % PROBLEM_ROOT_DIR,
                         "%s/case" % (instance.problem),
                         filename);
+
+#Author: Tino, Typo
+class Problem(models.Model):
+    
+    title = models.CharField(max_length=200)
+    description = models.TextField()
+    textFile = models.FileField(upload_to=get_upload_path,
+                       verbose_name="Text file (file)", blank = True)
+    date_uploaded = models.DateTimeField()
+    author = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.SET_NULL, null = True)
+    contest = models.ForeignKey(Contest)
+       
+    def __unicode__(self):
+        return "%s" % (self.description)
 
 class TestCase(models.Model):
     """ We're assuming error cases are defined elsewhere...
@@ -53,6 +63,7 @@ class TestCase(models.Model):
                             verbose_name="Description of the" \
                                          " output:")
 
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null = True)
     problem = models.ForeignKey(Problem)
 
     def __unicode__(self):

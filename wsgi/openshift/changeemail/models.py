@@ -134,11 +134,9 @@ class ChangeEmail(models.Model):
         try: 
             url = request.path.split('/')[1]
         except ObjectDoesNotExist as e: 
-<<<<<<< HEAD
-            raise ValidationError("");
-=======
+
             raise Exception
->>>>>>> 5f4c74d10e224826d594f2df40c3340148532b82
+
         
         site = RequestSite(request)
         ctx_dict = {'activation_key': self.activation_key,
