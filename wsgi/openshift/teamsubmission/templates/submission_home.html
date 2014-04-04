@@ -3,16 +3,20 @@
 {% block content %}
 
 {% load staticfiles %} 
-
-<script type="text/javascript" src="{% static 'openshift/js/jquery.tablesorter.js' %}"></script> 
+<!-- Tablesorter css -->
+<link href="{% static 'openshift/css/tablesorter/tablestyle.css' %}" rel="stylesheet">
+<script type="text/javascript" src="{% static 'openshift/js/tablesorter/jquery.tablesorter.js' %}"></script> 
 <script>
 $(document).ready(function() 
     { 
-        $("#tableProblems").tablesorter( {sortList: [[0,0], [1,0]]} ); 
+        $("#tableProblems").tablesorter( {sortList: [[0,0]]} ); 
+        $(".clickableRow").click(function() {
+        	window.document.location = $(this).attr("href");
+      	});
     } 
 ); 
-
 </script>
+Lag en tittel
 <table id="tableProblems" class="table table-bordered table-hover table-condensed tablesorter">
 	<thead>
             <tr>
@@ -25,16 +29,16 @@ $(document).ready(function()
     </thead>
     <tbody>
 			{% for probsub in prob_sub %}
-            <tr>
+            <tr class='clickableRow' href='{{probsub.problem.id}}'>
             <td>{{probsub.problem.title}}</td>
             <td>{{probsub.submission.submission}}</td>
             <td>{{probsub.submission.date_uploaded}}</td>
+            <td>{{probsub.submission.text_feedback}}</td>
             {%if probsub.submission.validated%}
-            	<td class="bg-success">{{probsub.submission.text_feedback}}</td>
+            	<td class ="success">{{probsub.submission.validated}}</td>
             {%else%}
-            	<td class="bg-danger">{{probsub.submission.text_feedback}}</td>
+            	<td class="danger">{{probsub.submission.validated}}</td>
             {%endif%}
-            <td>{{probsub.submission.validated}}</td>
             </tr>
 			{% endfor %}
     </tbody>

@@ -5,7 +5,7 @@ from django.template.defaultfilters import filesizeformat
 from django.core.exceptions import ValidationError
 
 # Should be in Settings file
-CONTENT_TYPES = ['image', 'video', 'pdf']
+CONTENT_TYPES = ['pdf']
 # 2.5MB - 2621440
 # 5MB - 5242880
 # 10MB - 10485760
