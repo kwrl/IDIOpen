@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% load staticfiles %} 
+<!-- Tablesorter css -->
+<link href="{% static 'openshift/css/tablesorter/tablestyle.css' %}" rel="stylesheet">
+<script type="text/javascript" src="{% static 'openshift/js/tablesorter/jquery.tablesorter.js' %}"></script> 
+<script>
+$(document).ready(function() 
+    { 
+        $("#tableProblems").tablesorter( {sortList: [[0,0]]} ); 
+        $(".clickableRow").click(function() {
+        	window.document.location = $(this).attr("href");
+      	});
+    } 
+); 
+</script>
+Lag en tittel
+<table id="tableProblems" class="table table-bordered table-hover table-condensed tablesorter">
+	<thead>
+            <tr>
+            <th>Problem</th>
+            <th>Last Submission</th>
+            <th>Date Uploaded</th>
+            <th>Feedback</th>
+            <th>Done</th>
+            </tr>
+    </thead>
+    <tbody>
+			{% for probsub in prob_sub %}
+            <tr class='clickableRow' href='{{probsub.problem.id}}'>
+            <td>{{probsub.problem.title}}</td>
+            <td>{{probsub.submission.submission}}</td>
+            <td>{{probsub.submission.date_uploaded}}</td>
+            <td>{{probsub.submission.text_feedback}}</td>
+            {%if probsub.submission.validated%}
+            	<td class ="success">{{probsub.submission.validated}}</td>
+            {%else%}
+            	<td class="danger">{{probsub.submission.validated}}</td>
+            {%endif%}
+            </tr>
+			{% endfor %}
+    </tbody>
+</table>
+{% endblock content %}
