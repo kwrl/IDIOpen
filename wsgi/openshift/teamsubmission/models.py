@@ -45,11 +45,20 @@ class ScoreManager(models.Manager):
         """
         submission_penalty = 2
         submissions = Submission.objects.filter(team=team).filter(problem=problem).order_by('-date_uploaded')
-        timeScore = (submissions[0].date_uploaded - problem.contest.start_date).total_seconds()
-        print(timeScore)
+        correctSubmissions = Submission.objects.filter(team=team).filter(problem=problem).filter(validated=True).order_by('date_uploaded')
+        if(len(correctSubmissions) <= 0):
+            return 0
+        
+        timeScore = (correctSubmissions[0].date_uploaded - problem.contest.start_date).total_seconds()
         submissionScore = len(submissions) * submission_penalty
-        print(submissionScore)
         return timeScore + submissionScore
+    
+    def get_team_score(self, team, contest):
+        problems = Problem.objects.filter(contest=contest)
+        score = 0
+        for problem in problems:
+            score = score + ScoreManager.get_problem_score(self, team, problem)
+        return score
 
 class Submission(models.Model):
     submission = models.FileField(upload_to=get_upload_path)
