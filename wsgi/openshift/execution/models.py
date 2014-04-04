@@ -52,7 +52,7 @@ class Problem(models.Model):
     contest = models.ForeignKey(Contest)
        
     def __unicode__(self):
-        return "%s" % (self.description)
+        return "%s" % (self.title)
 
 class TestCase(models.Model):
     """ We're assuming error cases are defined elsewhere...
