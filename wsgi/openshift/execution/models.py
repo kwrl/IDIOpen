@@ -47,7 +47,7 @@ class Problem(models.Model):
     description = models.TextField()
     textFile = models.FileField(upload_to=get_upload_path2,
                        verbose_name="Text file (file)", blank = True)
-    date_uploaded = models.DateTimeField()
+    date_uploaded = models.DateTimeField(auto_now = True)
     author = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.SET_NULL, null = True)
     contest = models.ForeignKey(Contest)
        
