@@ -10,8 +10,11 @@ from itertools import groupby, imap, izip_longest
 from operator import itemgetter
 from django.contrib import messages
 
+import pdb
+
 def submission_problem(request, problemID):
     #TODO: maybe a nicer url than numeric ID
+    #TODO: Only leader kan upload check
     
     problem = get_object_or_404(Problem.objects.filter(pk=problemID))
     user = request.user
@@ -23,16 +26,20 @@ def submission_problem(request, problemID):
     if len(submission.values_list()) > 0:
         submission = submission[0]
         problem = submission.problem
+        tries = len(submission.values_list())
     else:
         submission = Submission()
         submission.problem = problem
         submission.team = team
+        tries = 0
+        
     
     if request.method == "POST":
         form = SubmissionForm(request.POST, request.FILES,
                                instance=submission)
         if form.is_valid():
             form.save()
+    
             
     form = SubmissionForm(instance=submission);  
     
@@ -40,6 +47,7 @@ def submission_problem(request, problemID):
              'problem' : problem,
              'submission' : submission,
              'submission_form' : form,
+             'tries':tries,
               }
     
     return render(request,
