@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Article list{% endblock %}
+{% block title %}{{ article.title }}{% endblock %}
 
 {% block content %}
 {% if article %}
@@ -11,6 +11,6 @@
 		</p>	
 		<div>{{ article.text|safe}}</div>
 {% else %}
-	<p>Invalid article</p>
+	<p>Article not found</p>
 {% endif %}
 {% endblock content %}

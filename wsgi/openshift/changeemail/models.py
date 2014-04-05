@@ -1,5 +1,5 @@
-""" Change the email for a given user. 
-    The model defined in this class stores the old user, new email 
+""" Change the email for a given user.
+    The model defined in this class stores the old user, new email
     and activation key.
 
     The manager is to access the entires in a safe and defined manner..
@@ -18,6 +18,7 @@ from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
 from contest.models import Invite
+
 from userregistration.models import CustomUser as User
 
 import hashlib
@@ -134,7 +135,9 @@ class ChangeEmail(models.Model):
         try: 
             url = request.path.split('/')[1]
         except ObjectDoesNotExist as e: 
+
             raise Exception
+
         
         site = RequestSite(request)
         ctx_dict = {'activation_key': self.activation_key,
