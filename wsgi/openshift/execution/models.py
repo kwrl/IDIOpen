@@ -43,7 +43,7 @@ def get_upload_path2(instance, filename):
 
 #Author: Tino, Typo
 class Problem(models.Model):  
-    title = models.CharField(max_length=200)
+    title = models.CharField(max_length=200, unique = True)
     description = models.TextField()
     textFile = models.FileField(upload_to=get_upload_path2,
                        verbose_name="Text file (file)", blank = True)
@@ -52,7 +52,7 @@ class Problem(models.Model):
     contest = models.ForeignKey(Contest)
        
     def __unicode__(self):
-        return "%s" % (self.description)
+        return "%s" % (self.title)
 
 class TestCase(models.Model):
     """ We're assuming error cases are defined elsewhere...
