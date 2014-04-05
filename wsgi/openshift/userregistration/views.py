@@ -2,7 +2,6 @@ from django.shortcuts import redirect, render
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView
 from userregistration import signals
-from userregistration.forms import RegistrationForm, Invites_Form, PasswordResetForm
 from django.core.urlresolvers import reverse
 from contest.models import Invite
 from django.http import HttpResponseRedirect
@@ -14,7 +13,11 @@ from django.utils.translation import ugettext_lazy as _
 from contest.models import Team, Contest
 from django.http import Http404
 from django.contrib import messages
+
 from userregistration.forms import *
+from changeemail.models import ChangeEmail
+from changeemail.forms import EmailForm
+
 from django.contrib.sites.models import RequestSite
 from django.views.decorators.debug import sensitive_post_parameters
 from django.views.decorators.cache import never_cache
@@ -25,6 +28,7 @@ from django.contrib.auth.tokens import default_token_generator
 from django.conf import settings
 from django.utils.http import base36_to_int, is_safe_url, urlsafe_base64_decode, urlsafe_base64_encode
 from django.utils.encoding import force_bytes, force_text
+
 
 
 try:
@@ -334,6 +338,7 @@ def user_profile(request):
                }
 
     u = UserProfile(request);
+    
     context.update(u.getDict());
     return render(request, 'userregistration/profile.html', context)
 
