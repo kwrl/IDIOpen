@@ -11,8 +11,7 @@
 {% if submission.solved_problem %} 
 <strong><p>Problem solved! </strong></p> 
 <p> Attempts: <strong> {{ tries }} </strong> </p>
-<p> Solution runtime: <strong> {{ submission.runtime }} </strong> </p>
- 
+<p> Solution runtime: <strong> {{ submission.runtime }}</strong>ms </p>
 {% elif tries > 0 %}
 <p> You have made  <strong> {{ tries }} </strong> attempts at solving this problem </p>
 {% endif %}
@@ -40,12 +39,13 @@
     <h3> Feedback on submission </h3>
  <div class = 'well' >
 {% if submission.solved_problem %}
-	<span class="bg-success">{{submission.text_feedback}}</span>
+	<span class="bg-info">{{submission.text_feedback}}</span>
 {% elif submission.text_feedback %}
-<span class="bg-danger">{{submission.text_feedback}}</span>
+	<span class="bg-info">{{submission.text_feedback}}</span>
 {% else %}
-<span class="bg-info"> No feedback </span>
+	<span class="bg-info"> No feedback </span>
 {% endif %}
+
 <br />
 <br />
 </div>

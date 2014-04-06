@@ -150,27 +150,34 @@ def user_exist(email):
 #===============================================================================
 # Checks if contest has begun
 #===============================================================================
-def contest_begin(con):
-    contest = Contest.objects.get(contest=con)
-    startDate = contest.start_date
-    dateToday = timezone.now()
-    if (dateToday >= startDate):
-        return True
-    else:
-        return False
-    
+def contest_begin(request):
+    try: 
+        contest = get_current_contest(request)
+        startDate = contest.start_date
+        dateToday = timezone.now()
+        if (dateToday >= startDate):
+            has_started = True
+        else:
+            has_started = False
+    except ObjectDoesNotExist as e: 
+        raise Http404
+    return has_started
 #===============================================================================
 # Checks if contest has ended
 #===============================================================================
-def contest_end(con):
-    contest = Contest.objects.get(contest=con)
-    endDate = contest.end_date
-    dateToday = timezone.now()
-    
-    if (dateToday <= endDate):
-        return False
-    else:
-        return True
+def contest_end(request):
+    try: 
+        contest = get_current_contest(request)
+        endDate = contest.end_date
+        dateToday = timezone.now()
+        if (dateToday <= endDate):
+            has_ended = False
+        else:
+            has_ended = True
+    except ObjectDoesNotExist as e: 
+        raise Http404
+    return has_ended
+
 
 '''
 AUTHOR: Haakon, Tino, Filip
@@ -191,9 +198,9 @@ def team_profile(request):
         team = team[0]
         invites = Invite.objects.filter(team=team).filter(is_member = False)
         
+        contest_started = contest_begin(request)
         # If the competition has started
-        if (contest_begin(con)):
-            contest_started = True
+        if (contest_started):
             context = {'team':team,
                        'invites' : invites,
                        'contest_started' : contest_started,
