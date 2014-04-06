@@ -18,7 +18,6 @@ from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
 from contest.models import Invite
-
 from userregistration.models import CustomUser as User
 
 import hashlib
