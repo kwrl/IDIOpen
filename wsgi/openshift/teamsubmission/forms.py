@@ -16,7 +16,7 @@ CONTENT_TYPES = ['pdf', 'application']
 # 500MB - 429916160
 MAX_UPLOAD_SIZE = "5242880" # 5 MB
 
-class SubmissionForm(forms.ModelForm):  
+class SubmissionForm(forms.ModelForm):
     
     class Meta:
         model = Submission  
@@ -33,6 +33,7 @@ class SubmissionForm(forms.ModelForm):
                 self._errors['submission'] = self.error_class([('Please keep filesize under %s. Current filesize %s') % (filesizeformat(MAX_UPLOAD_SIZE), filesizeformat(submission._size))])
         else:
             self._errors['submission'] = self.error_class([('File type is not supported')])
+
         return self.cleaned_data
     
     def save(self):
