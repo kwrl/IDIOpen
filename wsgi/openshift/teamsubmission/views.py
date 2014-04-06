@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect, HttpResponse, Http404
-from contest.views import get_current_contest
+from contest.views import get_current_contest, is_leader
 from contest.models import Team
 from execution.models import Problem
 
@@ -10,7 +10,6 @@ from itertools import groupby, imap, izip_longest
 from operator import itemgetter
 from django.contrib import messages
 from contest.views import contest_begin, contest_end
-
 
 def is_problem_solved(team, problemID):
     submission = Submission.objects.filter(team=team).filter(problem=problemID).filter(solved_problem = True)
@@ -51,8 +50,11 @@ def submission_problem(request, problemID):
                                instance=submission)
         if contest_end(con):
             messages.error(request, 'You can\'t upload any more files after the contest has ended')
-        elif form.is_valid():
-            form.save()
+        if is_leader(request, con):
+            if form.is_valid():
+                form.save()
+        else:
+            messages.error(request, 'You have to be the leader of a team, to upload files')
     
 #    pdb.set_trace()
     if is_problem_solved(team, problemID): 
