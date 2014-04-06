@@ -147,8 +147,39 @@ def user_exist(email):
         return True
     return False
 
-'''
+#===============================================================================
+# Checks if contest has begun
+#===============================================================================
+def contest_begin(request):
+    try: 
+        contest = get_current_contest(request)
+        startDate = contest.start_date
+        dateToday = timezone.now()
+        if (dateToday >= startDate):
+            has_started = True
+        else:
+            has_started = False
+    except ObjectDoesNotExist as e: 
+        raise Http404
+    return has_started
+#===============================================================================
+# Checks if contest has ended
+#===============================================================================
+def contest_end(request):
+    try: 
+        contest = get_current_contest(request)
+        endDate = contest.end_date
+        dateToday = timezone.now()
+        if (dateToday <= endDate):
+            has_ended = False
+        else:
+            has_ended = True
+    except ObjectDoesNotExist as e: 
+        raise Http404
+    return has_ended
 
+
+'''
 AUTHOR: Haakon, Tino, Filip
 
 '''
@@ -166,7 +197,17 @@ def team_profile(request):
     if team.count() > 0:
         team = team[0]
         invites = Invite.objects.filter(team=team).filter(is_member = False)
-        # If you are leader
+        
+        contest_started = contest_begin(request)
+        # If the competition has started
+        if (contest_started):
+            context = {'team':team,
+                       'invites' : invites,
+                       'contest_started' : contest_started,
+                       }
+            return render(request, 'contest/team.html', context)
+            
+        # If you are the leader
         leader = is_leader(request,con)
         if leader:
             if request.method == 'POST':

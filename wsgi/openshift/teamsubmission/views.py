@@ -1,5 +1,5 @@
-from django.shortcuts import render, get_object_or_404
-from contest.views import get_current_contest
+from django.shortcuts import render, get_object_or_404, redirect, HttpResponse, Http404
+from contest.views import get_current_contest, is_leader, is_member_of_team
 from contest.models import Team
 from execution.models import Problem
 
@@ -9,8 +9,7 @@ from .forms import SubmissionForm
 from itertools import groupby, imap, izip_longest
 from operator import itemgetter
 from django.contrib import messages
-
-import pdb
+from contest.views import contest_begin, contest_end
 
 def is_problem_solved(team, problemID):
     submission = Submission.objects.filter(team=team).filter(problem=problemID).filter(solved_problem = True)
@@ -18,15 +17,25 @@ def is_problem_solved(team, problemID):
         return True
     return False
 
+#Login required
 def submission_problem(request, problemID):
     #TODO: maybe a nicer url than numeric ID
-    #TODO: Only leader can upload check
+    con = get_current_contest(request)
+    user = request.user
+    if not user.is_authenticated():
+        return redirect('login', con.url)
+    # Raise 404 if contest hasn't begun or has ended, and if user is not member of team
     
+    if not contest_begin(request) or not is_member_of_team(request, con):
+        raise Http404    
+
+    if contest_end(request):
+        messages.warning(request, 'The contest has ended, you are not able to upload any more submissions.')
+   
+    #TODO: Only leader can upload check    
     problem = get_object_or_404(Problem.objects.filter(pk=problemID))
     user = request.user
-    con = get_current_contest(request)
     team = Team.objects.filter(contest=con).get(members__id = user.id)
-    
     submission = Submission.objects.filter(team=team).filter(problem=problemID).order_by('date_uploaded')
     tries = len(submission)
     
@@ -43,16 +52,19 @@ def submission_problem(request, problemID):
     if request.method == "POST":
         form = SubmissionForm(request.POST, request.FILES,
                                instance=submission)
-        if form.is_valid():
-            form.save()
+        if contest_end(request):
+            messages.error(request, 'You can\'t upload any more files after the contest has ended')
+        if is_leader(request, con):
+            if form.is_valid():
+                form.save()
+        else:
+            messages.error(request, 'You have to be the leader of a team to upload submissions')
     
 #    pdb.set_trace()
     if is_problem_solved(team, problemID): 
         messages.success(request, 'This problem is solved!')
             
     form = SubmissionForm(instance=submission);
-      
-    
     
     context = {
              'problem' : problem,
@@ -66,11 +78,20 @@ def submission_problem(request, problemID):
                   context,
                   )
 
-
 #Login required
 def submission_view(request):
     user = request.user
     con = get_current_contest(request)
+    
+    # Raise 404 if contest hasn't begun or contest has ended
+    if not contest_begin(request) or not is_member_of_team(request, con):
+        raise Http404    
+    
+    if not user.is_authenticated():
+        return redirect('login', con.url)
+
+    if contest_end(request):
+        messages.warning(request, 'The contest has ended, you are not able to upload any more submissions.')
     
     team = Team.objects.filter(contest=con).filter(members__id = user.id)
     problems = Problem.objects.filter(contest=con)
