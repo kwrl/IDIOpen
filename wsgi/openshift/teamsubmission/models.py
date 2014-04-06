@@ -26,7 +26,6 @@ def get_upload_path(instance, filename):
 class Submission(models.Model):
     submission = models.FileField(storage=private_media, upload_to='submissions')
     date_uploaded = models.DateTimeField(auto_now = True)
-
     validated = models.BooleanField(default=False)
     text_feedback = models.CharField(max_length=50)
     team = models.ForeignKey(Team)

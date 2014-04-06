@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect, HttpResponse, Http404
 from contest.views import get_current_contest
 from contest.models import Team
 from execution.models import Problem
@@ -9,15 +9,22 @@ from .forms import SubmissionForm
 from itertools import groupby, imap, izip_longest
 from operator import itemgetter
 from django.contrib import messages
+from contest.views import contest_begin, contest_end
 
 def submission_problem(request, problemID):
     #TODO: maybe a nicer url than numeric ID
+    con = get_current_contest(request)
+    
+    # Raise 404 if contest hasn't begun or has ended
+    if not contest_begin(con):
+        raise Http404    
+    
+    if contest_end(con):
+        messages.warning(request, 'The contest has ended, you are not able to upload any more submissions.')
     
     problem = get_object_or_404(Problem.objects.filter(pk=problemID))
     user = request.user
-    con = get_current_contest(request)
     team = Team.objects.filter(contest=con).get(members__id = user.id)
-    
     submission = Submission.objects.filter(team=team).filter(problem=problemID).order_by('date_uploaded')
             
     if len(submission.values_list()) > 0:
@@ -31,7 +38,9 @@ def submission_problem(request, problemID):
     if request.method == "POST":
         form = SubmissionForm(request.POST, request.FILES,
                                instance=submission)
-        if form.is_valid():
+        if contest_end(con):
+            messages.error(request, 'You can\'t upload any more files after the contest has ended')
+        elif form.is_valid():
             form.save()
             
     form = SubmissionForm(instance=submission);  
@@ -47,11 +56,20 @@ def submission_problem(request, problemID):
                   context,
                   )
 
-
 #Login required
 def submission_view(request):
     user = request.user
     con = get_current_contest(request)
+    
+    # Raise 404 if contest hasn't begun or contest has ended
+    if not contest_begin(con):
+        raise Http404    
+    
+    if not user.is_authenticated():
+        return redirect('login', con.url)
+
+    if contest_end(con):
+        messages.warning(request, 'The contest has ended, you are not able to upload any more submissions.')
     
     team = Team.objects.filter(contest=con).filter(members__id = user.id)
     problems = Problem.objects.filter(contest=con)
