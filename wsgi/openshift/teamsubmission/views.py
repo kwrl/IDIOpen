@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect, HttpResponse, Http404
-from contest.views import get_current_contest, is_leader
+from contest.views import get_current_contest, is_leader, is_member_of_team
 from contest.models import Team
 from execution.models import Problem
 
@@ -17,12 +17,15 @@ def is_problem_solved(team, problemID):
         return True
     return False
 
+def has_team():
+    pass
+
 def submission_problem(request, problemID):
     #TODO: maybe a nicer url than numeric ID
     con = get_current_contest(request)
     
     # Raise 404 if contest hasn't begun or has ended
-    if not contest_begin(con):
+    if not contest_begin(con) or is_member_of_team(request, con):
         raise Http404    
     
     if contest_end(con):
@@ -82,7 +85,7 @@ def submission_view(request):
     con = get_current_contest(request)
     
     # Raise 404 if contest hasn't begun or contest has ended
-    if not contest_begin(con):
+    if not contest_begin(con) or is_member_of_team(request, con):
         raise Http404    
     
     if not user.is_authenticated():
