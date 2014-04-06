@@ -147,8 +147,32 @@ def user_exist(email):
         return True
     return False
 
-'''
+#===============================================================================
+# Checks if contest has begun
+#===============================================================================
+def contest_begin(con):
+    contest = Contest.objects.get(contest=con)
+    startDate = contest.start_date
+    dateToday = timezone.now()
+    if (dateToday >= startDate):
+        return True
+    else:
+        return False
+    
+#===============================================================================
+# Checks if contest has ended
+#===============================================================================
+def contest_end(con):
+    contest = Contest.objects.get(contest=con)
+    endDate = contest.end_date
+    dateToday = timezone.now()
+    
+    if (dateToday <= endDate):
+        return False
+    else:
+        return True
 
+'''
 AUTHOR: Haakon, Tino, Filip
 
 '''
@@ -166,7 +190,17 @@ def team_profile(request):
     if team.count() > 0:
         team = team[0]
         invites = Invite.objects.filter(team=team).filter(is_member = False)
-        # If you are leader
+        
+        # If the competition has started
+        if (contest_begin(con)):
+            contest_started = True
+            context = {'team':team,
+                       'invites' : invites,
+                       'contest_started' : contest_started,
+                       }
+            return render(request, 'contest/team.html', context)
+            
+        # If you are the leader
         leader = is_leader(request,con)
         if leader:
             if request.method == 'POST':
