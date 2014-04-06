@@ -33,7 +33,6 @@ class SubmissionForm(forms.ModelForm):
                 self._errors['submission'] = self.error_class([('Please keep filesize under %s. Current filesize %s') % (filesizeformat(MAX_UPLOAD_SIZE), filesizeformat(submission._size))])
         else:
             self._errors['submission'] = self.error_class([('File type is not supported')])
-       
         return self.cleaned_data
     
     def save(self):
