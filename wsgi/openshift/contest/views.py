@@ -177,8 +177,6 @@ def contest_end(request):
     except ObjectDoesNotExist as e: 
         raise Http404
     return has_ended
-
-
 '''
 AUTHOR: Haakon, Tino, Filip
 
@@ -206,7 +204,6 @@ def team_profile(request):
                        'contest_started' : contest_started,
                        }
             return render(request, 'contest/team.html', context)
-            
         # If you are the leader
         leader = is_leader(request,con)
         if leader:
@@ -220,7 +217,6 @@ def team_profile(request):
                             messages.success(request, 'Email has been sent to: ' + email)
                         else:   
                             messages.error(request, 'You already have the maximum number of members')
-
             # If request is not POST, add an empty form            
             else:        
                 addMemberForm = Team_Add_Members()
@@ -297,6 +293,9 @@ def editTeam(request):
     
     if not user.is_authenticated():
         return redirect('login', url)
+    
+    if (contest_begin(request)):
+        raise Http404()
     # Get the team or 404
     queryset = Team.objects.filter(contest=con).filter(members__in = [user])
     instance = get_object_or_404(queryset)#team

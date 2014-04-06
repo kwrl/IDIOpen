@@ -24,8 +24,8 @@ def submission_problem(request, problemID):
     user = request.user
     if not user.is_authenticated():
         return redirect('login', con.url)
+
     # Raise 404 if contest hasn't begun or has ended, and if user is not member of team
-    
     if not contest_begin(request) or not is_member_of_team(request, con):
         raise Http404    
 
@@ -47,8 +47,7 @@ def submission_problem(request, problemID):
         submission = Submission()
         submission.problem = problem
         submission.team = team
-        
-    
+            
     if request.method == "POST":
         form = SubmissionForm(request.POST, request.FILES,
                                instance=submission)
@@ -100,7 +99,7 @@ def submission_view(request):
     # The submission is the first one returned, as per date_uploaded
     ret_submissions = map(next, imap(itemgetter(1),
                           groupby(submissions, lambda x:x.problem)))
-        
+
     listProbSub = [SubJoinProb(sub, prob) 
                    for (sub, prob) in izip_longest(ret_submissions, problems)]
     
