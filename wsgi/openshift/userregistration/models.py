@@ -101,6 +101,7 @@ class CustomUserManager(BaseUserManager):
 
         """
         salt = hashlib.sha1(str(random.random())).hexdigest()[:5]
+        username = email
         if isinstance(email, unicode):
             username = email.encode('utf-8')
         activation_key = hashlib.sha1(salt+username).hexdigest()
