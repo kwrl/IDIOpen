@@ -5,7 +5,7 @@ from django.template.defaultfilters import filesizeformat
 from django.core.exceptions import ValidationError
 
 # Should be in Settings file
-CONTENT_TYPES = ['pdf']
+CONTENT_TYPES = ['pdf', 'application']
 # 2.5MB - 2621440
 # 5MB - 5242880
 # 10MB - 10485760
@@ -33,7 +33,7 @@ class SubmissionForm(forms.ModelForm):
                 self._errors['submission'] = self.error_class([('Please keep filesize under %s. Current filesize %s') % (filesizeformat(MAX_UPLOAD_SIZE), filesizeformat(submission._size))])
         else:
             self._errors['submission'] = self.error_class([('File type is not supported')])
-        
+
         return self.cleaned_data
     
     def save(self):
@@ -43,6 +43,6 @@ class SubmissionForm(forms.ModelForm):
         new_sub.validate = False
         new_sub.team = self.instance.team
         new_sub.save()
-        super(SubmissionForm, self).save()
+        #super(SubmissionForm, self).save()
 
 # EOF

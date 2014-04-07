@@ -10,15 +10,26 @@ PROBLEM_ROOT_DIR = 'problems'
 
 class FileExtension(models.Model):
     extension = models.CharField(max_length=4)
+    
+    def __unicode__(self):
+        return self.extension
 
 class CompilerProfile(models.Model):
+    name = models.CharField(max_length=100)
     extensions = models.ManyToManyField(FileExtension)
-    compiler_name_cmd = models.CharField(max_length=10)
+    compiler_name_cmd = models.CharField(max_length=10, blank=True, null=True)
 
-    flags = models.CharField(max_length=100)
+    compiler_flags = models.CharField(max_length=100, blank=True, null=True)
+
+    run_cmd = models.CharField(max_length=10)
+
+    run_flags = models.CharField(max_length=100, blank=True, null=True)
     # How do we handle output filename?
 
     package_name = models.CharField(max_length=30)
+    
+    def __unicode__(self):
+        return self.name
 
 def get_upload_path(instance, filename):
     """ Dynamically decide where to upload the case,
