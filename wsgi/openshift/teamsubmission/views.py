@@ -12,9 +12,15 @@ from django.contrib import messages
 
 import pdb
 
+def is_problem_solved(team, problemID):
+    submission = Submission.objects.filter(team=team).filter(problem=problemID).filter(solved_problem = True)
+    if submission:
+        return True
+    return False
+
 def submission_problem(request, problemID):
     #TODO: maybe a nicer url than numeric ID
-    #TODO: Only leader kan upload check
+    #TODO: Only leader can upload check
     
     problem = get_object_or_404(Problem.objects.filter(pk=problemID))
     user = request.user
@@ -22,16 +28,16 @@ def submission_problem(request, problemID):
     team = Team.objects.filter(contest=con).get(members__id = user.id)
     
     submission = Submission.objects.filter(team=team).filter(problem=problemID).order_by('date_uploaded')
-            
+    tries = len(submission)
+    
     if len(submission.values_list()) > 0:
         submission = submission[0]
         problem = submission.problem
-        tries = len(submission.values_list())
+        
     else:
         submission = Submission()
         submission.problem = problem
         submission.team = team
-        tries = 0
         
     
     if request.method == "POST":
@@ -40,8 +46,13 @@ def submission_problem(request, problemID):
         if form.is_valid():
             form.save()
     
+#    pdb.set_trace()
+    if is_problem_solved(team, problemID): 
+        messages.success(request, 'This problem is solved!')
             
-    form = SubmissionForm(instance=submission);  
+    form = SubmissionForm(instance=submission);
+      
+    
     
     context = {
              'problem' : problem,

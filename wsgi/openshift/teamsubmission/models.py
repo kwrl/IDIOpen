@@ -42,10 +42,10 @@ class MyStorage(Storage):
 class Submission(models.Model):
     submission = models.FileField(upload_to=get_upload_path)
     date_uploaded = models.DateTimeField(auto_now = True)
-
-    validated = models.BooleanField(default=False)
+    solved_problem = models.BooleanField(default=False) #E.g. Did this submission solve the the problem
     text_feedback = models.CharField(max_length=50)
     team = models.ForeignKey(Team)
-    problem = models.ForeignKey(Problem)    
+    problem = models.ForeignKey(Problem)
+    runtime = models.IntegerField(max_length = 15, blank = True, null = True)  
     
 # EOF

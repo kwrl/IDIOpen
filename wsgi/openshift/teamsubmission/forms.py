@@ -16,7 +16,7 @@ CONTENT_TYPES = ['pdf']
 # 500MB - 429916160
 MAX_UPLOAD_SIZE = "5242880" # 5 MB
 
-class SubmissionForm(forms.ModelForm):  
+class SubmissionForm(forms.ModelForm):
     
     class Meta:
         model = Submission  
