@@ -38,7 +38,6 @@ def get_upload_path2(instance, filename):
     """
     # path.join appends a trailing / in between each argument
     return os.path.join("%s" % PROBLEM_ROOT_DIR,
-                        "problemDesc",
                         filename);
 
 #Author: Tino, Typo
