@@ -45,6 +45,30 @@ def getTodayDate(request):
     return timezone.make_aware(datetime.datetime.now(),
                                timezone.get_default_timezone());
 
+'''
+AUTHOR: Tino, Filip
+'''
+#===============================================================================
+# Check if user is Team leader
+#===============================================================================
+def is_leader(request, contest):
+    team = Team.objects.filter(contest=contest).get(members__id = request.user.id)
+    if team.leader.id == request.user.id:
+        return True
+    else:
+        return False
+
+#===============================================================================
+# Check if user is on a team
+#===============================================================================
+def is_member_of_team(request, contest):
+    team = Team.objects.filter(contest=contest).filter(members__id = request.user.id)
+    if team.count() > 0:
+        return team[0]
+    else:
+        team = False
+
+
 # @login_required
 def registration(request):
     '''
@@ -197,6 +221,8 @@ def team_profile(request):
         invites = Invite.objects.filter(team=team).filter(is_member = False)
         
         contest_started = contest_begin(request)
+        # If you are the leader
+        leader = is_leader(request,con)
         # If the competition has started
         if (contest_started):
             context = {'team':team,
@@ -239,28 +265,6 @@ def team_profile(request):
         
     return render(request, 'contest/team.html', context)
 
-'''
-AUTHOR: Tino, Filip
-'''
-#===============================================================================
-# Check if user is Team leader
-#===============================================================================
-def is_leader(request, contest):
-    team = Team.objects.filter(contest=contest).get(members__id = request.user.id)
-    if team.leader.id == request.user.id:
-        return True
-    else:
-        return False
-
-#===============================================================================
-# Check if user is on a team
-#===============================================================================
-def is_member_of_team(request, contest):
-    team = Team.objects.filter(contest=contest).filter(members__id = request.user.id)
-    if team.count() > 0:
-        return team[0]
-    else:
-        team = False
 
 #===============================================================================
 # For when a contestant wants to leave a team
@@ -268,8 +272,10 @@ def is_member_of_team(request, contest):
 def leave_team(request):
     user = request.user
     con = get_current_contest(request)
-    is_RegOpen = con.isRegOpen()   
-    if request.method == 'POST':
+    is_RegOpen = con.isRegOpen()
+    if request.method == 'POST' and contest_begin(request):
+        messages.error(request, 'Sorry, you can\'t leave team after registration is closed')
+    elif request.method == 'POST':
         if is_RegOpen: 
             if is_leader(request, con): # If leader, delete the team
                 team = Team.objects.filter(contest=con).get(members__id = request.user.id)
@@ -281,10 +287,13 @@ def leave_team(request):
                 team = Team.objects.filter(contest=con).get(members__id = request.user.id)
                 team.members.remove(user.id)
         else:
-            messages.error(request, 'Can\'t leave team after registration is closed')
+            messages.error(request, 'Sorry, you can\'t leave team after registration is closed')
         
     return redirect('team_profile', con.url)
     
+#===============================================================================
+#For when a leader wants to edit the team
+#===============================================================================
 #@login_required
 def editTeam(request):
     user = request.user
