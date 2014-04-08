@@ -1,11 +1,8 @@
 from django import forms
 from .models import Submission
-
 from django.template.defaultfilters import filesizeformat
 from django.core.exceptions import ValidationError
-
-# Should be in Settings file
-CONTENT_TYPES = ['pdf', 'application']
+from execution.models import FileExtension
 # 2.5MB - 2621440
 # 5MB - 5242880
 # 10MB - 10485760
@@ -16,6 +13,10 @@ CONTENT_TYPES = ['pdf', 'application']
 # 500MB - 429916160
 MAX_UPLOAD_SIZE = "5242880" # 5 MB
 
+
+def get_file_extensions():
+    return FileExtension.objects.all()
+ 
 class SubmissionForm(forms.ModelForm):
     
     class Meta:
@@ -28,7 +29,9 @@ class SubmissionForm(forms.ModelForm):
             self._errors['submission'] = self.error_class([("Please upload a file before submitting")])
             raise ValidationError('')
         content_type = submission.content_type.split('/')[-1]
-        if content_type in CONTENT_TYPES:
+        FILE_EXT = get_file_extensions()
+        # Check if submission has an allowed file extension
+        if content_type in [str(x) for x in FILE_EXT]:
             if submission._size > MAX_UPLOAD_SIZE:
                 self._errors['submission'] = self.error_class([('Please keep filesize under %s. Current filesize %s') % (filesizeformat(MAX_UPLOAD_SIZE), filesizeformat(submission._size))])
         else:
