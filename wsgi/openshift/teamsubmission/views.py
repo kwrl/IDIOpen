@@ -93,7 +93,7 @@ def submission_view(request):
     
     team = Team.objects.filter(contest=con).filter(members__id = user.id)
     problems = Problem.objects.filter(contest=con)
-    submissions = Submission.objects.filter(team=team).order_by('date_uploaded')
+    submissions = Submission.objects.filter(team=team).order_by('-date_uploaded')
     # Get only one submission per problem. 
     # The submission is the first one returned, as per date_uploaded
     ret_submissions = map(next, imap(itemgetter(1),
