@@ -1,6 +1,6 @@
 #coding:utf-8
 from django.shortcuts import render, redirect, get_object_or_404
-from contest.forms import Team_Form, Team_Edit, Team_Add_Members
+from .forms import Team_Form, Team_Edit, Team_Add_Members
 from django.http import HttpResponseRedirect
 from article.models import Article
 from userregistration.models import CustomUser
