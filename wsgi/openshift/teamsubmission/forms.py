@@ -45,6 +45,5 @@ class SubmissionForm(forms.ModelForm):
         new_sub.validate = False
         new_sub.team = self.instance.team
         new_sub.save()
-        #super(SubmissionForm, self).save()
 
 # EOF
