@@ -59,6 +59,14 @@ class ScoreManager(models.Manager):
         for problem in problems:
             score = score + ScoreManager.get_problem_score(self, team, problem)
         return score
+    
+    def get_highscore(self, contest):
+        teams = Team.objects.filter(contest=contest)
+        scores = []
+        for team in teams:
+            scores.append(ScoreManager.get_team_score(self, team, contest))
+        scores.sort(cmp=None, key=None, reverse=False)
+        return scores
 
 class Submission(models.Model):
     submission = models.FileField(upload_to=get_upload_path)
