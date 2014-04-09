@@ -72,6 +72,16 @@ def submission_view(request):
                }    
     return render(request, 'submission_home.html', context)
 
+def highscore_view(request):
+    contest = get_current_contest(request)
+    scores = Submission.objects.get_highscore(contest)
+    
+    context = {
+               'contest' : contest,
+               'scores' : scores,
+               }
+    return render(request, 'highscore.html', context)
+
 class SubJoinProb(object):
     def __init__(self, submission, problem):
         if submission is not None:

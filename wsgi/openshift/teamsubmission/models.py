@@ -43,7 +43,7 @@ class ScoreManager(models.Manager):
         """ This constant is the penalty
             for delivering incorrect submissions.
         """
-        submission_penalty = 2
+        submission_penalty = 100
         submissions = Submission.objects.filter(team=team).filter(problem=problem).order_by('-date_uploaded')
         correctSubmissions = Submission.objects.filter(team=team).filter(problem=problem).filter(validated=True).order_by('date_uploaded')
         if(len(correctSubmissions) <= 0):
@@ -63,9 +63,16 @@ class ScoreManager(models.Manager):
     def get_highscore(self, contest):
         teams = Team.objects.filter(contest=contest)
         scores = []
+        zeros = []
+        print("test")
         for team in teams:
-            scores.append(ScoreManager.get_team_score(self, team, contest))
-        scores.sort(cmp=None, key=None, reverse=False)
+            if(ScoreManager.get_team_score(self, team, contest)):
+                scores.append((team.name, ScoreManager.get_team_score(self, team, contest)))
+            else:
+                zeros.append((team.name, ScoreManager.get_team_score(self, team, contest)))
+        sorted(scores, key=lambda score: score[1])
+        for s in zeros:
+            scores.append(s)
         return scores
 
 class Submission(models.Model):
