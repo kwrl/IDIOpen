@@ -2,7 +2,7 @@
 from django.test import TestCase
 
 from .models import Problem
-from contest.models import Contest, Link
+from openshift.contest.models import Contest, Link
 import datetime
 
 # Create your tests here.

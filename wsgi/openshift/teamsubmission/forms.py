@@ -2,7 +2,7 @@ from django import forms
 from .models import Submission
 from django.template.defaultfilters import filesizeformat
 from django.core.exceptions import ValidationError
-from execution.models import FileExtension
+from openshift.execution.models import FileExtension
 # 2.5MB - 2621440
 # 5MB - 5242880
 # 10MB - 10485760

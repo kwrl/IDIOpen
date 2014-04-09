@@ -65,15 +65,15 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'debug_toolbar',
-    'contest',
-    'article',
-    'userregistration',
+    'openshift.contest',
+    'openshift.article',
+    'openshift.userregistration',
 	'django_jenkins',
     'south',
     'sortedm2m',
-    'changeemail',
-    'execution',
-    'teamsubmission'
+    'openshift.changeemail',
+    'openshift.execution',
+    'openshift.teamsubmission'
 )
 '''
 if not ON_OPENSHIFT:
@@ -118,12 +118,12 @@ if 'REDISCLOUD_URL' in os.environ and 'REDISCLOUD_PORT' in os.environ and 'REDIS
     }
     MIDDLEWARE_CLASSES = ('django.middleware.cache.UpdateCacheMiddleware',) + MIDDLEWARE_CLASSES + ('django.middleware.cache.FetchFromCacheMiddleware',)
 
-ROOT_URLCONF = 'urls'
+ROOT_URLCONF = 'openshift.urls'
 
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
 
-WSGI_APPLICATION = 'wsgi.application'
+WSGI_APPLICATION = 'openshift.wsgi.application'
 
 TEMPLATE_DIRS = (
      os.path.join(BASE_DIR,'templates'),

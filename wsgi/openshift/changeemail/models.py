@@ -17,8 +17,8 @@ from django.template.loader import render_to_string
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
-from contest.models import Invite
-from userregistration.models import CustomUser as User
+from openshift.contest.models import Invite
+from openshift.userregistration.models import CustomUser as User
 
 import hashlib
 import re
