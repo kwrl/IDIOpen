@@ -7,7 +7,7 @@ from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.core.exceptions import ValidationError
 from django import forms
 from django.forms.util import ErrorList
-from .models import CustomUser, YEAR_OF_STUDY, GENDER_CHOICES
+from userregistration.models import CustomUser
 from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.debug import sensitive_variables
 from django.contrib.auth.tokens import default_token_generator
@@ -16,19 +16,9 @@ from django.template import loader
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
 
-
-'''
-By: Typo. As far as i can tell this import is not used.
-And i have to remove them in order to make testing work..
-
-Forget that...
-No, dont forhet that 
-'''  
-
-'''
+from .models import YEAR_OF_STUDY, GENDER_CHOICES
 from changeemail.models import ChangeEmail
 from changeemail.forms import EmailForm
-'''
 
 try:
     from django.contrib.auth import get_user_model

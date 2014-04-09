@@ -3,7 +3,7 @@ from django.test import TestCase, Client
 from userregistration.forms import RegistrationForm
 from contest.forms import *
 import datetime
-from .models import Contest 
+from contest.models import Contest 
 import userregistration
 
 # Create your tests here.

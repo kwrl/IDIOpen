@@ -1,6 +1,6 @@
 #coding:utf-8
 from django.shortcuts import render, redirect, get_object_or_404
-from .forms import Team_Form, Team_Edit, Team_Add_Members
+from contest.forms import Team_Form, Team_Edit, Team_Add_Members
 from django.http import HttpResponseRedirect
 from article.models import Article
 from userregistration.models import CustomUser
@@ -44,30 +44,6 @@ def getTodayDate(request):
     con = get_current_contest(request);
     return timezone.make_aware(datetime.datetime.now(),
                                timezone.get_default_timezone());
-
-'''
-AUTHOR: Tino, Filip
-'''
-#===============================================================================
-# Check if user is Team leader
-#===============================================================================
-def is_leader(request, contest):
-    team = Team.objects.filter(contest=contest).get(members__id = request.user.id)
-    if team.leader.id == request.user.id:
-        return True
-    else:
-        return False
-
-#===============================================================================
-# Check if user is on a team
-#===============================================================================
-def is_member_of_team(request, contest):
-    team = Team.objects.filter(contest=contest).filter(members__id = request.user.id)
-    if team.count() > 0:
-        return team[0]
-    else:
-        team = False
-
 
 # @login_required
 def registration(request):
@@ -171,37 +147,8 @@ def user_exist(email):
         return True
     return False
 
-#===============================================================================
-# Checks if contest has begun
-#===============================================================================
-def contest_begin(request):
-    try: 
-        contest = get_current_contest(request)
-        startDate = contest.start_date
-        dateToday = timezone.now()
-        if (dateToday >= startDate):
-            has_started = True
-        else:
-            has_started = False
-    except ObjectDoesNotExist as e: 
-        raise Http404
-    return has_started
-#===============================================================================
-# Checks if contest has ended
-#===============================================================================
-def contest_end(request):
-    try: 
-        contest = get_current_contest(request)
-        endDate = contest.end_date
-        dateToday = timezone.now()
-        if (dateToday <= endDate):
-            has_ended = False
-        else:
-            has_ended = True
-    except ObjectDoesNotExist as e: 
-        raise Http404
-    return has_ended
 '''
+
 AUTHOR: Haakon, Tino, Filip
 
 '''
@@ -219,18 +166,7 @@ def team_profile(request):
     if team.count() > 0:
         team = team[0]
         invites = Invite.objects.filter(team=team).filter(is_member = False)
-        
-        contest_started = contest_begin(request)
-        # If you are the leader
-        leader = is_leader(request,con)
-        # If the competition has started
-        if (contest_started):
-            context = {'team':team,
-                       'invites' : invites,
-                       'contest_started' : contest_started,
-                       }
-            return render(request, 'contest/team.html', context)
-        # If you are the leader
+        # If you are leader
         leader = is_leader(request,con)
         if leader:
             if request.method == 'POST':
@@ -243,6 +179,7 @@ def team_profile(request):
                             messages.success(request, 'Email has been sent to: ' + email)
                         else:   
                             messages.error(request, 'You already have the maximum number of members')
+
             # If request is not POST, add an empty form            
             else:        
                 addMemberForm = Team_Add_Members()
@@ -265,6 +202,28 @@ def team_profile(request):
         
     return render(request, 'contest/team.html', context)
 
+'''
+AUTHOR: Tino, Filip
+'''
+#===============================================================================
+# Check if user is Team leader
+#===============================================================================
+def is_leader(request, contest):
+    team = Team.objects.filter(contest=contest).get(members__id = request.user.id)
+    if team.leader.id == request.user.id:
+        return True
+    else:
+        return False
+
+#===============================================================================
+# Check if user is on a team
+#===============================================================================
+def is_member_of_team(request, contest):
+    team = Team.objects.filter(contest=contest).filter(members__id = request.user.id)
+    if team.count() > 0:
+        return team[0]
+    else:
+        team = False
 
 #===============================================================================
 # For when a contestant wants to leave a team
@@ -272,10 +231,8 @@ def team_profile(request):
 def leave_team(request):
     user = request.user
     con = get_current_contest(request)
-    is_RegOpen = con.isRegOpen()
-    if request.method == 'POST' and contest_begin(request):
-        messages.error(request, 'Sorry, you can\'t leave team after registration is closed')
-    elif request.method == 'POST':
+    is_RegOpen = con.isRegOpen()   
+    if request.method == 'POST':
         if is_RegOpen: 
             if is_leader(request, con): # If leader, delete the team
                 team = Team.objects.filter(contest=con).get(members__id = request.user.id)
@@ -287,13 +244,10 @@ def leave_team(request):
                 team = Team.objects.filter(contest=con).get(members__id = request.user.id)
                 team.members.remove(user.id)
         else:
-            messages.error(request, 'Sorry, you can\'t leave team after registration is closed')
+            messages.error(request, 'Can\'t leave team after registration is closed')
         
     return redirect('team_profile', con.url)
     
-#===============================================================================
-#For when a leader wants to edit the team
-#===============================================================================
 #@login_required
 def editTeam(request):
     user = request.user
@@ -302,9 +256,6 @@ def editTeam(request):
     
     if not user.is_authenticated():
         return redirect('login', url)
-    
-    if (contest_begin(request)):
-        raise Http404()
     # Get the team or 404
     queryset = Team.objects.filter(contest=con).filter(members__in = [user])
     instance = get_object_or_404(queryset)#team
