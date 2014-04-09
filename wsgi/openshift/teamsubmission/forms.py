@@ -3,6 +3,7 @@ from .models import Submission
 from django.template.defaultfilters import filesizeformat
 from django.core.exceptions import ValidationError
 from execution.models import FileExtension
+from execution.models import CompilerProfile
 # 2.5MB - 2621440
 # 5MB - 5242880
 # 10MB - 10485760
@@ -13,7 +14,7 @@ from execution.models import FileExtension
 # 500MB - 429916160
 MAX_UPLOAD_SIZE = "5242880" # 5 MB
 
-
+# Maybe not the best way
 def get_file_extensions():
     return FileExtension.objects.all()
  
