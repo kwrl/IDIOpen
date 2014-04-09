@@ -105,7 +105,6 @@ def submission_view(request):
     listProbSub = [SubJoinProb(sub, prob) 
                    for (sub, prob) in izip_longest(ret_submissions, problems)]
     
-    
     context = {
                'problems' : problems,
                'submissions' : submissions,
@@ -123,4 +122,6 @@ class SubJoinProb(object):
                         submission.date_uploaded.strftime('%H:%M:%S')
         self.problem = problem 
         
+
+
 # EOF

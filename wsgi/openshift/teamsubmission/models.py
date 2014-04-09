@@ -31,5 +31,5 @@ class Submission(models.Model):
     team = models.ForeignKey(Team)
     problem = models.ForeignKey(Problem)
     runtime = models.IntegerField(max_length = 15, blank = True, null = True)  
-    
+
 # EOF
