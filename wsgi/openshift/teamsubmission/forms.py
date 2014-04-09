@@ -28,7 +28,8 @@ class SubmissionForm(forms.ModelForm):
         if not submission:
             self._errors['submission'] = self.error_class([("Please upload a file before submitting")])
             raise ValidationError('')
-        content_type = submission.content_type.split('/')[-1]
+        # The file extension for the given submission
+        content_type = submission.name.split('.')[-1]
         FILE_EXT = get_file_extensions()
         # Check if submission has an allowed file extension
         if content_type in [str(x) for x in FILE_EXT]:
