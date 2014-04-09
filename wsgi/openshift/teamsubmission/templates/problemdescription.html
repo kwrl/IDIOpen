@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% load link_tags %}
+{% load fileprint %}
+{% block content %}
+
+
+<h2>{{problem.title}}</h2>
+
+<hr>
+
+{% if submission.solved_problem %} 
+<strong><p>Problem solved! </strong></p> 
+<p> Attempts: <strong> {{ tries }} </strong> </p>
+<p> Solution runtime: <strong> {{ submission.runtime }}</strong>ms </p>
+{% elif tries > 0 %}
+<p> You have made  <strong> {{ tries }} </strong> attempts at solving this problem </p>
+{% endif %}
+
+{% if tries > 0 %}
+<h3> Upload a new file to this problem </h3>
+{% else %}
+<h3> Upload a file for this problem </h3> 
+{% endif %}
+
+<form id="fileUpload" method="POST" action="" enctype="multipart/form-data">
+    {% csrf_token %}
+<div class = 'well'>
+  {% for field in submission_form %}
+  	{% for error in field.errors %}
+            <div class="alert alert-danger">{{error}}</div>
+    {% endfor %}
+    {{ field }} 
+    {% endfor %}
+    <br>
+    <button type="submit" class = "btn btn-primary btn-sm">Submit file</button> 
+    <br>
+    <i> <small>Please note that by submitting a file it will count as an attempt</small></i>
+</div>
+    <h3> Feedback on submission </h3>
+ <div class = 'well' >
+{% if submission.solved_problem %}
+	<span class="bg-info">{{submission.text_feedback}}</span>
+{% elif submission.text_feedback %}
+	<span class="bg-info">{{submission.text_feedback}}</span>
+{% else %}
+	<span class="bg-info"> No feedback </span>
+{% endif %}
+
+<br />
+<br />
+</div>
+
+
+</form>
+<h3>Problem Description </h3> 
+<hr>
+{% if problem.author %}
+<i><small>Author: {{ problem.author.get_full_name }} .</i></small>
+{% endif %}
+
+<br>
+{% if problem %}
+    {{ problem.description }}
+{% endif %}
+<br />
+
+{% endblock content %}

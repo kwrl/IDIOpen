@@ -22,6 +22,7 @@ User = get_user_model()
 Contest model
 
 TODO: Add location, fix start, end, publish date, validate
+Is done now right?
 '''
 
 from django.db import models
@@ -39,7 +40,7 @@ class ContactInformation(models.Model):
 
 class Contest(models.Model):
     title = models.CharField(max_length=200)
-    contact_infos = models.ManyToManyField(ContactInformation)
+    contact_infos = models.ManyToManyField(ContactInformation, null = True)
     """ The url is saved as the suffix from root, only, not the entire url
     """
     url = models.CharField(max_length=20, unique=True, help_text='Defines the url used to access the contest. E.g. sample.site.com/[the value inserted here]');
@@ -94,16 +95,13 @@ class Link(models.Model):
  
     
 class Team(models.Model):
-    name = models.CharField(max_length=200, verbose_name = "Team name")
+    name = models.CharField(max_length=50, verbose_name = "Team name")
     onsite = models.BooleanField()
-    '''
-    TODO: Set leader 
-    NOTE: in order to implement leader we information about the logged in user. 
-    '''
     leader = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='leader', null = True)
     members = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='members')
     contest = models.ForeignKey(Contest, related_name='contest', null=True)
-    offsite = models.CharField(max_length=200, blank = True)
+    offsite = models.CharField(max_length=30, blank = True)
+
     def __unicode__(self):
         return self.name
     

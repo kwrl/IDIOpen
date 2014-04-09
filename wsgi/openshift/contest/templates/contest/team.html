@@ -4,13 +4,19 @@
 {% block content %}
 
 {% if team %}
+	
 	<div class="row">
 		<div class="col-lg-7">
 			<h2>Team page</h2>
 		</div>
 		<div class="col-lg-5">
 		<div class="btn-group pull-right">
-		{% if is_leader %}    
+		{% if contest_started %}
+		<div class="span7 text-center">
+		<a href="{% url 'submission_page' contest.url %}" class="btn btn-primary btn-large">{% trans 'Go To Contest Page' %}</a>
+		</div>
+		{% endif %}
+		{% if is_leader %}
 			<a href="{% url 'team_edit' contest.url %}" class="btn btn-primary btn-sm">{% trans 'Edit team' %}</a>
 		{% endif %}
         {# btn btn-primary btn-sm pull-right">{% trans 'Leave team' %}</a> #}
@@ -18,21 +24,27 @@
 		</div>
 	</div>
 	<hr>
+	
 	<em><h3> {{ team.name }}</h3></em>
-	<p class="text-muted">
-	Location: 
+	<p>
+	Location:
+	<strong> 
 	{% if team.onsite %}
 		Onsite
 	{% else %}
 		{{ team.offsite }}
 	{% endif %}
+	</strong>
 	</p>
-	<p class="text-muted">
+	<p>
 	Leader: 
-	{{ team.leader.first_name }} {{ team.leader.last_name }} 
+	<strong> {{ team.leader.first_name }} {{ team.leader.last_name }}</strong> 
 	</p>
+	
 	<hr>
-	<em><h4>Members</h4></em>
+	
+	
+	<h3>Members</h3>
 	<table class="table table-striped">
       <thead>
         <tr>
@@ -67,7 +79,8 @@
     {% if team.members.count >= 3 %}
     <small><em><p> Your team is full </p></em></small>
     {% endif %}
-    <em><h4>Pending Invites</h4></em>
+    <br>
+    <h3>Pending Invites</h3>
 	<table class="table table-striped">
         <tbody>
 	    {% if invites %}
@@ -102,7 +115,7 @@
   		</div>
 	</form>
 	{% endif %}
-	<hr>
+	<hr> 
 		<div class="btn-group pull-right">
 			<a href=# id="LeaveButton" data-toggle="confirmation" class="alert btn btn-danger btn-sm">{% trans 'Leave team' %}</a>
 		</div>
