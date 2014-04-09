@@ -46,23 +46,26 @@ def submission_problem(request, problemID):
         submission.problem = problem
         submission.team = team
     
-    
     if is_problem_solved(team, problemID): 
         messages.success(request, 'This problem is solved!')
 
     if request.method == "POST":
         form = SubmissionForm(request.POST, request.FILES,
                                instance=submission)
-        if contest_end(request):
+        if not request.FILES:
+            messages.error(request, 'You need to choose a file to upload')
+        
+        elif contest_end(request):
             messages.error(request, 'You can\'t upload any more files after the contest has ended')
+        
         elif is_leader(request, con):
             if form.is_valid():
                 form.save()
-#                form = SubmissionForm(instance=submission);
+                form = SubmissionForm(instance=submission);
         else:
             messages.error(request, 'You have to be the leader of a team to upload submissions')
-    
-    form = SubmissionForm(instance=submission);
+    else:
+        form = SubmissionForm(instance=submission);
     
     context = {
              'problem' : problem,
@@ -102,7 +105,6 @@ def submission_view(request):
     listProbSub = [SubJoinProb(sub, prob) 
                    for (sub, prob) in izip_longest(ret_submissions, problems)]
     
-    
     context = {
                'problems' : problems,
                'submissions' : submissions,
@@ -120,4 +122,6 @@ class SubJoinProb(object):
                         submission.date_uploaded.strftime('%H:%M:%S')
         self.problem = problem 
         
+
+
 # EOF

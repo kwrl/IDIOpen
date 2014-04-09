@@ -3,6 +3,7 @@ from .models import Submission
 from django.template.defaultfilters import filesizeformat
 from django.core.exceptions import ValidationError
 from execution.models import FileExtension
+from execution.models import CompilerProfile
 # 2.5MB - 2621440
 # 5MB - 5242880
 # 10MB - 10485760
@@ -13,7 +14,7 @@ from execution.models import FileExtension
 # 500MB - 429916160
 MAX_UPLOAD_SIZE = "5242880" # 5 MB
 
-
+# Maybe not the best way
 def get_file_extensions():
     return FileExtension.objects.all()
  
@@ -28,7 +29,8 @@ class SubmissionForm(forms.ModelForm):
         if not submission:
             self._errors['submission'] = self.error_class([("Please upload a file before submitting")])
             raise ValidationError('')
-        content_type = submission.content_type.split('/')[-1]
+        # The file extension for the given submission
+        content_type = submission.name.split('.')[-1]
         FILE_EXT = get_file_extensions()
         # Check if submission has an allowed file extension
         if content_type in [str(x) for x in FILE_EXT]:
