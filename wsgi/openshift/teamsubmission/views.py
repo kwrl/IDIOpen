@@ -53,7 +53,7 @@ def submission_problem(request, problemID):
         form = SubmissionForm(request.POST, request.FILES,
                                instance=submission)
         if not request.FILES:
-            messages.error(request, 'You need to choose a new file to upload')
+            messages.error(request, 'You need to choose a file to upload')
         
         elif contest_end(request):
             messages.error(request, 'You can\'t upload any more files after the contest has ended')
