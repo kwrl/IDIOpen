@@ -1,5 +1,5 @@
 from django.db import models    
-from contest.models import Contest
+from openshift.contest.models import Contest
 from django.conf import settings 
 
 import os

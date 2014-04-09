@@ -1,8 +1,7 @@
 from django.contrib import admin
-from contest.models import Sponsor #weird error..Haakon 
 from django import forms
-from contest.models import Contest, Link, Team, Invite, ContactInformation
-from contest.forms import LinkForm
+from .models import Contest, Link, Team, Invite, ContactInformation, Sponsor
+from .forms import LinkForm
 from django.contrib.auth import get_user_model
 
 User = get_user_model()

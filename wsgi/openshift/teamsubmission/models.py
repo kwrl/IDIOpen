@@ -5,8 +5,8 @@ from django.core.files.storage import Storage
 
 import os
 
-from execution.models import Problem
-from contest.models import Team
+from openshift.execution.models import Problem
+from openshift.contest.models import Team
 from django.core.files.storage import FileSystemStorage
 
 private_media = FileSystemStorage(location=settings.PRIVATE_MEDIA_ROOT,

@@ -2,7 +2,7 @@ from django import forms
 from models import Team, Invite, Link
 from django.forms.widgets import CheckboxSelectMultiple, Widget
 from django.forms.models import ModelMultipleChoiceField
-from userregistration.models import CustomUser
+from openshift.userregistration.models import CustomUser
 
 '''
 Created on Feb 12, 2014
