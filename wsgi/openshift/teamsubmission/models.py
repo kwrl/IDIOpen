@@ -49,7 +49,6 @@ class ScoreManager(models.Manager):
         teams = Team.objects.filter(contest=contest)
         scores = []
         zeros = []
-        print("test")
         for team in teams:
             if(ScoreManager.get_team_score(self, team, contest)):
                 scores.append((team.name, ScoreManager.get_team_score(self, team, contest)))
