@@ -25,10 +25,8 @@ def submission_problem(request, problemID):
     if not user.is_authenticated():
         return redirect('login', con.url)
     # Raise 404 if contest hasn't begun or has ended, and if user is not member of team
-    
     if not contest_begin(request) or not is_member_of_team(request, con):
         raise Http404    
-
     if contest_end(request):
         messages.warning(request, 'The contest has ended, you are not able to upload any more submissions.')
    
@@ -36,34 +34,34 @@ def submission_problem(request, problemID):
     problem = get_object_or_404(Problem.objects.filter(pk=problemID))
     user = request.user
     team = Team.objects.filter(contest=con).get(members__id = user.id)
-    submission = Submission.objects.filter(team=team).filter(problem=problemID).order_by('date_uploaded')
+    submission = Submission.objects.filter(team=team).filter(problem=problemID).order_by('-date_uploaded')
     tries = len(submission)
     
     if len(submission.values_list()) > 0:
         submission = submission[0]
         problem = submission.problem
-        
+    
     else:
         submission = Submission()
         submission.problem = problem
         submission.team = team
-        
     
+    
+    if is_problem_solved(team, problemID): 
+        messages.success(request, 'This problem is solved!')
+
     if request.method == "POST":
         form = SubmissionForm(request.POST, request.FILES,
                                instance=submission)
         if contest_end(request):
             messages.error(request, 'You can\'t upload any more files after the contest has ended')
-        if is_leader(request, con):
+        elif is_leader(request, con):
             if form.is_valid():
                 form.save()
+#                form = SubmissionForm(instance=submission);
         else:
             messages.error(request, 'You have to be the leader of a team to upload submissions')
     
-#    pdb.set_trace()
-    if is_problem_solved(team, problemID): 
-        messages.success(request, 'This problem is solved!')
-            
     form = SubmissionForm(instance=submission);
     
     context = {
@@ -95,12 +93,12 @@ def submission_view(request):
     
     team = Team.objects.filter(contest=con).filter(members__id = user.id)
     problems = Problem.objects.filter(contest=con)
-    submissions = Submission.objects.filter(team=team).order_by('date_uploaded')
+    submissions = Submission.objects.filter(team=team).order_by('-date_uploaded')
     # Get only one submission per problem. 
     # The submission is the first one returned, as per date_uploaded
     ret_submissions = map(next, imap(itemgetter(1),
                           groupby(submissions, lambda x:x.problem)))
-        
+
     listProbSub = [SubJoinProb(sub, prob) 
                    for (sub, prob) in izip_longest(ret_submissions, problems)]
     

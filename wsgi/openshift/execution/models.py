@@ -10,10 +10,10 @@ PROBLEM_ROOT_DIR = 'problems'
 
 class FileExtension(models.Model):
     extension = models.CharField(max_length=4)
-    
+        
     def __unicode__(self):
         return self.extension
-
+    
 class CompilerProfile(models.Model):
     name = models.CharField(max_length=100)
     extensions = models.ManyToManyField(FileExtension)
