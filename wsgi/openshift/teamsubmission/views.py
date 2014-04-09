@@ -97,18 +97,25 @@ def submission_view(request):
     team = Team.objects.filter(contest=con).filter(members__id = user.id)
     problems = Problem.objects.filter(contest=con)
     submissions = Submission.objects.filter(team=team).order_by('-date_uploaded')
+    
     # Get only one submission per problem. 
     # The submission is the first one returned, as per date_uploaded
     ret_submissions = map(next, imap(itemgetter(1),
                           groupby(submissions, lambda x:x.problem)))
-
+    
+        
     listProbSub = [SubJoinProb(sub, prob) 
                    for (sub, prob) in izip_longest(ret_submissions, problems)]
-    
+
+    listProbScores = []
+    # Get the score for each problem            
+    for probsub in listProbSub:
+        listProbScores.append(Submission.objects.get_problem_score(team, probsub.problem, con))
+    # Create iterator for the list of problem scores
+    probScoresIterator = iter(listProbScores)
     context = {
-               'problems' : problems,
-               'submissions' : submissions,
                'prob_sub': listProbSub,
+               'prob_scores' : probScoresIterator
                }    
     return render(request, 'submission_home.html', context)
 
@@ -131,7 +138,5 @@ class SubJoinProb(object):
                 self.submission.date_uploaded = \
                         submission.date_uploaded.strftime('%H:%M:%S')
         self.problem = problem 
-        
-
 
 # EOF
