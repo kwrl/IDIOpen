@@ -45,6 +45,30 @@ def getTodayDate(request):
     return timezone.make_aware(datetime.datetime.now(),
                                timezone.get_default_timezone());
 
+'''
+AUTHOR: Tino, Filip
+'''
+#===============================================================================
+# Check if user is Team leader
+#===============================================================================
+def is_leader(request, contest):
+    team = Team.objects.filter(contest=contest).get(members__id = request.user.id)
+    if team.leader.id == request.user.id:
+        return True
+    else:
+        return False
+
+#===============================================================================
+# Check if user is on a team
+#===============================================================================
+def is_member_of_team(request, contest):
+    team = Team.objects.filter(contest=contest).filter(members__id = request.user.id)
+    if team.count() > 0:
+        return team[0]
+    else:
+        team = False
+
+
 # @login_required
 def registration(request):
     '''
@@ -177,8 +201,6 @@ def contest_end(request):
     except ObjectDoesNotExist as e: 
         raise Http404
     return has_ended
-
-
 '''
 AUTHOR: Haakon, Tino, Filip
 
@@ -208,8 +230,8 @@ def team_profile(request):
                        'contest_started' : contest_started,
                        }
             return render(request, 'contest/team.html', context)
-            
-        
+        # If you are the leader
+        leader = is_leader(request,con)
         if leader:
             if request.method == 'POST':
                     addMemberForm = Team_Add_Members(request.POST)
@@ -221,7 +243,6 @@ def team_profile(request):
                             messages.success(request, 'Email has been sent to: ' + email)
                         else:   
                             messages.error(request, 'You already have the maximum number of members')
-
             # If request is not POST, add an empty form            
             else:        
                 addMemberForm = Team_Add_Members()
@@ -244,28 +265,6 @@ def team_profile(request):
         
     return render(request, 'contest/team.html', context)
 
-'''
-AUTHOR: Tino, Filip
-'''
-#===============================================================================
-# Check if user is Team leader
-#===============================================================================
-def is_leader(request, contest):
-    team = Team.objects.filter(contest=contest).get(members__id = request.user.id)
-    if team.leader.id == request.user.id:
-        return True
-    else:
-        return False
-
-#===============================================================================
-# Check if user is on a team
-#===============================================================================
-def is_member_of_team(request, contest):
-    team = Team.objects.filter(contest=contest).filter(members__id = request.user.id)
-    if team.count() > 0:
-        return team[0]
-    else:
-        team = False
 
 #===============================================================================
 # For when a contestant wants to leave a team
@@ -303,7 +302,8 @@ def editTeam(request):
     
     if not user.is_authenticated():
         return redirect('login', url)
-    if contest_begin(request):
+    
+    if (contest_begin(request)):
         raise Http404()
     # Get the team or 404
     queryset = Team.objects.filter(contest=con).filter(members__in = [user])
