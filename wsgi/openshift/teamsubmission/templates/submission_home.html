@@ -43,7 +43,7 @@ $(document).ready(function()
             {%else%}
             	<td class="danger">{{probsub.submission.solved_problem}}</td>
             {%endif%}
-            <td>{{prob_scores}} </td>
+            <td>{{ prob_scores.next }} </td>
             </tr>
             {% endfor %}
     </tbody>
