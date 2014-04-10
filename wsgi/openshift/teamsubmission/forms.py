@@ -18,10 +18,7 @@ MAX_UPLOAD_SIZE = "5242880" # 5 MB
 def get_file_extensions():
     return FileExtension.objects.all()
 
-def get_max_fileSize():
-    return False 
- 
- 
+
 class SubmissionForm(forms.ModelForm):
     
     class Meta:
