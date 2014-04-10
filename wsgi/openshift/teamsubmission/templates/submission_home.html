@@ -3,10 +3,7 @@
 {% block content %}
 
 {% load staticfiles %} 
-<!-- Tablesorter css -->
-<link href="{% static 'openshift/css/tablesorter/tablestyle.css' %}" rel="stylesheet">
-<script type="text/javascript" src="{% static 'openshift/js/tablesorter/jquery.tablesorter.js' %}"></script> 
-<script type="text/javascript" src="{% static 'openshift/js/tooltip.js' %}"></script> 
+
 <script>
 $(document).ready(function() 
     { 
@@ -31,6 +28,7 @@ $(document).ready(function()
             <th data-toggle="tooltip" data-placement="top" title="The date of your last uploaded file">Date Uploaded</th>
             <th data-toggle="tooltip" data-placement="top" title="e.g. timeout, wrong answer">Feedback</th>
             <th data-toggle="tooltip" data-placement="top" title="The status of the problem">Solved</th>
+            <th data-toggle="tooltip" data-placement="top" title="The score achieved for the problem">Score</th>
             </tr>
     </thead>
     <tbody>
@@ -40,13 +38,14 @@ $(document).ready(function()
             <td>{{probsub.submission.submission}}</td>
             <td>{{probsub.submission.date_uploaded}}</td>
             <td>{{probsub.submission.text_feedback}}</td>
-            {%if probsub.submission.validated%}
-            	<td class ="success">{{probsub.submission.validated}}</td>
+            {%if probsub.submission.solved_problem%}
+            	<td class ="success">{{probsub.submission.solved_problem}}</td>
             {%else%}
-            	<td class="danger">{{probsub.submission.validated}}</td>
+            	<td class="danger">{{probsub.submission.solved_problem}}</td>
             {%endif%}
+            <td>{{ probsub.score }} </td>
             </tr>
-			{% endfor %}
+            {% endfor %}
     </tbody>
 </table>
 {% endblock content %}
