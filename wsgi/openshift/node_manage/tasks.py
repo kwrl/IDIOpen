@@ -4,7 +4,7 @@ from teamsubmission.models import Submission
 from djcelery import celery
 from subprocess import call
 from openshift.messaging import celery_app as app
-import sys
+import os
 import ipdb
 
 
@@ -13,29 +13,57 @@ FILENAME    = "sauce.in"
 FILENAME_SUB = "{FILENAME}"
 BASENAME_SUB = "{BASENAME}"
 
+"""
+Evaluation return values:
+0   -   Correct
+1   -   Wrong answer
+2   -   Compile time error
+3   -   Timed out or out of memory
+4   -   Runtime error
+5   -  Correct
+1   -   Wrong answer
+"""
+
+
 
 @app.task
 def add(x, y):
     return x + y
 
 @app.task
-def evaluate_task(submission, compiler, test_cases, limits):
-    #create temp dir
+def evaluate_task(submission_id, compiler_id, test_case_ids, limit_id):
+    sub     = Submission.objects.get(pk=submission_id)
+    comp    = CompilerProfile.objects.get(pk=compiler_id)
+    test_cases = TestCase.objects.filter(pk__in=test_case_ids)
+    #limit   = get some freaking limits, br0  
+    evaluate(sub,comp,test_cases,None)
+
+def evaluate(submission, compiler, test_cases, limtis):
+    os.mkdir(dir_path)
+    
+    retval, stdout, stderr = compile(submission, compiler)
+    
+    if retval:
+        return 2
+        
+        
+
+    os.rmdir(dir_path) 
+
+
+def compile(submission, compiler):
     dir_path = WORK_ROOT + submission.id
-    sys.mkdir(dir_path)
-    #compile
     command = 'cd ' + dir_path + ' && ' compiler.compiler_cmd
     command = re.sub(FILENAME_SUB, submission.filename, command)
     command = re.sub(BASENAME_SUB, submission.basename, command) 
-    retval, stdout, stderr = _run_shell(limits.time, command, False)
+    return _run_shell(limits.time, command, False)
     
-    if retval:
-        raise Exception(stderr)   
- 
-    #execute
+def execute(submission, compiler, test_cases, limits):
+    dir_path = WORK_ROOT + submission.id
     command = 'cd ' + dir_path + ' && ' + compiler.run_cmd
-    command = re.sub(FILENAME_SUB, submission.submission)
-    
+    command = re.sub(BASENAME_SUB, submission.basename)
+    command += test_cases.
+    return _run_safe_shell(100, command, False)
 
 @app.task
 def install_compilers(compilers):
