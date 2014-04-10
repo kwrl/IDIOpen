@@ -73,3 +73,16 @@ function install_packages
 }
 
 chown -R $USERNAME $HOME_FOLDER
+
+
+
+
+
+
+
+
+
+
+
+
+
