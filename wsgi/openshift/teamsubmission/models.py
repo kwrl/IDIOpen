@@ -25,14 +25,18 @@ def get_upload_path(instance, filename):
 
 class ScoreManager(models.Manager):
     def get_problem_score(self, team, problem, contest):
-        """ This constant is the penalty
-            for delivering incorrect submissions.
+        """ 
+        This constant is the penalty
+        for delivering incorrect submissions.
         """
         submission_penalty = contest.penalty_constant
         submissions = Submission.objects.filter(team=team).filter(problem=problem).filter(solved_problem=False).order_by('-date_uploaded')
         correctSubmissions = Submission.objects.filter(team=team).filter(problem=problem).filter(solved_problem=True).order_by('date_uploaded')
+
+
         
-        """ The statistics are:
+        """ 
+        The statistics are:
             [total score,
             time score,
             submission score,
@@ -49,6 +53,7 @@ class ScoreManager(models.Manager):
             statistics[3] = len(submissions) + 1
         
         return statistics
+
     
     def get_team_score(self, team, contest):
         problems = Problem.objects.filter(contest=contest)
