@@ -1,6 +1,4 @@
 #coding:utf-8
-import djcelery
-djcelery.setup_loader()
 BROKER_URL = "amqp://guest:guest@localhost:5672//"
 CELERY_RESULT_BACKEND = "amqp"
 import subprocess
@@ -86,7 +84,6 @@ INSTALLED_APPS = (
     'openshift.teamsubmission',
     'openshift.node_manage',
     'openshift.messaging',
-    'djcelery',
 )
 '''
 if not ON_OPENSHIFT:

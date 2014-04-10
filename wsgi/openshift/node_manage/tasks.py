@@ -1,7 +1,6 @@
 from __future__ import absolute_import
 from openshift.execution.models import CompilerProfile, TestCase
 from openshift.teamsubmission.models import Submission 
-from djcelery import celery
 from subprocess import call
 from openshift.messaging import celery_app as app
 import os
