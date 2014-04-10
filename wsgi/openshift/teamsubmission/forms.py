@@ -2,8 +2,9 @@ from django import forms
 from .models import Submission
 from django.template.defaultfilters import filesizeformat
 from django.core.exceptions import ValidationError
-from execution.models import FileExtension
+from execution.models import FileExtension, Resource
 from execution.models import CompilerProfile
+
 # 2.5MB - 2621440
 # 5MB - 5242880
 # 10MB - 10485760
@@ -12,13 +13,19 @@ from execution.models import CompilerProfile
 # 100MB 104857600
 # 250MB - 214958080
 # 500MB - 429916160
-MAX_UPLOAD_SIZE = "5242880" # 5 MB
+#MAX_UPLOAD_SIZE = "5242880" # 5 MB
 
 # Maybe not the best way, could get file extension for each compiler profile connected to a specific problem
 def get_file_extensions():
     return FileExtension.objects.all()
 
-
+def get_max_file_size(problem):
+    resource = Resource.objects.filter(problem = problem)
+    if resource:
+        return resource.max_filesize
+    else:
+        return 0
+    
 class SubmissionForm(forms.ModelForm):
     
     class Meta:
@@ -33,10 +40,11 @@ class SubmissionForm(forms.ModelForm):
         # The file extension for the given submission
         content_type = submission.name.split('.')[-1]
         FILE_EXT = get_file_extensions()
+        MAX_FILESIZE = get_max_file_size(self.instance.problem) * 1024
         # Check if submission has an allowed file extension
         if content_type in [str(x) for x in FILE_EXT]:
-            if submission._size > MAX_UPLOAD_SIZE:
-                self._errors['submission'] = self.error_class([('Please keep filesize under %s. Current filesize %s') % (filesizeformat(MAX_UPLOAD_SIZE), filesizeformat(submission._size))])
+            if submission._size > MAX_FILESIZE:
+                self._errors['submission'] = self.error_class([('Please keep filesize under %s. Current filesize %s') % (filesizeformat(MAX_FILESIZE), filesizeformat(submission._size))])
         else:
             self._errors['submission'] = self.error_class([('File type is not supported')])
         return self.cleaned_data
