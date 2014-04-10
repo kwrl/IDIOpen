@@ -110,7 +110,7 @@ class ScoreManager(models.Manager):
         return statistics
 
 class Submission(models.Model):
-    #We shoul rename submission field.... 
+    #We should rename submission field.... 
     submission = models.FileField(storage=private_media, upload_to='submissions')
     date_uploaded = models.DateTimeField(auto_now = True)
     solved_problem = models.BooleanField(default=False) #E.g. Did this submission solve the the problem
