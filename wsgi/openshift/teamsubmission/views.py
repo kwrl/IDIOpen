@@ -141,7 +141,7 @@ def highscore_view(request):
 class SubJoinProb(object):
     def __init__(self, submission, problem, score):
         if submission is not None:
-                self.score = score
+                self.score = score[0]
                 self.submission = submission
                 self.submission.submission = \
                     str(submission.submission).split('/')[-1]
