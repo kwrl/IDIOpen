@@ -17,13 +17,18 @@ $(document).ready(function()
 	<thead>
             <tr>
             <th data-toggle="tooltip" data-placement="top" title="Teams">Team</th>
-            <th data-toggle="tooltip" data-placement="top" title="Scores">Score</th>
+            <th data-toggle="tooltip" data-placement="top" title="Scores">Total Score</th>
+            <th data-toggle="tooltip" data-placement="top" title="Solved">Solved</th>
+            <th data-toggle="tooltip" data-placement="top" title="Time">Time</th>
+            {% for p in problems %}
+            	<th data-toggle="tooltip" data-placement="top" title="Problems">Problem {{ forloop.counter }}</th>
+            {% endfor %}
             </tr>
     </thead>
     <tbody>
-			{% for score in scores %}
+            {% for stat in statistics %}
             <tr>
-            {% for s in score %}
+            {% for s in stat %}
             <td>{{s}}</td>
             {% endfor %}
             </tr>
