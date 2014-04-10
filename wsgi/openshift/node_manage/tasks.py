@@ -3,6 +3,8 @@ from openshift.execution.models import CompilerProfile, TestCase
 from openshift.teamsubmission.models import Submission 
 from subprocess import call
 from openshift.messaging import celery_app as app
+
+import re
 import os
 import ipdb
 import threading
@@ -13,6 +15,8 @@ WORK_ROOT   = "/idiopen/work/"
 FILENAME    = "sauce.in"
 FILENAME_SUB = "{FILENAME}"
 BASENAME_SUB = "{BASENAME}"
+
+RUN_USER = "algrun"
 
 """
 Evaluation return values:
@@ -100,6 +104,9 @@ class Runner(threading.Thread):
 def _run_safe_shell(command):
     command = use_run_user(command)
     return _run_shell(command)
+
+def use_run_user(command):
+    return 'nice sudo su ' + RUN_USER + ' -c "' + command + '"'
 
 def _run_shell(command):
     #ipdb.set_trace()
