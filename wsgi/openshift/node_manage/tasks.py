@@ -6,7 +6,7 @@ from openshift.messaging import celery_app as app
 
 import re
 import os
-import ipdb
+#import ipdb
 import threading
 import time
 import popen2

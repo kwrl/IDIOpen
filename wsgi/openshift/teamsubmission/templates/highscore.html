@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% load link_tags %}
+{% contest as contest %}
+{% block content %}
+<script>
+$(document).ready(function() 
+    { 
+        $("#highscoreTable").tablesorter( {sortList: [[0,0]]} ); 
+        $(".clickableRow").click(function() {
+        	window.document.location = $(this).attr("href");
+      	});
+    } 
+); 
+</script>
+
+<table id="highscoreTable" class="table table-bordered table-hover table-condensed tablesorter">
+	<thead>
+            <tr>
+            <th data-toggle="tooltip" data-placement="top" title="Teams">Team</th>
+            <th data-toggle="tooltip" data-placement="top" title="Scores">Total Score</th>
+            <th data-toggle="tooltip" data-placement="top" title="Solved">Solved</th>
+            <th data-toggle="tooltip" data-placement="top" title="Time">Time</th>
+            {% for p in problems %}
+            	<th data-toggle="tooltip" data-placement="top" title="Problems">Problem {{ forloop.counter }}</th>
+            {% endfor %}
+            </tr>
+    </thead>
+    <tbody>
+            {% for stat in statistics %}
+            <tr>
+            {% for s in stat %}
+            <td>{{s}}</td>
+            {% endfor %}
+            </tr>
+			{% endfor %}
+    </tbody>
+</table>
+
+{% endblock content %}
