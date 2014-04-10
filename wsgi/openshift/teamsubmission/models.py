@@ -52,8 +52,7 @@ class ScoreManager(models.Manager):
             statistics[2] = submissionScore
             statistics[3] = len(submissions) + 1
         
-        return statistics
-
+        return statistics    
     
     def get_team_score(self, team, contest):
         problems = Problem.objects.filter(contest=contest)
