@@ -40,9 +40,9 @@ def evaluate_task(submission_id, compiler_id, test_case_ids, limit_id):
     sub     = Submission.objects.get(pk=submission_id)
     comp    = CompilerProfile.objects.get(pk=compiler_id)
     test_cases = TestCase.objects.filter(pk__in=test_case_ids)
-    #limit   = get some freaking limits, br0  
-    evaluate(sub,comp,test_cases,None)
-    return "tissemann"
+    limit   = get some freaking limits, br0  
+    ievaluate(sub,comp,test_cases,None)
+    return (submission_id, compiler_id, test_case_ids, limit_id)
 
 def evaluate(submission, compiler, test_cases, limtis):
     os.mkdir(dir_path)
@@ -60,8 +60,8 @@ def evaluate(submission, compiler, test_cases, limtis):
 def compile(submission, compiler):
     dir_path = WORK_ROOT + submission.id
     #command = 'cd ' + dir_path + ' && ' compiler.compiler_cmd
-    command = re.sub(FILENAME_SUB, submission.filename, command)
-    command = re.sub(BASENAME_SUB, submission.basename, command) 
+    command = re.sub(FILENAME_SUB, submission.submission, command)
+    command = re.sub(BASENAME_SUB, submission.submission.split(".")[0], command) 
     return _run_shell(command)
     
 def execute(submission, compiler, test_cases, limits):
@@ -70,6 +70,11 @@ def execute(submission, compiler, test_cases, limits):
     command = re.sub(BASENAME_SUB, submission.basename)
     #command += test_cases.
     return _run_safe_shell(command)
+
+def run_test(submission, comp):
+    dir_path = WORK_ROOT + submission.id
+    command = 'cd ' + dir_path + ' && ' + compiler.run_cmd
+    re.sub(BASENAME_SUB, submission.submission.split(".")[0])
 
 @app.task
 def install_compilers(compilers):
@@ -101,6 +106,13 @@ class Runner(threading.Thread):
             time.sleep(0.001)
         self.retval = proc.poll()
 
+class RawTestCase:
+    def __init__(self, test_case):
+        test_case.inputFile.open("rb")
+        test_case.outputFile.open("rb")
+        self.input_content = test_case.inputFile.read()
+        self.output_content= test_case.outputFile.read()
+    
 def _run_safe_shell(command):
     command = use_run_user(command)
     return _run_shell(command)
