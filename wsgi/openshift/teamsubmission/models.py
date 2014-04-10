@@ -32,7 +32,7 @@ class ScoreManager(models.Manager):
         submissions = Submission.objects.filter(team=team).filter(problem=problem).filter(solved_problem=False).order_by('-date_uploaded')
         correctSubmissions = Submission.objects.filter(team=team).filter(problem=problem).filter(solved_problem=True).order_by('date_uploaded')
         
-        """The statistics are:
+        """ The statistics are:
             [total score,
             time score,
             submission score,
@@ -53,7 +53,7 @@ class ScoreManager(models.Manager):
     def get_team_score(self, team, contest):
         problems = Problem.objects.filter(contest=contest)
         
-        """The statistics are:
+        """ The statistics are:
             [total score,
             solved problems,
             time score,
@@ -74,7 +74,7 @@ class ScoreManager(models.Manager):
     def get_highscore(self, contest):
         teams = Team.objects.filter(contest=contest)
         
-        """The statistics are:
+        """ The statistics are:
             [team name,
             total score,
             solved problems,
@@ -84,18 +84,22 @@ class ScoreManager(models.Manager):
             problem n submissions,]
         """
         statistics = []
+        
+        """ zeros is a list of teams that have 0 in total score. These teams haven't
+            solved any problems, and should beat the bottom of the scoreboard.
+        """
         zeros = []
         for team in teams:
-            if(ScoreManager.get_team_score(self, team, contest)):
-                teamStat = [team.name]
-                for field in ScoreManager.get_team_score(self, team, contest):
-                    teamStat.append(field)
-                statistics.append(teamStat)
+            teamStats = ScoreManager.get_team_score(self, team, contest)
+            highscore = [team.name]
+            if(teamStats[0]):
+                for field in teamStats:
+                    highscore.append(field)
+                statistics.append(highscore)
             else:
-                teamStat = [team.name]
-                for field in ScoreManager.get_team_score(self, team, contest):
-                    statistics.append(field)
-                zeros.append(teamStat)
+                for field in teamStats:
+                    highscore.append(field)
+                zeros.append(highscore)
         sorted(statistics, key=lambda score: score[1])
         for s in zeros:
             statistics.append(s)
