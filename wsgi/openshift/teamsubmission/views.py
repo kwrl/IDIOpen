@@ -37,6 +37,10 @@ def submission_problem(request, problemID):
     submission = Submission.objects.filter(team=team).filter(problem=problemID).order_by('-date_uploaded')
     tries = len(submission)
     
+    
+    score = Submission.objects.get_problem_score(team, problem, con)
+
+    
     if len(submission.values_list()) > 0:
         submission = submission[0]
         problem = submission.problem
@@ -46,8 +50,11 @@ def submission_problem(request, problemID):
         submission.problem = problem
         submission.team = team
     
+    '''
+    Does not look good
     if is_problem_solved(team, problemID): 
         messages.success(request, 'This problem is solved!')
+    '''
 
     if request.method == "POST":
         form = SubmissionForm(request.POST, request.FILES,
@@ -72,6 +79,7 @@ def submission_problem(request, problemID):
              'submission' : submission,
              'submission_form' : form,
              'tries':tries,
+             'score' : score,
               }
     
     return render(request,
@@ -120,11 +128,13 @@ def submission_view(request):
 
 def highscore_view(request):
     contest = get_current_contest(request)
-    scores = Submission.objects.get_highscore(contest)
+    statistics = Submission.objects.get_highscore(contest)
+    problems = statistics[0][4:]
     
     context = {
                'contest' : contest,
-               'scores' : scores,
+               'statistics' : statistics,
+               'problems' : problems
                }
     return render(request, 'highscore.html', context)
 

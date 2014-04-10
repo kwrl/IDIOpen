@@ -96,6 +96,8 @@ class Resource (models.Model):
     #The maximum number of child processes. (avoid fork bombs)
     max_processes = models.IntegerField(max_length = 10, default = 5) 
     
+    #Maximum filesize, 
+    Max_filesize = models.IntegerField(max_length = 10, default = 50) # in Kilobytes
     
     
     '''
@@ -127,7 +129,7 @@ class TestCase(models.Model):
                             verbose_name="Description of the" \
                                          " output:")
 
-    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null = True)
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null = True, blank = True, editable = False)
     problem = models.ForeignKey(Problem)
 
     def __unicode__(self):
