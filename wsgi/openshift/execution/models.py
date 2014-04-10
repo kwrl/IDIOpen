@@ -18,20 +18,23 @@ class FileExtension(models.Model):
 class CompilerProfile(models.Model):
     name = models.CharField(max_length=100)
     extensions = models.ManyToManyField(FileExtension)
-    compiler_name_cmd = models.CharField(max_length=10, blank=True, null=True)
-
-    #flags that are sendt to the compiler
-    compiler_flags = models.CharField(max_length=100, blank=True, null=True)
     
-    #the command to run the compiled file
-    run_cmd = models.CharField(max_length=10)
+    compile = models.CharField(max_length=100, blank=True, null=True,
+                               help_text=
+                               'The command to compile, include {BASENAME} for file without extension' + 
+                               ' {FILENAME} for file with extension, include all flags required' + 
+                               '<br>Example: gcc -w --std=c99 -O2 -o {BASENAME} {FILENAME} -lm')
 
 
-    run_flags = models.CharField(max_length=100, blank=True, null=True)
-    # How do we handle output filename?
+    run = models.CharField(max_length=100,
+                           help_text=
+                           'The command to run the program, include {BASENAME} for file without extension' + 
+                           ' {FILENAME} for file with extension, include all flags required' + 
+                           '<br>Example: java {BASENAME} <br>Example2: ./{BASENAME')
 
     # The name of the package that is required in order to install the compiler. (Via apt-get)
-    package_name = models.CharField(max_length=30)
+    package_name = models.CharField(max_length=30, 
+                                    help_text='The package required to run and compile, eg. openjdk-7-jdk')
 
     def __unicode__(self):
         return self.name
