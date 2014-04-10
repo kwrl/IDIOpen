@@ -1,5 +1,6 @@
 from django.test import TestCase
 from .models import Submission
+from .forms import SubmissionForm
  
 
 from execution.models import Problem
@@ -96,6 +97,23 @@ class submissionTestCase(TestCase):
         self.assertFalse(s.solved_problem, "Solved_problem should be false by default")
         
     
+    def test_form(self):
+        
+        '''
+        NOT working, sorry, dont know how to test this
+        myfile = open('private\submissions\DoNotDelete.pdf','r')
+        response = self.client.post('/', {'file':myfile}) 
+        
+        form_data = {'submission' : Submission.objects.get(submission = 'media/submissions/DoNotDelete.pdf').submission,
+             'request.FILES': response}
+        form = SubmissionForm(data = form_data)
+        self.assertEqual(form.is_valid(), True, "Submission form is not valid")
+        '''
+        
+        form_data = {'submission' : None}
+        form = SubmissionForm(data = form_data)
+        self.assertEqual(form.is_valid(), False, "Submission form should not be validated when nothing is sendt")
+            
     
     def set_text_feedback(self):
         return "I am not a demon. I am a lizard,"
