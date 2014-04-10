@@ -114,11 +114,13 @@ def submission_view(request):
 
 def highscore_view(request):
     contest = get_current_contest(request)
-    scores = Submission.objects.get_highscore(contest)
+    statistics = Submission.objects.get_highscore(contest)
+    problems = statistics[0][4:]
     
     context = {
                'contest' : contest,
-               'scores' : scores,
+               'statistics' : statistics,
+               'problems' : problems
                }
     return render(request, 'highscore.html', context)
 

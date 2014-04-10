@@ -29,35 +29,77 @@ class ScoreManager(models.Manager):
             for delivering incorrect submissions.
         """
         submission_penalty = contest.penalty_constant
-        submissions = Submission.objects.filter(team=team).filter(problem=problem).order_by('-date_uploaded')
+        submissions = Submission.objects.filter(team=team).filter(problem=problem).filter(solved_problem=False).order_by('-date_uploaded')
         correctSubmissions = Submission.objects.filter(team=team).filter(problem=problem).filter(solved_problem=True).order_by('date_uploaded')
-        if(len(correctSubmissions) <= 0):
-            return 0
         
-        timeScore = (correctSubmissions[0].date_uploaded - problem.contest.start_date).total_seconds()
-        submissionScore = len(submissions) * submission_penalty
-        return timeScore + submissionScore
+        """The statistics are:
+            [total score,
+            time score,
+            submission score,
+            number of submissions]
+        """
+        statistics = [0, 0, 0, len(submissions)]
+        if(len(correctSubmissions) > 0):
+            timeScore = (correctSubmissions[0].date_uploaded - problem.contest.start_date).total_seconds()
+            submissionScore = len(submissions) * submission_penalty
+            
+            statistics[0] = timeScore + submissionScore
+            statistics[1] = timeScore
+            statistics[2] = submissionScore
+            statistics[3] = len(submissions) + 1
+        
+        return statistics
     
     def get_team_score(self, team, contest):
         problems = Problem.objects.filter(contest=contest)
-        score = 0
+        
+        """The statistics are:
+            [total score,
+            solved problems,
+            time score,
+            problem 1 submissions,
+            ...
+            problem n submissions,]
+        """
+        statistics = [0, 0, 0]
         for problem in problems:
-            score = score + ScoreManager.get_problem_score(self, team, problem, contest)
-        return score
+            problemStat = ScoreManager.get_problem_score(self, team, problem, contest)
+            statistics[0] = statistics[0] + problemStat[0]
+            if problemStat[0]:
+                statistics[1] = statistics[1] + 1
+            statistics[2] = statistics[2] + problemStat[1]
+            statistics.append(problemStat[3])
+        return statistics
     
     def get_highscore(self, contest):
         teams = Team.objects.filter(contest=contest)
-        scores = []
+        
+        """The statistics are:
+            [team name,
+            total score,
+            solved problems,
+            time score,
+            problem 1 submissions,
+            ...
+            problem n submissions,]
+        """
+        statistics = []
         zeros = []
         for team in teams:
             if(ScoreManager.get_team_score(self, team, contest)):
-                scores.append((team.name, ScoreManager.get_team_score(self, team, contest)))
+                teamStat = [team.name]
+                for field in ScoreManager.get_team_score(self, team, contest):
+                    teamStat.append(field)
+                statistics.append(teamStat)
             else:
-                zeros.append((team.name, ScoreManager.get_team_score(self, team, contest)))
-        sorted(scores, key=lambda score: score[1])
+                teamStat = [team.name]
+                for field in ScoreManager.get_team_score(self, team, contest):
+                    statistics.append(field)
+                zeros.append(teamStat)
+        sorted(statistics, key=lambda score: score[1])
         for s in zeros:
-            scores.append(s)
-        return scores
+            statistics.append(s)
+        return statistics
 
 class Submission(models.Model):
     submission = models.FileField(storage=private_media, upload_to='submissions')
