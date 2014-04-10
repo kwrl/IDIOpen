@@ -1,11 +1,12 @@
 from __future__ import absolute_import
-from execution.models import CompilerProfile, TestCase
-from teamsubmission.models import Submission 
+from openshift.execution.models import CompilerProfile, TestCase
+from openshift.teamsubmission.models import Submission 
 from djcelery import celery
 from subprocess import call
 from openshift.messaging import celery_app as app
 import os
 import ipdb
+import threading
 
 
 WORK_ROOT   = "/idiopen/work/"
@@ -37,6 +38,7 @@ def evaluate_task(submission_id, compiler_id, test_case_ids, limit_id):
     test_cases = TestCase.objects.filter(pk__in=test_case_ids)
     #limit   = get some freaking limits, br0  
     evaluate(sub,comp,test_cases,None)
+    pass
 
 def evaluate(submission, compiler, test_cases, limtis):
     os.mkdir(dir_path)
@@ -53,7 +55,7 @@ def evaluate(submission, compiler, test_cases, limtis):
 
 def compile(submission, compiler):
     dir_path = WORK_ROOT + submission.id
-    command = 'cd ' + dir_path + ' && ' compiler.compiler_cmd
+    #command = 'cd ' + dir_path + ' && ' compiler.compiler_cmd
     command = re.sub(FILENAME_SUB, submission.filename, command)
     command = re.sub(BASENAME_SUB, submission.basename, command) 
     return _run_shell(limits.time, command, False)
@@ -62,7 +64,7 @@ def execute(submission, compiler, test_cases, limits):
     dir_path = WORK_ROOT + submission.id
     command = 'cd ' + dir_path + ' && ' + compiler.run_cmd
     command = re.sub(BASENAME_SUB, submission.basename)
-    command += test_cases.
+    #command += test_cases.
     return _run_safe_shell(100, command, False)
 
 @app.task
