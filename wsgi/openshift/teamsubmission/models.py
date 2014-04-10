@@ -6,7 +6,7 @@ from django.core.files.storage import Storage
 import os
 
 from execution.models import Problem
-from contest.models import Team
+from contest.models import Team, Contest
 from django.core.files.storage import FileSystemStorage
 
 private_media = FileSystemStorage(location=settings.PRIVATE_MEDIA_ROOT,
@@ -24,11 +24,11 @@ def get_upload_path(instance, filename):
                         filename);
 
 class ScoreManager(models.Manager):
-    def get_problem_score(self, team, problem):
+    def get_problem_score(self, team, problem, contest):
         """ This constant is the penalty
             for delivering incorrect submissions.
         """
-        submission_penalty = 100
+        submission_penalty = contest.penalty_constant
         submissions = Submission.objects.filter(team=team).filter(problem=problem).order_by('-date_uploaded')
         correctSubmissions = Submission.objects.filter(team=team).filter(problem=problem).filter(solved_problem=True).order_by('date_uploaded')
         if(len(correctSubmissions) <= 0):
@@ -42,7 +42,7 @@ class ScoreManager(models.Manager):
         problems = Problem.objects.filter(contest=contest)
         score = 0
         for problem in problems:
-            score = score + ScoreManager.get_problem_score(self, team, problem)
+            score = score + ScoreManager.get_problem_score(self, team, problem, contest)
         return score
     
     def get_highscore(self, contest):
