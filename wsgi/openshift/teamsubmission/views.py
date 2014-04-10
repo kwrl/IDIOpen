@@ -95,21 +95,27 @@ def submission_view(request):
         messages.warning(request, 'The contest has ended, you are not able to upload any more submissions.')
     
     team = Team.objects.filter(contest=con).filter(members__id = user.id)
-    problems = Problem.objects.filter(contest=con)
+    problems = Problem.objects.filter(contest=con).order_by('title')
     submissions = Submission.objects.filter(team=team).order_by('-date_uploaded').order_by('problem')
     
-    # Get only one submission per problem. 
-    # The submission is the first one returned, as per date_uploaded
-    ret_submissions = map(next, imap(itemgetter(1),
-                          groupby(submissions, lambda x:x.problem)))
+    new_dict = dict()
+    listProbSub = []
     
-        
-    listProbSub = [SubJoinProb(sub, prob, Submission.objects.get_problem_score(team, prob, con)) 
-                   for (sub, prob) in izip_longest(ret_submissions, problems)]
-
+    for sub in submissions:
+        new_dict[sub.problem] = sub
+    for prob in problems:
+        if prob in new_dict:
+            sub = new_dict[prob]
+        else:
+            sub = None
+        listProbSub.append((SubJoinProb(sub, prob, 
+                Submission.objects.get_problem_score(team, prob, con)))
+        )
+    
     context = {
                'prob_sub': listProbSub,
                }    
+                                   
     return render(request, 'submission_home.html', context)
 
 def highscore_view(request):
