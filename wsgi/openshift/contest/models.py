@@ -1,19 +1,19 @@
 #coding: utf-8
 
 from sortedm2m.fields import SortedManyToManyField
-from django.core.exceptions import ValidationError;
+from django.core.exceptions import ValidationError
 from django.db import models
-from django.contrib.auth import get_user_model;
-from django.conf import settings;
-from filebrowser.fields import FileBrowseField;
-from django.forms import ModelForm;
-from django import forms;
+from django.contrib.auth import get_user_model
+from django.conf import settings
+from filebrowser.fields import FileBrowseField
+from django.forms import ModelForm
+from django import forms
 from django.template.loader import render_to_string
 from django.core.mail import send_mail
 from django.core.exceptions import ObjectDoesNotExist
 
-import datetime;
-from django.utils import timezone;
+import datetime
+from django.utils import timezone
 
 # Create your models here.
 
@@ -29,7 +29,7 @@ from django.db import models
 from django.core.urlresolvers import reverse
 
 def getTodayDate():
-    return timezone.make_aware(datetime.datetime.now(), timezone.get_default_timezone());
+    return timezone.make_aware(datetime.datetime.now(), timezone.get_default_timezone())
 
 class ContactInformation(models.Model):
     email = models.EmailField()
@@ -43,12 +43,12 @@ class Contest(models.Model):
     contact_infos = models.ManyToManyField(ContactInformation, null = True)
     """ The url is saved as the suffix from root, only, not the entire url
     """
-    url = models.CharField(max_length=20, unique=True, help_text='Defines the url used to access the contest. E.g. sample.site.com/[the value inserted here]');
-    start_date = models.DateTimeField(verbose_name='Start date');
-    end_date = models.DateTimeField('End date');
-    publish_date = models.DateTimeField('Publish date');
-    teamreg_end_date = models.DateTimeField("Team registration close date");
-    links = SortedManyToManyField('Link');
+    url = models.CharField(max_length=20, unique=True, help_text='Defines the url used to access the contest. E.g. sample.site.com/[the value inserted here]')
+    start_date = models.DateTimeField(verbose_name='Start date')
+    end_date = models.DateTimeField('End date')
+    publish_date = models.DateTimeField('Publish date')
+    teamreg_end_date = models.DateTimeField("Team registration close date")
+    links = SortedManyToManyField('Link')
     sponsors = models.ManyToManyField('Sponsor', blank=True)
     css = FileBrowseField('CSS', max_length=200, directory='css/',
                           extensions=['.css',], blank=True, null=True)
@@ -57,10 +57,10 @@ class Contest(models.Model):
                           help_text='Select logo image, allowed formats jpg, jpeg, png, gif')
 
     def isPublishable(self):
-        return self.publish_date.__lt__(getTodayDate());
+        return self.publish_date.__lt__(getTodayDate())
 
     def isRegOpen(self):
-        return self.teamreg_end_date.__gt__(getTodayDate());
+        return self.teamreg_end_date.__gt__(getTodayDate())
 
     def clean(self):
         # TODO: which is better? To do clean here, or in form?
@@ -68,7 +68,7 @@ class Contest(models.Model):
         # not a single one
         if self.start_date is not None and self.end_date is not None:
             if self.start_date.__lt__(self.end_date) == False:
-                raise ValidationError('You cannot set start date to be after the end date');
+                raise ValidationError('You cannot set start date to be after the end date')
             
     def __str__(self):
         return self.title
@@ -147,9 +147,9 @@ class InviteManager(models.Manager):
         
 
 class Invite(models.Model):
-    email = models.EmailField(); 
+    email = models.EmailField() 
     team = models.ForeignKey(Team)
-    is_member = models.BooleanField(default=False);
+    is_member = models.BooleanField(default=False)
     objects = InviteManager()
     
     def __unicode__(self):
