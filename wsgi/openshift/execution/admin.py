@@ -1,6 +1,7 @@
 from django.contrib import admin
 
-from .models import TestCase, Problem, CompilerProfile, FileExtension
+from .models import TestCase, Problem, CompilerProfile, FileExtension, Resource
+
 
 class TestCaseAdmin(admin.ModelAdmin):
     # list_display = ('short_description')
@@ -21,5 +22,6 @@ class ProblemAdmin(admin.ModelAdmin):
         obj.save()        
         
 admin.site.register(Problem, ProblemAdmin)
-admin.site.register(CompilerProfile)
 admin.site.register(FileExtension)
+admin.site.register(CompilerProfile)
+admin.site.register(Resource)

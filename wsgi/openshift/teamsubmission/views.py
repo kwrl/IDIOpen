@@ -37,6 +37,10 @@ def submission_problem(request, problemID):
     submission = Submission.objects.filter(team=team).filter(problem=problemID).order_by('-date_uploaded')
     tries = len(submission)
     
+    
+    score = Submission.objects.get_problem_score(team, problem, con)
+
+    
     if len(submission.values_list()) > 0:
         submission = submission[0]
         problem = submission.problem
@@ -46,29 +50,36 @@ def submission_problem(request, problemID):
         submission.problem = problem
         submission.team = team
     
-    
+    '''
+    Does not look good
     if is_problem_solved(team, problemID): 
         messages.success(request, 'This problem is solved!')
+    '''
 
     if request.method == "POST":
         form = SubmissionForm(request.POST, request.FILES,
                                instance=submission)
-        if contest_end(request):
+        if not request.FILES:
+            messages.error(request, 'You need to choose a file to upload')
+        
+        elif contest_end(request):
             messages.error(request, 'You can\'t upload any more files after the contest has ended')
+        
         elif is_leader(request, con):
             if form.is_valid():
                 form.save()
-#                form = SubmissionForm(instance=submission);
+                form = SubmissionForm(instance=submission);
         else:
             messages.error(request, 'You have to be the leader of a team to upload submissions')
-    
-    form = SubmissionForm(instance=submission);
+    else:
+        form = SubmissionForm(instance=submission);
     
     context = {
              'problem' : problem,
              'submission' : submission,
              'submission_form' : form,
              'tries':tries,
+             'score' : score,
               }
     
     return render(request,
@@ -93,31 +104,42 @@ def submission_view(request):
     
     team = Team.objects.filter(contest=con).filter(members__id = user.id)
     problems = Problem.objects.filter(contest=con)
-    submissions = Submission.objects.filter(team=team).order_by('-date_uploaded')
+    submissions = Submission.objects.filter(team=team).order_by('-date_uploaded').order_by('problem')
+    
     # Get only one submission per problem. 
     # The submission is the first one returned, as per date_uploaded
     ret_submissions = map(next, imap(itemgetter(1),
                           groupby(submissions, lambda x:x.problem)))
-
-    listProbSub = [SubJoinProb(sub, prob) 
+    
+        
+    listProbSub = [SubJoinProb(sub, prob, Submission.objects.get_problem_score(team, prob, con)) 
                    for (sub, prob) in izip_longest(ret_submissions, problems)]
-    
-    
+
     context = {
-               'problems' : problems,
-               'submissions' : submissions,
                'prob_sub': listProbSub,
                }    
     return render(request, 'submission_home.html', context)
 
+def highscore_view(request):
+    contest = get_current_contest(request)
+    statistics = Submission.objects.get_highscore(contest)
+    problems = statistics[0][4:]
+    
+    context = {
+               'contest' : contest,
+               'statistics' : statistics,
+               'problems' : problems
+               }
+    return render(request, 'highscore.html', context)
+
 class SubJoinProb(object):
-    def __init__(self, submission, problem):
+    def __init__(self, submission, problem, score):
         if submission is not None:
+                self.score = score
                 self.submission = submission
                 self.submission.submission = \
                     str(submission.submission).split('/')[-1]
                 self.submission.date_uploaded = \
                         submission.date_uploaded.strftime('%H:%M:%S')
         self.problem = problem 
-        
 # EOF

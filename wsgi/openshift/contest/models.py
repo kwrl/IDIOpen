@@ -43,12 +43,14 @@ class Contest(models.Model):
     contact_infos = models.ManyToManyField(ContactInformation, null = True)
     """ The url is saved as the suffix from root, only, not the entire url
     """
-    url = models.CharField(max_length=20, unique=True, help_text='Defines the url used to access the contest. E.g. sample.site.com/[the value inserted here]')
-    start_date = models.DateTimeField(verbose_name='Start date')
-    end_date = models.DateTimeField('End date')
-    publish_date = models.DateTimeField('Publish date')
-    teamreg_end_date = models.DateTimeField("Team registration close date")
-    links = SortedManyToManyField('Link')
+
+    penalty_constant = models.IntegerField('Penalty Constant', default = 0)
+    url = models.CharField(max_length=20, unique=True, help_text='Defines the url used to access the contest. E.g. sample.site.com/[the value inserted here]');
+    start_date = models.DateTimeField(verbose_name='Start date');
+    end_date = models.DateTimeField('End date');
+    publish_date = models.DateTimeField('Publish date');
+    teamreg_end_date = models.DateTimeField("Team registration close date");
+    links = SortedManyToManyField('Link');
     sponsors = models.ManyToManyField('Sponsor', blank=True)
     css = FileBrowseField('CSS', max_length=200, directory='css/',
                           extensions=['.css',], blank=True, null=True)
