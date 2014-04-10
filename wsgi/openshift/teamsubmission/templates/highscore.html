@@ -2,8 +2,18 @@
 {% load link_tags %}
 {% contest as contest %}
 {% block content %}
+<script>
+$(document).ready(function() 
+    { 
+        $("#highscoreTable").tablesorter( {sortList: [[0,0]]} ); 
+        $(".clickableRow").click(function() {
+        	window.document.location = $(this).attr("href");
+      	});
+    } 
+); 
+</script>
 
-<table id="highscoreTable" class="table table-bordered table-hover table-condensed">
+<table id="highscoreTable" class="table table-bordered table-hover table-condensed tablesorter">
 	<thead>
             <tr>
             <th data-toggle="tooltip" data-placement="top" title="Teams">Team</th>
