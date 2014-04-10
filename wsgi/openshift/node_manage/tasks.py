@@ -7,7 +7,8 @@ from openshift.messaging import celery_app as app
 import os
 import ipdb
 import threading
-
+import time
+import popen2
 
 WORK_ROOT   = "/idiopen/work/"
 FILENAME    = "sauce.in"
@@ -38,7 +39,7 @@ def evaluate_task(submission_id, compiler_id, test_case_ids, limit_id):
     test_cases = TestCase.objects.filter(pk__in=test_case_ids)
     #limit   = get some freaking limits, br0  
     evaluate(sub,comp,test_cases,None)
-    pass
+    return "tissemann"
 
 def evaluate(submission, compiler, test_cases, limtis):
     os.mkdir(dir_path)
@@ -58,23 +59,23 @@ def compile(submission, compiler):
     #command = 'cd ' + dir_path + ' && ' compiler.compiler_cmd
     command = re.sub(FILENAME_SUB, submission.filename, command)
     command = re.sub(BASENAME_SUB, submission.basename, command) 
-    return _run_shell(limits.time, command, False)
+    return _run_shell(command)
     
 def execute(submission, compiler, test_cases, limits):
     dir_path = WORK_ROOT + submission.id
     command = 'cd ' + dir_path + ' && ' + compiler.run_cmd
     command = re.sub(BASENAME_SUB, submission.basename)
     #command += test_cases.
-    return _run_safe_shell(100, command, False)
+    return _run_safe_shell(command)
 
 @app.task
 def install_compilers(compilers):
     retval, stdout, stderr = _run_shell(["sudo apt-get update"])
     for compiler in compilers:
-        retval, stdout, stderr = _run_shell(["sudo apt-get install " + compiler.package_name])
+        retval, stdout, stderr = _run_shell("sudo apt-get install " + compiler.package_name)
         if retval:
             raise Exception(stderr)
-    ipdb.set_trace()
+    #ipdb.set_trace()
     return stdout
        
 
@@ -97,21 +98,22 @@ class Runner(threading.Thread):
             time.sleep(0.001)
         self.retval = proc.poll()
 
-def _run_safe_shell(real_time_limit, command, use_thread = False):
+def _run_safe_shell(command):
     command = use_run_user(command)
-    return _run_shell(real_time_limit, command, use_thread)
+    return _run_shell(command)
 
-def _run_shell(real_time_limit, command, use_thread = False):
-    ipdb.set_trace()
+def _run_shell(command):
+    #ipdb.set_trace()
     runboy = Runner(command)
-    if use_thread:
-        start_time = time.time()
-        runboy.start()
-        while runboy.isAlive():
-            tim = time.time() - start_time
-            if tim > real_time_limit:
-                return 137, 'usertime: %s\nreturn value: 137\n' % tim, ''
-    else:
-        runboy.run()
+    runboy.run()
+    
     return runboy.retval, runboy.out_stdout, runboy.out_stderr        
-     
+    
+@app.task
+def uname():
+    retval, stdout, stderr = _run_shell("hostname")
+    return stdout
+
+
+
+ 
