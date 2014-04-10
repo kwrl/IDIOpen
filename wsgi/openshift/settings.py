@@ -1,4 +1,14 @@
 #coding:utf-8
+import djcelery
+djcelery.setup_loader()
+BROKER_URL = "amqp://guest:guest@localhost:5672//"
+CELERY_RESULT_BACKEND = "amqp"
+import subprocess
+CELERY_APP = subprocess.check_output(["which", "celery"])[:-1]
+
+CELERYD_NODES = "w1"
+CELERY_MULTI = "celery multi"
+
 
 """
 Django settings for openshift project.
@@ -73,13 +83,20 @@ INSTALLED_APPS = (
     'sortedm2m',
     'openshift.changeemail',
     'openshift.execution',
-    'openshift.teamsubmission'
+    'openshift.teamsubmission',
+    'openshift.node_manage',
+    'openshift.messaging',
+    'djcelery',
 )
 '''
 if not ON_OPENSHIFT:
     print 'not on openshift'
     INSTALLED_APPS = ('debug_toolbar',) + INSTALLED_APPS
 '''
+
+BROKER_HOST = "localhost"
+BROKER_PORT = 5672
+
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
