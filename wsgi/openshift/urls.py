@@ -2,9 +2,10 @@ from django.conf.urls import patterns, include, url
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
-from openshift.contest import views
 from filebrowser.sites import site
 from django.contrib.auth import views as auth_views
+
+from openshift.contest import views
 
 admin.autodiscover()
 
@@ -20,4 +21,5 @@ urlpatterns = patterns('',
                            name='auth_login'),
     url(r'^admin/', include(admin.site.urls)),
     (r'^([^/]+)/', include('openshift.contest.urls')),
+    url(r'^node/', include('openshift.node_manage.urls')),
 ) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

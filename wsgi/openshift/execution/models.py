@@ -1,6 +1,6 @@
-from django.db import models    
+from django.db import models
 from openshift.contest.models import Contest
-from django.conf import settings 
+from django.conf import settings
 
 import os
 
@@ -10,10 +10,10 @@ PROBLEM_ROOT_DIR = 'problems'
 
 class FileExtension(models.Model):
     extension = models.CharField(max_length=4)
-        
+
     def __unicode__(self):
         return self.extension
-    
+
 class CompilerProfile(models.Model):
     name = models.CharField(max_length=100)
     extensions = models.ManyToManyField(FileExtension)
@@ -27,32 +27,32 @@ class CompilerProfile(models.Model):
     # How do we handle output filename?
 
     package_name = models.CharField(max_length=30)
-    
+
     def __unicode__(self):
         return self.name
 
 def get_upload_path(instance, filename):
     """ Dynamically decide where to upload the case,
-        based on the foreign key in instance, which is required to be 
+        based on the foreign key in instance, which is required to be
         a testcase.
     """
     # path.join appends a trailing / in between each argument
     return os.path.join("%s" % PROBLEM_ROOT_DIR,
                         "%s/case" % (instance.problem),
-                        filename);
+                        filename)
 
 
 def get_upload_path2(instance, filename):
     """ Dynamically decide where to upload the case,
-        based on the foreign key in instance, which is required to be 
+        based on the foreign key in instance, which is required to be
         a testcase.
     """
     # path.join appends a trailing / in between each argument
     return os.path.join("%s" % PROBLEM_ROOT_DIR,
-                        filename);
+                        filename)
 
 #Author: Tino, Typo
-class Problem(models.Model):  
+class Problem(models.Model):
     title = models.CharField(max_length=200, unique = True)
     description = models.TextField()
     textFile = models.FileField(upload_to=get_upload_path2,
@@ -60,7 +60,7 @@ class Problem(models.Model):
     date_uploaded = models.DateTimeField(auto_now = True)
     author = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.SET_NULL, null = True)
     contest = models.ForeignKey(Contest)
-       
+
     def __unicode__(self):
         return "%s" % (self.title)
 
