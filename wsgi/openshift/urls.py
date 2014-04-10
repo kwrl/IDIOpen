@@ -5,15 +5,18 @@ from django.contrib import admin
 from openshift.contest import views
 from filebrowser.sites import site
 from django.contrib.auth import views as auth_views
-
+from dajaxice.core import dajaxice_autodiscover, dajaxice_config
+dajaxice_autodiscover()
 admin.autodiscover()
 
 urlpatterns = patterns('',
     # Examples:
     url(r'^$', 'openshift.views.home', name='home'),
+    url(r'^test/$', 'openshift.views.taskTest'),
     # url(r'^blog/', include('blog.urls')),
     (r'^grappelli/', include('grappelli.urls')),
     (r'^admin/filebrowser/', include(site.urls)),
+    url(dajaxice_config.dajaxice_url, include('dajaxice.urls')),
     url(r'^login/$',
                            auth_views.login,
                            {'template_name': 'registration/bare_login.html'},

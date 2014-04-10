@@ -3,6 +3,7 @@
 <html lang="en">
 {% load link_tags %}
 {% load i18n %}
+{% load dajaxice_templatetags %}
 {% contest as contest %}
 <head>
 <meta charset="utf-8">
@@ -25,11 +26,14 @@
       <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
       <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
+    
+    {% dajaxice_js_import %}
 </head>
 <body>
 	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 	<script src="https://code.jquery.com/jquery.js"></script>
 	<script	src="//netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="{% static "/static/dajax/jquery.dajax.core.js" %}"></script>
 	<script type="text/javascript" src="{% static  "openshift/js/bootstrap-confirmation.js" %}"></script>
 	<script type="text/javascript" src="{% static  "openshift/js/check_radio_button.js" %}"></script>
 		

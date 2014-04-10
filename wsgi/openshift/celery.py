@@ -15,7 +15,7 @@ from django.conf import settings
 # set the default Django settings module for the 'celery' program.
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'openshift.settings')
 
-app = Celery('openshift')
+app = Celery('openshift', backend='amqp', broker='amqp://guest@localhost//')
 
 # Using a string here means the worker will not have to
 # pickle the object when using Windows.
