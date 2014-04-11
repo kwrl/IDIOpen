@@ -2,17 +2,16 @@
 {% load link_tags %}
 {% load fileprint %}
 {% block content %}
-
+<div class = "pull-right" >
+<a href= {% url 'submission_page' contest.url %}>Back to contest page</a>
+</div>
 
 <h2>{{problem.title}}</h2>
 
 <hr>
 
-{% if submission.solved_problem %} 
-<strong><p>Problem solved! </strong></p> 
-<p> Attempts: <strong> {{ tries }} </strong> </p>
-<p> Solution runtime: <strong> {{ submission.runtime }}</strong>ms </p>
-{% elif tries > 0 %}
+
+{% if sumbissions.solver_problem and tries > 0 %}
 <p> You have made  <strong> {{ tries }} </strong> attempts at solving this problem </p>
 {% endif %}
 
@@ -39,21 +38,20 @@
     <h3> Feedback on submission </h3>
  <div class = 'well' >
 {% if submission.solved_problem %}
-	<span class="bg-info">{{submission.text_feedback}}</span>
+	<strong><p>Problem solved! </strong></p>
+	<p> Feedback: <strong>{{submission.text_feedback}} </strong></p>
+	<p> Score for problem: <strong> {{ score }} </strong> </p>
+	<p> Solution runtime: <strong> {{ submission.runtime }}</strong> ms </p>
+	<p> Attempts: <strong> {{ tries }} </strong> </p>
 {% elif submission.text_feedback %}
 	<span class="bg-info">{{submission.text_feedback}}</span>
 {% else %}
 	<span class="bg-info"> No feedback </span>
 {% endif %}
-
-<br />
-<br />
 </div>
-
-
 </form>
-<h3>Problem Description </h3> 
-<hr>
+<h3>Problem Description </h3>
+<hr> 
 {% if problem.author %}
 <i><small>Author: {{ problem.author.get_full_name }} .</i></small>
 {% endif %}
