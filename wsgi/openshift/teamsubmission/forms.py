@@ -4,6 +4,7 @@ from django.template.defaultfilters import filesizeformat
 from django.core.exceptions import ValidationError
 from openshift.execution.models import FileExtension, CompilerProfile
 from openshift.node_manage.tasks import evaluate_task
+from openshift.messaging import celery_app
 # 2.5MB - 2621440
 # 5MB - 5242880
 # 10MB - 10485760
