@@ -5,16 +5,6 @@ from django.core.exceptions import ValidationError
 from execution.models import FileExtension, Resource
 from execution.models import CompilerProfile
 
-# 2.5MB - 2621440
-# 5MB - 5242880
-# 10MB - 10485760
-# 20MB - 20971520
-# 50MB - 5242880
-# 100MB 104857600
-# 250MB - 214958080
-# 500MB - 429916160
-#MAX_UPLOAD_SIZE = "5242880" # 5 MB
-
 # Maybe not the best way, could get file extension for each compiler profile connected to a specific problem
 def get_file_extensions():
     return FileExtension.objects.all()
