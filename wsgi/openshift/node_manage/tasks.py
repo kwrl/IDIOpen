@@ -40,11 +40,12 @@ def evaluate_task(submission_id, compiler_id, test_case_ids, limit_id):
     sub     = Submission.objects.get(pk=submission_id)
     comp    = CompilerProfile.objects.get(pk=compiler_id)
     test_cases = TestCase.objects.filter(pk__in=test_case_ids)
-    limit   = get some freaking limits, br0  
-    ievaluate(sub,comp,test_cases,None)
+    #limit   = get some freaking limits, br0  
+    evaluate(sub,comp,test_cases,None)
     return (submission_id, compiler_id, test_case_ids, limit_id)
 
 def evaluate(submission, compiler, test_cases, limtis):
+    dir_path = WORK_ROOT + str(submission.id) + str(os.getpid())
     os.mkdir(dir_path)
     
     retval, stdout, stderr = compile(submission, compiler)
@@ -58,15 +59,15 @@ def evaluate(submission, compiler, test_cases, limtis):
 
 
 def compile(submission, compiler):
-    dir_path = WORK_ROOT + submission.id
-    #command = 'cd ' + dir_path + ' && ' compiler.compiler_cmd
+    dir_path = WORK_ROOT + str(submission.id) + str(os.getpid())
+    command = 'cd ' + dir_path + ' && '+ compiler.compile
     command = re.sub(FILENAME_SUB, submission.submission, command)
-    command = re.sub(BASENAME_SUB, submission.submission.split(".")[0], command) 
+    command = re.sub(BASENAME_SUB, submission.submission.filename.split(".")[0], command) 
     return _run_shell(command)
     
 def execute(submission, compiler, test_cases, limits):
-    dir_path = WORK_ROOT + submission.id
-    command = 'cd ' + dir_path + ' && ' + compiler.run_cmd
+    dir_path = WORK_ROOT + str(submission.id) + str(os.getpid())
+    command = 'cd ' + dir_path + ' && ' + compiler.run
     command = re.sub(BASENAME_SUB, submission.basename)
     #command += test_cases.
     return _run_safe_shell(command)
