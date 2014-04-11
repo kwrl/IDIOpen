@@ -46,7 +46,8 @@ def evaluate_task(submission_id, compiler_id, test_case_ids, limit_id):
 
 def evaluate(submission, compiler, test_cases, limits):
     dir_path = WORK_ROOT + str(submission.id) + str(os.getpid())
-    os.mkdir(dir_path)
+    if os.path.exists(dir_path):
+        os.mkdir(dir_path)
     
     retval, stdout, stderr = compile(submission, compiler)
     if retval:
