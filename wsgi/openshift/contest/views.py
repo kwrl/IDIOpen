@@ -16,13 +16,24 @@ from django.contrib import messages
 import datetime;
 from django.utils import timezone;
 
+
+
 User = get_user_model()
 # Create your views here.
 
 def index(request):
     url = get_current_url(request)
-    article_list = Article.objects.all().filter(contest__url = url).exclude(visible_article_list = False).order_by("-created_at")
-    context = {'article_list' : article_list, 
+    
+    '''
+    article_urgent = Article.objects.all().filter(contest__url = url, is_urgent = True).order_by("-created_at")
+    if not article_urgent:
+        article_urgent = Article.objects.all().order_by("-created_at")[:1].get()
+    '''
+    article_list = Article.objects.all().filter(contest__url = url).exclude(visible_article_list = False).order_by("-is_urgent","-created_at")[:7]
+    
+    
+    context = {'article_list' : article_list,
+              # 'article_urgent': article_urgent, 
                }    
     return render(request, 'contest/index.html', context)
 
@@ -202,8 +213,7 @@ def contest_end(request):
         raise Http404
     return has_ended
 '''
-AUTHOR: Haakon, Tino, Filip
-
+AUTHOR: Tino, Tino, Filip
 '''
 #@login_required
 def team_profile(request):    
