@@ -44,12 +44,12 @@ def evaluate_task(submission_id, compiler_id, test_case_ids, limit_id):
     evaluate(sub,comp,test_cases,None)
     return (submission_id, compiler_id, test_case_ids, limit_id)
 
-def evaluate(submission, compiler, test_cases, limtis):
+def evaluate(submission, compiler, test_cases, limits):
     dir_path = WORK_ROOT + str(submission.id) + str(os.getpid())
     os.mkdir(dir_path)
     
     retval, stdout, stderr = compile(submission, compiler)
-    
+    results = execute(submission, compiler, test_cases, limits)
     if retval:
         return 2
         
@@ -69,12 +69,18 @@ def execute(submission, compiler, test_cases, limits):
     dir_path = WORK_ROOT + str(submission.id) + str(os.getpid())
     command = 'cd ' + dir_path + ' && ' + compiler.run
     command = re.sub(BASENAME_SUB, submission.basename)
+    results = []
+    for test in test_cases:
+        retval, stdout, stderr = _run_safe_shell(command + ' ' + test.inputfile + ' | tee output.txt')
+        diff = _run_shell('diff ' + dir_path + '/output.txt ' + test.inputfile)
+        results.append([retval, stdout, stderr, diff])
+    
     #command += test_cases.
-    return _run_safe_shell(command)
+    return results
 
 def run_test(submission, comp):
     dir_path = WORK_ROOT + submission.id
-    command = 'cd ' + dir_path + ' && ' + compiler.run_cmd
+    command = 'cd ' + dir_path + ' && ' + comp.run_cmd
     re.sub(BASENAME_SUB, submission.submission.split(".")[0])
 
 @app.task
