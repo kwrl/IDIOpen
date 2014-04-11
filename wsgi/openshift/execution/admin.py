@@ -22,6 +22,6 @@ class ProblemAdmin(admin.ModelAdmin):
         obj.save()        
         
 admin.site.register(Problem, ProblemAdmin)
-admin.site.register(CompilerProfile)
 admin.site.register(FileExtension)
+admin.site.register(CompilerProfile)
 admin.site.register(Resource)
