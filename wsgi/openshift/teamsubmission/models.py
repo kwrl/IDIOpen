@@ -41,17 +41,17 @@ class ScoreManager(models.Manager):
         """ 
         The statistics are:
         [total score,
-        time score,
+        time submitted,
         submission score,
         number of submissions]
         """
         statistics = [0, 0, 0, len(submissions)]
         if(len(correctSubmissions) > 0):
-            timeScore = (correctSubmissions[0].date_uploaded - problem.contest.start_date).total_seconds()
+            time = int((correctSubmissions[0].date_uploaded - problem.contest.start_date).total_seconds()) / 60
             submissionScore = len(submissions) * submission_penalty
             
-            statistics[0] = timeScore + submissionScore
-            statistics[1] = timeScore
+            statistics[0] = time + submissionScore
+            statistics[1] = time
             statistics[2] = submissionScore
             statistics[3] = len(submissions) + 1
         
@@ -64,10 +64,10 @@ class ScoreManager(models.Manager):
         The statistics are:
         [solved problems,
         total score,
-        time score,
-        problem 1 submissions,
+        time submitted,
+        problem 1 submissions/time solved,
         ...
-        problem n submissions,]
+        problem n submissions/time solved]
         """
         statistics = [0, 0, 0]
         for problem in problems:
@@ -76,7 +76,10 @@ class ScoreManager(models.Manager):
                 statistics[0] = statistics[0] + 1
             statistics[1] = statistics[1] + problemStat[0]
             statistics[2] = statistics[2] + problemStat[1]
-            statistics.append(problemStat[3])
+            if(problemStat[1]):
+                statistics.append(str(problemStat[3]) + "/" + str(problemStat[1]))
+            else:
+                statistics.append(str(problemStat[3]) + "/--")
         return statistics
     
     def get_highscore(self, contest):
