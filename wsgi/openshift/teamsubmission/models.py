@@ -33,8 +33,6 @@ class ScoreManager(models.Manager):
         submissions = Submission.objects.filter(team=team).filter(problem=problem).filter(solved_problem=False).order_by('-date_uploaded')
         correctSubmissions = Submission.objects.filter(team=team).filter(problem=problem).filter(solved_problem=True).order_by('date_uploaded')
 
-
-        
         """ 
         The statistics are:
             [total score,

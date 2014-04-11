@@ -19,14 +19,15 @@ from execution.models import CompilerProfile
 def get_file_extensions():
     return FileExtension.objects.all()
 
-def get_max_file_size(problem):
-    resource = Resource.objects.filter(problem = problem)
+def get_max_file_size(problem, cProfile):
+    resource = Resource.objects.filter(problem=problem).filter(cProfile=cProfile)
     if resource:
-        return resource.max_filesize
+        return resource[0].max_filesize
     else:
         return 0
     
 class SubmissionForm(forms.ModelForm):
+    compilerProfile = forms.ModelChoiceField(CompilerProfile.objects.all())
     
     class Meta:
         model = Submission  
@@ -34,13 +35,18 @@ class SubmissionForm(forms.ModelForm):
         
     def clean(self):
         submission = self.cleaned_data.get('submission')
+        cProfile = self.cleaned_data.get('compilerProfile')
+        
         if not submission:
             self._errors['submission'] = self.error_class([("Please upload a file before submitting")])
             raise ValidationError('')
         # The file extension for the given submission
         content_type = submission.name.split('.')[-1]
         FILE_EXT = get_file_extensions()
-        MAX_FILESIZE = get_max_file_size(self.instance.problem) * 1024
+        MAX_FILESIZE = get_max_file_size(self.instance.problem, cProfile) * 1024
+        if (MAX_FILESIZE == 0):
+            self._errors['compilerProfile'] = self.error_class([('Please contact support')])
+            return self.cleaned_data
         # Check if submission has an allowed file extension
         if content_type in [str(x) for x in FILE_EXT]:
             if submission._size > MAX_FILESIZE:

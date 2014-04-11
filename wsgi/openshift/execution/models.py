@@ -79,7 +79,6 @@ class Resource (models.Model):
     This models contains all "limitations" on each Profile. 
     E.g. the number maximum memory usage for this profile, if JAVA is used is XXXXX. 
     '''
-
     cProfile = models.ForeignKey(CompilerProfile, related_name="resource_CompilerProfile")
     problem = models.ForeignKey(Problem, related_name="resource_problem")
     
@@ -97,8 +96,7 @@ class Resource (models.Model):
     
     #Maximum filesize, 
     max_filesize = models.IntegerField(max_length = 10, default = 50) # in Kilobytes
-    
-    
+        
     '''
     From the old code: 
         
