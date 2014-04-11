@@ -25,11 +25,13 @@
     {% csrf_token %}
 <div class = 'well'>
   {% for field in submission_form %}
+    {{ field }} 
   	{% for error in field.errors %}
             <div class="alert alert-danger">{{error}}</div>
     {% endfor %}
-    {{ field }} 
     {% endfor %}
+    Please pick a compiler profile
+    <br>
     <br>
     <button type="submit" class = "btn btn-primary btn-sm">Submit file</button> 
     <br>
