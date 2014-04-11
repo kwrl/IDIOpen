@@ -33,8 +33,6 @@ class ScoreManager(models.Manager):
         submissions = Submission.objects.filter(team=team).filter(problem=problem).filter(solved_problem=False).order_by('-date_uploaded')
         correctSubmissions = Submission.objects.filter(team=team).filter(problem=problem).filter(solved_problem=True).order_by('date_uploaded')
 
-
-        
         """ 
         The statistics are:
             [total score,
@@ -110,7 +108,7 @@ class ScoreManager(models.Manager):
         return statistics
 
 class Submission(models.Model):
-    #We shoul rename submission field.... 
+    #We should rename submission field.... 
     submission = models.FileField(storage=private_media, upload_to='submissions')
     date_uploaded = models.DateTimeField(auto_now = True)
     solved_problem = models.BooleanField(default=False) #E.g. Did this submission solve the the problem
