@@ -27,8 +27,9 @@
   {% for field in submission_form %}
     {{ field }} 
   	{% for error in field.errors %}
-            <div class="alert alert-danger">{{error}}</div>
+            {{error}} <br>
     {% endfor %}
+    <br>
     {% endfor %}
     Please pick a compiler profile
     <br>
