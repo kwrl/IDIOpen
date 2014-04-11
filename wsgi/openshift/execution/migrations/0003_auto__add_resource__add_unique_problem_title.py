@@ -8,20 +8,29 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
+        # Adding model 'Resource'
+        db.create_table(u'execution_resource', (
+            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('cProfile', self.gf('django.db.models.fields.related.ForeignKey')(related_name='resource_CompilerProfile', to=orm['execution.CompilerProfile'])),
+            ('problem', self.gf('django.db.models.fields.related.ForeignKey')(related_name='resource_problem', to=orm['execution.Problem'])),
+            ('max_compile_time', self.gf('django.db.models.fields.IntegerField')(default=30, max_length=20)),
+            ('max_program_timeout', self.gf('django.db.models.fields.IntegerField')(default=60, max_length=20)),
+            ('max_memory', self.gf('django.db.models.fields.IntegerField')(default=100000, max_length=20)),
+            ('max_processes', self.gf('django.db.models.fields.IntegerField')(default=5, max_length=10)),
+        ))
+        db.send_create_signal(u'execution', ['Resource'])
+
         # Adding unique constraint on 'Problem', fields ['title']
         db.create_unique(u'execution_problem', ['title'])
 
-
-        # Changing field 'Problem.date_uploaded'
-        db.alter_column(u'execution_problem', 'date_uploaded', self.gf('django.db.models.fields.DateTimeField')(auto_now=True))
 
     def backwards(self, orm):
         # Removing unique constraint on 'Problem', fields ['title']
         db.delete_unique(u'execution_problem', ['title'])
 
+        # Deleting model 'Resource'
+        db.delete_table(u'execution_resource')
 
-        # Changing field 'Problem.date_uploaded'
-        db.alter_column(u'execution_problem', 'date_uploaded', self.gf('django.db.models.fields.DateTimeField')())
 
     models = {
         u'auth.group': {
@@ -82,11 +91,14 @@ class Migration(SchemaMigration):
         },
         u'execution.compilerprofile': {
             'Meta': {'object_name': 'CompilerProfile'},
-            'compiler_name_cmd': ('django.db.models.fields.CharField', [], {'max_length': '10'}),
+            'compiler_flags': ('django.db.models.fields.CharField', [], {'max_length': '100', 'null': 'True', 'blank': 'True'}),
+            'compiler_name_cmd': ('django.db.models.fields.CharField', [], {'max_length': '10', 'null': 'True', 'blank': 'True'}),
             'extensions': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['execution.FileExtension']", 'symmetrical': 'False'}),
-            'flags': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'package_name': ('django.db.models.fields.CharField', [], {'max_length': '30'})
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
+            'package_name': ('django.db.models.fields.CharField', [], {'max_length': '30'}),
+            'run_cmd': ('django.db.models.fields.CharField', [], {'max_length': '10'}),
+            'run_flags': ('django.db.models.fields.CharField', [], {'max_length': '100', 'null': 'True', 'blank': 'True'})
         },
         u'execution.fileextension': {
             'Meta': {'object_name': 'FileExtension'},
@@ -100,8 +112,19 @@ class Migration(SchemaMigration):
             'date_uploaded': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
             'description': ('django.db.models.fields.TextField', [], {}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'resource': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['execution.CompilerProfile']", 'through': u"orm['execution.Resource']", 'symmetrical': 'False'}),
             'textFile': ('django.db.models.fields.files.FileField', [], {'max_length': '100', 'blank': 'True'}),
             'title': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '200'})
+        },
+        u'execution.resource': {
+            'Meta': {'object_name': 'Resource'},
+            'cProfile': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'resource_CompilerProfile'", 'to': u"orm['execution.CompilerProfile']"}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'max_compile_time': ('django.db.models.fields.IntegerField', [], {'default': '30', 'max_length': '20'}),
+            'max_memory': ('django.db.models.fields.IntegerField', [], {'default': '100000', 'max_length': '20'}),
+            'max_processes': ('django.db.models.fields.IntegerField', [], {'default': '5', 'max_length': '10'}),
+            'max_program_timeout': ('django.db.models.fields.IntegerField', [], {'default': '60', 'max_length': '20'}),
+            'problem': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'resource_problem'", 'to': u"orm['execution.Problem']"})
         },
         u'execution.testcase': {
             'Meta': {'object_name': 'TestCase'},
