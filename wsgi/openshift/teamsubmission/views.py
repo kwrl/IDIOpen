@@ -17,28 +17,42 @@ def is_problem_solved(team, problemID):
         return True
     return False
 
+'''
+AUTHOR: Tino, Filip
+'''
+#===============================================================================
+# Check if user is Team leader
+#===============================================================================
+def is_leader(request, contest):
+    team = Team.objects.filter(contest=contest).get(members__id = request.user.id)
+    if team.leader.id == request.user.id:
+        return True
+    else:
+        return False
 #Login required
 def submission_problem(request, problemID):
     #TODO: maybe a nicer url than numeric ID
-    con = get_current_contest(request)
+    contest = get_current_contest(request)
     user = request.user
     if not user.is_authenticated():
-        return redirect('login', con.url)
+        return redirect('login', contest.url)
     # Raise 404 if contest hasn't begun or has ended, and if user is not member of team
-    if not contest_begin(request) or not is_member_of_team(request, con):
+    if not contest_begin(request) or not is_member_of_team(request, contest):
         raise Http404    
     if contest_end(request):
         messages.warning(request, 'The contest has ended, you are not able to upload any more submissions.')
    
+    if not is_leader(request, contest):
+        messages.warning(request, 'Only leader can upload a solution')
+   
     #TODO: Only leader can upload check    
     problem = get_object_or_404(Problem.objects.filter(pk=problemID))
     user = request.user
-    team = Team.objects.filter(contest=con).get(members__id = user.id)
+    team = Team.objects.filter(contest=contest).get(members__id = user.id)
     submission = Submission.objects.filter(team=team).filter(problem=problemID).order_by('-date_uploaded')
     tries = len(submission)
     
-    score = Submission.objects.get_problem_score(team, problem, con)
-
+    score = Submission.objects.get_problem_score(team, problem, contest)
     
     if len(submission.values_list()) > 0:
         submission = submission[0]
@@ -64,7 +78,7 @@ def submission_problem(request, problemID):
         elif contest_end(request):
             messages.error(request, 'You can\'t upload any more files after the contest has ended')
         
-        elif is_leader(request, con):
+        elif is_leader(request, contest):
             if form.is_valid():
                 form.save()
                 form = SubmissionForm(instance=submission);
@@ -78,7 +92,7 @@ def submission_problem(request, problemID):
              'submission' : submission,
              'submission_form' : form,
              'tries':tries,
-             'score' : score,
+             'score' : score[0],
               }
     
     
