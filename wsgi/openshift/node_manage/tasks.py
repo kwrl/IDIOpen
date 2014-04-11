@@ -49,10 +49,10 @@ def evaluate(submission, compiler, test_cases, limits):
     os.mkdir(dir_path)
     
     retval, stdout, stderr = compile(submission, compiler)
-    results = execute(submission, compiler, test_cases, limits)
     if retval:
         return 2
         
+    results = execute(submission, compiler, test_cases, limits)
         
 
     os.rmdir(dir_path) 

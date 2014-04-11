@@ -5,7 +5,7 @@ from django.core.files.storage import Storage
 
 import os
 
-from openshift.execution.models import Problem
+from openshift.execution.models import Problem, CompilerProfile
 from openshift.contest.models import Team
 from django.core.files.storage import FileSystemStorage
 
@@ -33,8 +33,6 @@ class ScoreManager(models.Manager):
         submissions = Submission.objects.filter(team=team).filter(problem=problem).filter(solved_problem=False).order_by('-date_uploaded')
         correctSubmissions = Submission.objects.filter(team=team).filter(problem=problem).filter(solved_problem=True).order_by('date_uploaded')
 
-
-        
         """ 
         The statistics are:
             [total score,
@@ -52,8 +50,7 @@ class ScoreManager(models.Manager):
             statistics[2] = submissionScore
             statistics[3] = len(submissions) + 1
         
-        return statistics
-
+        return statistics    
     
     def get_team_score(self, team, contest):
         problems = Problem.objects.filter(contest=contest)
@@ -111,8 +108,9 @@ class ScoreManager(models.Manager):
         return statistics
 
 class Submission(models.Model):
-    #We shoul rename submission field.... 
+    #We should rename submission field.... 
     submission = models.FileField(storage=private_media, upload_to='submissions')
+    compileProfile = models.ForeignKey(CompilerProfile)
     date_uploaded = models.DateTimeField(auto_now = True)
     solved_problem = models.BooleanField(default=False) #E.g. Did this submission solve the the problem
     text_feedback = models.CharField(max_length=50)
