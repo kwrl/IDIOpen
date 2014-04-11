@@ -39,7 +39,7 @@ class ScoreManager(models.Manager):
         """ 
         The statistics are:
         [total score,
-        time submitted,
+        time submitted (in minutes),
         submission score,
         number of submissions]
         """
@@ -62,7 +62,7 @@ class ScoreManager(models.Manager):
         The statistics are:
         [solved problems,
         total score,
-        time submitted,
+        time submitted (in minutes),
         problem 1 submissions/time solved,
         ...
         problem n submissions/time solved]
@@ -89,7 +89,7 @@ class ScoreManager(models.Manager):
         team name,
         solved problems,
         total score,
-        time score,
+        total time (in minutes),
         problem 1 submissions,
         ...
         problem n submissions,]
@@ -120,7 +120,6 @@ class ScoreManager(models.Manager):
         for s in zeros:
             s[0] = len(statistics) + 1
             statistics.append(s)
-        print(statistics)
         return statistics
 
 class Submission(models.Model):
