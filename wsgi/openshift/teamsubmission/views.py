@@ -160,6 +160,7 @@ class SubJoinProb(object):
                 self.submission.submission = \
                     str(submission.submission).split('/')[-1]
                 self.submission.date_uploaded = \
-                        submission.date_uploaded.strftime('%H:%M:%S')
+                    submission.date_uploaded
+#                    submission.date_uploaded.strftime('%X:%Z')
         self.problem = problem 
 # EOF
