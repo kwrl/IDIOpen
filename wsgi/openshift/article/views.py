@@ -2,7 +2,6 @@ from django.shortcuts import render
 
 from article.models import Article
 
-import pdb
 # Create your views here.
 '''
 Shows all articles for a contest
