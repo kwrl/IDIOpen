@@ -1,12 +1,12 @@
 from __future__ import absolute_import
-from openshift.execution.models import CompilerProfile, TestCase
+from openshift.execution.models import CompilerProfile, TestCase, Resource, get_resource
 from openshift.teamsubmission.models import Submission 
 from subprocess import call
 from openshift.messaging import celery_app as app
 
 import re
 import os
-#import ipdb
+import ipdb
 import threading
 import time
 import popen2
@@ -16,7 +16,7 @@ FILENAME    = "sauce.in"
 FILENAME_SUB = "{FILENAME}"
 BASENAME_SUB = "{BASENAME}"
 
-RUN_USER = "algrun"
+RUN_USER = "gentlemember"
 
 """
 Evaluation return values:
@@ -40,7 +40,9 @@ def evaluate_task(submission_id, compiler_id, test_case_ids, limit_id):
     sub     = Submission.objects.get(pk=submission_id)
     comp    = CompilerProfile.objects.get(pk=compiler_id)
     test_cases = TestCase.objects.filter(pk__in=test_case_ids)
-    #limit   = get some freaking limits, br0  
+    limits = get_resource(sub, comp)       
+
+ 
     evaluate(sub,comp,test_cases,None)
     return (submission_id, compiler_id, test_case_ids, limit_id)
 
@@ -51,9 +53,10 @@ def evaluate(submission, compiler, test_cases, limtis):
     
     retval, stdout, stderr = compile(submission, compiler)
     
+    ipdb.set_trace()
+
     if retval:
         return 2
-        
         
 
     os.rmdir(dir_path) 
@@ -62,14 +65,14 @@ def evaluate(submission, compiler, test_cases, limtis):
 def compile(submission, compiler):
     dir_path = WORK_ROOT + str(submission.id) + str(os.getpid())
     command = 'cd ' + dir_path + ' && '+ compiler.compile
-    command = re.sub(FILENAME_SUB, submission.submission, command)
-    command = re.sub(BASENAME_SUB, submission.submission.filename.split(".")[0], command) 
+    command = re.sub(FILENAME_SUB, base(submission.submission.name), command)
+    command = re.sub(BASENAME_SUB, base(submission.submission.name).split(".")[0], command) 
     return _run_shell(command)
     
 def execute(submission, compiler, test_cases, limits):
     dir_path = WORK_ROOT + str(submission.id) + str(os.getpid())
     command = 'cd ' + dir_path + ' && ' + compiler.run
-    command = re.sub(BASENAME_SUB, submission.basename)
+    command = re.sub(BASENAME_SUB, base(submission.submission.name))
     #command += test_cases.
     return _run_safe_shell(command)
 
@@ -77,6 +80,9 @@ def run_test(submission, comp):
     dir_path = WORK_ROOT + submission.id
     command = 'cd ' + dir_path + ' && ' + compiler.run_cmd
     re.sub(BASENAME_SUB, submission.submission.split(".")[0])
+
+def base(filepath):
+    return os.path.basename(filepath)
 
 @app.task
 def install_compilers(compilers):
