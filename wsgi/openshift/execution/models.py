@@ -129,7 +129,7 @@ class TestCase(models.Model):
                             verbose_name="Description of the" \
                                          " output:")
 
-    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null = True)
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null = True, blank = True, editable = False)
     problem = models.ForeignKey(Problem)
 
     def __unicode__(self):
