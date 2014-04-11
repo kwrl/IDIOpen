@@ -37,6 +37,10 @@ def submission_problem(request, problemID):
     submission = Submission.objects.filter(team=team).filter(problem=problemID).order_by('-date_uploaded')
     tries = len(submission)
     
+    
+    score = Submission.objects.get_problem_score(team, problem, con)
+
+    
     if len(submission.values_list()) > 0:
         submission = submission[0]
         problem = submission.problem
@@ -46,8 +50,11 @@ def submission_problem(request, problemID):
         submission.problem = problem
         submission.team = team
     
+    '''
+    Does not look good
     if is_problem_solved(team, problemID): 
         messages.success(request, 'This problem is solved!')
+    '''
 
     if request.method == "POST":
         form = SubmissionForm(request.POST, request.FILES,
@@ -72,6 +79,7 @@ def submission_problem(request, problemID):
              'submission' : submission,
              'submission_form' : form,
              'tries':tries,
+             'score' : score,
               }
     
     return render(request,
@@ -95,21 +103,27 @@ def submission_view(request):
         messages.warning(request, 'The contest has ended, you are not able to upload any more submissions.')
     
     team = Team.objects.filter(contest=con).filter(members__id = user.id)
-    problems = Problem.objects.filter(contest=con)
+    problems = Problem.objects.filter(contest=con).order_by('title')
     submissions = Submission.objects.filter(team=team).order_by('-date_uploaded').order_by('problem')
     
-    # Get only one submission per problem. 
-    # The submission is the first one returned, as per date_uploaded
-    ret_submissions = map(next, imap(itemgetter(1),
-                          groupby(submissions, lambda x:x.problem)))
+    new_dict = dict()
+    listProbSub = []
     
-        
-    listProbSub = [SubJoinProb(sub, prob, Submission.objects.get_problem_score(team, prob, con)) 
-                   for (sub, prob) in izip_longest(ret_submissions, problems)]
-
+    for sub in submissions:
+        new_dict[sub.problem] = sub
+    for prob in problems:
+        if prob in new_dict:
+            sub = new_dict[prob]
+        else:
+            sub = None
+        listProbSub.append((SubJoinProb(sub, prob, 
+                Submission.objects.get_problem_score(team, prob, con)))
+        )
+    
     context = {
                'prob_sub': listProbSub,
                }    
+                                   
     return render(request, 'submission_home.html', context)
 
 def highscore_view(request):
@@ -129,7 +143,7 @@ def highscore_view(request):
 class SubJoinProb(object):
     def __init__(self, submission, problem, score):
         if submission is not None:
-                self.score = score
+                self.score = score[0]
                 self.submission = submission
                 self.submission.submission = \
                     str(submission.submission).split('/')[-1]

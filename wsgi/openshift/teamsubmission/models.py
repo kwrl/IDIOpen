@@ -35,6 +35,8 @@ class ScoreManager(models.Manager):
         submission_penalty = contest.penalty_constant
         submissions = Submission.objects.filter(team=team).filter(problem=problem).filter(solved_problem=False).order_by('-date_uploaded')
         correctSubmissions = Submission.objects.filter(team=team).filter(problem=problem).filter(solved_problem=True).order_by('date_uploaded')
+
+
         
         """ 
         The statistics are:
@@ -53,7 +55,7 @@ class ScoreManager(models.Manager):
             statistics[2] = submissionScore
             statistics[3] = len(submissions) + 1
         
-        return statistics
+        return statistics    
     
     def get_team_score(self, team, contest):
         problems = Problem.objects.filter(contest=contest)

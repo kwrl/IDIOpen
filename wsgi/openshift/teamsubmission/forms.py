@@ -14,10 +14,11 @@ from execution.models import CompilerProfile
 # 500MB - 429916160
 MAX_UPLOAD_SIZE = "5242880" # 5 MB
 
-# Maybe not the best way
+# Maybe not the best way, could get file extension for each compiler profile connected to a specific problem
 def get_file_extensions():
     return FileExtension.objects.all()
- 
+
+
 class SubmissionForm(forms.ModelForm):
     
     class Meta:
