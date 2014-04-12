@@ -88,7 +88,8 @@ class Link(models.Model):
                            help_text=' Internal links need leading and trailing slashes.'+
                            ' External links are required to start with "http://"')
 
-    separator = models.BooleanField()
+    separator = models.BooleanField(help_text = 'seperator is for creating \"whitespace\" in the meny at left '
+                                    )
     def __unicode__(self):
         return self.text
 

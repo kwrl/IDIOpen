@@ -1,16 +1,24 @@
 {% extends "base.html" %}
 
+{% if article_urgent %}
+
+{% else %}
+
+{% endif %}
+
 {% block content %}
 {% if article_list %}
 	{% for article in article_list %}
 		<div class="newsitem">
 			<h1>{{ article.title }}</h1>
 				<p class="text-muted">
-					Published: {{article.created_at|date:"d.m.Y - H.i"}}, 
-					Author: {{article.author.get_name_nick }}</p>	
-				{# <div>{{ article.text|safe}}</div> #}
+					Published: {{article.created_at|date:"d.m.Y - H.i"}}. 
+					Author: {{article.author.get_full_name}}</p>	
+					<div>{{ article.text|safe}}</div>
 			</div>
-	{% endfor %} 
+	{% endfor %}
+<br>
 {% endif %}
 
+<a href= {% url 'articleList' contest.url %} >View all articles</a>
 {% endblock content %}
