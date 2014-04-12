@@ -35,7 +35,8 @@ class ScoreManager(models.Manager):
 
 
         
-        """ The statistics are:
+        """ 
+        The statistics are:
             [total score,
             time score,
             submission score,
