@@ -3,7 +3,7 @@
 {% load fileprint %}
 {% block content %}
 <div class = "pull-right" >
-<a href= {% url 'submission_page' contest.url %}>Back to contest page</a>
+<a href="{% url 'submission_page' contest.url %}" class="btn btn-primary btn-large">Go To Contest Page</a>
 </div>
 
 <h2>{{problem.title}}</h2>
