@@ -9,20 +9,24 @@
 		<span class="col-lg-7">
 			<h2>Team page</h2>
 		</span>
-  		<span class="span7">
 		{% if contest_started %}
-		<a href="{% url 'submission_page' contest.url %}" class="btn btn-primary btn-large" data-toggle="tooltip" data-placement="left" title="Press this button to go to the contest page">{% trans 'Go To Contest Page' %}</a>
+		<span data-toggle="tooltip" data-placement="left" title="Press this button to go to the contest page">
+		<a href="{% url 'submission_page' contest.url %}" class="btn btn-primary btn-large">{% trans 'Go To Contest Page' %}</a>
+		</span>
 		{% else %}
-		<a href="{% url 'submission_page' contest.url %}" class="btn btn-info btn-large disabled" data-toggle="tooltip" data-placement="left" title="This button will be enabled when the contest starts">{% trans 'Go To Contest Page' %}</a>
+		<span data-toggle="tooltip" data-placement="left" title="This button will be enabled when the contest starts">
+		<a href="{% url 'submission_page' contest.url %}" class="btn btn-info btn-large disabled">{% trans 'Go To Contest Page' %}</a>
 		{% endif %}
 		</span>
-		<span class="btn-group pull-right">
+	<span class="pull-right">
 		{% if is_leader and not contest_started%}
-		<a href="{% url 'team_edit' contest.url %}" class="btn btn-primary btn-sm" data-toggle="tooltip" data-placement="left" title="This button will be enabled when the contest starts">{% trans 'Edit team' %}</a>
-		{% else %}
-		<a href="{% url 'team_edit' contest.url %}" class="btn btn-primary btn-sm disabled" data-toggle="tooltip" data-placement="left" title="This button will be enabled when the contest starts">{% trans 'Edit team' %}</a>
+		<a href="{% url 'team_edit' contest.url %}" class="btn btn-primary btn-sm">{% trans 'Edit team' %}</a>
+		{% else %}	
+		<span data-toggle="tooltip" data-placement="left" title="Sorry, you can't edit your team while the contest is in progress"> 
+		<a href="{% url 'team_edit' contest.url %}" class="btn btn-primary btn-sm disabled">{% trans 'Edit team' %}</a>
 		{% endif %}
 		</span>
+	</span>	
 	</div>
 	<hr>
 	
@@ -107,8 +111,10 @@
         </div>
 	    <div class="form-group">
 			<div class="col-lg-offset-3 col-lg-9">
-				{% if team.members.count >= 3 or contest_started %}
-	  				<button type="submit" name='addMember' value="addMember" class="btn btn-default disabled" data-toggle="tooltip" data-placement="left" title="You can't add more team members if the contest is in progress.">{% trans 'Add new member' %}</button>
+				{% if team.members.count >= 3 or contest_started%}
+				<span  data-toggle="tooltip" data-placement="left" title="Your team is full, or the contest has begun">
+	  				<button type="submit" name='addMember' value="addMember" class="btn btn-default disabled">{% trans 'Add new member' %}</button>
+	  			</span>
 	  			{% else %}
 	  				<button type="submit" name='addMember' value="addMember" class="btn btn-default">{% trans 'Add new member' %}</button>
 	  			{% endif %}	
@@ -119,7 +125,9 @@
 	<hr> 
 		<div class="btn-group pull-right">
 			{% if contest_started %}
+			<span  data-toggle="tooltip" data-placement="left" title="Sorry, you can't leave your team while the contest is in progres">
 			<a href=# id="LeaveButton" data-toggle="confirmation" class="alert btn btn-danger btn-sm disabled">{% trans 'Leave team' %}</a>
+			</span>
 			{% else %}
 			<a href=# id="LeaveButton" data-toggle="confirmation" class="alert btn btn-danger btn-sm">{% trans 'Leave team' %}</a>
 			{% endif %}
