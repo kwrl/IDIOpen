@@ -233,10 +233,16 @@ def team_profile(request):
         contest_started = contest_begin(request)
         # If you are the leader
         leader = is_leader(request,con)
+        
+        # Create empty addMemberForm
+        addMemberForm = Team_Add_Members()
+        
         # If the competition has started
         if (contest_started):
             context = {'team':team,
                        'invites' : invites,
+                       'addMemberForm' : addMemberForm,
+                        'is_leader' : leader,
                        'contest_started' : contest_started,
                        }
             return render(request, 'contest/team.html', context)
@@ -244,6 +250,7 @@ def team_profile(request):
         leader = is_leader(request,con)
         if leader:
             if request.method == 'POST':
+                if not contest_started:
                     addMemberForm = Team_Add_Members(request.POST)
                     if addMemberForm.is_valid():
                         email = addMemberForm.cleaned_data['email']
@@ -253,10 +260,8 @@ def team_profile(request):
                             messages.success(request, 'Email has been sent to: ' + email)
                         else:   
                             messages.error(request, 'You already have the maximum number of members')
-            # If request is not POST, add an empty form            
-            else:        
-                addMemberForm = Team_Add_Members()
-        
+                else:
+                    messages.error(request, 'Sorry, you can\'t add members after the contest has started')
             # send team, addMemberForm and is_leader with context        
             context = {'team':team,
                        'addMemberForm' : addMemberForm,
