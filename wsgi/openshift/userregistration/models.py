@@ -1,4 +1,3 @@
-#pylint: disable=R0904, W0232, C1001, R0903, R0913
 import hashlib
 import random
 import re
