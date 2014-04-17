@@ -8,9 +8,11 @@ def clarification(request):
     
     if request.method == 'POST':
         form = MessageForm(request.POST)
-        messages.info(request, "You question has been submitted. ")
-        
-    
+        if form.is_valid():
+            form.save()
+            messages.info(request, "You question has been submitted. ")
+        else:
+            messages.warning(request, "Form invalid. ")
     else:
         form = MessageForm()
     
