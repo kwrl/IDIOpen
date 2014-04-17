@@ -17,7 +17,7 @@ class Migration(SchemaMigration):
             ('sent_at', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, null=True, blank=True)),
             ('answared_by', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['userregistration.CustomUser'], null=True, blank=True)),
             ('answared_at', self.gf('django.db.models.fields.DateTimeField')(null=True, blank=True)),
-            ('contest', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['contest.Contest'])),
+            ('contest', self.gf('d<xjango.db.models.fields.related.ForeignKey')(to=orm['contest.Contest'])),
         ))
         db.send_create_signal(u'clarification', ['Message'])
 
