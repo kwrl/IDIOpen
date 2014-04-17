@@ -21,6 +21,7 @@ class Migration(SchemaMigration):
         db.send_create_signal(u'execution', ['Resource'])
 
         # Adding unique constraint on 'Problem', fields ['title']
+
         #db.create_unique(u'execution_problem', ['title'])
 
 
