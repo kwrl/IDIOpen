@@ -52,7 +52,6 @@ def submission_problem(request, problemID):
     submission = Submission.objects.filter(team=team).filter(problem=problemID).order_by('-date_uploaded')
     tries = len(submission)
     
-    score = Submission.objects.get_problem_score(team, problem, contest)
     
     if len(submission.values_list()) > 0:
         submission = submission[0]
@@ -81,12 +80,16 @@ def submission_problem(request, problemID):
         elif is_leader(request, contest):
             if form.is_valid():
                 form.save()
+                submission = Submission.objects.get(pk=submission.pk)
+                tries += 1
                 form = SubmissionForm(instance=submission);
+                
         else:
             messages.error(request, 'You have to be the leader of a team to upload submissions')
     else:
         form = SubmissionForm(instance=submission);
     
+    score = Submission.objects.get_problem_score(team, problem, contest)
     context = {
              'problem' : problem,
              'submission' : submission,

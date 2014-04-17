@@ -1,16 +1,25 @@
 from django.contrib import admin
+from django import forms
 from .models import Article
 
 
 # Register your models here.
+class ArticleForm(forms.ModelForm):
+    class Meta:
+        model = Article
+    def clean_url(self):
+        return self.cleaned_data['url'] or None
+
+
 class ArticleAdmin(admin.ModelAdmin):
     fieldsets = (
         (None, {
-            'fields': ('title', 'contest','visible_article_list', 'url', 'is_urgent'),
+            'fields': ('title', 'contest','visible_article_list', 'url', 'is_urgent', 'text'),
             'description': "You can here create a new article. Please note that if is_urgent is sat, those articles will come before all other articles"
         }),
     )
     
+    form = ArticleForm
     list_display = ('title', 'created_at','contest','author','visible_article_list','url', 'is_urgent')
     search_fields = ('title', 'text','author',)
     ordering = ('created_at',)

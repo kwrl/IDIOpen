@@ -91,19 +91,24 @@ class Resource (models.Model):
     problem = models.ForeignKey('execution.Problem', related_name="resource_problem")
     
     #The maximum time a program can use to compile
-    max_compile_time = models.IntegerField(max_length = 20, default = 30) #in sec
+    max_compile_time = models.IntegerField(max_length = 20, default = 30,
+                                           help_text = 'The maximum compile time in <strong>seconds</strong>') #in sec
     
     #How long the program can run before 
-    max_program_timeout = models.IntegerField(max_length = 20, default = 60)# in sec 
+    max_program_timeout = models.IntegerField(max_length = 20, default = 60,
+                                              help_text = 'The maximum run time in <strong>seconds</strong>')# in sec 
     
     #Maximum memory a program can use for this problem  
-    max_memory = models.IntegerField(max_length = 20, default = 100000) # in kilobytes
+    max_memory = models.IntegerField(max_length = 20, default = 102400000,
+                                     help_text = 'The maximum adress space in <strong>bytes</strong>') # in bytes
     
     #The maximum number of child processes. (avoid fork bombs)
-    max_processes = models.IntegerField(max_length = 10, default = 5) 
-    
+    max_processes = models.IntegerField(max_length = 10, default = 5,
+                                        help_text = 'The maximum number of processes')
+     
     #Maximum filesize, 
-    max_filesize = models.IntegerField(max_length = 10, default = 50) # in Kilobytes
+    max_filesize = models.IntegerField(max_length = 10, default = 50,
+                                       help_text = 'The maximum uploaded file size in <strong>KiloBytes</strong>')
         
     '''
     From the old code: 
