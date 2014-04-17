@@ -15,8 +15,8 @@ class Message (models.Model):
     body = models.TextField(max_length = 355)
     sender = models.ForeignKey(Team)    
     sent_at = models.DateTimeField(null=True, blank=True, auto_now = True)
-    answered_by = models.ForeignKey(CustomUser, blank = True, null=True)
-    answered_at = models.DateTimeField(null=True, blank=True)
+    answared_by = models.ForeignKey(CustomUser, blank = True, null=True)
+    answared_at = models.DateTimeField(null=True, blank=True)
     contest = models.ForeignKey(Contest)
         
 signals.post_save.connect(notify_admin, sender=Message)
