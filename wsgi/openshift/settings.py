@@ -74,8 +74,10 @@ INSTALLED_APPS = (
     'execution',
     'changeemail',
     'teamsubmission',
-    'clarification'
+    'clarification',
+    'helpFunctions'
 )
+
 '''
 if not ON_OPENSHIFT:
     print 'not on openshift'
