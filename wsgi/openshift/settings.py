@@ -72,7 +72,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'debug_toolbar',
+    #'debug_toolbar',
     'openshift.contest',
     'openshift.article',
     'openshift.userregistration',
@@ -90,9 +90,6 @@ if not ON_OPENSHIFT:
     print 'not on openshift'
     INSTALLED_APPS = ('debug_toolbar',) + INSTALLED_APPS
 '''
-
-BROKER_HOST = "localhost"
-BROKER_PORT = 5672
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',

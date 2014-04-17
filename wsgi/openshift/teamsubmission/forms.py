@@ -63,6 +63,7 @@ class SubmissionForm(forms.ModelForm):
         new_sub.validate = False
         new_sub.team = self.instance.team
         new_sub.save()
-        evaluate_task(new_sub.pk)
-
+        print 'running task'
+        result = evaluate_task(new_sub.pk)
+        print result
 # EOF

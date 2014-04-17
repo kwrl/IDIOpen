@@ -39,6 +39,15 @@ class CompilerProfile(models.Model):
     def __unicode__(self):
         return self.name
 
+
+def get_resource(submission, compiler):
+    try: 
+        prob = Problem.objects.get(pk=submission.problem.pk)
+        res = Resource.objects.filter(problem=prob).filter(cProfile=compiler)[0]
+    except Exception:
+        return None
+    return res
+
 def get_upload_path(instance, filename):
     """ Dynamically decide where to upload the case,
         based on the foreign key in instance, which is required to be

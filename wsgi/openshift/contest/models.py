@@ -25,7 +25,6 @@ TODO: Add location, fix start, end, publish date, validate
 Is done now right?
 '''
 
-from django.db import models
 from django.core.urlresolvers import reverse
 
 def getTodayDate():
