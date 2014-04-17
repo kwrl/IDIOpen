@@ -41,8 +41,6 @@ class ChangeEmailManager(models.Manager):
                 instance = self.get(refuser=user, activation_key=activation_key)
             except (self.model.DoesNotExist, TypeError):
                 return None
-            except TypeError:
-                return None
 
             return instance
         else:
