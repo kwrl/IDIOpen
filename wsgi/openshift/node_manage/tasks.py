@@ -22,6 +22,11 @@ BASENAME_SUB = "{BASENAME}"
 
 RUN_USER = "gentlemember"
 
+USER_TIMEOUT    = [137, 35072]
+USER_CRASH      = [1,9,128,257,300]
+PROC_EXCEED     = [11, 139]
+MEM_EXCEED      = [-9]
+
 """
 Evaluation return values:
 0   -   Correct
@@ -89,10 +94,12 @@ def evaluate_task(submission_id):
     retval, stdout, stderr = compile(sub, comp)
     
     if retval != 0:
-        if retval == -SIGKILL:
+        if retval in MEM_EXCEED:
             sub.text_feedback = "Compile time memory limit exceeded."
+        elif retval in USER_TIMEOUT:
+            sub.text_feedback = "Compile timeout"
         else:
-            sub.text_feedback = "Compile time error."
+            sub.text_feedback = "Unspecified compile time error."
 
         return retval, stdout, stderr
 
@@ -113,12 +120,14 @@ def evaluate_task(submission_id):
             exretval = res[0]
             sub.solved_problem = res[3]
             
-            if exretval == -SIGKILL:
+            if exretval in MEM_EXCEED:
                 sub.text_feedback = "Runtime memory limit exceeded."
-            elif exretval == -SIGXCPU:
-                sub.text_feedback = "Runtime time limit exceeded."
+            elif exretval in USER_TIMEOUT:
+                sub.text_feedback = "Runtime timeout."
+            elif exretvel in PROC_EXCEED:
+                sub.text_feedback = "Number of processes exceeded."
             else:
-                sub.text_feedback = "Runtime error."   
+                sub.text_feedback = "Unspecified runtime error."   
             break
     
     sub.save()
@@ -152,7 +161,6 @@ def execute(submission, compiler, test_cases, limit):
     dir_path, filename = os.path.split(os.path.abspath(submission.submission.path))
     command = re.sub(BASENAME_SUB, filename.split('.')[0], command)
     command = use_run_user(command)
-                
     results = []
     for test in test_cases:
         test.inputFile.open("rb")
@@ -242,5 +250,3 @@ def uname():
     return stdout
 
 
-
- 
