@@ -21,12 +21,12 @@ class Migration(SchemaMigration):
         db.send_create_signal(u'execution', ['Resource'])
 
         # Adding unique constraint on 'Problem', fields ['title']
-        db.create_unique(u'execution_problem', ['title'])
+     #   db.create_unique(u'execution_problem', ['title'])
 
 
     def backwards(self, orm):
         # Removing unique constraint on 'Problem', fields ['title']
-        db.delete_unique(u'execution_problem', ['title'])
+     #   db.delete_unique(u'execution_problem', ['title'])
 
         # Deleting model 'Resource'
         db.delete_table(u'execution_resource')
