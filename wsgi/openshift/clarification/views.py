@@ -24,7 +24,6 @@ def clarification(request):
             subject = form.cleaned_data['subject'].strip()
             body    = form.cleaned_data['body'].strip()
 
-            
             '''
             Inserts into the database
             '''
