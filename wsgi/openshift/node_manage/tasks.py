@@ -4,6 +4,7 @@ from openshift.teamsubmission.models import Submission
 from subprocess import call
 from openshift.messaging import celery_app as app
 from subprocess import PIPE, Popen
+from signal import SIGKILL, SIGXCPU 
 import re
 import os
 import threading
@@ -87,9 +88,15 @@ def evaluate_task(submission_id):
 
     retval, stdout, stderr = compile(sub, comp)
     
-    if retval:
-        sub.text_feedback = 'Compile time error'
+    if retval != 0:
+        if retval == -SIGKILL:
+            sub.text_feedback = "Compile time memory limit exceeded."
+        else:
+            sub.text_feedback = "Compile time error."
+
         return retval, stdout, stderr
+
+
     results = execute(sub, comp, test_cases, limits)
     exretval = 0
     for res in results:
@@ -98,15 +105,20 @@ def evaluate_task(submission_id):
             exretval = res[0]
             sub.solved_problem = res[3]
             if sub.solved_problem:
-                sub.text_feedback = "Solved"
+                sub.text_feedback = "Successful submission!"
             else:
-                sub.text_feedback = "Wrong answer"
+                sub.text_feedback = "Incorrect output."
         #Runtime error
         else:
             exretval = res[0]
             sub.solved_problem = res[3]
             
-            sub.text_feedback = "Evaluation timed out"
+            if exretval == -SIGKILL:
+                sub.text_feedback = "Runtime memory limit exceeded."
+            elif exretval == -SIGXCPU:
+                sub.text_feedback = "Runtime time limit exceeded."
+            else:
+                sub.text_feedback = "Runtime error."   
             break
     
     sub.save()
@@ -116,11 +128,14 @@ def evaluate_task(submission_id):
 def compile(submission, compiler):
     #dir_path = WORK_ROOT + str(submission.id).strip()
     #command = 'cd ' + dir_path + ' && '+ compiler.compile
+    limits = get_resource(submission, compiler)
+
     dir_path, filename = os.path.split(submission.submission.path)
     command = re.sub(FILENAME_SUB, filename, compiler.compile)
     command = re.sub(BASENAME_SUB, filename.split('.')[0], command)
     args = shlex.split(command)
-    process = Popen(args=args, stdout=PIPE, stderr=PIPE, cwd=dir_path)
+    process = Popen(args=args, stdout=PIPE, stderr=PIPE, cwd=dir_path, 
+                    preexec_fn=set_resource(limits.max_compile_time, -1, -1))
     stdout, stderr = process.communicate()
     retval = process.poll()
     if os.path.exists(dir_path + '/' + filename.split('.')[0]):
