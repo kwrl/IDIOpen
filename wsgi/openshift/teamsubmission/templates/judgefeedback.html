@@ -4,18 +4,21 @@
 {# {% contest as contest %} #}
 
 {% block content %}
-<h1> Latest submissions </h1>
 
-<script>
-$(document).ready(function() 
-    { 
-        $("#tableProblems").tablesorter( {sortList: [[0,0]]} ); 
-        $(".clickableRow").click(function() {
-        	window.document.location = $(this).attr("href");
-      	});
-    } 
-); 
-</script>
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script src="https://code.jquery.com/jquery.js"></script>
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
+
+<!-- Tablesorter css -->
+<link href="/static/openshift/css/tablesorter/tablestyle.css" rel="stylesheet">
+<!--  Tablesorter and tooltip js -->
+<script type="text/javascript" src="/static/openshift/js/tablesorter/jquery.tablesorter.js"></script> 
+<script type="text/javascript" src="/static/openshift/js/tooltip.js"></script> 
+
+
+
+
+<h1> Latest submissions </h1>
 
 {% if messages %}
 <div class="row">
@@ -28,46 +31,83 @@ $(document).ready(function()
 </div>
 {% endif %}
 
-
 <hr>
-{% for team in team_list %} 
-<p> {{team.name}} </p>
-{% endfor %}
+<select name="something" onchange="updateText()">
+ <option value = ''> Choose Manager </option>
+ {% for team in team_list %}
+ <option value = "{{ team.name }}">{{team.name}}</option>
+ {% endfor %}
+</select>
+
+<br />
+<br />
 
 
 <h2>List of Problems</h2>
 <hr>
-<small>Click on a table row to go to the selected problem.</small>
-<br>
-<small><i>Hover over each title in the table to get a further explanation.</i></small>
-<table id="tableProblems" class="table table-bordered table-hover table-condensed tablesorter">
+<small>Click on a table column to sort on that field</small>
+<br />
+<br />
+<h3> Unsolved </h3>
+<table id="tableUnsolved" class="table table-bordered table-hover table-condensed tablesorter">
 	<thead>
             <tr>
-            <th data-toggle="tooltip" data-placement="top" title="The problems given for this competition">Problem</th>
-            <th data-toggle="tooltip" data-placement="top" title="Your latest submission">Last Submission</th>
-            <th data-toggle="tooltip" data-placement="top" title="The date of your last uploaded file">Date Uploaded</th>
-            <th data-toggle="tooltip" data-placement="top" title="e.g. timeout, wrong answer">Feedback</th>
-            <th data-toggle="tooltip" data-placement="top" title="The status of the problem">Solved</th>
-            <th data-toggle="tooltip" data-placement="top" title="The score achieved for the problem">Score</th>
+            <th data-toggle="tooltip" data-placement="top" title="The team this regards">Team</th>
+            <th data-toggle="tooltip" data-placement="top" title="">Previously Solved Assignments</th>
+            <th data-toggle="tooltip" data-placement="top" title="What problem this is about">Problem</th>
+            <th data-toggle="tooltip" data-placement="top" title="Number of failed attempts">Failed Attempts</th>
+            <th data-toggle="tooltip" data-placement="top" title="e.g. timeout, wrong answer">Problem is Solved</th>
             </tr>
     </thead>
     <tbody>
-			{% for probsub in prob_sub %}
+            {% for listitem in fail_count %}
             <tr class='clickableRow' href='{{probsub.problem.id}}'>
-            <td>{{probsub.problem.title}}</td>
-            <td>{{probsub.submission.submission}}</td>
-            <td>{{probsub.submission.date_uploaded}}</td>
-            <td>{{probsub.submission.text_feedback}}</td>
-            {%if probsub.submission.solved_problem%}
-            	<td class ="success">{{probsub.submission.solved_problem}}</td>
+            <td>{{listitem.team}}</td>
+            <td>{{listitem.prev_solved}}</td>
+            <td>{{listitem.problem}}</td>
+            <td>{{listitem.fail_count}}</td>
+            {%if listitem.solved_problem%}
+            	<td class ="success">True</td>
             {%else%}
-            	<td class="danger">{{probsub.submission.solved_problem}}</td>
+            	<td class="danger">False</td>
             {%endif%}
-            <td>{{ probsub.score }} </td>
-            </tr>
             {% endfor %}
     </tbody>
 </table>
+
+<h3> Solved </h3>
+<table id="tableSolved" class="table table-bordered table-hover table-condensed tablesorter">
+	<thead>
+            <tr>
+            <th data-toggle="tooltip" data-placement="top" title="The team this regards">Team</th>
+            <th data-toggle="tooltip" data-placement="top" title="">Previously Solved Assignments</th>
+            <th data-toggle="tooltip" data-placement="top" title="What problem this is about">Problem</th>
+            <th data-toggle="tooltip" data-placement="top" title="Number of failed attempts">Failed Attempts</th>
+            <th data-toggle="tooltip" data-placement="top" title="e.g. timeout, wrong answer">Problem is Solved</th>
+            </tr>
+    </thead>
+    <tbody>
+            {% for listitem in prob_attempt_counts %}
+            <tr class='clickableRow' href='{{probsub.problem.id}}'>
+            <td>{{listitem}}</td>
+            {% endfor %}
+    </tbody>
+</table>
+
+
+
+<script>
+$(document).ready(function() 
+    { 
+        $("#tableUnsolved").tablesorter( {sortList: [[3,1]], cssAsc: "", cssDesc: "", cssHeader: "",} ); 
+        $("#tableSolved").tablesorter( {sortList: [[3,1]], cssAsc: "", cssDesc: "", cssHeader: "",} ); 
+        //$(".clickableRow").click(function() {
+        	//window.document.location = $(this).attr("href");
+      	//});
+    } 
+); 
+</script>
+
 
 
 {% endblock content %}
