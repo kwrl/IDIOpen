@@ -114,6 +114,9 @@ class Resource (models.Model):
     MAX_PROC = 5 # maximum number of child processes (avoid fork bombs)
     '''
     
+    def __unicode__(self):
+        return self.problem.title + ' ' + self.cProfile.name 
+    
 
 class TestCase(models.Model):
     """ We're assuming error cases are defined elsewhere...

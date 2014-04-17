@@ -46,20 +46,29 @@ def demote(user_uid, user_gid):
 
 def set_resource(time, memory, procs):
     def result():
+        
         nproc   = resource.getrlimit(resource.RLIMIT_NPROC)
         tcpu    = resource.getrlimit(resource.RLIMIT_CPU)
         mem     = resource.getrlimit(resource.RLIMIT_DATA)
-
-        nproc[0]    = procs
-        tcpu[0]     = time
-        mem[0]      = memory
-
+        
         # Set The maximum number of processes the current process may create.
-        resource.setrlimit(resource.RLIMIT_NPROC, nprocs)
+        try:
+            resource.setrlimit(resource.RLIMIT_NPROC, (procs, procs))
+        except Exception:
+            resource.setrlimit(resource.RLIMIT_NPROC, nproc)
+            
         # Set The maximum amount of processor time (in seconds) that a process can use.
-        resource.setrlimit(resource.RLIMIT_CPU, tcpu)
+        try:
+            resource.setrlimit(resource.RLIMIT_CPU, (time, time))
+        except Exception:
+            resource.setrlimit(resource.RLIMIT_CPU, tcpu)
+
         # Set The maximum area (in bytes) of address space which may be taken by the process.
-        resource.setrlimit(resource.RLIMIT_DATA, mem)
+        try:
+            resource.setrlimit(resource.RLIMIT_AS, (memory, memory))
+        except Exception:
+            resource.setrlimit(resource.RLIMIT_AS, mem)
+            
 
     return result
     #limit.max_program_timeout, limit.max_memory, limit.max_processes
