@@ -1,0 +1,73 @@
+{% extends "admin/app_index.html" %}
+
+{# {% load link_tags %} #}
+{# {% contest as contest %} #}
+
+{% block content %}
+<h1> Latest submissions </h1>
+
+<script>
+$(document).ready(function() 
+    { 
+        $("#tableProblems").tablesorter( {sortList: [[0,0]]} ); 
+        $(".clickableRow").click(function() {
+        	window.document.location = $(this).attr("href");
+      	});
+    } 
+); 
+</script>
+
+{% if messages %}
+<div class="row">
+    {% for message in messages %}
+    <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissable">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+        {{ message }}
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+
+<hr>
+{% for team in team_list %} 
+<p> {{team.name}} </p>
+{% endfor %}
+
+
+<h2>List of Problems</h2>
+<hr>
+<small>Click on a table row to go to the selected problem.</small>
+<br>
+<small><i>Hover over each title in the table to get a further explanation.</i></small>
+<table id="tableProblems" class="table table-bordered table-hover table-condensed tablesorter">
+	<thead>
+            <tr>
+            <th data-toggle="tooltip" data-placement="top" title="The problems given for this competition">Problem</th>
+            <th data-toggle="tooltip" data-placement="top" title="Your latest submission">Last Submission</th>
+            <th data-toggle="tooltip" data-placement="top" title="The date of your last uploaded file">Date Uploaded</th>
+            <th data-toggle="tooltip" data-placement="top" title="e.g. timeout, wrong answer">Feedback</th>
+            <th data-toggle="tooltip" data-placement="top" title="The status of the problem">Solved</th>
+            <th data-toggle="tooltip" data-placement="top" title="The score achieved for the problem">Score</th>
+            </tr>
+    </thead>
+    <tbody>
+			{% for probsub in prob_sub %}
+            <tr class='clickableRow' href='{{probsub.problem.id}}'>
+            <td>{{probsub.problem.title}}</td>
+            <td>{{probsub.submission.submission}}</td>
+            <td>{{probsub.submission.date_uploaded}}</td>
+            <td>{{probsub.submission.text_feedback}}</td>
+            {%if probsub.submission.solved_problem%}
+            	<td class ="success">{{probsub.submission.solved_problem}}</td>
+            {%else%}
+            	<td class="danger">{{probsub.submission.solved_problem}}</td>
+            {%endif%}
+            <td>{{ probsub.score }} </td>
+            </tr>
+            {% endfor %}
+    </tbody>
+</table>
+
+
+{% endblock content %}
