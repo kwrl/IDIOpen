@@ -96,6 +96,8 @@ class ProblemAttempsCount(object):
         self.successfull = successfull
 
 
+#TODO: check out django admin tables sorters..
+
 def get_attempt_count(contest):
     problems = Problem.objects.filter(contest=contest).order_by('title')
     submissions = Submission.objects.get_queryset()
@@ -123,13 +125,13 @@ def my_view(request):
         messages.info(request, "Something went wrong :(")
 
     fail_count = get_unsolved_attemps(team_list)
-    prob_attempt_counts = get_attempt_count(contest)
+    #prob_attempt_counts = get_attempt_count(contest)
 
     context = {
             'team_list' : team_list,
             'team_sub'  : get_prob_team(team_list),
             'fail_count':  fail_count,
-            'prob_attempt_counts' : prob_attempt_counts,
+            #'prob_attempt_counts' : prob_attempt_counts,
             }
 
     return render(request,
