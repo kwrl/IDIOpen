@@ -99,6 +99,10 @@ def compile(submission, compiler):
     process = Popen(args=args, stdout=PIPE, stderr=PIPE, cwd=dir_path)
     stdout, stderr = process.communicate()
     retval = process.poll()
+    if os.path.exists(dir_path + '/' + filename.split('.')[0]):
+        os.chmod(dir_path + '/' + filename.split('.')[0], 0751)
+    else:
+        print 'Cant find file'
     return retval, stdout, stderr
     
 def execute(submission, compiler, test_cases, limit):
@@ -108,7 +112,7 @@ def execute(submission, compiler, test_cases, limit):
     command = compiler.run
     dir_path, filename = os.path.split(os.path.abspath(submission.submission.path))
     command = re.sub(BASENAME_SUB, filename.split('.')[0], command)
-
+    command = use_run_user(command)
                 
     results = []
     for test in test_cases:
@@ -185,7 +189,7 @@ def _run_safe_shell(command):
     return _run_shell(command)
 
 def use_run_user(command):
-    return 'nice sudo su ' + RUN_USER + ' -c "' + command + '"'
+    return 'sudo su ' + RUN_USER + ' -c "' + command + '"'
 
 def _run_shell(command):
     runboy = Runner(command)
