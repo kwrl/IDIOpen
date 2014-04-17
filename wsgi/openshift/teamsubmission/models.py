@@ -107,9 +107,13 @@ class ScoreManager(models.Manager):
             statistics.append(s)
         return statistics
 
+def file_function(instance, filename):
+    tries = len(Submission.objects.filter(team__pk = instance.team.pk).filter(problem__pk = instance.problem.id).all())
+    return '/'.join(['submissions', str(instance.team.id), str(instance.problem.id), str(tries), filename])
+
 class Submission(models.Model):
     #We should rename submission field.... 
-    submission = models.FileField(storage=private_media, upload_to='submissions')
+    submission = models.FileField(storage=private_media, upload_to=file_function)
     compileProfile = models.ForeignKey(CompilerProfile)
     date_uploaded = models.DateTimeField(auto_now = True)
     solved_problem = models.BooleanField(default=False) #E.g. Did this submission solve the the problem

@@ -1,5 +1,6 @@
 from django import forms
-from models import Team, Invite, Link
+from openshift.contest.models import Invite, Link
+from openshift.contest.models import Team
 from django.forms.widgets import CheckboxSelectMultiple, Widget
 from django.forms.models import ModelMultipleChoiceField
 from openshift.userregistration.models import CustomUser

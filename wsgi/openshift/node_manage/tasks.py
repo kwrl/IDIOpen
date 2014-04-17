@@ -1,22 +1,25 @@
 from __future__ import absolute_import
-from openshift.execution.models import CompilerProfile, TestCase
+from openshift.execution.models import CompilerProfile, TestCase, Resource, get_resource
 from openshift.teamsubmission.models import Submission 
 from subprocess import call
 from openshift.messaging import celery_app as app
-
+from subprocess import PIPE, Popen
 import re
 import os
-#import ipdb
 import threading
 import time
 import popen2
+import pwd
+import shlex
+import resource
+
 
 WORK_ROOT   = "/idiopen/work/"
 FILENAME    = "sauce.in"
 FILENAME_SUB = "{FILENAME}"
 BASENAME_SUB = "{BASENAME}"
 
-RUN_USER = "algrun"
+RUN_USER = "gentlemember"
 
 """
 Evaluation return values:
@@ -29,52 +32,105 @@ Evaluation return values:
 1   -   Wrong answer
 """
 
+def getUserData():
+    pw_record = pwd.getpwnam(RUN_USER)
+    user_uid       = pw_record.pw_uid
+    user_gid       = pw_record.pw_gid
+    return user_uid, user_gid
 
+def demote(user_uid, user_gid):
+    def result():
+        os.setgid(user_gid)
+        os.setuid(user_uid)
+    return result
+
+def set_resource(time, memory, procs):
+    def result():
+        # Set The maximum number of processes the current process may create.
+        resource.setrlimit(resource.RLIMIT_NPROC, (procs, procs))
+        # Set The maximum amount of processor time (in seconds) that a process can use.
+        resource.setrlimit(resource.RLIMIT_CPU, (time, time))
+        # Set The maximum area (in bytes) of address space which may be taken by the process.
+        #resource.setrlimit(resource.RLIMIT_DATA, (memory, memory))
+        
+    return result
+    #limit.max_program_timeout, limit.max_memory, limit.max_processes
 
 @app.task
 def add(x, y):
     return x + y
 
 @app.task
-def evaluate_task(submission_id, compiler_id, test_case_ids, limit_id):
+def evaluate_task(submission_id):
     sub     = Submission.objects.get(pk=submission_id)
-    comp    = CompilerProfile.objects.get(pk=compiler_id)
-    test_cases = TestCase.objects.filter(pk__in=test_case_ids)
-    #limit   = get some freaking limits, br0  
-    evaluate(sub,comp,test_cases,None)
-    return (submission_id, compiler_id, test_case_ids, limit_id)
+    comp = sub.compileProfile
+    problem = sub.problem
+    test_cases = TestCase.objects.filter(problem__pk = problem.pk)
+    limits = get_resource(sub, comp)       
 
-def evaluate(submission, compiler, test_cases, limits):
-    dir_path = WORK_ROOT + str(submission.id) + str(os.getpid())
-    if os.path.exists(dir_path):
-        os.mkdir(dir_path)
+    retval, stdout, stderr = compile(sub, comp)
     
-    retval, stdout, stderr = compile(submission, compiler)
     if retval:
-        return 2
-        
-    results = execute(submission, compiler, test_cases, limits)
-        
-
-    os.rmdir(dir_path) 
-
+        sub.text_feedback = 'Compiling failed'
+        return retval, stdout, stderr
+    results = execute(sub, comp, test_cases, limits)
+    exretval = 0
+    for res in results:
+        if res[0] == 0:
+            exretval = res[0]
+            sub.solved_problem = res[3]
+        else:
+            exretval = res[0]
+            sub.solved_problem = res[3]
+            sub.text_feedback = res[2]
+            break
+    
+    sub.save()
+    print results
+    return results
 
 def compile(submission, compiler):
-    dir_path = WORK_ROOT + str(submission.id) + str(os.getpid())
-    command = 'cd ' + dir_path + ' && '+ compiler.compile
-    command = re.sub(FILENAME_SUB, submission.submission, command)
-    command = re.sub(BASENAME_SUB, submission.submission.filename.split(".")[0], command) 
-    return _run_shell(command)
+    #dir_path = WORK_ROOT + str(submission.id).strip()
+    #command = 'cd ' + dir_path + ' && '+ compiler.compile
+    dir_path, filename = os.path.split(submission.submission.path)
+    command = re.sub(FILENAME_SUB, filename, compiler.compile)
+    command = re.sub(BASENAME_SUB, filename.split('.')[0], command)
+    args = shlex.split(command)
+    process = Popen(args=args, stdout=PIPE, stderr=PIPE, cwd=dir_path)
+    stdout, stderr = process.communicate()
+    retval = process.poll()
+    return retval, stdout, stderr
     
-def execute(submission, compiler, test_cases, limits):
-    dir_path = WORK_ROOT + str(submission.id) + str(os.getpid())
-    command = 'cd ' + dir_path + ' && ' + compiler.run
-    command = re.sub(BASENAME_SUB, submission.basename)
+def execute(submission, compiler, test_cases, limit):
+    #dir_path = WORK_ROOT + str(submission.id)
+    #command = 'cd ' + dir_path + ' && ' + compiler.run
+    #command = 'ulimit -t %d -v %d -u %d && ' % (limit.max_program_timeout, limit.max_memory, limit.max_processes)
+    command = compiler.run
+    dir_path, filename = os.path.split(os.path.abspath(submission.submission.path))
+    command = re.sub(BASENAME_SUB, filename.split('.')[0], command)
+
+                
     results = []
     for test in test_cases:
-        retval, stdout, stderr = _run_safe_shell(command + ' ' + test.inputfile + ' | tee output.txt')
-        diff = _run_shell('diff ' + dir_path + '/output.txt ' + test.inputfile)
-        results.append([retval, stdout, stderr, diff])
+        test.inputFile.open("rb")
+        test.outputFile.open("rb")
+        input_content = test.inputFile.read()
+        output_content= test.outputFile.read()
+        test.inputFile.close()
+        test.outputFile.close()
+        #user_uid, user_gid = getUserData()
+        
+        args = shlex.split(command)
+        process = Popen(args=args, stdin=PIPE, stdout=PIPE, stderr=PIPE,
+                        #preexec_fn=set_resource(limit.max_program_timeout, limit.max_memory, limit.max_processes),
+                        cwd=dir_path)
+        stdout, stderr = process.communicate(input_content)
+        retval = process.poll()
+        #retval, stdout, stderr = _run_safe_shell(command + ' < ' + str(test.inputFile.path))
+        if stdout == output_content:
+            results.append([retval, stdout, stderr, True])
+        else:
+            results.append([retval, stdout, stderr, False])
     
     #command += test_cases.
     return results
@@ -84,6 +140,10 @@ def run_test(submission, comp):
     command = 'cd ' + dir_path + ' && ' + comp.run_cmd
     re.sub(BASENAME_SUB, submission.submission.split(".")[0])
 
+def base(filepath):
+    return os.path.basename(filepath)
+
+
 @app.task
 def install_compilers(compilers):
     retval, stdout, stderr = _run_shell(["sudo apt-get update"])
@@ -91,7 +151,6 @@ def install_compilers(compilers):
         retval, stdout, stderr = _run_shell("sudo apt-get install " + compiler.package_name)
         if retval:
             raise Exception(stderr)
-    #ipdb.set_trace()
     return stdout
        
 
@@ -129,7 +188,6 @@ def use_run_user(command):
     return 'nice sudo su ' + RUN_USER + ' -c "' + command + '"'
 
 def _run_shell(command):
-    #ipdb.set_trace()
     runboy = Runner(command)
     runboy.run()
     

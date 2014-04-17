@@ -1,6 +1,6 @@
-import fabric.api
+#import fabric.api
 #fabric.api.env.celery_path = subprocess.check_output(["which", "celery"])[:-1]
-fabric.api.env.celery_path = "/home/andesil/test"
+#fabric.api.env.celery_path = "/home/andesil/test"
 
 
 BROKER_URL = 'amqp://'
