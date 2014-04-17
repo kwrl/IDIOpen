@@ -65,5 +65,4 @@ class SubmissionForm(forms.ModelForm):
         new_sub.save()
         print 'running task'
         result = evaluate_task(new_sub.pk)
-        print result
 # EOF
