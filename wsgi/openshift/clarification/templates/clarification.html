@@ -17,15 +17,12 @@ Insert guidelines text here
 <form action="" method="post">
 {% csrf_token %}
 {% if clarification_form %}
-{{ clarification_form.subject.errors }}
-{{ clarification_form.subject }}
+{{ clarification_form.subject }} {{ clarification_form.subject.errors }}
 <br>
 <br>
-{{ clarification_form.body.errors }}
-{{ clarification_form.body }}
+{{ clarification_form.body }} {{ clarification_form.body.errors }}
 <br>
 <button type="submit" class = "btn btn-primary btn-sm">Send question</button>
-
 </form>
 
 	
