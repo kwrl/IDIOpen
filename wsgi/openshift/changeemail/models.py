@@ -12,13 +12,12 @@ from django.db import models
 from django.conf import settings
 from django.contrib.sites.models import RequestSite
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.mail import send_mail
+#from django.core.mail import send_mail
 from django.template.loader import render_to_string
-from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
 from openshift.contest.models import Invite
-from openshift.userregistration.models import CustomUser as User
+#from openshift.userregistration.models import CustomUser as User
 
 import hashlib
 import re
@@ -150,6 +149,6 @@ class ChangeEmail(models.Model):
                                    ctx_dict)
         content = render_to_string('changeEmail/change_email_content.txt',
                                    ctx_dict)
-        send_mail(subject, content, None, [self.new_email])
+        #send_mail(subject, content, None, [self.new_email])
         
 # EOF        

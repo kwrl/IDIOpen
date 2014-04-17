@@ -1,9 +1,7 @@
 from django.db import models
-from openshift.contest.models import Contest
 from django.conf import settings
 
 import os
-from django.template.defaultfilters import default
 
 """ Located in media folder (prefix ../media)
 """
@@ -17,7 +15,7 @@ class FileExtension(models.Model):
 
 class CompilerProfile(models.Model):
     name = models.CharField(max_length=100)
-    extensions = models.ManyToManyField(FileExtension)
+    extensions = models.ManyToManyField('FileExtension')
     
     compile = models.CharField(max_length=100, blank=True, null=True,
                                help_text=
@@ -76,9 +74,9 @@ class Problem(models.Model):
                        verbose_name="Text file (file)", blank = True)
     date_uploaded = models.DateTimeField(auto_now = True)
     author = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.SET_NULL, null = True)
-    contest = models.ForeignKey(Contest)
+    contest = models.ForeignKey('contest.Contest')
     
-    resource = models.ManyToManyField(CompilerProfile, through='Resource')
+    resource = models.ManyToManyField('execution.CompilerProfile', through='Resource')
 
     def __unicode__(self):
         return "%s" % (self.title)
@@ -89,8 +87,8 @@ class Resource (models.Model):
     This models contains all "limitations" on each Profile. 
     E.g. the number maximum memory usage for this profile, if JAVA is used is XXXXX. 
     '''
-    cProfile = models.ForeignKey(CompilerProfile, related_name="resource_CompilerProfile")
-    problem = models.ForeignKey(Problem, related_name="resource_problem")
+    cProfile = models.ForeignKey('execution.CompilerProfile', related_name="resource_CompilerProfile")
+    problem = models.ForeignKey('execution.Problem', related_name="resource_problem")
     
     #The maximum time a program can use to compile
     max_compile_time = models.IntegerField(max_length = 20, default = 30) #in sec
@@ -137,7 +135,7 @@ class TestCase(models.Model):
                                          " output:")
 
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null = True, blank = True, editable = False)
-    problem = models.ForeignKey(Problem)
+    problem = models.ForeignKey('execution.Problem')
 
     def __unicode__(self):
         return "%s" % (self.short_description)
