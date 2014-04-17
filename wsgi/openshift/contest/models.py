@@ -3,21 +3,17 @@
 from sortedm2m.fields import SortedManyToManyField
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.contrib.auth import get_user_model
 from django.conf import settings
 from filebrowser.fields import FileBrowseField
-from django.forms import ModelForm
-from django import forms
 from django.template.loader import render_to_string
 from django.core.mail import send_mail
 from django.core.exceptions import ObjectDoesNotExist
-
+from openshift.userregistration.models import CustomUser as User
 import datetime
 from django.utils import timezone
 
 # Create your models here.
 
-User = get_user_model()
 '''
 Contest model
 
@@ -25,7 +21,6 @@ TODO: Add location, fix start, end, publish date, validate
 Is done now right?
 '''
 
-from django.core.urlresolvers import reverse
 
 def getTodayDate():
     return timezone.make_aware(datetime.datetime.now(), timezone.get_default_timezone())
@@ -39,7 +34,7 @@ class ContactInformation(models.Model):
 
 class Contest(models.Model):
     title = models.CharField(max_length=200)
-    contact_infos = models.ManyToManyField(ContactInformation, null = True)
+    contact_infos = models.ManyToManyField('ContactInformation', null = True)
     """ The url is saved as the suffix from root, only, not the entire url
     """
 
@@ -101,7 +96,7 @@ class Team(models.Model):
     onsite = models.BooleanField()
     leader = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='leader', null = True)
     members = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='members')
-    contest = models.ForeignKey(Contest, related_name='contest', null=True)
+    contest = models.ForeignKey('Contest', related_name='contest', null=True)
     offsite = models.CharField(max_length=30, blank = True)
 
     def __unicode__(self):
@@ -145,12 +140,12 @@ class InviteManager(models.Manager):
         else:
             message = render_to_string('registration/team_register_email.txt', ctx_dict)
 
-        # send_mail(subject, message, False, [email,])
+        send_mail(subject, message, False, [email,])
         
 
 class Invite(models.Model):
     email = models.EmailField() 
-    team = models.ForeignKey(Team)
+    team = models.ForeignKey('Team')
     is_member = models.BooleanField(default=False)
     objects = InviteManager()
     
