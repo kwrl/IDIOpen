@@ -1,10 +1,14 @@
-from django.contrib import admin
+from django.contrib import admin, messages
 from django.core.exceptions import ObjectDoesNotExist
+from django.conf.urls import patterns
+from django.http import HttpResponse
 from django.shortcuts import render
 
 from contest.models import Contest, Team
 from execution.models import Problem
 from .models import Submission
+
+from collections import defaultdict
 
 class SubmissionAdmin(admin.ModelAdmin):
     list_display = ('date_uploaded', 'text_feedback', 'team', 'problem', 'solved_problem', 'submission')
@@ -22,6 +26,18 @@ class JudgeFeedbackAdmin(admin.ModelAdmin):
     # I expect?
     pass
 
+""" get every where there is > 1 submission and problem not completed
+"""
+""" for each problem
+        group all submissions for prob by team
+        ignore where completed = true
+                put on top for > 1 submission
+
+"""
+""" select team, then a list of problems come with submissions
+        can sort by latest submissions
+"""
+
 def get_prob_team(team):
     contest = Contest.objects.get()
     problems = Problem.objects.filter(contest=contest)
@@ -31,8 +47,6 @@ def get_prob_team(team):
 
     return 
     
-from django.conf.urls import patterns
-from django.http import HttpResponse
 
 def get_rand_feedback():
     import random
@@ -41,8 +55,66 @@ def get_rand_feedback():
         return ''.join(random.choice(chars) for _ in range(size))
     return id_generator()
 
+class SubTeamFailedView(object):
+    def __init__(self, team, problem, fail_count, prev_solved):
+        self.team = team
+        self.problem = problem
+        self.fail_count = fail_count
+        self.prev_solved = prev_solved
+
+def get_unsolved_attemps(team_list):
+    ret_list = []
+    for team in team_list:
+        submissions = Submission.objects.filter(team=team) \
+                      .order_by('-date_uploaded').order_by('problem')
+
+        groups = defaultdict( list )
+        solved_count = 0
+        for sub in submissions:
+            groups[sub.problem].append(sub)
+            if sub.solved_problem == True:
+                solved_count += 1
+
+        for prob in groups:
+            sub_list = groups[prob]
+
+            if any(sub.solved_problem == True for sub in sub_list):
+                continue
+            else:
+                # fail_count.append(len(sub_list))
+                stfv = SubTeamFailedView(team=team, problem=prob,
+                                         fail_count=len(sub_list),
+                                         prev_solved=solved_count )
+                ret_list.append(stfv)
+
+    return ret_list
+
+class ProblemAttempsCount(object):
+    def __init__(self, problem, failed, successfull):
+        self.problem = problem 
+        self.failed = failed
+        self.successfull = successfull
+
+
+def get_attempt_count(contest):
+    problems = Problem.objects.filter(contest=contest).order_by('title')
+    submissions = Submission.objects.get_queryset()
+    groups = defaultdict( list )
+    ret_list = [ ];
+
+    for sub in submissions:
+            groups[sub.problem].append(sub)
+
+    for prob in problems:
+        failed_for_problem = sum([count for count in groups[prob] \
+                                    if count.solved_problem])
+        ret_list.append( ProblemAttempsCount(problem=prob, 
+                                            failed=len(groups[prob]),
+                                            ))
+
+    return ret_list
+
 def my_view(request):
-    # TODO: get conte
     context = {}
     contest = Contest.objects.get()
     try:
@@ -50,33 +122,14 @@ def my_view(request):
     except ObjectDoesNotExist:
         messages.info(request, "Something went wrong :(")
 
-    import ipdb; ipdb.set_trace()
-    for team in team_list:
-        submissions = Submission.objects.filter(team=team).order_by('-date_uploaded').order_by('problem')
-        # submission has solved.. so sort
-
-
-    problems = Problem.objects.filter(contest=con).order_by('title')
-    
-
-    new_dict = dict()
-    listProbSub = []
-    
-    for sub in submissions:
-        new_dict[sub.problem] = sub
-    for prob in problems:
-        if prob in new_dict:
-            sub = new_dict[prob]
-        else:
-            sub = None
-        listProbSub.append((SubJoinProb(sub, prob, 
-                Submission.objects.get_problem_score(team, prob, con)))
-        )
-    
+    fail_count = get_unsolved_attemps(team_list)
+    prob_attempt_counts = get_attempt_count(contest)
 
     context = {
             'team_list' : team_list,
-            'prob_sub'  : get_prob_team(team_list),
+            'team_sub'  : get_prob_team(team_list),
+            'fail_count':  fail_count,
+            'prob_attempt_counts' : prob_attempt_counts,
             }
 
     return render(request,
