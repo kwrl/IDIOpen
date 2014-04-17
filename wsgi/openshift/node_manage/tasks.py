@@ -51,8 +51,8 @@ def set_resource(time, memory, procs):
         # Set The maximum amount of processor time (in seconds) that a process can use.
         resource.setrlimit(resource.RLIMIT_CPU, (time, time))
         # Set The maximum area (in bytes) of address space which may be taken by the process.
-        #resource.setrlimit(resource.RLIMIT_DATA, (memory, memory))
-        
+        resource.setrlimit(resource.RLIMIT_DATA, (memory, memory))
+
     return result
     #limit.max_program_timeout, limit.max_memory, limit.max_processes
 
@@ -71,14 +71,20 @@ def evaluate_task(submission_id):
     retval, stdout, stderr = compile(sub, comp)
     
     if retval:
-        sub.text_feedback = 'Compiling failed'
+        sub.text_feedback = 'Compile time error'
         return retval, stdout, stderr
     results = execute(sub, comp, test_cases, limits)
     exretval = 0
     for res in results:
+        #No runtime error
         if res[0] == 0:
             exretval = res[0]
             sub.solved_problem = res[3]
+            if sub.solved_problem:
+                sub.text_feedback = "Solved"
+            else:
+                sub.text_feedback = "Wrong answer"
+        #Runtime error
         else:
             exretval = res[0]
             sub.solved_problem = res[3]
@@ -108,7 +114,7 @@ def execute(submission, compiler, test_cases, limit):
     command = compiler.run
     dir_path, filename = os.path.split(os.path.abspath(submission.submission.path))
     command = re.sub(BASENAME_SUB, filename.split('.')[0], command)
-
+    command = use_run_user(command)
                 
     results = []
     for test in test_cases:
@@ -122,7 +128,7 @@ def execute(submission, compiler, test_cases, limit):
         
         args = shlex.split(command)
         process = Popen(args=args, stdin=PIPE, stdout=PIPE, stderr=PIPE,
-                        #preexec_fn=set_resource(limit.max_program_timeout, limit.max_memory, limit.max_processes),
+                        preexec_fn=set_resource(limit.max_program_timeout, limit.max_memory, limit.max_processes),
                         cwd=dir_path)
         stdout, stderr = process.communicate(input_content)
         retval = process.poll()
@@ -185,7 +191,7 @@ def _run_safe_shell(command):
     return _run_shell(command)
 
 def use_run_user(command):
-    return 'nice sudo su ' + RUN_USER + ' -c "' + command + '"'
+    return 'sudo su ' + RUN_USER + ' -c "' + command + '"'
 
 def _run_shell(command):
     runboy = Runner(command)
