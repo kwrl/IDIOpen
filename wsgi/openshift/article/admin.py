@@ -6,7 +6,7 @@ from article.models import Article
 class ArticleAdmin(admin.ModelAdmin):
     fieldsets = (
         (None, {
-            'fields': ('title', 'contest','visible_article_list', 'url', 'is_urgent'),
+            'fields': ('title', 'contest', 'text', 'visible_article_list', 'url', 'is_urgent'),
             'description': "You can here create a new article. Please note that if is_urgent is set, those articles will come before all other articles"
         }),
     )
