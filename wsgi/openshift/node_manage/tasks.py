@@ -88,7 +88,8 @@ def evaluate_task(submission_id):
         else:
             exretval = res[0]
             sub.solved_problem = res[3]
-            sub.text_feedback = res[2]
+            
+            sub.text_feedback = "Evaluation timed out"
             break
     
     sub.save()
