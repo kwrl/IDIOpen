@@ -4,7 +4,7 @@ from django.test import TestCase
 from .models import Problem, Resource, CompilerProfile, FileExtension
 from contest.models import Contest, Link
 import datetime
-import cProfile
+#import cProfile
 
 # Create your tests here.
 

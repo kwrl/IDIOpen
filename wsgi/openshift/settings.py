@@ -71,8 +71,8 @@ INSTALLED_APPS = (
 	'django_jenkins',
     'south',
     'sortedm2m',
-    'changeemail',
     'execution',
+    'changeemail',
     'teamsubmission',
     'clarification'
 )

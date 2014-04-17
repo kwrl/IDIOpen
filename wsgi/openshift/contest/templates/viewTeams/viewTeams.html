@@ -6,7 +6,7 @@
 <h2>Registered teams</h2>
 <hr>
 {% if contest %}
-	<p>There are currently {{ number_of_teams }} teams registered for {{contest.title}}
+	<p>There are currently {{ number_of_teams }} teams registered for {{contest.title}} 
 	<hr>
 	{% for team in team_list %} 
 			<ul class="list-inline">
@@ -34,7 +34,7 @@
     		</li>    		
     		
                 {% if team.members.all|length > 1 %}
-            <small><p class="text-muted">  {{ team.leader.get_name_nick }}, </small> </p>
+            <small><p class="text-muted">  {{ team.leader.get_name_nick } },  </p> </small>
                 {% else %}
             <small><p class="text-muted">  {{ team.leader.get_name_nick }} </p> </small>
                 {% endif %}
