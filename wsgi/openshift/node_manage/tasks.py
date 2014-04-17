@@ -105,6 +105,10 @@ def compile(submission, compiler):
     process = Popen(args=args, stdout=PIPE, stderr=PIPE, cwd=dir_path)
     stdout, stderr = process.communicate()
     retval = process.poll()
+    if os.path.exists(dir_path + '/' + filename.split('.')[0]):
+        os.chmod(dir_path + '/' + filename.split('.')[0], 0751)
+    else:
+        print 'Cant find file'
     return retval, stdout, stderr
     
 def execute(submission, compiler, test_cases, limit):
