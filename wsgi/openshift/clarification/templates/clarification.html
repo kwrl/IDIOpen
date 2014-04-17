@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% load link_tags %}
+{% load fileprint %}
+{% block content %}
+
+<div class = "pull-right" >
+<a href="{% url 'submission_page' contest.url %}" class="btn btn-primary btn-large">Go To Contest Page</a>
+</div>
+
+<h2>Clarification</h2>
+<hr>
+
+<p>
+Insert guidelines text here
+</p>
+
+<form action="." method="post">
+{% csrf_token %}
+{% if clarification_form %}
+{{ clarification_form.subject.errors }}
+{{ clarification_form.subject }}
+<br>
+<br>
+{{ clarification_form.body.errors }}
+{{ clarification_form.body }}
+<br>
+<button type="submit" class = "btn btn-primary btn-sm">Send question</button>
+
+</form>
+
+	
+{% else %}
+<p> Something went wrong, please contact support </p>
+{% endif %}
+
+{% endblock content %}
