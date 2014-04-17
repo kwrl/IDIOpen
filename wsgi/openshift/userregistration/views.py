@@ -304,7 +304,6 @@ def user_profile(request):
                
             # If the submit value is accept    
             if submit == 'accept':
-                print 'accept'
                 # If the user already has a team
                 if is_on_team(request):
                     messages.info(request, 'You are already a member of a team!')
