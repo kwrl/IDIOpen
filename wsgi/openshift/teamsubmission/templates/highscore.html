@@ -5,6 +5,14 @@
 <script>
 $(document).ready(function() 
     { 
+    	$.tablesorter.formatInt = function (s) {
+            var i = parseInt(s);
+            return (isNaN(i)) ? null : i;
+        };
+        $.tablesorter.formatFloat = function (s) {
+            var i = parseFloat(s);
+            return (isNaN(i)) ? null : i;
+        };
         $("#highscoreTable").tablesorter( {sortList: [[0,0]]} ); 
         $(".clickableRow").click(function() {
         	window.document.location = $(this).attr("href");
@@ -12,13 +20,15 @@ $(document).ready(function()
     } 
 ); 
 </script>
+<h2>Highscore table</h2>
 
 <table id="highscoreTable" class="table table-bordered table-hover table-condensed tablesorter">
 	<thead>
             <tr>
+            <th data-toggle="tooltip" data-placement="top" title="Positions">Position</th>
             <th data-toggle="tooltip" data-placement="top" title="Teams">Team</th>
-            <th data-toggle="tooltip" data-placement="top" title="Scores">Total Score</th>
             <th data-toggle="tooltip" data-placement="top" title="Solved">Solved</th>
+            <th data-toggle="tooltip" data-placement="top" title="Scores">Total Score</th>
             <th data-toggle="tooltip" data-placement="top" title="Time">Time</th>
             {% for p in problems %}
             	<th data-toggle="tooltip" data-placement="top" title="Problems">Problem {{ forloop.counter }}</th>

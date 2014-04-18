@@ -71,6 +71,9 @@ INSTALLED_APPS = (
     'openshift.teamsubmission',
     'openshift.node_manage',
     'openshift.messaging',
+    'openshift.clarification',
+    'openshift.helpFunctions',
+    'openshift.judge_supervise',
 )
 
 MIDDLEWARE_CLASSES = (

@@ -1,4 +1,5 @@
 #coding:utf-8
+from openshift.userregistration.models import CustomUser as User
 from django.shortcuts import render, redirect, get_object_or_404
 from .forms import Team_Form, Team_Edit, Team_Add_Members
 from django.http import HttpResponseRedirect
@@ -18,7 +19,7 @@ from django.utils import timezone;
 
 
 
-User = get_user_model()
+
 # Create your views here.
 
 def index(request):
@@ -136,7 +137,7 @@ def registration(request):
                                            offsite=offsite, contest = con, leader = request.user)
                 team.members.add(request.user)
                 '''
-                Clearifaction: We have decided to add the current user as a leader AND as a member. 
+                Clarifaction: We have decided to add the current user as a leader AND as a member. 
                 '''                
                 '''
                 TODO:  This should be a loop, looping over the number allowed members. For now this will be OK.  
@@ -233,10 +234,16 @@ def team_profile(request):
         contest_started = contest_begin(request)
         # If you are the leader
         leader = is_leader(request,con)
+        
+        # Create empty addMemberForm
+        addMemberForm = Team_Add_Members()
+        
         # If the competition has started
         if (contest_started):
             context = {'team':team,
                        'invites' : invites,
+                       'addMemberForm' : addMemberForm,
+                        'is_leader' : leader,
                        'contest_started' : contest_started,
                        }
             return render(request, 'contest/team.html', context)
@@ -244,6 +251,7 @@ def team_profile(request):
         leader = is_leader(request,con)
         if leader:
             if request.method == 'POST':
+                if not contest_started:
                     addMemberForm = Team_Add_Members(request.POST)
                     if addMemberForm.is_valid():
                         email = addMemberForm.cleaned_data['email']
@@ -253,10 +261,8 @@ def team_profile(request):
                             messages.success(request, 'Email has been sent to: ' + email)
                         else:   
                             messages.error(request, 'You already have the maximum number of members')
-            # If request is not POST, add an empty form            
-            else:        
-                addMemberForm = Team_Add_Members()
-        
+                else:
+                    messages.error(request, 'Sorry, you can\'t add members after the contest has started')
             # send team, addMemberForm and is_leader with context        
             context = {'team':team,
                        'addMemberForm' : addMemberForm,
@@ -351,6 +357,9 @@ def view_teams(request):
                   'number_of_teams': len(team_list)
                   })
 
+'''
+TODO: You can delete member after 
+'''
 def deleteMember(request, member_id):
     user = request.user
     url = request.path.split('/')[1]
@@ -366,3 +375,14 @@ def deleteMember(request, member_id):
         messages.warning(request, 'Only the leader can delete members')
         
     return redirect('team_profile', url)
+
+
+
+#What are you doing down here? POEM TIME!!!!1
+# Roses are red
+# Violets are blue 
+# I am a Dragon 
+# And i love U2
+def cage_me(request):
+    return render(request,'Cage/cage.html')
+    

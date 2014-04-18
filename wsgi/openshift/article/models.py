@@ -11,7 +11,7 @@ class Article(models.Model):
                                 help_text = "The contest this article should be published in")
     text = models.TextField()
     author = models.ForeignKey(settings.AUTH_USER_MODEL, null = True, blank = True, editable = False)
-# I don't use User as a foreignkey here, so an article isn't directly linked to an User model
+    # I don't use User as a foreignkey here, so an article isn't directly linked to an User model
     #author = models.CharField(max_length=200, null = True, blank = True, editable = False)
     visible_article_list = models.BooleanField(default=True, help_text = 
                            'If this is set the article will appear in the article list. (/article/list/)')

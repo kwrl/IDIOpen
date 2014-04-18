@@ -29,7 +29,9 @@ def is_leader(request, contest):
         return True
     else:
         return False
+
 #Login required
+#View for uploading submissions to a problem
 def submission_problem(request, problemID):
     #TODO: maybe a nicer url than numeric ID
     contest = get_current_contest(request)
@@ -83,7 +85,7 @@ def submission_problem(request, problemID):
                 submission = Submission.objects.get(pk=submission.pk)
                 tries += 1
                 form = SubmissionForm(instance=submission);
-                
+                return redirect('submission_problem', contest.url, problemID)
         else:
             messages.error(request, 'You have to be the leader of a team to upload submissions')
     else:
@@ -97,7 +99,6 @@ def submission_problem(request, problemID):
              'tries':tries,
              'score' : score[0],
               }
-    
     
     return render(request,
                   'problemdescription.html',
@@ -146,7 +147,9 @@ def submission_view(request):
 def highscore_view(request):
     contest = get_current_contest(request)
     statistics = Submission.objects.get_highscore(contest)
-    problems = statistics[0][4:]
+    problems = []
+    if statistics:
+        problems = statistics[0][5:]
     
     context = {
                'contest' : contest,
@@ -163,6 +166,7 @@ class SubJoinProb(object):
                 self.submission.submission = \
                     str(submission.submission).split('/')[-1]
                 self.submission.date_uploaded = \
-                        submission.date_uploaded.strftime('%H:%M:%S')
+                    submission.date_uploaded.strftime('%H:%M:%S')
         self.problem = problem 
-# EOF
+
+# END OF LIFE
