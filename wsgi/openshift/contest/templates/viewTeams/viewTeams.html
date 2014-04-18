@@ -6,8 +6,8 @@
 <h2>Registered teams</h2>
 <hr>
 {% if contest %}
-	<p>There are currently {{ number_of_teams }} teams registered for {{contest.title}} 
-	<hr>
+	<p>There are currently {{ number_of_teams }} teams registered for {{contest.title}} </p>
+	<br>
 	{% for team in team_list %} 
 			<ul class="list-inline">
     		<li><p>{{ team.name }} </p></li>
@@ -31,22 +31,31 @@
     		)
     		</p>
     		</small>
-    		</li>    		
-    		
+    		</li>
+    		    		
+    		<p class="text-muted"> 
+    		<small>
                 {% if team.members.all|length > 1 %}
+<<<<<<< HEAD
             <small><p class="text-muted">  {{ team.leader.get_name_nick } },  </p> </small>
+=======
+              {{ team.leader.get_name_nick }}, 
+>>>>>>> e54cb86d564066eb1ebad59066f44dfa7964a0ab
                 {% else %}
-            <small><p class="text-muted">  {{ team.leader.get_name_nick }} </p> </small>
+            {{ team.leader.get_name_nick }}  
                 {% endif %}
             {% for member in team.members.all%}      
                 {% if member = team.leader %}
                 {% else %}
-            <small><p class="text-muted">    {% if not forloop.last %} </p></small>
-                        {{ member.get_name_nick }},
+              {% if not forloop.last %} 
+            {{ member.get_name_nick }},
                     {% else %}
-            <small><p class="text-muted"> {{ member.get_name_nick }} </p></small>
+            {{ member.get_name_nick }} 
                     {% endif %}
                 {% endif %}
+              </small>
+              </p>
+              
             {% endfor %}
         </ul>        
        		</ul>	    	
@@ -54,4 +63,5 @@
 {% else %}
 	<p>Something weird has happened... Are you sure there is a contest!? :S <p>
 {% endif %}
+<!-- Hi and welcome to the bottom. This is the moment. Here is the secret to everything. Britney Spears is a man, a swedish dude. No joke. LOL! -->
 {% endblock %}
