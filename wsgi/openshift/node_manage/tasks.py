@@ -13,7 +13,9 @@ import popen2
 import pwd
 import shlex
 import resource
+import logging
 
+logger = logging.getLogger('idiopen')
 
 WORK_ROOT   = "/idiopen/work/"
 FILENAME    = "sauce.in"
@@ -56,7 +58,7 @@ def set_resource(time, memory, procs):
         nproc   = resource.getrlimit(resource.RLIMIT_NPROC)
         tcpu    = resource.getrlimit(resource.RLIMIT_CPU)
         mem     = resource.getrlimit(resource.RLIMIT_DATA)
-        
+	logger.debug(os.getenv('PATH'))        
         # Set The maximum number of processes the current process may create.
         try:
             resource.setrlimit(resource.RLIMIT_NPROC, (procs, procs))
@@ -85,14 +87,17 @@ def add(x, y):
 
 @app.task
 def evaluate_task(submission_id):
+    logger.debug(os.getenv('PATH'))
     sub     = Submission.objects.get(pk=submission_id)
     comp = sub.compileProfile
     problem = sub.problem
     test_cases = TestCase.objects.filter(problem__pk = problem.pk)
-    limits = get_resource(sub, comp)       
-
+    logger.debug('Compile start')
     retval, stdout, stderr = compile(sub, comp)
-    
+    logger.debug(retval)
+    logger.debug(stdout)
+    logger.debug(stderr)
+    logger.debug('Compile end')
     if retval != 0:
         if retval in MEM_EXCEED:
             sub.text_feedback = "Compile time memory limit exceeded."
@@ -100,11 +105,11 @@ def evaluate_task(submission_id):
             sub.text_feedback = "Compile timeout"
         else:
             sub.text_feedback = "Unspecified compile time error."
-
+	sub.save()
         return retval, stdout, stderr
 
-
-    results = execute(sub, comp, test_cases, limits)
+    logger.debug('Exec start')
+    results = execute(sub, comp, test_cases)
     exretval = 0
     for res in results:
         #No runtime error
@@ -124,12 +129,12 @@ def evaluate_task(submission_id):
                 sub.text_feedback = "Runtime memory limit exceeded."
             elif exretval in USER_TIMEOUT:
                 sub.text_feedback = "Runtime timeout."
-            elif exretvel in PROC_EXCEED:
+            elif exretval in PROC_EXCEED:
                 sub.text_feedback = "Number of processes exceeded."
             else:
                 sub.text_feedback = "Unspecified runtime error."   
             break
-    
+    logger.debug('Exec end')
     sub.save()
     print results
     return results
@@ -137,12 +142,15 @@ def evaluate_task(submission_id):
 def compile(submission, compiler):
     #dir_path = WORK_ROOT + str(submission.id).strip()
     #command = 'cd ' + dir_path + ' && '+ compiler.compile
-    limits = get_resource(submission, compiler)
 
+    limits = get_resource(submission, compiler)
+    if not limits:
+	limits = Resource()
     dir_path, filename = os.path.split(submission.submission.path)
     command = re.sub(FILENAME_SUB, filename, compiler.compile)
     command = re.sub(BASENAME_SUB, filename.split('.')[0], command)
     args = shlex.split(command)
+    logger.debug('DIRPATH: ' + dir_path)
     process = Popen(args=args, stdout=PIPE, stderr=PIPE, cwd=dir_path, 
                     preexec_fn=set_resource(limits.max_compile_time, -1, -1))
     stdout, stderr = process.communicate()
@@ -150,17 +158,22 @@ def compile(submission, compiler):
     if os.path.exists(dir_path + '/' + filename.split('.')[0]):
         os.chmod(dir_path + '/' + filename.split('.')[0], 0751)
     else:
+        logger.debug('Cant find executable')
         print 'Cant find file'
     return retval, stdout, stderr
     
-def execute(submission, compiler, test_cases, limit):
+def execute(submission, compiler, test_cases):
     #dir_path = WORK_ROOT + str(submission.id)
     #command = 'cd ' + dir_path + ' && ' + compiler.run
     #command = 'ulimit -t %d -v %d -u %d && ' % (limit.max_program_timeout, limit.max_memory, limit.max_processes)
+    limits = get_resource(submission, compiler)
+    if not limits:
+	limits = Resource()
     command = compiler.run
     dir_path, filename = os.path.split(os.path.abspath(submission.submission.path))
     command = re.sub(BASENAME_SUB, filename.split('.')[0], command)
-    command = use_run_user(command)
+    logger.debug(command)
+    #command = use_run_user(command)
     results = []
     for test in test_cases:
         test.inputFile.open("rb")
@@ -172,6 +185,7 @@ def execute(submission, compiler, test_cases, limit):
         #user_uid, user_gid = getUserData()
         
         args = shlex.split(command)
+	logger.debug(args)
         process = Popen(args=args, stdin=PIPE, stdout=PIPE, stderr=PIPE,
                         preexec_fn=set_resource(limit.max_program_timeout, limit.max_memory, limit.max_processes),
                         cwd=dir_path)
@@ -182,7 +196,9 @@ def execute(submission, compiler, test_cases, limit):
             results.append([retval, stdout, stderr, True])
         else:
             results.append([retval, stdout, stderr, False])
-    
+   
+    logger.debug('Results:')
+    logger.debug(results) 
     #command += test_cases.
     return results
 
