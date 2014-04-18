@@ -145,8 +145,6 @@ def compile(submission, compiler):
     #command = 'cd ' + dir_path + ' && '+ compiler.compile
 
     limits = get_resource(submission, compiler)
-    if not limits:
-        limits = Resource()
     dir_path, filename = os.path.split(submission.submission.path)
     command = re.sub(FILENAME_SUB, filename, compiler.compile)
     command = re.sub(BASENAME_SUB, filename.split('.')[0], command)
@@ -168,8 +166,6 @@ def execute(submission, compiler, test_cases):
     #command = 'cd ' + dir_path + ' && ' + compiler.run
     #command = 'ulimit -t %d -v %d -u %d && ' % (limit.max_program_timeout, limit.max_memory, limit.max_processes)
     limit = get_resource(submission, compiler)
-    if not limit:
-        limit = Resource()
     command = compiler.run
     dir_path, filename = os.path.split(os.path.abspath(submission.submission.path))
     command = re.sub(BASENAME_SUB, filename.split('.')[0], command)
