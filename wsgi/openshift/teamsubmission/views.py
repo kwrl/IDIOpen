@@ -164,4 +164,5 @@ class SubJoinProb(object):
                 self.submission.date_uploaded = \
                     submission.date_uploaded.strftime('%H:%M:%S')
         self.problem = problem 
-# EOF
+
+# END OF LIFE
