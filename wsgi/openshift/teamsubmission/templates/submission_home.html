@@ -53,10 +53,18 @@ $(document).ready(function()
     </tbody>
 </table>
 <br>
+<h3>Highscore list</h3>
+<p> Insert Highscore list for top 5 <p>
+<p> Insert this teams possitiion </p>
+<p> Move it to the right </p>
+
+
 <h3>Clarification</h3>
 <p> Insert text here </p>
-<a href= {% url 'clarificationPage' contest.url %}> Ask question </a>
+
+<a href= {% url 'clarificationAnswersPage' contest.url %}> View messages </a>
 <br>
-<a href= {% url 'clarificationAnswersPage' contest.url %}> View asked questions </a>
+<a href= {% url 'clarificationPage' contest.url %}> Ask a question </a>
+
 
 {% endblock content %}

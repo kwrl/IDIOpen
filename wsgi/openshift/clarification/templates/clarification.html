@@ -13,6 +13,9 @@
 <p>
 Insert guidelines text here
 </p>
+<a href= {% url 'clarificationAnswersPage' contest.url %}> View answered question </a>
+<br>
+<br>
 
 <form action="" method="post">
 {% csrf_token %}
@@ -26,7 +29,7 @@ Insert guidelines text here
 </form>
 <br>
 <br>
-<a href= {% url 'clarificationAnswersPage' contest.url %}> View answered question </a>
+
 	
 {% else %}
 <p> Something went wrong, please contact support </p>

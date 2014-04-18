@@ -46,7 +46,6 @@ def clarificationAnswers(request):
         raise Http404
     
     answers = helpView.get_all_answers(request)
-    print answers
     context = {
                'answers': answers
                }
