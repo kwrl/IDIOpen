@@ -383,3 +383,6 @@ def deleteMember(request, member_id):
 # Violets are blue 
 # I am a Dragon 
 # And i love U2
+def cage_me(request):
+    return render(request,'Cage/cage.html')
+    
