@@ -12,7 +12,7 @@
 
 {% if answers %}
 {% for answer in answers %}
-		<h1>{{ answers.subject }}</h1>
+		<h1>{{ answer.subject }}</h1>
 		<hr>
 		<p class="text-muted">
 			Published: {{answers.created_at|date:"d.m.Y - H.i"}}, 
