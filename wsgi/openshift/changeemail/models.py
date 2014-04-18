@@ -14,11 +14,11 @@ from django.contrib.sites.models import RequestSite
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
-from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
 from contest.models import Invite
-from userregistration.models import CustomUser as User
+
+# from userregistration.models import CustomUser as User
 
 import hashlib
 import re

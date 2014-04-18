@@ -1,7 +1,8 @@
-from django.shortcuts import render, get_object_or_404, redirect, HttpResponse, Http404
+from django.shortcuts import render, get_object_or_404, redirect, HttpResponse, Http404, HttpResponseRedirect
 from contest.views import get_current_contest, is_leader, is_member_of_team
 from contest.models import Team
 from execution.models import Problem
+from django.core.urlresolvers import reverse
 
 from .models import Submission
 from .forms import SubmissionForm
@@ -29,7 +30,9 @@ def is_leader(request, contest):
         return True
     else:
         return False
+
 #Login required
+#View for uploading submissions to a problem
 def submission_problem(request, problemID):
     #TODO: maybe a nicer url than numeric ID
     contest = get_current_contest(request)
@@ -82,6 +85,7 @@ def submission_problem(request, problemID):
             if form.is_valid():
                 form.save()
                 form = SubmissionForm(instance=submission);
+                return redirect('submission_problem', contest.url, problemID)
         else:
             messages.error(request, 'You have to be the leader of a team to upload submissions')
     else:
@@ -94,7 +98,6 @@ def submission_problem(request, problemID):
              'tries':tries,
              'score' : score[0],
               }
-    
     
     return render(request,
                   'problemdescription.html',
@@ -164,4 +167,5 @@ class SubJoinProb(object):
                 self.submission.date_uploaded = \
                     submission.date_uploaded.strftime('%H:%M:%S')
         self.problem = problem 
-# EOF
+
+# END OF LIFE
