@@ -321,7 +321,6 @@ def user_profile(request):
                 messages.success(request, 'Invite accepted')
                     
             elif submit == 'decline':
-                print 'decline'
                 invite.delete()
                 messages.info(request, 'Invite declined')
             else:
