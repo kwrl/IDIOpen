@@ -15,13 +15,14 @@ class Message (models.Model):
     sender      = models.ForeignKey(Team)    
     sent_at     = models.DateTimeField(null=True, blank=True, auto_now = True)
     contest     = models.ForeignKey(Contest)
+    answered    = models.BooleanField(default = False)
 
 class MessageAnswer(models.Model):
     subject     = models.CharField(max_length = 120, default='Not Yet Answered')
     body        = models.TextField(max_length = 355, default='Not Yet Answered')
     answered_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank = True, null=True) 
     answered_at = models.DateTimeField(null=True, blank=True, auto_now = True)  
-    message     = models.ForeignKey(Message)
+    message     = models.ForeignKey(Message, null=True, blank=True, default = None)
     contest     = models.ForeignKey(Contest)
-      
+
 #signals.post_save.connect(notify_admin, sender=Message)
