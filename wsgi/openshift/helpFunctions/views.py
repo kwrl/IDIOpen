@@ -10,8 +10,6 @@ from django.shortcuts import get_object_or_404
 import datetime;
 from django.utils import timezone;
 
-import pdb
-
 '''
 This view is suppose to hold functiones used by several modules. 
 Please mark 
