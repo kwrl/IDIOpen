@@ -3,8 +3,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.http import Http404
 from contest.models import Contest
 from contest.models import Team
+from clarification.models import MessageAnswer
 from django.shortcuts import get_object_or_404
-
 
 
 import datetime;
@@ -80,5 +80,10 @@ def is_member_of_team(request):
 #===============================================================================
 def get_all_answers(request):
     contest = get_current_contest(request)
-
+    answers = MessageAnswer.objects.filter(contest=contest)    
+    if(answers.count() < 0):
+        return None
+    return answers
+      
+    
     pass
