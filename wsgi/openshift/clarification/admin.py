@@ -7,7 +7,7 @@ class CommentInline(admin.TabularInline):
 
 class MessageAdmin(admin.ModelAdmin):
     inlines = [CommentInline,]
-    list_display = ('subject', 'sender', 'sent_at', 'answared_by', 'answared_at')
+    list_display = ('subject', 'sender', 'sent_at')
     list_filter = ('sent_at',)
     date_hierarchy = 'sent_at'
     search_fields = ('sender',)

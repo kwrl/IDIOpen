@@ -10,13 +10,13 @@
 <h2>Questions and answers</h2>
 <hr>
 {% if answer %}
-		<h1>{{ answer.title }}</h1>
+		<h1>{{ answer.subject }}</h1>
 		<hr>
 		<p class="text-muted">
 			Published: {{answer.created_at|date:"d.m.Y - H.i"}}, 
 			Author: {{ answer.author.get_name_nick }}
 		</p>	
-		<div>{{ answer.text|safe}}</div>
+		<div>{{ answer.body|safe}}</div>
 {% else %}
 	<p>No asked questions found </p>
 {% endif %}
