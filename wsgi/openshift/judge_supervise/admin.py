@@ -1,17 +1,14 @@
 from django.contrib import admin
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render
-
 from django.conf.urls import url, patterns
 
 from contest.models import Contest, Team
 from execution.models import Problem
 from teamsubmission.models import Submission
 
-
 from collections import defaultdict
 from decimal import Decimal
-from random import randint
 
 ORACLE_FEEDBACK = [
         (1, 'FEED_1'),
@@ -21,7 +18,9 @@ ORACLE_FEEDBACK = [
         ]
 
 class Oracle(object):
+    """ Return some random feedback"""
     def __init__(self, submission):
+        from random import randint
         self.text1 = ORACLE_FEEDBACK[randint(0, len(ORACLE_FEEDBACK) - 1)][1]
         self.text2 = ORACLE_FEEDBACK[randint(0, len(ORACLE_FEEDBACK) - 1)][1]
         self.text3 = ORACLE_FEEDBACK[randint(0, len(ORACLE_FEEDBACK) - 1)][1]
@@ -31,12 +30,16 @@ class Oracle(object):
 
 
 class FeedbackPerProblem(object):
+    """ Collection of data
+    """
     def __init__(self, feedback_type, problem, count):
         self.feedback_type = feedback_type
         self.problem =problem
         self.count =count
 
 class CountFeedbackRow(object):
+    """ Collection of data
+    """
     def __init__(self, feedback, total, prob_count_list):
         self.feedback = feedback
         self.total = total
@@ -45,6 +48,8 @@ class CountFeedbackRow(object):
 
 
 class SubTeamFailedView(object):
+    """ Collection of data
+    """
     def __init__(self, team, problem, fail_count, prev_solved,
                  site_location = ''):
         self.team = team
@@ -54,6 +59,8 @@ class SubTeamFailedView(object):
         self.site_location = site_location
 
 class ProblemAttempsCount(object):
+    """ Collection of data
+    """
     def __get_ratio(self):
         if self.successfull == 0:
             return 0
@@ -69,44 +76,53 @@ class ProblemAttempsCount(object):
         self.total = failed + successfull
         self.success_ratio = self.__get_ratio()
 
-       #TODO: check out django admin tables sorters..
+class MyModelAdmin(admin.ModelAdmin):
+    # FIXME
+    """ Temporary solution to get a view connected in admin site
+    """
+    view_on_site = True
+    class Media:
+        """ https://docs.djangoproject.com/en/1.6/ref/contrib/
+            admin/#django.contrib.admin.ModelAdmin.get_urls
+        """
+    def get_urls(self):
+        urls = super(MyModelAdmin, self).get_urls()
+        my_urls = patterns('',
+           url(r'^my_view/$', admin.site.admin_view(judge_home,
+                                                    cacheable=True)),
+           url(r'^my_view/team(?P<team_pk>[0-9]+)' +
+                  '/problem(?P<problem_pk>[0-9]+)/$',
+                  admin.site.admin_view(judge_submission_team)),
+           url(r'^my_view/team(?P<team_pk>[0-9]+)',
+                admin.site.admin_view(judge_team_summary)),
+        )
 
-
-
-def get_prob_team(team):
-    contest = Contest.objects.get()
-    problems = Problem.objects.filter(contest=contest)
-
-
-    submissions = Submission.objects.filter(team=team).order_by('-date_uploaded').order_by('problem')
-
-    return
-
-def get_rand_feedback():
-    import random
-    small_lett = [ chr(x) for x in range(97,123)]
-    def id_generator(size=6, chars=small_lett):
-        return ''.join(random.choice(chars) for _ in range(size))
-    return id_generator()
+        return my_urls + urls
 
 def get_unsolved_attemps(team_list):
+    """ For all the problems, per team,
+        extract tuples off teams that have tried X times to solve a problem
+        without success
+    """
     onsite_list, offsite_list = [], []
     for team in team_list:
         submissions = Submission.objects.filter(team=team) \
                       .order_by('-date_uploaded').order_by('problem')
 
-        groups = defaultdict( list )
+        prob_to_subs_dict = defaultdict( list )
         solved_count = 0
         for sub in submissions:
-            groups[sub.problem].append(sub)
             if sub.solved_problem == True:
                 solved_count += 1
+            prob_to_subs_dict[sub.problem].append(sub)
 
-        for prob in groups:
-            sub_list = groups[prob]
+        for prob in prob_to_subs_dict:
+            sub_list = prob_to_subs_dict[prob]
 
             if any(sub.solved_problem == True for sub in sub_list):
-                print "lolol"
+                """ Ignore the count of submissions if the team has solved
+                    the problem
+                """
                 continue
             else:
                 if team.onsite == True:
@@ -127,7 +143,7 @@ def get_attempt_count(contest):
     problems = Problem.objects.filter(contest=contest).order_by('title')
     submissions = Submission.objects.get_queryset()
     groups = defaultdict( list )
-    ret_list = [ ];
+    ret_list = [ ]
 
     for sub in submissions:
         groups[sub.problem].append(sub)
@@ -147,7 +163,7 @@ def get_attempt_count(contest):
                                             ))
     return ret_list
 
-def show_view(request, team_pk, problem_pk):
+def judge_submission_team(request, team_pk, problem_pk):
     submissions = Submission.objects.filter(team=team_pk) \
                     .order_by('-date_uploaded').filter(problem=problem_pk)
     oracle_list = []
@@ -157,35 +173,30 @@ def show_view(request, team_pk, problem_pk):
 
     context = {
             'oracle_list' : oracle_list,
+            'team': Team.objects.get(pk=team_pk),
             }
 
     return render(request,
-                  'judge_team_submissions.html',
+                  'judge_team_summary.html',
                   context)
 
-def show_prob_subs(request, problem_pk):
-    context = {}
-
-    return render(request,
-                  'judge_problem_sub.html',
-                  context)
-
-
-def show_team(request, team_pk):
+def judge_team_summary(request, team_pk):
+    """ The page to render an overview of the team
+    """
     dic = dict()
     submissions = Submission.objects.filter(team=team_pk)\
                   .order_by('-date_uploaded')
     prob_row, oracle_list = [], []
     prob_index = {}
-    problems = Problem.objects.get_queryset()
+    problems = Problem.objects.get_queryset() # all problems
 
     for index, val in enumerate(problems):
         prob_index[val] = index
 
     for sub in submissions:
+        from random import randint
         feedback = ORACLE_FEEDBACK[randint(0, len(ORACLE_FEEDBACK) - 1)][1]
         dic.setdefault(feedback, [0] * len(problems))
-        #import ipdb; ipdb.set_trace()
         dic[feedback][prob_index[sub.problem]] += 1
 
         oracle_list.append( Oracle(sub) )
@@ -201,55 +212,35 @@ def show_team(request, team_pk):
             'oracle_list' : oracle_list,
             'problems' : problems,
             'prob_row' : prob_row,
+            'team': Team.objects.get(pk=team_pk),
             }
 
     return render(request,
-                  'judge_team_sublist.html',
+                  'judge_team_summary.html',
                   context)
 
 
-class MyModelAdmin(admin.ModelAdmin):
-    view_on_site = True
-    class Media:
-        pass
-        """ https://docs.djangoproject.com/en/1.6/ref/contrib/admin/#django.contrib.admin.ModelAdmin.get_urls
-        """
-    def get_urls(self):
-        urls = super(MyModelAdmin, self).get_urls()
-        my_urls = patterns('',
-           url(r'^my_view/$', admin.site.admin_view(self.my_view, cacheable=True)),
-           url(r'^my_view/team(?P<team_pk>[0-9]+)' +
-                  '/problem(?P<problem_pk>[0-9]+)/$',
-                  admin.site.admin_view(show_view)),
-           url(r'^my_view/problem(?P<problem_pk>[0-9]+)/$',
-                  admin.site.admin_view(show_prob_subs)),
-           url(r'^my_view/team(?P<team_pk>[0-9]+)',
-                admin.site.admin_view(show_team)),
-        )
-        return my_urls + urls
+def judge_home(request):
+    contest = Contest.objects.get()
+    try:
+        team_list = Team.objects.filter(contest=contest)
+    except ObjectDoesNotExist:
+        team_list = []
 
-    def my_view(self, request):
-        contest = Contest.objects.get()
-        try:
-            team_list = Team.objects.filter(contest=contest)
-        except ObjectDoesNotExist:
-            team_list = []
+    fail_count_onsite, fail_count_offsite = get_unsolved_attemps(team_list)
+    prob_attempt_counts = get_attempt_count(contest)
 
-        fail_count_onsite, fail_count_offsite = get_unsolved_attemps(team_list)
-        prob_attempt_counts = get_attempt_count(contest)
+    context = {
+            'team_list' : team_list,
+            'fail_count_onsite':  fail_count_onsite,
+            'fail_count_offsite':  fail_count_offsite,
+            'prob_attempt_counts' : prob_attempt_counts,
+            }
 
-        context = {
-                'team_list' : team_list,
-                'team_sub'  : get_prob_team(team_list),
-                'fail_count_onsite':  fail_count_onsite,
-                'fail_count_offsite':  fail_count_offsite,
-                'prob_attempt_counts' : prob_attempt_counts,
-                }
-
-        return render(request,
-                      'judgefeedback.html',
-                      context,
-                      )
+    return render(request,
+                  'judge_home.html',
+                  context,
+                  )
 
 
 from django.db import models
