@@ -8,23 +8,19 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # Adding model 'Message'
-        db.create_table(u'clarification_message', (
+        # Adding model 'MessageAnswer'
+        db.create_table(u'clarification_messageanswer', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('subject', self.gf('django.db.models.fields.CharField')(max_length=120)),
-            ('body', self.gf('django.db.models.fields.TextField')(max_length=355)),
-            ('sender', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['contest.Team'])),
-            ('sent_at', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, null=True, blank=True)),
-            ('answared_by', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['userregistration.CustomUser'], null=True, blank=True)),
-            ('answared_at', self.gf('django.db.models.fields.DateTimeField')(null=True, blank=True)),
-            ('contest', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['contest.Contest'])),
+            ('subject', self.gf('django.db.models.fields.CharField')(default='Not Yet Answered', max_length=120)),
+            ('body', self.gf('django.db.models.fields.TextField')(default='Not Yet Answered', max_length=355)),
+            ('message', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['clarification.Message'])),
         ))
-        db.send_create_signal(u'clarification', ['Message'])
+        db.send_create_signal(u'clarification', ['MessageAnswer'])
 
 
     def backwards(self, orm):
-        # Deleting model 'Message'
-        db.delete_table(u'clarification_message')
+        # Deleting model 'MessageAnswer'
+        db.delete_table(u'clarification_messageanswer')
 
 
     models = {
@@ -51,6 +47,13 @@ class Migration(SchemaMigration):
             'sender': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['contest.Team']"}),
             'sent_at': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'null': 'True', 'blank': 'True'}),
             'subject': ('django.db.models.fields.CharField', [], {'max_length': '120'})
+        },
+        u'clarification.messageanswer': {
+            'Meta': {'object_name': 'MessageAnswer'},
+            'body': ('django.db.models.fields.TextField', [], {'default': "'Not Yet Answered'", 'max_length': '355'}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'message': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['clarification.Message']"}),
+            'subject': ('django.db.models.fields.CharField', [], {'default': "'Not Yet Answered'", 'max_length': '120'})
         },
         u'contenttypes.contenttype': {
             'Meta': {'ordering': "('name',)", 'unique_together': "(('app_label', 'model'),)", 'object_name': 'ContentType', 'db_table': "'django_content_type'"},
