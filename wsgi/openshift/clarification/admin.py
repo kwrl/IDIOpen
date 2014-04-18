@@ -4,7 +4,7 @@ from .models import MessageAnswer, Message
 
 class MessageAnswerAdmin(admin.ModelAdmin):
     list_display = ('subject', 'answered_by', 'answered_at', 'message')
-    fields = ('subject', 'body', 'contest')
+    fields = ('subject', 'body', 'contest', 'message')
     
     def save_model(self, request, obj, form, change):
         if form.changed_data:

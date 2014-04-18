@@ -30,8 +30,9 @@ def is_leader(request, contest):
         return True
     else:
         return False
+
 #Login required
-# View for uploading submissions to a problem
+#View for uploading submissions to a problem
 def submission_problem(request, problemID):
     #TODO: maybe a nicer url than numeric ID
     contest = get_current_contest(request)
