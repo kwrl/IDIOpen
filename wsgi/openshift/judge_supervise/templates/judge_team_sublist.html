@@ -1,0 +1,98 @@
+{% extends "admin/app_index.html" %}
+
+{# {% load link_tags %} #}
+{# {% contest as contest %} #}
+
+{% block content %}
+
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script src="https://code.jquery.com/jquery.js"></script>
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
+
+<!-- Tablesorter css -->
+<link href="/static/openshift/css/tablesorter/tablestyle.css" rel="stylesheet">
+<!--  Tablesorter and tooltip js -->
+<script type="text/javascript" src="/static/openshift/js/tablesorter/jquery.tablesorter.js"></script> 
+<script type="text/javascript" src="/static/openshift/js/tooltip.js"></script> 
+
+
+
+
+<h1> Latest submissions </h1>
+
+{% if messages %}
+<div class="row">
+    {% for message in messages %}
+    <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissable">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+        {{ message }}
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<h3> Solved </h3>
+<table id="tableSubs" class="table table-bordered table-hover table-condensed tablesorter">
+	<thead>
+            <tr>
+            <th data-toggle="tooltip" data-placement="top" title="The team this regards">Date Uploaded</th>
+            <th data-toggle="tooltip" data-placement="top" title="">Problem</th>
+            <th data-toggle="tooltip" data-placement="top" title="What problem this is about">Text1</th>
+            <th data-toggle="tooltip" data-placement="top" title="What problem this is about">Text2</th>
+            <th data-toggle="tooltip" data-placement="top" title="What problem this is about">Text3</th>
+            </tr>
+    </thead>
+    <tbody>
+            {% for listitem in oracle_list %}
+            <tr class='clickableRow' href=''>
+            <td>{{listitem.date_uploaded}}</td>
+            <td>{{listitem.problem}}</td>
+            <td>{{listitem.text1}}</td>
+            <td>{{listitem.text2}}</td>
+            <td>{{listitem.text3}}</td>
+            {% endfor %}
+    </tbody>
+</table>
+
+<h3> Types of error responses </h3>
+<table id="tableSubs" class="table table-bordered table-hover table-condensed tablesorter">
+	<thead>
+            <tr>
+            <th data-toggle="tooltip" data-placement="top" title="The team this regards">Type of Feedback</th>
+            <th data-toggle="tooltip" data-placement="top" title="What problem this is about">Total count</th>
+            {% for prob in problems %}
+            <th data-toggle="tooltip" data-placement="top" title="What problem this is about">{{prob}}</th>
+            {% endfor %}
+            </tr>
+    </thead>
+    <tbody>
+            {% for listitem in prob_row  %}
+            <tr class='clickableRow' href=''>
+            <td>{{listitem.feedback}}</td>
+            <td>{{listitem.total}}</td>
+            {% for prob_count in listitem.prob_count_list %}
+            <td> {{ prob_count }} </td>
+            {% endfor %}
+            {% endfor %}
+    </tbody>
+</table>
+
+
+
+
+
+
+
+<script>
+$(document).ready(function() 
+    { 
+        $("#tableSubs").tablesorter( {sortList: [[0,0]], cssAsc: "", cssDesc: "", cssHeader: "",} ); 
+
+      //  $(".clickableRow").click(function() {
+      //  	window.document.location = $(this).attr("href");
+      //	});
+    } 
+); 
+</script>
+
+{% endblock content %}

@@ -1,0 +1,46 @@
+{% extends "admin/app_index.html" %}
+
+{# {% load link_tags %} #}
+{# {% contest as contest %} #}
+
+{% block content %}
+
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script src="https://code.jquery.com/jquery.js"></script>
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
+
+<!-- Tablesorter css -->
+<link href="/static/openshift/css/tablesorter/tablestyle.css" rel="stylesheet">
+<!--  Tablesorter and tooltip js -->
+<script type="text/javascript" src="/static/openshift/js/tablesorter/jquery.tablesorter.js"></script> 
+<script type="text/javascript" src="/static/openshift/js/tooltip.js"></script> 
+
+
+
+
+<h1> Latest submissions </h1>
+
+{% if messages %}
+<div class="row">
+    {% for message in messages %}
+    <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissable">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+        {{ message }}
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<hr>
+<select name="something" onchange="updateText()">
+ <option value = ''> Choose Manager </option>
+ {% for team in team_list %}
+ <option value = "{{ team.name }}">{{team.name}}</option>
+ {% endfor %}
+</select>
+
+<br />
+<br />
+
+
+{% endblock content %}
