@@ -183,27 +183,33 @@ def judge_submission_team(request, team_pk, problem_pk):
 def judge_team_summary(request, team_pk):
     """ The page to render an overview of the team
     """
-    dic = dict()
+    feedback_prob_dict = dict()
     submissions = Submission.objects.filter(team=team_pk)\
                   .order_by('-date_uploaded')
     prob_row, oracle_list = [], []
     prob_index = {}
     problems = Problem.objects.get_queryset() # all problems
 
-    for index, val in enumerate(problems):
-        prob_index[val] = index
+    for index, problem in enumerate(problems):
+        prob_index[problem] = index
 
     for sub in submissions:
         from random import randint
         feedback = ORACLE_FEEDBACK[randint(0, len(ORACLE_FEEDBACK) - 1)][1]
-        dic.setdefault(feedback, [0] * len(problems))
-        dic[feedback][prob_index[sub.problem]] += 1
+        # Put the feedback in to dict
+        # , or, if empty, put an empty array
+        feedback_prob_dict.setdefault(feedback, [0] * len(problems))
+        # Assuming the the prob_index[sub.problem] points to the
+        # the same order as in `problems`. This should be valid since
+        # the enumerate above
+        feedback_prob_dict[feedback][prob_index[sub.problem]] += 1
 
         oracle_list.append( Oracle(sub) )
 
-    total_count = dict([(key,sum(val)) for key,val in dic.iteritems()])
+    total_count = dict([(feedback,sum(problems)) \
+                    for feedback,problems in feedback_prob_dict.iteritems()])
 
-    for key, val in dic.iteritems():
+    for key, val in feedback_prob_dict.iteritems():
         prob_row.append(CountFeedbackRow(feedback = key,
                                          total=total_count[key],
                                          prob_count_list = val))
@@ -218,7 +224,6 @@ def judge_team_summary(request, team_pk):
     return render(request,
                   'judge_team_summary.html',
                   context)
-
 
 def judge_home(request):
     contest = Contest.objects.get()
