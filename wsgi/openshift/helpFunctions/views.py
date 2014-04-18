@@ -6,6 +6,7 @@ from contest.models import Team
 from django.shortcuts import get_object_or_404
 
 
+
 import datetime;
 from django.utils import timezone;
 
@@ -47,3 +48,37 @@ def get_team(request):
     queryset = Team.objects.filter(contest=con).filter(members__in = [user])
     team = get_object_or_404(queryset)
     return team
+
+
+def contest_begin(request):
+    try: 
+        contest = get_current_contest(request)
+        startDate = contest.start_date
+        dateToday = timezone.now()
+        if (dateToday >= startDate):
+            has_started = True
+        else:
+            has_started = False
+    except ObjectDoesNotExist as e: 
+        raise Http404
+    return has_started
+
+#===============================================================================
+# Check if user is on a team
+#===============================================================================
+def is_member_of_team(request):
+    contest = get_current_contest(request)
+    team = Team.objects.filter(contest=contest).filter(members__id = request.user.id)
+    if team.count() > 0:
+        return team[0]
+    else:
+        team = False
+
+
+#===============================================================================
+# Returns all the ansswers for a contest based on a request. 
+#===============================================================================
+def get_all_answers(request):
+    contest = get_current_contest(request)
+
+    pass

@@ -3,13 +3,12 @@ from .forms import MessageForm
 from .models import Message
 from django.contrib import messages
 from helpFunctions import views as helpView
-import helpFunctions
+from django.shortcuts import Http404
+
 import pdb
 # Create your views here.
 
 def clarification(request):
-    
-    
     if request.method == 'POST':
         form = MessageForm(request.POST)
         
@@ -43,3 +42,12 @@ def clarification(request):
      
     return render(request, 'clarification.html', context)
     
+
+
+def clarificationAnswers(request):
+    # Raise 404 if contest hasn't begun or has ended, and if user is not member of team
+    if not helpView.contest_begin(request) or not helpView.is_member_of_team(request):
+        raise Http404
+    
+    
+    return render(request, 'clarificationAnswers.html')
