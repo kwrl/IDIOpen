@@ -12,7 +12,7 @@ from django.db import models
 from django.conf import settings
 from django.contrib.sites.models import RequestSite
 from django.core.exceptions import ObjectDoesNotExist
-#from django.core.mail import send_mail
+from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.utils.translation import ugettext_lazy as _
 
@@ -38,7 +38,7 @@ class ChangeEmailManager(models.Manager):
         if SHA1_RE.search(activation_key):
             try:
                 instance = self.get(refuser=user, activation_key=activation_key)
-            except self.model.DoesNotExist:
+            except (self.model.DoesNotExist, TypeError):
                 return None
 
             return instance
@@ -149,6 +149,6 @@ class ChangeEmail(models.Model):
                                    ctx_dict)
         content = render_to_string('changeEmail/change_email_content.txt',
                                    ctx_dict)
-        #send_mail(subject, content, None, [self.new_email])
+        send_mail(subject, content, None, [self.new_email])
         
 # EOF        

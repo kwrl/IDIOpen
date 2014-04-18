@@ -1,5 +1,5 @@
 #coding: utf-8
-
+from openshift.userregistration.models import CustomUser as User 
 from sortedm2m.fields import SortedManyToManyField
 from django.core.exceptions import ValidationError
 from django.db import models

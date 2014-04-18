@@ -14,9 +14,11 @@ $(document).ready(function()
     } 
 ); 
 </script>
-
-<h2>List of Problems</h2>
+<h2>Contest Page</h2>
 <hr>
+
+<h3>List of Problems</h3>
+
 <small>Click on a table row to go to the selected problem.</small>
 <br>
 <small><i>Hover over each title in the table to get a further explanation.</i></small>
@@ -34,7 +36,9 @@ $(document).ready(function()
     <tbody>
 			{% for probsub in prob_sub %}
             <tr class='clickableRow' href='{{probsub.problem.id}}'>
-            <td>{{probsub.problem.title}}</td>
+            <td>
+            <button type="button" class="btn btn-default btn-xs btn-block">{{probsub.problem.title}}</button>
+            </td>
             <td>{{probsub.submission.submission}}</td>
             <td>{{probsub.submission.date_uploaded}}</td>
             <td>{{probsub.submission.text_feedback}}</td>
@@ -48,4 +52,19 @@ $(document).ready(function()
             {% endfor %}
     </tbody>
 </table>
+<br>
+<h3>Highscore list</h3>
+<p> Insert Highscore list for top 5 <p>
+<p> Insert this teams possitiion </p>
+<p> Move it to the right </p>
+
+
+<h3>Clarification</h3>
+<p> Insert text here </p>
+
+<a href= {% url 'clarificationAnswersPage' contest.url %}> View messages </a>
+<br>
+<a href= {% url 'clarificationPage' contest.url %}> Ask a question </a>
+
+
 {% endblock content %}

@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% load link_tags %}
+{% load fileprint %}
+{% block content %}
+
+<div class = "pull-right" >
+<a href="{% url 'submission_page' contest.url %}" class="btn btn-primary btn-large">Go To Contest Page</a>
+</div>
+
+<h2>Messages</h2>
+<hr>
+<br>
+<p> insert text here </p>
+<a href= {% url 'clarificationPage' contest.url %}> Ask a question </a>
+
+<br>
+{% if answers %}
+{% for answer in answers %}
+		<h3>{{ answer.subject }}</h3>
+		<p class="text-muted">
+			Published: {{answers.created_at|date:"d.m.Y - H.i"}}, 
+			Author: {{ answers.answered_by.get_full_name }}
+		</p>	
+		<div>{{ answer.body|safe}}</div>
+<br>
+{% endfor %}
+{% else %}
+	<p>No asked questions found </p>
+{% endif %}
+
+
+{% endblock content %}

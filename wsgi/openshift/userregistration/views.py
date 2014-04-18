@@ -304,7 +304,6 @@ def user_profile(request):
                
             # If the submit value is accept    
             if submit == 'accept':
-                print 'accept'
                 # If the user already has a team
                 if is_on_team(request):
                     messages.info(request, 'You are already a member of a team!')
@@ -322,7 +321,6 @@ def user_profile(request):
                 messages.success(request, 'Invite accepted')
                     
             elif submit == 'decline':
-                print 'decline'
                 invite.delete()
                 messages.info(request, 'Invite declined')
             else:
