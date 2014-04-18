@@ -71,12 +71,14 @@ INSTALLED_APPS = (
 	'django_jenkins',
     'south',
     'sortedm2m',
-    'changeemail',
     'execution',
+    'changeemail',
     'teamsubmission',
     'clarification',
+    'helpFunctions'
     'judge_supervise',
 )
+
 '''
 if not ON_OPENSHIFT:
     print 'not on openshift'

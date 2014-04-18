@@ -1,4 +1,5 @@
 #coding:utf-8
+from userregistration.models import CustomUser as User
 from django.shortcuts import render, redirect, get_object_or_404
 from .forms import Team_Form, Team_Edit, Team_Add_Members
 from django.http import HttpResponseRedirect
@@ -18,7 +19,7 @@ from django.utils import timezone;
 
 
 
-User = get_user_model()
+
 # Create your views here.
 
 def index(request):
@@ -136,7 +137,7 @@ def registration(request):
                                            offsite=offsite, contest = con, leader = request.user)
                 team.members.add(request.user)
                 '''
-                Clearifaction: We have decided to add the current user as a leader AND as a member. 
+                Clarifaction: We have decided to add the current user as a leader AND as a member. 
                 '''                
                 '''
                 TODO:  This should be a loop, looping over the number allowed members. For now this will be OK.  
@@ -356,6 +357,9 @@ def view_teams(request):
                   'number_of_teams': len(team_list)
                   })
 
+'''
+TODO: You can delete member after 
+'''
 def deleteMember(request, member_id):
     user = request.user
     url = request.path.split('/')[1]
@@ -372,6 +376,13 @@ def deleteMember(request, member_id):
         
     return redirect('team_profile', url)
 
+
+
+#What are you doing down here? POEM TIME!!!!1
+# Roses are red
+# Violets are blue 
+# I am a Dragon 
+# And i love U2
 def cage_me(request):
     return render(request,'Cage/cage.html')
     

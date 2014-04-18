@@ -8,37 +8,40 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # Adding model 'Message'
-        db.create_table(u'clarification_message', (
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('subject', self.gf('django.db.models.fields.CharField')(max_length=120)),
-            ('body', self.gf('django.db.models.fields.TextField')(max_length=355)),
-            ('sender', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['contest.Team'])),
-            ('sent_at', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, null=True, blank=True)),
-            ('contest', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['contest.Contest'])),
-        ))
-        db.send_create_signal(u'clarification', ['Message'])
+        # Deleting field 'MessageAnswer.answared_at'
+        db.delete_column(u'clarification_messageanswer', 'answared_at')
 
-        # Adding model 'MessageAnswer'
-        db.create_table(u'clarification_messageanswer', (
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('subject', self.gf('django.db.models.fields.CharField')(default='Not Yet Answered', max_length=120)),
-            ('body', self.gf('django.db.models.fields.TextField')(default='Not Yet Answered', max_length=355)),
-            ('answared_by', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['userregistration.CustomUser'], null=True, blank=True)),
-            ('answared_at', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, null=True, blank=True)),
-            ('message', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['clarification.Message'])),
-            ('contest', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['contest.Contest'])),
-        ))
-        db.send_create_signal(u'clarification', ['MessageAnswer'])
+        # Deleting field 'MessageAnswer.answared_by'
+        db.delete_column(u'clarification_messageanswer', 'answared_by_id')
+
+        # Adding field 'MessageAnswer.answered_by'
+        db.add_column(u'clarification_messageanswer', 'answered_by',
+                      self.gf('django.db.models.fields.related.ForeignKey')(to=orm['userregistration.CustomUser'], null=True, blank=True),
+                      keep_default=False)
+
+        # Adding field 'MessageAnswer.answered_at'
+        db.add_column(u'clarification_messageanswer', 'answered_at',
+                      self.gf('django.db.models.fields.DateTimeField')(auto_now=True, null=True, blank=True),
+                      keep_default=False)
 
 
     def backwards(self, orm):
-        # Deleting model 'Message'
-        db.delete_table(u'clarification_message')
+        # Adding field 'MessageAnswer.answared_at'
+        db.add_column(u'clarification_messageanswer', 'answared_at',
+                      self.gf('django.db.models.fields.DateTimeField')(auto_now=True, null=True, blank=True),
+                      keep_default=False)
 
-        # Deleting model 'MessageAnswer'
-        db.delete_table(u'clarification_messageanswer')
-        
+        # Adding field 'MessageAnswer.answared_by'
+        db.add_column(u'clarification_messageanswer', 'answared_by',
+                      self.gf('django.db.models.fields.related.ForeignKey')(to=orm['userregistration.CustomUser'], null=True, blank=True),
+                      keep_default=False)
+
+        # Deleting field 'MessageAnswer.answered_by'
+        db.delete_column(u'clarification_messageanswer', 'answered_by_id')
+
+        # Deleting field 'MessageAnswer.answered_at'
+        db.delete_column(u'clarification_messageanswer', 'answered_at')
+
 
     models = {
         u'auth.group': {
@@ -65,8 +68,8 @@ class Migration(SchemaMigration):
         },
         u'clarification.messageanswer': {
             'Meta': {'object_name': 'MessageAnswer'},
-            'answared_at': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'null': 'True', 'blank': 'True'}),
-            'answared_by': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['userregistration.CustomUser']", 'null': 'True', 'blank': 'True'}),
+            'answered_at': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'null': 'True', 'blank': 'True'}),
+            'answered_by': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['userregistration.CustomUser']", 'null': 'True', 'blank': 'True'}),
             'body': ('django.db.models.fields.TextField', [], {'default': "'Not Yet Answered'", 'max_length': '355'}),
             'contest': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['contest.Contest']"}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
