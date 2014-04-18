@@ -10,6 +10,8 @@ from django.shortcuts import get_object_or_404
 import datetime;
 from django.utils import timezone;
 
+import pdb
+
 '''
 This view is suppose to hold functiones used by several modules. 
 Please mark 
@@ -80,7 +82,8 @@ def is_member_of_team(request):
 #===============================================================================
 def get_all_answers(request):
     contest = get_current_contest(request)
-    answers = MessageAnswer.objects.filter(contest=contest)    
+    answers = MessageAnswer.objects.filter(contest=contest)
+     
     if(answers.count() < 0):
         return None
     return answers
