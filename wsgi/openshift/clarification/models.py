@@ -2,12 +2,6 @@ from django.db import models
 from contest.models import Team, Contest
 from userregistration.models import CustomUser
 from django.conf import settings
-
-#def notify_admin(sender, instance, created, **kwargs):
-#    ''' Notify the administrator that a new message has been added.'''  
-#    if created:
-        # TODO: Notify all admins that a new message has been received
-#        pass
     
 class Message (models.Model):
     subject     = models.CharField(max_length = 120)
@@ -18,11 +12,9 @@ class Message (models.Model):
     answered    = models.BooleanField(default = False)
 
 class MessageAnswer(models.Model):
-    subject     = models.CharField(max_length = 120, default='Not Yet Answered')
-    body        = models.TextField(max_length = 355, default='Not Yet Answered')
+    subject     = models.CharField(max_length = 120)
+    body        = models.TextField(max_length = 355)
     answered_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank = True, null=True) 
     answered_at = models.DateTimeField(null=True, blank=True, auto_now = True)  
     message     = models.ForeignKey(Message, null=True, blank=True, default = None)
     contest     = models.ForeignKey(Contest)
-
-#signals.post_save.connect(notify_admin, sender=Message)

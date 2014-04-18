@@ -5,7 +5,6 @@ from django.contrib import messages
 from helpFunctions import views as helpView
 from django.shortcuts import Http404
 
-import pdb
 # Create your views here.
 
 def clarification(request):
@@ -14,7 +13,7 @@ def clarification(request):
         
         if not form.is_valid():
             messages.warning(request, "Something went wrong. Did you fill out all fields?")
-        
+
         else: #e.g the form is valid
             '''
             Gets the data 
@@ -54,6 +53,5 @@ def clarificationAnswers(request):
     context = {
                'answers': answers
                }
-    
     
     return render(request, 'clarificationAnswers.html', context)
