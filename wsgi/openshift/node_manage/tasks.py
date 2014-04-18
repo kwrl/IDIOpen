@@ -58,7 +58,7 @@ def set_resource(time, memory, procs):
         nproc   = resource.getrlimit(resource.RLIMIT_NPROC)
         tcpu    = resource.getrlimit(resource.RLIMIT_CPU)
         mem     = resource.getrlimit(resource.RLIMIT_DATA)
-	logger.debug(os.getenv('PATH'))        
+        logger.debug(os.getenv('PATH'))        
         # Set The maximum number of processes the current process may create.
         try:
             resource.setrlimit(resource.RLIMIT_NPROC, (procs, procs))
@@ -105,7 +105,8 @@ def evaluate_task(submission_id):
             sub.text_feedback = "Compile timeout"
         else:
             sub.text_feedback = "Unspecified compile time error."
-	sub.save()
+        
+        sub.save()
         return retval, stdout, stderr
 
     logger.debug('Exec start')
@@ -145,7 +146,7 @@ def compile(submission, compiler):
 
     limits = get_resource(submission, compiler)
     if not limits:
-	limits = Resource()
+        limits = Resource()
     dir_path, filename = os.path.split(submission.submission.path)
     command = re.sub(FILENAME_SUB, filename, compiler.compile)
     command = re.sub(BASENAME_SUB, filename.split('.')[0], command)
@@ -166,9 +167,9 @@ def execute(submission, compiler, test_cases):
     #dir_path = WORK_ROOT + str(submission.id)
     #command = 'cd ' + dir_path + ' && ' + compiler.run
     #command = 'ulimit -t %d -v %d -u %d && ' % (limit.max_program_timeout, limit.max_memory, limit.max_processes)
-    limits = get_resource(submission, compiler)
-    if not limits:
-	limits = Resource()
+    limit = get_resource(submission, compiler)
+    if not limit:
+        limit = Resource()
     command = compiler.run
     dir_path, filename = os.path.split(os.path.abspath(submission.submission.path))
     command = re.sub(BASENAME_SUB, filename.split('.')[0], command)
@@ -185,7 +186,7 @@ def execute(submission, compiler, test_cases):
         #user_uid, user_gid = getUserData()
         
         args = shlex.split(command)
-	logger.debug(args)
+        logger.debug(args)
         process = Popen(args=args, stdin=PIPE, stdout=PIPE, stderr=PIPE,
                         preexec_fn=set_resource(limit.max_program_timeout, limit.max_memory, limit.max_processes),
                         cwd=dir_path)
@@ -197,8 +198,8 @@ def execute(submission, compiler, test_cases):
         else:
             results.append([retval, stdout, stderr, False])
    
-    logger.debug('Results:')
-    logger.debug(results) 
+        logger.debug('Results:')
+        logger.debug(results) 
     #command += test_cases.
     return results
 
