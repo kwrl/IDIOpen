@@ -49,8 +49,11 @@ def clarificationAnswers(request):
     if not helpView.contest_begin(request) or not helpView.is_member_of_team(request):
         raise Http404
     
+    answers = helpView.get_all_answers(request)
+    print answers
     context = {
-               'answers': helpView.get_all_answers(request)
+               'answers': answers
                }
+    
     
     return render(request, 'clarificationAnswers.html', context)

@@ -9,14 +9,17 @@
 
 <h2>Questions and answers</h2>
 <hr>
-{% if answer %}
-		<h1>{{ answer.subject }}</h1>
+
+{% if answers %}
+{% for answer in answers %}
+		<h1>{{ answers.subject }}</h1>
 		<hr>
 		<p class="text-muted">
-			Published: {{answer.created_at|date:"d.m.Y - H.i"}}, 
-			Author: {{ answer.author.get_name_nick }}
+			Published: {{answers.created_at|date:"d.m.Y - H.i"}}, 
+			Author: {{ answers.author.get_name_nick }}
 		</p>	
 		<div>{{ answer.body|safe}}</div>
+{% endfor %}
 {% else %}
 	<p>No asked questions found </p>
 {% endif %}
