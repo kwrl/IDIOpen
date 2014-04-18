@@ -39,7 +39,7 @@ class ChangeEmailManager(models.Manager):
         if SHA1_RE.search(activation_key):
             try:
                 instance = self.get(refuser=user, activation_key=activation_key)
-            except self.model.DoesNotExist:
+            except (self.model.DoesNotExist, TypeError):
                 return None
 
             return instance
