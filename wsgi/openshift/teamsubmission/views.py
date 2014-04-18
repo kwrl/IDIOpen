@@ -84,6 +84,7 @@ def submission_problem(request, problemID):
             if form.is_valid():
                 form.save()
                 form = SubmissionForm(instance=submission);
+                return redirect('submission_problem', contest.url, problemID)
         else:
             messages.error(request, 'You have to be the leader of a team to upload submissions')
     else:

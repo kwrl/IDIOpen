@@ -13,6 +13,9 @@
 <p>
 Insert guidelines text here
 </p>
+<a href= {% url 'clarificationAnswersPage' contest.url %}> View answered question </a>
+<br>
+<br>
 
 <form action="" method="post">
 {% csrf_token %}
@@ -24,6 +27,8 @@ Insert guidelines text here
 <br>
 <button type="submit" class = "btn btn-primary btn-sm">Send question</button>
 </form>
+<br>
+<br>
 
 	
 {% else %}
