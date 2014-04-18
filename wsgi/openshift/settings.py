@@ -74,7 +74,8 @@ INSTALLED_APPS = (
     'changeemail',
     'execution',
     'teamsubmission',
-    'clarification'
+    'clarification',
+    'judge_supervise',
 )
 '''
 if not ON_OPENSHIFT:
