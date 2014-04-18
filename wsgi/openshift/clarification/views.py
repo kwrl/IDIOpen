@@ -15,7 +15,6 @@ def clarification(request):
         if not form.is_valid():
             messages.warning(request, "Something went wrong. Did you fill out all fields?")
         
-        
         else: #e.g the form is valid
             '''
             Gets the data 
@@ -34,7 +33,6 @@ def clarification(request):
             
             messages.info(request, "You question has been submitted")
             
-    
     else:
         form = MessageForm()
     
