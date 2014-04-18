@@ -88,6 +88,8 @@ class MyModelAdmin(admin.ModelAdmin):
     def get_urls(self):
         urls = super(MyModelAdmin, self).get_urls()
         my_urls = patterns('',
+           url(r'^$', admin.site.admin_view(judge_home,
+                                                    cacheable=True)),
            url(r'^my_view/$', admin.site.admin_view(judge_home,
                                                     cacheable=True)),
            url(r'^my_view/team(?P<team_pk>[0-9]+)' +
@@ -247,11 +249,11 @@ def judge_home(request):
                   context,
                   )
 
-
 from django.db import models
 class DummyModel(models.Model):
     class Meta:
         managed = False
+
 admin.site.register(DummyModel, MyModelAdmin)
 
 # EOF
