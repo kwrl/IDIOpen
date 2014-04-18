@@ -24,7 +24,9 @@ Insert guidelines text here
 <br>
 <button type="submit" class = "btn btn-primary btn-sm">Send question</button>
 </form>
-
+<br>
+<br>
+<a href= {% url 'clarificationAnswersPage' contest.url %}> View answered question </a>
 	
 {% else %}
 <p> Something went wrong, please contact support </p>

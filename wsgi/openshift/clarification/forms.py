@@ -1,4 +1,5 @@
 from .models import Message 
+from helpFunctions import views as helpView
 
 '''
 Created on Apr 16, 2014
@@ -18,4 +19,14 @@ class MessageForm(forms.ModelForm):
         
         fields = ['subject', 'body']
         
+    def save(self,data):
+        subject             = self.cleaned_data['subject'].strip()
+        body                = self.cleaned_data['body'].strip()
+        new_message         = Message()
+        new_message.body    = body
+        new_message.subject = subject
+        new_message.contest = data['contest']
+        new_message.sender  = data['sender']
+        new_message.save()
+            
         
