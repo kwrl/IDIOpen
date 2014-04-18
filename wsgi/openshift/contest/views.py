@@ -371,3 +371,7 @@ def deleteMember(request, member_id):
         messages.warning(request, 'Only the leader can delete members')
         
     return redirect('team_profile', url)
+
+def cage_me(request):
+    return render(request,'Cage/cage.html')
+    
