@@ -377,7 +377,6 @@ def deleteMember(request, member_id):
     return redirect('team_profile', url)
 
 
-
 #What are you doing down here? POEM TIME!!!!1
 # Roses are red
 # Violets are blue 
