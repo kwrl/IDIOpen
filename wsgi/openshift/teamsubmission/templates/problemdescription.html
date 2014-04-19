@@ -10,7 +10,6 @@
 
 <hr>
 
-
 {% if not submission.solved_problem %}
 <p> Attempts: <strong> {{ tries }} </strong> </p>
 
@@ -26,11 +25,13 @@
     {% csrf_token %}
 <div class = 'well'>
 
-<p>1. Pick a compiler profile</p>
-{{ submission_form.compilerProfile }} 
+<strong><p>1. Pick a compiler profile</p></strong>
+
+{{ submission_form.compileProfile }}
+
 <br>
 <br>	
-<p>2. Pick the file you want to upload </p>
+<strong><p>2. Pick the file you want to upload </p></strong>
 {{ submission_form.submission }}
  {% for field in submission_form %}
   	{% for error in field.errors %}
@@ -39,7 +40,8 @@
              <br>
     {% endfor %}
  {% endfor %}
- <p>3. Submitt the file </p>
+ <br>
+ <strong><p>3. Submitt the file </p></strong>
     <button type="submit" class = "btn btn-primary btn-sm">Submit file</button> 
     <br>
     <i> <small>Please note that by submitting a file it will count as an attempt</small></i>
