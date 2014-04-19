@@ -137,6 +137,9 @@ class Submission(models.Model):
     runtime = models.IntegerField(max_length = 15, blank = True, null = True)  
     objects = ScoreManager()
 
+    def __unicode__(self):
+        return unicode(self.pk)
+
 class ExecutionLogEntry(models.Model):
     submission  = models.ForeignKey(Submission)
     command     = models.CharField(help_text="Command issued", max_length=200)
