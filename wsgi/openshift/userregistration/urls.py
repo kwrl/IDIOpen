@@ -8,9 +8,9 @@ from django.conf.urls import patterns
 from django.conf.urls import url
 from django.views.generic.base import TemplateView
 from django.contrib.auth import views as auth_views;
-from userregistration.views import *;
-from userregistration.views import updateProfilePw;
-from changeemail.views import ChangeEmailView;
+from .views import *;
+from .views import updateProfilePw;
+from openshift.changeemail.views import ChangeEmailView;
 
 # prefix in here is contest/accounts/
 # as per Wed 19 Mar 2014 11:27:26 PM CET
