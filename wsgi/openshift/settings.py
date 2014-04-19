@@ -117,7 +117,7 @@ if MYSQL:
          'default': {
              'ENGINE'	: 'django.db.backends.mysql',
              'NAME'	: 'gentleidi',
-             'USER'	: 'filip', #Added Windows support  
+             'USER'	: os.getenv('USER'), #Added Windows support  
 	     'PASSWORD'	: 'password',
 	     'HOST'	: 'localhost',
 	     'PORT'	: '3306',
