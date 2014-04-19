@@ -5,6 +5,9 @@ Created on Apr 9, 2014
 '''
 from dajax.core import Dajax
 from dajaxice.decorators import dajaxice_register
+from django.core.exceptions import ObjectDoesNotExist
+from .models import Submission
+from openshift.contest.models import Team
 import datetime
 
 @dajaxice_register
@@ -17,8 +20,15 @@ def ajaxalert(request):
 
 
 @dajaxice_register
-def submission(request):
+def submission(request, submission_id):
     dajax = Dajax()
-    now = str(datetime.datetime.now())
-    dajax.assign('#response', 'innerHTML', now)
+    
+    try:
+        sub  = Submission.objects.get(id = int(submission_id))
+    except ObjectDoesNotExist:
+        sub = None
+    members = sub.team.members.all()
+    if request.user in members:
+        dajax.assign('#response', 'innerHTML', sub.status)
+        
     return dajax.json()

@@ -6,7 +6,7 @@
 
 
 function doPoll(){
-	Dajaxice.openshift.teamsubmission.submission(Dajax.process);
+	Dajaxice.openshift.teamsubmission.submission(Dajax.process, {'submission_id': {{ submission.pk }}});
     setTimeout(doPoll,5000);
 }
 
