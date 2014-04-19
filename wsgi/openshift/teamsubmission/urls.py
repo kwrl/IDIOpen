@@ -1,6 +1,6 @@
 from django.conf.urls import patterns, include, url
 from .views import submission_view, submission_problem, highscore_view
-from clarification import views as clarViews
+from openshift.clarification import views as clarViews
 
 urlpatterns = patterns('',
     url(r'^$', submission_view, name = 'submission_page'),

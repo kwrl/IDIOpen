@@ -2,7 +2,7 @@ from django.shortcuts import render
 from .forms import MessageForm
 from .models import Message
 from django.contrib import messages
-from helpFunctions import views as helpView
+from openshift.helpFunctions import views as helpView
 from django.shortcuts import Http404
 
 # Create your views here.

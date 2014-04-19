@@ -3,9 +3,9 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render
 from django.conf.urls import url, patterns
 
-from contest.models import Contest, Team
-from execution.models import Problem
-from teamsubmission.models import Submission
+from openshift.contest.models import Contest, Team
+from openshift.execution.models import Problem
+from openshift.teamsubmission.models import Submission
 
 from collections import defaultdict
 from decimal     import Decimal

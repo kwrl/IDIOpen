@@ -1,5 +1,5 @@
 from django.test import TestCase, Client
-from userregistration.models import CustomUser
+from .models import CustomUser
 from django.contrib.sites.models import Site
 from django.core import mail
 # Create your tests here.

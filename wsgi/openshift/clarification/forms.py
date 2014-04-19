@@ -1,5 +1,5 @@
 from .models import Message 
-from helpFunctions import views as helpView
+from openshift.helpFunctions import views as helpView
 
 '''
 Created on Apr 16, 2014
