@@ -1,11 +1,9 @@
-#pylint: disable=R0904, W0232, C1001, R0903, R0913
 import hashlib
 import random
 import re
 
 from django.db import models
 from django.core.exceptions import ValidationError;
-from django.core.validators import MinLengthValidator;
 from django.utils import timezone
 from django.utils.http import urlquote
 from django.utils.translation import ugettext_lazy as _

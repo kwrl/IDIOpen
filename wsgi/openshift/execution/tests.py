@@ -1,10 +1,8 @@
-
 from django.test import TestCase
 
+from openshift.contest.models import Contest, Link
 from .models import Problem, Resource, CompilerProfile, FileExtension
-from contest.models import Contest, Link
 import datetime
-import cProfile
 
 # Create your tests here.
 

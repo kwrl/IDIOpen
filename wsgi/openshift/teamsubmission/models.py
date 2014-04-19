@@ -1,12 +1,11 @@
 from django.db import models
 
 from django.conf import settings
-from django.core.files.storage import Storage
 
 import os
 
-from execution.models import Problem
-from contest.models import Team, Contest
+from openshift.execution.models import Problem
+from openshift.contest.models import Team
 from django.core.files.storage import FileSystemStorage
 
 import operator
@@ -137,14 +136,19 @@ class ScoreManager(models.Manager):
             statistics.append(s)
         return statistics
 
+def file_function(instance, filename):
+    tries = len(Submission.objects.filter(team__pk = instance.team.pk).filter(problem__pk = instance.problem.id).all())
+    return '/'.join(['submissions', str(instance.team.id), str(instance.problem.id), str(tries), filename])
+
 class Submission(models.Model):
     #We should rename submission field.... 
-    submission = models.FileField(storage=private_media, upload_to='submissions')
+    submission = models.FileField(storage=private_media, upload_to=file_function)
+    compileProfile = models.ForeignKey('execution.CompilerProfile')
     date_uploaded = models.DateTimeField(auto_now = True)
     solved_problem = models.BooleanField(default=False) #E.g. Did this submission solve the the problem
     text_feedback = models.CharField(max_length=50)
-    team = models.ForeignKey(Team)
-    problem = models.ForeignKey(Problem)
+    team = models.ForeignKey('contest.Team')
+    problem = models.ForeignKey('execution.Problem')
     runtime = models.IntegerField(max_length = 15, blank = True, null = True)  
     objects = ScoreManager()
     

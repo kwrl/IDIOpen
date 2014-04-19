@@ -1,23 +1,19 @@
 #coding: utf-8
-
+from openshift.userregistration.models import CustomUser as User 
 from sortedm2m.fields import SortedManyToManyField
-from django.core.exceptions import ValidationError;
+from django.core.exceptions import ValidationError
 from django.db import models
-from django.contrib.auth import get_user_model;
-from django.conf import settings;
-from filebrowser.fields import FileBrowseField;
-from django.forms import ModelForm;
-from django import forms;
+from django.conf import settings
+from filebrowser.fields import FileBrowseField
 from django.template.loader import render_to_string
 from django.core.mail import send_mail
 from django.core.exceptions import ObjectDoesNotExist
-
-import datetime;
-from django.utils import timezone;
+from openshift.userregistration.models import CustomUser as User
+import datetime
+from django.utils import timezone
 
 # Create your models here.
 
-User = get_user_model()
 '''
 Contest model
 
@@ -25,11 +21,9 @@ TODO: Add location, fix start, end, publish date, validate
 Is done now right?
 '''
 
-from django.db import models
-from django.core.urlresolvers import reverse
 
 def getTodayDate():
-    return timezone.make_aware(datetime.datetime.now(), timezone.get_default_timezone());
+    return timezone.make_aware(datetime.datetime.now(), timezone.get_default_timezone())
 
 class ContactInformation(models.Model):
     email = models.EmailField()
@@ -40,9 +34,10 @@ class ContactInformation(models.Model):
 
 class Contest(models.Model):
     title = models.CharField(max_length=200)
-    contact_infos = models.ManyToManyField(ContactInformation, null = True)
+    contact_infos = models.ManyToManyField('ContactInformation', null = True)
     """ The url is saved as the suffix from root, only, not the entire url
     """
+
     penalty_constant = models.IntegerField('Penalty Constant', default = 0)
     url = models.CharField(max_length=20, unique=True, help_text='Defines the url used to access the contest. E.g. sample.site.com/[the value inserted here]');
     start_date = models.DateTimeField(verbose_name='Start date');
@@ -58,10 +53,10 @@ class Contest(models.Model):
                           help_text='Select logo image, allowed formats jpg, jpeg, png, gif')
 
     def isPublishable(self):
-        return self.publish_date.__lt__(getTodayDate());
+        return self.publish_date.__lt__(getTodayDate())
 
     def isRegOpen(self):
-        return self.teamreg_end_date.__gt__(getTodayDate());
+        return self.teamreg_end_date.__gt__(getTodayDate())
 
     def clean(self):
         # TODO: which is better? To do clean here, or in form?
@@ -69,7 +64,7 @@ class Contest(models.Model):
         # not a single one
         if self.start_date is not None and self.end_date is not None:
             if self.start_date.__lt__(self.end_date) == False:
-                raise ValidationError('You cannot set start date to be after the end date');
+                raise ValidationError('You cannot set start date to be after the end date')
             
     def __str__(self):
         return self.title
@@ -101,7 +96,7 @@ class Team(models.Model):
     onsite = models.BooleanField()
     leader = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='leader', null = True)
     members = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='members')
-    contest = models.ForeignKey(Contest, related_name='contest', null=True)
+    contest = models.ForeignKey('Contest', related_name='contest', null=True)
     offsite = models.CharField(max_length=30, blank = True)
 
     def __unicode__(self):
@@ -145,13 +140,13 @@ class InviteManager(models.Manager):
         else:
             message = render_to_string('registration/team_register_email.txt', ctx_dict)
 
-        # send_mail(subject, message, False, [email,])
+        send_mail(subject, message, False, [email,])
         
 
 class Invite(models.Model):
-    email = models.EmailField(); 
-    team = models.ForeignKey(Team)
-    is_member = models.BooleanField(default=False);
+    email = models.EmailField() 
+    team = models.ForeignKey('Team')
+    is_member = models.BooleanField(default=False)
     objects = InviteManager()
     
     def __unicode__(self):

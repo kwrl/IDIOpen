@@ -1,22 +1,22 @@
 from django.shortcuts import redirect, render
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView
-from userregistration import signals
+from openshift.userregistration import signals
 from django.core.urlresolvers import reverse
-from contest.models import Invite
+from openshift.contest.models import Invite
 from django.http import HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django import forms
 from django.contrib.auth.forms import SetPasswordForm
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import ugettext_lazy as _
-from contest.models import Team, Contest
+from openshift.contest.models import Team, Contest
 from django.http import Http404
 from django.contrib import messages
 
-from userregistration.forms import *
-from changeemail.models import ChangeEmail
-from changeemail.forms import EmailForm
+from .forms import *
+from openshift.changeemail.models import ChangeEmail
+from openshift.changeemail.forms import EmailForm
 
 from django.contrib.sites.models import RequestSite
 from django.views.decorators.debug import sensitive_post_parameters
@@ -304,7 +304,6 @@ def user_profile(request):
                
             # If the submit value is accept    
             if submit == 'accept':
-                print 'accept'
                 # If the user already has a team
                 if is_on_team(request):
                     messages.info(request, 'You are already a member of a team!')
@@ -322,7 +321,6 @@ def user_profile(request):
                 messages.success(request, 'Invite accepted')
                     
             elif submit == 'decline':
-                print 'decline'
                 invite.delete()
                 messages.info(request, 'Invite declined')
             else:
