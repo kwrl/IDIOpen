@@ -99,7 +99,6 @@ class MyModelAdmin(admin.ModelAdmin):
                 admin.site.admin_view(judge_team_summary)),
         )
 
-        #import ipdb; ipdb.set_trace()
         return my_urls + urls
 
     def get_inline_instances(self, request, obj=None):
