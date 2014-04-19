@@ -6,7 +6,7 @@ import subprocess
 CELERYD_NODES = "w1"
 CELERY_MULTI = "celery multi"
 
-
+DAJAXICE_DEBUG = True
 """
 Django settings for openshift project.
 
