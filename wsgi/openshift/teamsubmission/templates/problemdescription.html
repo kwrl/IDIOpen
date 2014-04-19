@@ -2,6 +2,20 @@
 {% load link_tags %}
 {% load fileprint %}
 {% block content %}
+<script type="text/javascript">
+
+
+function doPoll(){
+	Dajaxice.openshift.teamsubmission.submission(Dajax.process, {'submission_id': {{ submission.pk }}});
+    setTimeout(doPoll,5000);
+}
+
+$( document ).ready(function() {
+	doPoll();
+});
+
+</script>
+
 <div class = "pull-right" >
 <a href="{% url 'submission_page' contest.url %}" class="btn btn-primary btn-large">Go To Contest Page</a>
 </div>
@@ -9,6 +23,8 @@
 <h2>{{problem.title}}</h2>
 
 <hr>
+<p id='response'><p>
+<button onclick="Dajaxice.openshift.teamsubmission.ajaxalert(Dajax.process);">Click here!</button>
 
 {% if not submission.solved_problem %}
 <p> Attempts: <strong> {{ tries }} </strong> </p>

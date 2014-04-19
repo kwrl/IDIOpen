@@ -82,14 +82,13 @@ def submission_problem(request, problemID):
         elif is_leader(request, contest):
             if form.is_valid():
                 form.save()
-                submission = Submission.objects.get(pk=submission.pk)
-                tries += 1
-                form = SubmissionForm(instance=submission);
                 return redirect('submission_problem', contest.url, problemID)
         else:
             messages.error(request, 'You have to be the leader of a team to upload submissions')
-    else:
+    elif not submission.solved_problem:
         form = SubmissionForm(instance=submission);
+    else:
+        form = None
     
     score = Submission.objects.get_problem_score(team, problem, contest)
     context = {

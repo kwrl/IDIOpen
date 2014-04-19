@@ -141,8 +141,18 @@ def file_function(instance, filename):
     return '/'.join(['submissions', str(instance.team.id), str(instance.problem.id), str(tries), filename])
 
 class Submission(models.Model):
+    
+    QUEUED = 0
+    RUNNING = 1
+    EVALUATED = 2
+    STATES = (
+        (QUEUED, 'Queued'),
+        (RUNNING, 'Running'),
+        (EVALUATED, 'Evaluated'),
+    )
     #We should rename submission field.... 
     submission = models.FileField(storage=private_media, upload_to=file_function)
+    status = models.IntegerField(choices=STATES, default=QUEUED)
     compileProfile = models.ForeignKey('execution.CompilerProfile')
     date_uploaded = models.DateTimeField(auto_now = True)
     solved_problem = models.BooleanField(default=False) #E.g. Did this submission solve the the problem
@@ -151,5 +161,18 @@ class Submission(models.Model):
     problem = models.ForeignKey('execution.Problem')
     runtime = models.IntegerField(max_length = 15, blank = True, null = True)  
     objects = ScoreManager()
+
+    def __unicode__(self):
+        return unicode(self.pk)
+
+class ExecutionLogEntry(models.Model):
+    submission  = models.ForeignKey(Submission)
+    command     = models.CharField(help_text="Command issued", max_length=200)
+    stdout      = models.TextField(help_text="Standard output")
+    stderr      = models.TextField(help_text="Standard error")
+    retval      = models.IntegerField(help_text="Return value")
+
+    def __unicode__(self):
+        return "Submission:\t" + unicode(self.submission.pk) + "\tCommand:\t " + self.command
     
 # EOF
