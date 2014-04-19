@@ -166,8 +166,51 @@
 				{% endblock content %}
 				</div>				
 			</div>
+			{% block highscore %}
+			<div class="col-lg-3">
+				<div class="panel panel-default">
+					<div class="panel-body">
+				    	<table class="table table-striped table-condensed">
+					        <thead>
+						        <tr>
+						          <th>#</th>
+						          <th>Team</th>
+						          <th>Solved</th>
+						          <th>Time</th>
+						        </tr>
+						      </thead>
+						      <tbody>
+						        <tr>
+						          <td>1</td>
+						          <td>team1</td>
+						          <td>2690</td>
+						          <td>230.35 s</td>
+						        </tr>
+						        <tr>
+						          <td>2</td>
+						          <td>team2</td>
+						          <td>2256</td>
+						          <td>349.35 s</td>
+						        </tr>
+						        <tr>
+						          <td>3</td>
+						          <td>team3</td>
+						          <td>1977</td>
+						          <td>190.11 s</td>
+						        </tr>
+						      </tbody>
+						</table>
+
+				  	</div>
+				</div>
+
+			</div>
+			
+			{% endblock highscore %}
 		</div>
 	</div>
+	
+
 	
 <div id="push"></div>
     </div>
