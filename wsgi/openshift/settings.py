@@ -74,6 +74,7 @@ INSTALLED_APPS = (
     'openshift.clarification',
     'openshift.helpFunctions',
     'openshift.judge_supervise',
+
 )
 
 MIDDLEWARE_CLASSES = (
