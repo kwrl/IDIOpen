@@ -1,6 +1,6 @@
 from __future__ import absolute_import
 from openshift.execution.models import CompilerProfile, TestCase, Resource, get_resource
-from openshift.teamsubmission.models import Submission 
+from openshift.teamsubmission.models import Submission, ExecutionLogEntry 
 from subprocess import call
 from openshift.messaging import celery_app as app
 from subprocess import PIPE, Popen
@@ -154,6 +154,14 @@ def compile(submission, compiler):
                     preexec_fn=set_resource(limits.max_compile_time, -1, -1))
     stdout, stderr = process.communicate()
     retval = process.poll()
+    ExecutionLogEntry.objects.create(submission=submission, 
+                                        command=command, 
+                                        stdout=stdout, 
+                                        stderr=stderr,
+                                        retval=retval).save()
+
+    
+
     if os.path.exists(dir_path + '/' + filename.split('.')[0]):
         os.chmod(dir_path + '/' + filename.split('.')[0], 0751)
     else:
@@ -170,7 +178,7 @@ def execute(submission, compiler, test_cases):
     dir_path, filename = os.path.split(os.path.abspath(submission.submission.path))
     command = re.sub(BASENAME_SUB, filename.split('.')[0], command)
     logger.debug(command)
-    #command = use_run_user(command)
+    command = use_run_user(command)
     results = []
     for test in test_cases:
         test.inputFile.open("rb")
@@ -188,6 +196,11 @@ def execute(submission, compiler, test_cases):
                         cwd=dir_path)
         stdout, stderr = process.communicate(input_content)
         retval = process.poll()
+        ExecutionLogEntry.objects.create(submission=submission, 
+                                            command=command, 
+                                            stdout=stdout, 
+                                            stderr=stderr,
+                                            retval=retval).save()
         #retval, stdout, stderr = _run_safe_shell(command + ' < ' + str(test.inputFile.path))
         if stdout == output_content:
             results.append([retval, stdout, stderr, True])
