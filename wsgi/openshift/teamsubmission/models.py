@@ -62,11 +62,23 @@ class ScoreManager(models.Manager):
         [solved problems,
         total score,
         time submitted (in minutes),
+        onsite,
+        year,
+        gender,
         problem 1 submissions/time solved,
         ...
         problem n submissions/time solved]
         """
-        statistics = [0, 0, 0]
+        statistics = [0, 0, 0, 0, 0, 0]
+        statistics[3] = team.onsite
+        statistics[4] = team.members.all()[0].skill_level
+        statistics[5] = team.members.all()[0].gender
+        for member in team.members.all():
+            if member.skill_level != statistics[4]:
+                statistics[4] = "--"
+            if member.gender != statistics[5]:
+                statistics[5] = "--"
+                
         for problem in problems:
             problemStat = ScoreManager.get_problem_score(self, team, problem, contest)
             if problemStat[0]:
@@ -89,6 +101,9 @@ class ScoreManager(models.Manager):
         solved problems,
         total score,
         total time (in minutes),
+        onsite,
+        year,
+        gender,
         problem 1 submissions,
         ...
         problem n submissions,]
