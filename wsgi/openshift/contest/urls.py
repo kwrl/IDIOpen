@@ -6,7 +6,7 @@ Created on Feb 12, 2014
 from django.conf.urls import patterns, include, url
 from openshift.contest import views
 from openshift.article import views as articleview
-
+from openshift.teamsubmission.views import highscore_view
 urlpatterns = patterns('',
     # Examples:
     url(r'^$', views.index, name='contest_list'),
@@ -23,9 +23,11 @@ urlpatterns = patterns('',
     url(r'^team/edit/$', views.editTeam, name = 'team_edit'),
     url(r'^team/member/delete/(?P<member_id>\d+)/$', views.deleteMember, name = 'team_delete_member'),
     url(r'^teams/$', views.view_teams, name = 'view_teams'),
+    url(r'^team/leave/$', views.leave_team, name = 'team_leave'), 
     url(r'^team/leave/$', views.leave_team, name = 'team_leave'),
     url(r'^pages/(?P<article_url>[^/]+)/$', articleview.detail_url, name='article_detail_url'), 
     url(r'^cage$', views.cage_me, name = 'nic_cage'), 
+    url(r'^highscore', highscore_view, name = "highscorePage"),
 )
 
 # EOF

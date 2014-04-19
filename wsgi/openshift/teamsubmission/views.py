@@ -30,7 +30,7 @@ def is_leader(request, contest):
     else:
         return False
 
-#Login required
+
 #View for uploading submissions to a problem
 def submission_problem(request, problemID):
     #TODO: maybe a nicer url than numeric ID
@@ -109,9 +109,22 @@ def submission_view(request):
     user = request.user
     con = get_current_contest(request)
     
+    if not user.is_authenticated():
+        messages.error(request, 'You have to be logged in in order to view the contest page')
+        return redirect('login', con.url)
+    
+    
+    if not is_member_of_team(request, con):
+        messages.error(request, 'Please register a team to participate')
+        return redirect('team_profile', con.url)
+        
+    
     # Raise 404 if contest hasn't begun or contest has ended
-    if not contest_begin(request) or not is_member_of_team(request, con):
-        raise Http404    
+    if not contest_begin(request):
+        messages.error(request, 'Contest has not yet started')
+        return redirect('contest_list', con.url)
+        
+    
     
     if not user.is_authenticated():
         return redirect('login', con.url)
@@ -148,7 +161,7 @@ def highscore_view(request):
     statistics = Submission.objects.get_highscore(contest)
     problems = []
     if statistics:
-        problems = statistics[0][5:]
+        problems = statistics[0][8:]
     
     context = {
                'contest' : contest,

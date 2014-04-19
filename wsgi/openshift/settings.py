@@ -59,7 +59,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    #'debug_toolbar',
+    'debug_toolbar',
     'openshift.contest',
     'openshift.article',
     'openshift.userregistration',
@@ -76,6 +76,7 @@ INSTALLED_APPS = (
     'openshift.clarification',
     'openshift.helpFunctions',
     'openshift.judge_supervise',
+
 )
 
 MIDDLEWARE_CLASSES = (
@@ -129,7 +130,7 @@ if MYSQL:
          'default': {
              'ENGINE'	: 'django.db.backends.mysql',
              'NAME'	: 'gentleidi',
-             'USER'	: os.getenv("USER"), #Added Windows support  
+             'USER'	: os.getenv('USER'), #Added Windows support  
 	     'PASSWORD'	: 'password',
 	     'HOST'	: 'localhost',
 	     'PORT'	: '3306',
@@ -157,7 +158,7 @@ USE_L10N = True
 # Timezone-aware or not
 USE_TZ = True
 
-#DEBUG_TOOLBAR_PATCH_SETTINGS = False
+DEBUG_TOOLBAR_PATCH_SETTINGS = False
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 STATIC_ROOT = os.path.join(BASE_DIR, '..', 'static')

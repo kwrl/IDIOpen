@@ -30,6 +30,8 @@ def submission(request, submission_id):
     # TODO: Filter only latest?
     members = sub.team.members.all()
     if request.user in members:
-        dajax.assign('#response', 'innerHTML', Submission.STATES[sub.status][1])
-        
+        if sub.status != Submission.EVALUATED:
+            dajax.assign('#response', 'innerHTML', Submission.STATES[sub.status][1])
+        else:
+            dajax.script('location.reload();')
     return dajax.json()

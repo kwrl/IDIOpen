@@ -9,6 +9,7 @@
 <h2>{{problem.title}}</h2>
 <hr>
 {% if not submission.solved_problem %}
+{% if submission.status != submission.EVALUATED %}
 <script type="text/javascript">
 
 
@@ -22,10 +23,16 @@ $( document ).ready(function() {
 });
 
 </script>
-<p id='response'><p>
-
+<div>
+<h3>
+<ul class="fa-ul">
+	<li><i class="fa-li fa fa-spinner fa-spin"></i><span id='response'></span></li>
+</ul>
+</h3>
+</div>
+{% endif %}
 {% if tries > 0 %}
-<p> You have made  <strong> {{ tries }} </strong> attempts at solving this problem </p>
+<p> Attempts: <strong> {{ tries }} </strong> </p>
 <h3> Upload a new file to this problem </h3>
 {% else %}
 <h3> Upload a file for this problem </h3> 
@@ -34,28 +41,41 @@ $( document ).ready(function() {
 <form id="fileUpload" method="POST" action="" enctype="multipart/form-data">
     {% csrf_token %}
 <div class = 'well'>
-  {% for field in submission_form %}
-    {{ field }} 
+
+<strong><p>1. Pick a compiler profile</p></strong>
+
+{{ submission_form.compileProfile }}
+
+<br>
+<br>	
+<strong><p>2. Pick the file you want to upload </p></strong>
+{{ submission_form.submission }}
+ {% for field in submission_form %}
   	{% for error in field.errors %}
-            {{error}} <br>
+  	<span class="bg-warning"> {{error}} </span>
+             <br>
+             <br>
     {% endfor %}
-    <br>
-    {% endfor %}
-    Please pick a compiler profile
-    <br>
-    <br>
+ {% endfor %}
+ <br>
+ <strong><p>3. Submitt the file </p></strong>
     <button type="submit" class = "btn btn-primary btn-sm">Submit file</button> 
     <br>
     <em><small>Please note that by submitting a file it will count as an attempt</small></em>
 </div>
 </form>
-{% endif %}
     <h3> Feedback on submission </h3>
+{% else %}
+	<h3><strong>Problem solved!</strong></h3>
+{% endif %}
+
  <div class = 'well' >
+
 {% if submission.solved_problem %}
-	<strong><p>Problem solved! </strong></p>
-	<p> Feedback: <strong>{{submission.text_feedback}} </strong></p>
+
+	<p> Feedback: <strong> <span class="bg-success"> {{submission.text_feedback}}</span></strong></p>
 	<p> Score for problem: <strong> {{ score }} </strong> </p>
+
 	<p> Solution runtime: <strong> {{ submission.runtime }}</strong> ms </p>
 	<p> Attempts: <strong> {{ tries }} </strong> </p>
 {% elif submission.text_feedback %}
@@ -72,7 +92,7 @@ $( document ).ready(function() {
 
 <br>
 {% if problem %}
-    {{ problem.description }}
+     {{ problem.description|linebreaksbr }}
 {% endif %}
 <br>
 

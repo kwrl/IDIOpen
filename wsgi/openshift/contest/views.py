@@ -84,7 +84,8 @@ def is_member_of_team(request, contest):
 # @login_required
 def registration(request):
     '''
-    TODO: Ch3ck if you already have a team. 
+    TODO: Ch3ck if you already have a team.
+    Done? 
     '''
     if not request.user.is_authenticated():
         return render(request, 'registerForContest/requireLogin.html')
