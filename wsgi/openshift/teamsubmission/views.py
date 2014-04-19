@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect, HttpResponse, Http404
-from contest.views import get_current_contest, is_leader, is_member_of_team
-from contest.models import Team
-from execution.models import Problem
+from openshift.contest.views import get_current_contest, is_leader, is_member_of_team
+from openshift.contest.models import Team
+from openshift.execution.models import Problem
 
 from .models import Submission
 from .forms import SubmissionForm
@@ -9,7 +9,7 @@ from .forms import SubmissionForm
 from itertools import groupby, imap, izip_longest
 from operator import itemgetter
 from django.contrib import messages
-from contest.views import contest_begin, contest_end
+from openshift.contest.views import contest_begin, contest_end
 
 def is_problem_solved(team, problemID):
     submission = Submission.objects.filter(team=team).filter(problem=problemID).filter(solved_problem = True)
@@ -29,7 +29,9 @@ def is_leader(request, contest):
         return True
     else:
         return False
+
 #Login required
+#View for uploading submissions to a problem
 def submission_problem(request, problemID):
     #TODO: maybe a nicer url than numeric ID
     contest = get_current_contest(request)
@@ -52,7 +54,6 @@ def submission_problem(request, problemID):
     submission = Submission.objects.filter(team=team).filter(problem=problemID).order_by('-date_uploaded')
     tries = len(submission)
     
-    score = Submission.objects.get_problem_score(team, problem, contest)
     
     if len(submission.values_list()) > 0:
         submission = submission[0]
@@ -81,12 +82,16 @@ def submission_problem(request, problemID):
         elif is_leader(request, contest):
             if form.is_valid():
                 form.save()
+                submission = Submission.objects.get(pk=submission.pk)
+                tries += 1
                 form = SubmissionForm(instance=submission);
+                return redirect('submission_problem', contest.url, problemID)
         else:
             messages.error(request, 'You have to be the leader of a team to upload submissions')
     else:
         form = SubmissionForm(instance=submission);
     
+    score = Submission.objects.get_problem_score(team, problem, contest)
     context = {
              'problem' : problem,
              'submission' : submission,
@@ -94,7 +99,6 @@ def submission_problem(request, problemID):
              'tries':tries,
              'score' : score[0],
               }
-    
     
     return render(request,
                   'problemdescription.html',
@@ -164,4 +168,5 @@ class SubJoinProb(object):
                 self.submission.date_uploaded = \
                     submission.date_uploaded.strftime('%H:%M:%S')
         self.problem = problem 
-# EOF
+
+# END OF LIFE
