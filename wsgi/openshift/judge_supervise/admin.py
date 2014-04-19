@@ -92,10 +92,10 @@ class MyModelAdmin(admin.ModelAdmin):
         my_urls = patterns('',
            url(r'^$', admin.site.admin_view(judge_home,
                                             cacheable=True)),
-           url(r'^my_view/team(?P<team_pk>[0-9]+)' +
+           url(r'^team(?P<team_pk>[0-9]+)' +
                   '/problem(?P<problem_pk>[0-9]+)/$',
                   admin.site.admin_view(judge_submission_team)),
-           url(r'^my_view/team(?P<team_pk>[0-9]+)',
+           url(r'^team(?P<team_pk>[0-9]+)',
                 admin.site.admin_view(judge_team_summary)),
         )
 
@@ -271,7 +271,7 @@ class string_with_title(str):
     __deepcopy__ = lambda self, memodict: self
 
 from django.db import models
-class DummyModel(models.Model):
+class judge_view(models.Model):
     class Meta:
         app_label = string_with_title("Judge_Supervisor", "Judge_Supervisor")
 
@@ -279,6 +279,6 @@ class DummyModel(models.Model):
         verbose_name = "Click here to supervise"
         verbose_name_plural = "Click here to supervise"
 
-admin.site.register(DummyModel, MyModelAdmin)
+admin.site.register(judge_view, MyModelAdmin)
 
 # EOF
