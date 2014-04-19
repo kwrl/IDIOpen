@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from contest.models import Contest
+from openshift.contest.models import Contest
 
 def home(request):
     

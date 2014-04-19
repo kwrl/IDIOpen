@@ -15,8 +15,8 @@ class Article(models.Model):
     #author = models.CharField(max_length=200, null = True, blank = True, editable = False)
     visible_article_list = models.BooleanField(default=True, help_text = 
                            'If this is set the article will appear in the article list. (/article/list/)')
-    url = models.CharField(null = True, max_length=200, unique=True,
-                           help_text = 'Set the url to access this page. Do only set if you want the article to be visible outside of the front page (excluding article/list). If set, the article can be viewed on: \'/pages/[url]/\'. Make sure you first have created a url you can put the article. You can do this in links. Create a /pages/[url] there first' )
+    url = models.CharField(null = True, blank=True, max_length=200, unique=True,
+                           help_text = 'Set the url to access this page. Do only set if you want the article to be visible outside of the front page (exluding article/list). If set, the article can be view on: \'/pages/[url]/\'. Make sure you first have created a url you can put the article. You can do this in links. Create a /pages/[url] there first' )
     
     is_urgent = models.BooleanField(default = False,
                                     help_text = 'If set, this article will be at the top.\

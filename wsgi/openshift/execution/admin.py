@@ -19,9 +19,24 @@ class ProblemAdmin(admin.ModelAdmin):
         # Only update author if author = None
         if getattr(obj, 'author', None) is None:
             obj.author = request.user
-        obj.save()        
+        obj.save() 
+        
+class ResourceAdmin(admin.ModelAdmin):
+    fieldsets = (
+        (None, {
+            'fields': ('cProfile', 'problem')
+        }),
+        ('Resource Limits', {
+            'fields': ('max_compile_time', 'max_program_timeout',
+                       'max_memory', 'max_processes', 'max_filesize'),
+            'description': 'Here you set the limits for a problem and for a compiler profile. The system uses <strong>rlimit</strong>' \
+            ' to enforce these limits. <br> Java does <strong>not</strong> work very well here and you might have to set the limits directly on the compiler ' \
+            ' profile for Java and the limits here should be set to <strong>-1</strong>. This means unlimited'
+        }),
+        
+    )       
         
 admin.site.register(Problem, ProblemAdmin)
 admin.site.register(FileExtension)
 admin.site.register(CompilerProfile)
-admin.site.register(Resource)
+admin.site.register(Resource, ResourceAdmin)
