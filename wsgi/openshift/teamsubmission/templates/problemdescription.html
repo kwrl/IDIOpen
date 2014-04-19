@@ -51,7 +51,10 @@
 
 {% if submission.solved_problem %}
 	<strong><p>Problem solved! </strong></p>
-	<p> Feedback: <strong>{{submission.text_feedback}} </strong></p>
+
+	<p> Feedback: <strong> <span class="bg-success"> {{submission.text_feedback}}</span></strong></p>
+	<p> Score for problem: <strong> {{ score }} </strong> </p>
+
 	<p> Solution runtime: <strong> {{ submission.runtime }}</strong> ms </p>
 	<p> Attempts: <strong> {{ tries }} </strong> </p>
 {% elif submission.text_feedback %}
@@ -69,7 +72,7 @@
 
 <br>
 {% if problem %}
-    {{ problem.description }}
+     {{ problem.description|linebreaksbr }}
 {% endif %}
 <br>
 
