@@ -178,7 +178,7 @@ def execute(submission, compiler, test_cases):
     dir_path, filename = os.path.split(os.path.abspath(submission.submission.path))
     command = re.sub(BASENAME_SUB, filename.split('.')[0], command)
     logger.debug(command)
-    #command = use_run_user(command)
+    command = use_run_user(command)
     results = []
     for test in test_cases:
         test.inputFile.open("rb")
