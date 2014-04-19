@@ -101,14 +101,6 @@ class MyModelAdmin(admin.ModelAdmin):
 
         return my_urls + urls
 
-    def get_inline_instances(self, request, obj=None):
-        return []
-    def get_fieldsets(self, request, obj=None):
-        return []
-    def get_list_display(self, request):
-        return []
-
-
 def get_unsolved_attemps(team_list):
     """ For all the problems, per team,
         extract tuples off teams that have tried X times to solve a problem
