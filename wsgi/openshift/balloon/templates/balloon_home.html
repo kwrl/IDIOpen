@@ -1,0 +1,109 @@
+{% extends "admin/app_index.html" %}
+
+{# {% load link_tags %} #}
+{# {% contest as contest %} #}
+
+{% load i18n %}
+
+<h3>{% blocktrans with filter_title=title %} By {{ filter_title }} {% endblocktrans %}</h3>
+
+
+{% block content %}
+
+
+<!-- Tablesorter css -->
+<link href="/static/openshift/css/tablesorter/tablestyle.css" rel="stylesheet">
+<!--  Tablesorter and tooltip js -->
+<script type="text/javascript" src="/static/openshift/js/tablesorter/jquery.tablesorter.js"></script> 
+<script type="text/javascript" src="/static/openshift/js/tooltip.js"></script> 
+
+<h1>Balloon table</h1>
+
+<small>Click on a table column to sort on that field</smpslocall>
+<br />
+<br />
+<h3> Correct submissions not given balloon </h3>
+<hr />
+<table id="TableCorrectSubmissions" class="table table-bordered table-hover table-condensed tablesorter">
+	<thead>
+            <tr>
+            <th data-toggle="tooltip" data-placement="top" title="The team this regards">Team</th>
+            <th data-toggle="tooltip" data-placement="top" title="">Problem</th>
+            <th data-toggle="tooltip" data-placement="top" title="What problem this is about">Submission</th>
+            </tr>
+    </thead>
+    <tbody>
+            {% for listitem in not_given_balloon %}
+            <tr>                
+            <td>{{listitem.team}}</td>
+            <td>{{listitem.problem}}</td>
+            <td>{{listitem.submission}} </td>
+            </tr>
+            {% endfor %}
+    </tbody>
+</table>
+
+<h3> Correct submissions with form </h3>
+<hr />
+<table id="TableCorrectSubmissions" class="table table-bordered table-hover table-condensed tablesorter">
+	<thead>
+            <tr>
+            <th data-toggle="tooltip" data-placement="top" title="The team this regards">Team</th>
+            <th data-toggle="tooltip" data-placement="top" title="">Problem</th>
+            <th data-toggle="tooltip" data-placement="top" title="What problem this is about">Submission</th>
+            </tr>
+    </thead>
+    <tbody>
+            {% for listitem in test.submissions %}
+            <tr>                
+            <td>{{listitem.team}}</td>
+            <td>{{listitem.problem}}</td>
+            <td>{{listitem.submission}} </td>
+            </tr>
+            {% endfor %}
+    </tbody>
+</table>
+
+<script>
+
+function getCheckBox()
+{
+	var values = new Array();
+	$.each($("input[name='giveBalloon_chkbx']:checked").closest("td").siblings("td"),
+       function () {
+            values.push($(this).text());
+       });
+}
+</script>
+
+<form name = "submissions_checked" action ="" method ="POST">
+	<div class="col-lg-5">
+		<button type="submit" onclick="getCheckBox()" class="btn btn-default">{% trans 'Submit' %}</button>
+	</div>
+</form>
+
+<br />
+<br />
+<h3> Correct submissions that are given balloon </h3>
+<hr />
+<table id="TableCorrectSubmissions" class="table table-bordered table-hover table-condensed tablesorter">
+	<thead>
+            <tr>
+            <th data-toggle="tooltip" data-placement="top" title="The team this regards">Team</th>
+            <th data-toggle="tooltip" data-placement="top" title="">Problem</th>
+            <th data-toggle="tooltip" data-placement="top" title="What problem this is about">Submission</th>
+            </tr>
+    </thead>
+    <tbody>
+            {% for listitem in given_balloon %}
+            <tr >
+            <td>{{listitem.team}}</td>
+            <td>{{listitem.problem}}</td>
+            <td>{{listitem.submission}} </td>
+            </tr>
+            {% endfor %}
+    </tbody>
+</table>
+
+
+{% endblock content %}

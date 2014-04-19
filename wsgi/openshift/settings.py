@@ -77,6 +77,7 @@ INSTALLED_APPS = (
     'clarification',
     'helpFunctions',
     'judge_supervise',
+    'balloon',
 )
 
 '''
