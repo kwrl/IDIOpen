@@ -8,7 +8,7 @@ from openshift.execution.models import Problem
 from openshift.teamsubmission.models import Submission
 
 from collections import defaultdict
-from decimal import Decimal
+from decimal     import Decimal
 
 ORACLE_FEEDBACK = [
         (1, 'FEED_1'),
@@ -85,15 +85,17 @@ class MyModelAdmin(admin.ModelAdmin):
         """ https://docs.djangoproject.com/en/1.6/ref/contrib/
             admin/#django.contrib.admin.ModelAdmin.get_urls
         """
+
     def get_urls(self):
         urls = super(MyModelAdmin, self).get_urls()
+        urls = [urls[0], ]
         my_urls = patterns('',
-           url(r'^my_view/$', admin.site.admin_view(judge_home,
-                                                    cacheable=True)),
-           url(r'^my_view/team(?P<team_pk>[0-9]+)' +
+           url(r'^$', admin.site.admin_view(judge_home,
+                                            cacheable=True)),
+           url(r'^team(?P<team_pk>[0-9]+)' +
                   '/problem(?P<problem_pk>[0-9]+)/$',
                   admin.site.admin_view(judge_submission_team)),
-           url(r'^my_view/team(?P<team_pk>[0-9]+)',
+           url(r'^team(?P<team_pk>[0-9]+)',
                 admin.site.admin_view(judge_team_summary)),
         )
 
@@ -183,27 +185,33 @@ def judge_submission_team(request, team_pk, problem_pk):
 def judge_team_summary(request, team_pk):
     """ The page to render an overview of the team
     """
-    dic = dict()
+    feedback_prob_dict = dict()
     submissions = Submission.objects.filter(team=team_pk)\
                   .order_by('-date_uploaded')
     prob_row, oracle_list = [], []
     prob_index = {}
     problems = Problem.objects.get_queryset() # all problems
 
-    for index, val in enumerate(problems):
-        prob_index[val] = index
+    for index, problem in enumerate(problems):
+        prob_index[problem] = index
 
     for sub in submissions:
         from random import randint
         feedback = ORACLE_FEEDBACK[randint(0, len(ORACLE_FEEDBACK) - 1)][1]
-        dic.setdefault(feedback, [0] * len(problems))
-        dic[feedback][prob_index[sub.problem]] += 1
+        # Put the feedback in to dict
+        # , or, if empty, put an empty array
+        feedback_prob_dict.setdefault(feedback, [0] * len(problems))
+        # Assuming the the prob_index[sub.problem] points to the
+        # the same order as in `problems`. This should be valid since
+        # the enumerate above
+        feedback_prob_dict[feedback][prob_index[sub.problem]] += 1
 
         oracle_list.append( Oracle(sub) )
 
-    total_count = dict([(key,sum(val)) for key,val in dic.iteritems()])
+    total_count = dict([(feedback,sum(problems)) \
+                    for feedback,problems in feedback_prob_dict.iteritems()])
 
-    for key, val in dic.iteritems():
+    for key, val in feedback_prob_dict.iteritems():
         prob_row.append(CountFeedbackRow(feedback = key,
                                          total=total_count[key],
                                          prob_count_list = val))
@@ -218,7 +226,6 @@ def judge_team_summary(request, team_pk):
     return render(request,
                   'judge_team_summary.html',
                   context)
-
 
 def judge_home(request):
     contest = Contest.objects.get()
@@ -242,11 +249,27 @@ def judge_home(request):
                   context,
                   )
 
+class string_with_title(str):
+    def __new__(cls, value, title):
+        instance = str.__new__(cls, value)
+        instance._title = title
+        return instance
+
+    def title(self):
+        return self._title
+
+    __copy__ = lambda self: self
+    __deepcopy__ = lambda self, memodict: self
 
 from django.db import models
-class DummyModel(models.Model):
+class judge_view(models.Model):
     class Meta:
-        managed = False
-admin.site.register(DummyModel, MyModelAdmin)
+        app_label = string_with_title("Judge_Supervisor", "Judge_Supervisor")
+
+        managed = False # prevent from entering the DB
+        verbose_name = "Click here to supervise"
+        verbose_name_plural = "Click here to supervise"
+
+admin.site.register(judge_view, MyModelAdmin)
 
 # EOF
