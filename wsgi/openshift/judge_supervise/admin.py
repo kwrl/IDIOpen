@@ -8,7 +8,7 @@ from execution.models import Problem
 from teamsubmission.models import Submission
 
 from collections import defaultdict
-from decimal import Decimal
+from decimal     import Decimal
 
 ORACLE_FEEDBACK = [
         (1, 'FEED_1'),
@@ -85,13 +85,13 @@ class MyModelAdmin(admin.ModelAdmin):
         """ https://docs.djangoproject.com/en/1.6/ref/contrib/
             admin/#django.contrib.admin.ModelAdmin.get_urls
         """
+
     def get_urls(self):
         urls = super(MyModelAdmin, self).get_urls()
+        urls = [urls[0], ]
         my_urls = patterns('',
            url(r'^$', admin.site.admin_view(judge_home,
-                                                    cacheable=True)),
-           url(r'^my_view/$', admin.site.admin_view(judge_home,
-                                                    cacheable=True)),
+                                            cacheable=True)),
            url(r'^my_view/team(?P<team_pk>[0-9]+)' +
                   '/problem(?P<problem_pk>[0-9]+)/$',
                   admin.site.admin_view(judge_submission_team)),
@@ -99,7 +99,16 @@ class MyModelAdmin(admin.ModelAdmin):
                 admin.site.admin_view(judge_team_summary)),
         )
 
+        #import ipdb; ipdb.set_trace()
         return my_urls + urls
+
+    def get_inline_instances(self, request, obj=None):
+        return []
+    def get_fieldsets(self, request, obj=None):
+        return []
+    def get_list_display(self, request):
+        return []
+
 
 def get_unsolved_attemps(team_list):
     """ For all the problems, per team,
@@ -249,10 +258,26 @@ def judge_home(request):
                   context,
                   )
 
+class string_with_title(str):
+    def __new__(cls, value, title):
+        instance = str.__new__(cls, value)
+        instance._title = title
+        return instance
+
+    def title(self):
+        return self._title
+
+    __copy__ = lambda self: self
+    __deepcopy__ = lambda self, memodict: self
+
 from django.db import models
 class DummyModel(models.Model):
     class Meta:
-        managed = False
+        app_label = string_with_title("Judge_Supervisor", "Judge_Supervisor")
+
+        managed = False # prevent from entering the DB
+        verbose_name = "Click here to supervise"
+        verbose_name_plural = "Click here to supervise"
 
 admin.site.register(DummyModel, MyModelAdmin)
 
