@@ -151,5 +151,18 @@ class Submission(models.Model):
     problem = models.ForeignKey('execution.Problem')
     runtime = models.IntegerField(max_length = 15, blank = True, null = True)  
     objects = ScoreManager()
+
+    def __unicode__(self):
+        return unicode(self.pk)
+
+class ExecutionLogEntry(models.Model):
+    submission  = models.ForeignKey(Submission)
+    command     = models.CharField(help_text="Command issued", max_length=200)
+    stdout      = models.TextField(help_text="Standard output")
+    stderr      = models.TextField(help_text="Standard error")
+    retval      = models.IntegerField(help_text="Return value")
+
+    def __unicode__(self):
+        return "Submission:\t" + unicode(self.submission.pk) + "\tCommand:\t " + self.command
     
 # EOF
