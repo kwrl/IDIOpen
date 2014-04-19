@@ -75,7 +75,7 @@ INSTALLED_APPS = (
     'changeemail',
     'teamsubmission',
     'clarification',
-    'helpFunctions'
+    'helpFunctions',
     'judge_supervise',
 )
 
