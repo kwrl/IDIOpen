@@ -27,8 +27,9 @@ def submission(request, submission_id):
         sub  = Submission.objects.get(id = int(submission_id))
     except ObjectDoesNotExist:
         sub = None
+    # TODO: Filter only latest?
     members = sub.team.members.all()
     if request.user in members:
-        dajax.assign('#response', 'innerHTML', sub.status)
+        dajax.assign('#response', 'innerHTML', Submission.STATES[sub.status][1])
         
     return dajax.json()
