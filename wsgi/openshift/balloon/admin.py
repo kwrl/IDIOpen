@@ -9,17 +9,37 @@ from execution.models import Problem
 from teamsubmission.models import Submission
 
 from .models import BalloonStatus
-        
+import datetime
+
 from django import forms
 from django.forms import ModelForm
 
 class BalloonSubmissionForm(forms.Form):
-    submission = forms.ModelChoiceField(queryset=Submission.objects.get_queryset())
+    pk = forms.IntegerField()
     
-    class Meta:
-        fields = ['problem', 'submission', 'team']
-        model = Submission
-        
+    def clean(self):
+        try:
+            Submission.objects.get(pk=self.cleaned_data.get('pk'))
+        except Exception:
+            pass
+            
+        return self.cleaned_data
+    
+    def save(self):
+        submission = Submission.objects.get(pk=self.cleaned_data['pk'])
+
+        if not BalloonStatus.objects.filter(submission=submission).exists():
+            new_model = BalloonStatus()
+            new_model.submission = Submission.objects.get(pk=self.cleaned_data['pk'])
+            new_model.problem = new_model.submission.problem
+            new_model.team = new_model.submission.team
+            new_model.timestamp = datetime.datetime.now()
+            new_model.save()
+        else:
+            obj = BalloonStatus.objects.get(submission=submission);
+            obj.delete()
+            
+
 class MyModelAdmin(admin.ModelAdmin):
     # FIXME
     """ Temporary solution to get a view connected iSubmissionn admin site
@@ -37,30 +57,37 @@ class MyModelAdmin(admin.ModelAdmin):
     
 def _get_table_lists():
     balloons = BalloonStatus.objects.all()
-    balloon_sub_dict = dict([ball.submission for ball in balloons])
-    contest = Contest.objects.get()
+    balloon_sub_dict = set([ball.submission.pk for ball in balloons])
     corrrect_submissions = Submission.objects.filter(solved_problem = 'True')
     
     given_balloon, not_given_balloon = [], []
         
     for sub in corrrect_submissions:
-        if sub in balloon_sub_dict:
+        if sub.pk in balloon_sub_dict:
             given_balloon.append(sub)
         else:
             not_given_balloon.append(sub)
             
+    import ipdb; ipdb.set_trace()
     return given_balloon, not_given_balloon
 
 def balloon_home(request):
-    given_balloon, not_given_balloon = _get_table_lists()
     
+    form = None
     if request.method == 'POST':
-        import ipdb; ipdb.set_trace()
+        form = BalloonSubmissionForm(request.POST);
+        
+        if form.is_valid():
+            form.save()
+            #new_model = BalloonStatus()
+            
         pass
         
     else:
         pass
        
+    given_balloon, not_given_balloon = _get_table_lists()
+
     context = {
                'given_balloon': given_balloon,
                'not_given_balloon': not_given_balloon,
