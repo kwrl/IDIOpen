@@ -11,7 +11,7 @@
 <hr>
 
 
-{% if sumbissions.solver_problem and tries > 0 %}
+{% if not sumbissions.solved_problem and tries > 0 %}
 <p> You have made  <strong> {{ tries }} </strong> attempts at solving this problem </p>
 {% endif %}
 
@@ -47,9 +47,9 @@
 	<p> Solution runtime: <strong> {{ submission.runtime }}</strong> ms </p>
 	<p> Attempts: <strong> {{ tries }} </strong> </p>
 {% elif submission.text_feedback %}
-	<span class="bg-info">{{submission.text_feedback}}</span>
+	<p>{{submission.text_feedback}}</p>
 {% else %}
-	<span class="bg-info"> No feedback </span>
+	<p> No feedback </p>
 {% endif %}
 </div>
 </form>
@@ -63,6 +63,6 @@
 {% if problem %}
      {{ problem.description|linebreaksbr }}
 {% endif %}
-<br />
+<br>
 
 {% endblock content %}

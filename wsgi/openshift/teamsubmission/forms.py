@@ -1,9 +1,19 @@
 from django import forms
-from .models import Submission
+from openshift.teamsubmission.models import Submission
 from django.template.defaultfilters import filesizeformat
 from django.core.exceptions import ValidationError
-from execution.models import FileExtension, Resource
-from execution.models import CompilerProfile
+from openshift.execution.models import FileExtension, CompilerProfile, Resource
+from openshift.node_manage.tasks import evaluate_task
+from openshift.messaging import celery_app
+# 2.5MB - 2621440
+# 5MB - 5242880
+# 10MB - 10485760
+# 20MB - 20971520
+# 50MB - 5242880
+# 100MB 104857600
+# 250MB - 214958080
+# 500MB - 429916160
+MAX_UPLOAD_SIZE = "5242880" # 5 MB
 
 # Maybe not the best way, could get file extension for each compiler profile connected to a specific problem
 def get_file_extensions():
@@ -17,15 +27,15 @@ def get_max_file_size(problem, cProfile):
         return 0
     
 class SubmissionForm(forms.ModelForm):
-    compilerProfile = forms.ModelChoiceField(CompilerProfile.objects.all())
+    #compilerProfile = forms.ModelChoiceField(CompilerProfile.objects.all())
     
     class Meta:
         model = Submission  
-        fields = ['submission']
+        fields = ['submission', 'compileProfile']
         
     def clean(self):
         submission = self.cleaned_data.get('submission')
-        cProfile = self.cleaned_data.get('compilerProfile')
+        cProfile = self.cleaned_data.get('compileProfile')
         
         if not submission:
             self._errors['submission'] = self.error_class([("Please upload a file before submitting")])
@@ -35,7 +45,7 @@ class SubmissionForm(forms.ModelForm):
         FILE_EXT = get_file_extensions()
         MAX_FILESIZE = get_max_file_size(self.instance.problem, cProfile) * 1024
         if (MAX_FILESIZE == 0):
-            self._errors['compilerProfile'] = self.error_class([('Please contact support')])
+            self._errors['compileProfile'] = self.error_class([('Please contact support')])
             return self.cleaned_data
         # Check if submission has an allowed file extension
         if content_type in [str(x) for x in FILE_EXT]:
@@ -48,9 +58,11 @@ class SubmissionForm(forms.ModelForm):
     def save(self):
         new_sub = Submission()
         new_sub.submission = self.cleaned_data.get('submission')
+        new_sub.compileProfile = self.cleaned_data.get('compileProfile')
         new_sub.problem = self.instance.problem
         new_sub.validate = False
         new_sub.team = self.instance.team
         new_sub.save()
-
+        print 'running task'
+        result = evaluate_task(new_sub.pk)
 # EOF

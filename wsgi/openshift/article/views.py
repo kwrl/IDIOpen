@@ -1,7 +1,6 @@
 from django.shortcuts import render
 
-from article.models import Article
-
+from .models import Article
 # Create your views here.
 '''
 Shows all articles for a contest
