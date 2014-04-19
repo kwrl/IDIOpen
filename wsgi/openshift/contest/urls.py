@@ -6,6 +6,7 @@ Created on Feb 12, 2014
 from django.conf.urls import patterns, include, url
 from contest import views
 from article import views as articleview
+from teamsubmission.views import highscore_view
 
 urlpatterns = patterns('',
     # Examples:
@@ -25,6 +26,7 @@ urlpatterns = patterns('',
     url(r'^pages/(?P<article_url>[^/]+)/$', articleview.detail_url, name='article_detail_url'),
     url(r'^teams/$', views.view_teams, name = 'view_teams'),
     url(r'^team/leave/$', views.leave_team, name = 'team_leave'), 
+    url(r'highscore', highscore_view),
 )
 
 # EOF

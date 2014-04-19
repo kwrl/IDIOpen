@@ -145,7 +145,7 @@ def highscore_view(request):
     statistics = Submission.objects.get_highscore(contest)
     problems = []
     if statistics:
-        problems = statistics[0][5:]
+        problems = statistics[0][8:]
     
     context = {
                'contest' : contest,
