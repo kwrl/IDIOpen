@@ -2,6 +2,13 @@
 {% load link_tags %}
 {% load fileprint %}
 {% block content %}
+<div class = "pull-right" >
+<a href="{% url 'submission_page' contest.url %}" class="btn btn-primary btn-large">Go To Contest Page</a>
+</div>
+
+<h2>{{problem.title}}</h2>
+<hr>
+{% if not submission.solved_problem %}
 <script type="text/javascript">
 
 
@@ -15,23 +22,10 @@ $( document ).ready(function() {
 });
 
 </script>
-
-<div class = "pull-right" >
-<a href="{% url 'submission_page' contest.url %}" class="btn btn-primary btn-large">Go To Contest Page</a>
-</div>
-
-<h2>{{problem.title}}</h2>
-
-<hr>
 <p id='response'><p>
-<button onclick="Dajaxice.openshift.teamsubmission.ajaxalert(Dajax.process);">Click here!</button>
-
-
-{% if not sumbissions.solved_problem and tries > 0 %}
-<p> You have made  <strong> {{ tries }} </strong> attempts at solving this problem </p>
-{% endif %}
 
 {% if tries > 0 %}
+<p> You have made  <strong> {{ tries }} </strong> attempts at solving this problem </p>
 <h3> Upload a new file to this problem </h3>
 {% else %}
 <h3> Upload a file for this problem </h3> 
@@ -52,8 +46,10 @@ $( document ).ready(function() {
     <br>
     <button type="submit" class = "btn btn-primary btn-sm">Submit file</button> 
     <br>
-    <i> <small>Please note that by submitting a file it will count as an attempt</small></i>
+    <em><small>Please note that by submitting a file it will count as an attempt</small></em>
 </div>
+</form>
+{% endif %}
     <h3> Feedback on submission </h3>
  <div class = 'well' >
 {% if submission.solved_problem %}
@@ -68,7 +64,6 @@ $( document ).ready(function() {
 	<p> No feedback </p>
 {% endif %}
 </div>
-</form>
 <h3>Problem Description </h3>
 <hr> 
 {% if problem.author %}
