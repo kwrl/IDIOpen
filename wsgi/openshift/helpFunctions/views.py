@@ -1,9 +1,9 @@
 #coding:utf-8
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import Http404
-from contest.models import Contest
-from contest.models import Team
-from clarification.models import MessageAnswer
+from openshift.contest.models import Contest
+from openshift.contest.models import Team
+from openshift.clarification.models import MessageAnswer
 from django.shortcuts import get_object_or_404
 
 
