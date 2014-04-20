@@ -18,6 +18,13 @@
 
 <h1>Overview of Team "{{team.name}}"</h1>
 
+<style>
+    .errorRow {
+        background: #FFD1D1 !important;
+    }
+
+</style>
+
 <h3>Submissions</h3>
 <table id="tableSubs" class="table table-bordered table-hover table-condensed tablesorter">
 	<thead>
@@ -30,18 +37,27 @@
     <tbody>
             {% for listitem in sub_feed_items %}
             <tr id={{listitem.submissions.pk}} class='clickableRow parent' >
-                <td > {{listitem.date_uploaded}}</td>
+                {% if listitem.retval >= 1 %}
+                <td class="errorRow" > {{listitem.date_uploaded}}</td>
+                <td class="errorRow">{{listitem.problem}}</td>
+                <td class="errorRow">{{listitem.retval}}</td>
+                {% else %}
+                <td> {{listitem.date_uploaded}}</td>
                 <td>{{listitem.problem}}</td>
                 <td>{{listitem.retval}}</td>
+                {% endif %}
             </tr>
                 <tr class="child-{{listitem.submissions.pk}}"> 
-                    <td colspan=3> {{listitem.subtext }}
-                         {{listitem.retval}}
+                    <td colspan=3> 
+                         {# {{listitem.subtext }} #}
+                         {# {{listitem.retval}} #}
+                         <h2> Command: </h2>
                         <pre class="prettyprint linenums">
                             {{listitem.command}}
                         </pre>
                          {{listitem.stderr }}
 
+                         <h2> Code:</h2>
                         <pre class="prettyprint linenums">
                         {{ listitem.file_content }} 
                         </pre>
@@ -84,6 +100,10 @@ $(function() {
     $('tr.parent')
         .click(function(){
             $(this).siblings('.child-'+this.id).toggle();
+            for(var i = 0; i < this.children.length; i++)
+            {
+                //this.children[i].style.background = "#B1FFFB";
+                }
         });
     list = $(document.querySelectorAll('tr[class^="child-"]'))
     for(var i = 0; i < list.length; i++)
