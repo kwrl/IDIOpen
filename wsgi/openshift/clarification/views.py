@@ -1,6 +1,6 @@
 from django.shortcuts import render
-from .forms import MessageForm
-from .models import Message
+from .forms import QuestionForm
+from .models import Question
 from django.contrib import messages
 from openshift.helpFunctions import views as helpView
 from django.shortcuts import Http404
@@ -10,7 +10,7 @@ from django.shortcuts import Http404
 def clarification(request):
     if request.method == 'POST':
         
-        form = MessageForm(request.POST)
+        form = QuestionForm(request.POST)
         
         if not form.is_valid():
             messages.warning(request, "Something went wrong. Did you fill out all fields?")
@@ -25,10 +25,10 @@ def clarification(request):
             form.save(data)
 
             messages.info(request, "Your question has been submitted successfully")
-            form = MessageForm()
+            form = QuestionForm()
             
     else:
-        form = MessageForm()
+        form = QuestionForm()
     
     context = {
                'clarification_form':form

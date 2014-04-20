@@ -1,8 +1,8 @@
 from django.contrib import admin
-from .models import MessageAnswer, Message
+from .models import QuestionAnswer, Question
 # Register your models here.
 
-class MessageAnswerAdmin(admin.ModelAdmin):
+class QuestionAnswerAdmin(admin.ModelAdmin):
     list_display = ('subject', 'answered_by', 'answered_at', 'message')
     fields = ('subject', 'body', 'contest', 'message')
     
@@ -16,14 +16,14 @@ class MessageAnswerAdmin(admin.ModelAdmin):
         obj.save()
  
 class AnswerInline(admin.TabularInline):
-    model = MessageAnswer
+    model = QuestionAnswer
     # Don't show any extra MessageAnswer's on default
     extra = 0
     fields = ('subject', 'body', 'answered_by',)
     readonly_fields = ('answered_by',)
     
         
-class MessageAdmin(admin.ModelAdmin):
+class QuestionAdmin(admin.ModelAdmin):
     inlines = (AnswerInline,)
     list_display = ('subject', 'sender', 'sent_at', 'answered',)
     list_filter = ('sent_at',)
@@ -51,5 +51,5 @@ class MessageAdmin(admin.ModelAdmin):
                 obj.answered = True
         obj.save()
         
-admin.site.register(Message, MessageAdmin)
-admin.site.register(MessageAnswer, MessageAnswerAdmin)
+admin.site.register(Question, QuestionAdmin)
+admin.site.register(QuestionAnswer, QuestionAnswerAdmin)
