@@ -96,16 +96,16 @@ class ScoreManager(models.Manager):
         
         """ 
         The statistics are:
-        [position,
-        team name,
-        solved problems,
-        total score,
-        total time (in minutes),
-        onsite,
-        year,
-        gender,
-        problem 1 submissions,
-        ...
+        [position,          - 0
+        team name,          - 1
+        solved problems,    -2
+        total score,        -3
+        total time (in minutes), -4
+        onsite,            -5
+        year,                -6
+        gender,            -7
+        problem 1 submissions, -8
+        ...        
         problem n submissions,]
         """
         statistics = []
@@ -135,14 +135,25 @@ class ScoreManager(models.Manager):
             s[0] = len(statistics) + 1
             statistics.append(s)
         return statistics
+    
 
 def file_function(instance, filename):
     tries = len(Submission.objects.filter(team__pk = instance.team.pk).filter(problem__pk = instance.problem.id).all())
     return '/'.join(['submissions', str(instance.team.id), str(instance.problem.id), str(tries), filename])
 
 class Submission(models.Model):
+    
+    QUEUED = 0
+    RUNNING = 1
+    EVALUATED = 2
+    STATES = (
+        (QUEUED, 'Queued'),
+        (RUNNING, 'Running'),
+        (EVALUATED, 'Evaluated'),
+    )
     #We should rename submission field.... 
     submission = models.FileField(storage=private_media, upload_to=file_function)
+    status = models.IntegerField(choices=STATES, default=QUEUED)
     compileProfile = models.ForeignKey('execution.CompilerProfile')
     date_uploaded = models.DateTimeField(auto_now = True)
     solved_problem = models.BooleanField(default=False) #E.g. Did this submission solve the the problem

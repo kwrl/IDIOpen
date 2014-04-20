@@ -6,6 +6,7 @@ Created on Apr 9, 2014
 from __future__ import absolute_import
 
 from celery import shared_task
+from openshift.execution.models import Problem, CompilerProfile, FileExtension
 
 
 @shared_task
