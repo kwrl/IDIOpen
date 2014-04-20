@@ -3,6 +3,9 @@ from openshift.contest.models import Team, Contest
 from django.conf import settings
     
 class Question (models.Model):
+    class Meta:
+        verbose_name = "Click here to view and answer question"
+
     subject     = models.CharField(max_length = 120)
     body        = models.TextField(max_length = 355)
     sender      = models.ForeignKey(Team)    
@@ -11,6 +14,9 @@ class Question (models.Model):
     answered    = models.BooleanField(default = False)
 
 class QuestionAnswer(models.Model):
+    class Meta:
+        verbose_name = "Click here to view answer"
+
     subject     = models.CharField(max_length = 120)
     body        = models.TextField(max_length = 355)
     answered_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank = True, null=True) 
