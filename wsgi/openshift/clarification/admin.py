@@ -31,6 +31,9 @@ class QuestionAdmin(admin.ModelAdmin):
     ordering = ('-sent_at', '-answered')
     readonly_fields = ('subject', 'body', 'sender', 'contest')
     
+    def has_add_permission(self, request):
+        return False
+    
     # Set answered_by and contest fields for the MessageAnswers before saving them
     def save_formset(self, request, form, formset, change):
         instances = formset.save(commit=False)
