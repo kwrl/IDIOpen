@@ -65,10 +65,11 @@ def build_html_table(stats):
         string +=  "<td>" + unicode(stats[s][0]) + "</td>"
         
         #TEAM NAME
-        if len(stats[0][1]) > 13:  
-            string += "<td>" + unicode(stats[s][1])[:11] + "..." + "</td>"
-        else:
-            string += "<td>" + unicode(stats[s][1]) + "..." + "</td>"
+        if len(stats[s][1].encode('utf-8')) > 10:
+            string += "<td>" + unicode(stats[s][1].encode("utf-8")[:10], "utf-8", errors="ignore") + "..." + "</td>"
+        
+	else:
+            string += "<td>" + unicode(stats[s][1]) + "</td>"
         
         #Number of solved
         string += "<td>" + unicode(stats[s][2]) + "</td>"

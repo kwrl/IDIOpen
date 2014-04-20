@@ -3,7 +3,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.http import Http404
 from openshift.contest.models import Contest
 from openshift.contest.models import Team
-from openshift.clarification.models import MessageAnswer
+from openshift.clarification.models import QuestionAnswer
 from django.shortcuts import get_object_or_404
 
 
@@ -80,7 +80,7 @@ def is_member_of_team(request):
 #===============================================================================
 def get_all_answers(request):
     contest = get_current_contest(request)
-    answers = MessageAnswer.objects.filter(contest=contest)
+    answers = QuestionAnswer.objects.filter(contest=contest)
      
     if(answers.count() < 0):
         return None
