@@ -1,8 +1,7 @@
-from django.shortcuts import render, get_object_or_404, redirect, HttpResponse, Http404, HttpResponseRedirect
-from contest.views import get_current_contest, is_leader, is_member_of_team
-from contest.models import Team
-from execution.models import Problem
-from django.core.urlresolvers import reverse
+from django.shortcuts import render, get_object_or_404, redirect, HttpResponse, Http404
+from openshift.contest.views import get_current_contest, is_leader, is_member_of_team
+from openshift.contest.models import Team
+from openshift.execution.models import Problem
 
 from .models import Submission
 from .forms import SubmissionForm
@@ -10,7 +9,7 @@ from .forms import SubmissionForm
 from itertools import groupby, imap, izip_longest
 from operator import itemgetter
 from django.contrib import messages
-from contest.views import contest_begin, contest_end
+from openshift.contest.views import contest_begin, contest_end
 
 def is_problem_solved(team, problemID):
     submission = Submission.objects.filter(team=team).filter(problem=problemID).filter(solved_problem = True)
@@ -31,7 +30,7 @@ def is_leader(request, contest):
     else:
         return False
 
-#Login required
+
 #View for uploading submissions to a problem
 def submission_problem(request, problemID):
     #TODO: maybe a nicer url than numeric ID
@@ -55,7 +54,6 @@ def submission_problem(request, problemID):
     submission = Submission.objects.filter(team=team).filter(problem=problemID).order_by('-date_uploaded')
     tries = len(submission)
     
-    score = Submission.objects.get_problem_score(team, problem, contest)
     
     if len(submission.values_list()) > 0:
         submission = submission[0]
@@ -84,6 +82,8 @@ def submission_problem(request, problemID):
         elif is_leader(request, contest):
             if form.is_valid():
                 form.save()
+                submission = Submission.objects.get(pk=submission.pk)
+                tries += 1
                 form = SubmissionForm(instance=submission);
                 return redirect('submission_problem', contest.url, problemID)
         else:
@@ -91,6 +91,7 @@ def submission_problem(request, problemID):
     else:
         form = SubmissionForm(instance=submission);
     
+    score = Submission.objects.get_problem_score(team, problem, contest)
     context = {
              'problem' : problem,
              'submission' : submission,
@@ -109,9 +110,22 @@ def submission_view(request):
     user = request.user
     con = get_current_contest(request)
     
+    if not user.is_authenticated():
+        messages.error(request, 'You have to be logged in in order to view the contest page')
+        return redirect('login', con.url)
+    
+    
+    if not is_member_of_team(request, con):
+        messages.error(request, 'Please register a team to participate')
+        return redirect('team_profile', con.url)
+        
+    
     # Raise 404 if contest hasn't begun or contest has ended
-    if not contest_begin(request) or not is_member_of_team(request, con):
-        raise Http404    
+    if not contest_begin(request):
+        messages.error(request, 'Contest has not yet started')
+        return redirect('contest_list', con.url)
+        
+    
     
     if not user.is_authenticated():
         return redirect('login', con.url)
@@ -148,7 +162,7 @@ def highscore_view(request):
     statistics = Submission.objects.get_highscore(contest)
     problems = []
     if statistics:
-        problems = statistics[0][5:]
+        problems = statistics[0][8:]
     
     context = {
                'contest' : contest,

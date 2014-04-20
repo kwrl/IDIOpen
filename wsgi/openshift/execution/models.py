@@ -1,9 +1,7 @@
-from django.db import models    
-from contest.models import Contest
-from django.conf import settings 
+from django.db import models
+from django.conf import settings
 
 import os
-from django.template.defaultfilters import default
 
 """ Located in media folder (prefix ../media)
 """
@@ -11,65 +9,75 @@ PROBLEM_ROOT_DIR = 'problems'
 
 class FileExtension(models.Model):
     extension = models.CharField(max_length=4)
-        
+
     def __unicode__(self):
         return self.extension
-    
+
 class CompilerProfile(models.Model):
     name = models.CharField(max_length=100)
-    extensions = models.ManyToManyField(FileExtension)
-    compiler_name_cmd = models.CharField(max_length=10, blank=True, null=True)
-
-    #flags that are sendt to the compiler
-    compiler_flags = models.CharField(max_length=100, blank=True, null=True)
+    extensions = models.ManyToManyField('FileExtension')
     
-    #the command to run the compiled file
-    run_cmd = models.CharField(max_length=10)
+    compile = models.CharField(max_length=100, blank=True, null=True,
+                               help_text=
+                               'The command to compile, include {BASENAME} for file without extension' + 
+                               ' {FILENAME} for file with extension, include all flags required' + 
+                               '<br>Example: gcc -w --std=c99 -O2 -o {BASENAME} {FILENAME} -lm')
 
 
-    run_flags = models.CharField(max_length=100, blank=True, null=True)
-    # How do we handle output filename?
+    run = models.CharField(max_length=100,
+                           help_text=
+                           'The command to run the program, include {BASENAME} for file without extension' + 
+                           ' {FILENAME} for file with extension, include all flags required' + 
+                           '<br>Example: java {BASENAME} <br>Example2: ./{BASENAME')
 
     # The name of the package that is required in order to install the compiler. (Via apt-get)
-    package_name = models.CharField(max_length=30)
+    package_name = models.CharField(max_length=30, 
+                                    help_text='The package required to run and compile, eg. openjdk-7-jdk')
 
-    
     def __unicode__(self):
         return self.name
 
+
+def get_resource(submission, compiler):
+    try: 
+        prob = Problem.objects.get(pk=submission.problem.pk)
+        res = Resource.objects.filter(problem=prob).filter(cProfile=compiler)[0]
+    except Exception:
+        return None
+    return res
+
 def get_upload_path(instance, filename):
     """ Dynamically decide where to upload the case,
-        based on the foreign key in instance, which is required to be 
+        based on the foreign key in instance, which is required to be
         a testcase.
     """
     # path.join appends a trailing / in between each argument
     return os.path.join("%s" % PROBLEM_ROOT_DIR,
                         "%s/case" % (instance.problem),
-                        filename);
+                        filename)
 
 
 def get_upload_path2(instance, filename):
     """ Dynamically decide where to upload the case,
-        based on the foreign key in instance, which is required to be 
+        based on the foreign key in instance, which is required to be
         a testcase.
     """
     # path.join appends a trailing / in between each argument
     return os.path.join("%s" % PROBLEM_ROOT_DIR,
-                        filename);
+                        filename)
 
 #Author: Tino, Typo
-class Problem(models.Model):  
+class Problem(models.Model):
     title = models.CharField(max_length=200, unique = True)
     description = models.TextField()
     textFile = models.FileField(upload_to=get_upload_path2,
                        verbose_name="Text file (file)", blank = True)
     date_uploaded = models.DateTimeField(auto_now = True)
     author = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.SET_NULL, null = True)
-    contest = models.ForeignKey(Contest)
+    contest = models.ForeignKey('contest.Contest')
     
-    resource = models.ManyToManyField(CompilerProfile, through='Resource')
+    resource = models.ManyToManyField('execution.CompilerProfile', through='Resource')
 
-       
     def __unicode__(self):
         return "%s" % (self.title)
 
@@ -79,23 +87,28 @@ class Resource (models.Model):
     This models contains all "limitations" on each Profile. 
     E.g. the number maximum memory usage for this profile, if JAVA is used is XXXXX. 
     '''
-    cProfile = models.ForeignKey(CompilerProfile, related_name="resource_CompilerProfile")
-    problem = models.ForeignKey(Problem, related_name="resource_problem")
+    cProfile = models.ForeignKey('execution.CompilerProfile', related_name="resource_CompilerProfile")
+    problem = models.ForeignKey('execution.Problem', related_name="resource_problem")
     
     #The maximum time a program can use to compile
-    max_compile_time = models.IntegerField(max_length = 20, default = 30) #in sec
+    max_compile_time = models.IntegerField(max_length = 20, default = 30,
+                                           help_text = 'The maximum compile time in <strong>seconds</strong>') #in sec
     
     #How long the program can run before 
-    max_program_timeout = models.IntegerField(max_length = 20, default = 60)# in sec 
+    max_program_timeout = models.IntegerField(max_length = 20, default = 60,
+                                              help_text = 'The maximum run time in <strong>seconds</strong>')# in sec 
     
     #Maximum memory a program can use for this problem  
-    max_memory = models.IntegerField(max_length = 20, default = 100000) # in kilobytes
+    max_memory = models.IntegerField(max_length = 20, default = 102400000,
+                                     help_text = 'The maximum adress space in <strong>bytes</strong>') # in bytes
     
     #The maximum number of child processes. (avoid fork bombs)
-    max_processes = models.IntegerField(max_length = 10, default = 5) 
-    
+    max_processes = models.IntegerField(max_length = 10, default = 5,
+                                        help_text = 'The maximum number of processes')
+     
     #Maximum filesize, 
-    max_filesize = models.IntegerField(max_length = 10, default = 50) # in Kilobytes
+    max_filesize = models.IntegerField(max_length = 10, default = 50,
+                                       help_text = 'The maximum uploaded file size in <strong>KiloBytes</strong>')
         
     '''
     From the old code: 
@@ -105,6 +118,9 @@ class Resource (models.Model):
     MAX_MEM = 100000 # kilobytes
     MAX_PROC = 5 # maximum number of child processes (avoid fork bombs)
     '''
+    
+    def __unicode__(self):
+        return self.problem.title + ' ' + self.cProfile.name 
     
 
 class TestCase(models.Model):
@@ -127,9 +143,10 @@ class TestCase(models.Model):
                                          " output:")
 
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null = True, blank = True, editable = False)
-    problem = models.ForeignKey(Problem)
+    problem = models.ForeignKey('execution.Problem')
 
     def __unicode__(self):
         return "%s" % (self.short_description)
+
 
 # EOF

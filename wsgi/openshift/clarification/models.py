@@ -1,6 +1,6 @@
 from django.db import models
-from contest.models import Team, Contest
-from userregistration.models import CustomUser
+from openshift.contest.models import Team, Contest
+from openshift.userregistration.models import CustomUser
 from django.conf import settings
     
 class Message (models.Model):
