@@ -1,7 +1,7 @@
 from django.db import models
 
-from contest.models import Team
-from teamsubmission.models import Submission, Problem
+from openshift.contest.models import Team
+from openshift.teamsubmission.models import Submission, Problem
 
 class BalloonStatus(models.Model):
     """ Model
