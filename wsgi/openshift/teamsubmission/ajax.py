@@ -68,16 +68,16 @@ def build_html_table(stats):
         string += "<tr>"
         
         #PLACE
-        string +=  "<td>" + str(stats[s][0]) + "</td>"
+        string +=  "<td>" + unicode(stats[s][0]) + "</td>"
         
         #TEAM NAME
         if len(stats[0][1]) > 13:  
-            string += "<td>" + str(stats[s][1])[:11] + "..." + "</td>"
+            string += "<td>" + unicode(stats[s][1])[:11] + "..." + "</td>"
         else:
-            string += "<td>" + str(stats[s][1]) + "..." + "</td>"
+            string += "<td>" + unicode(stats[s][1]) + "..." + "</td>"
         
         #Number of solved
-        string += "<td>" + str(stats[s][2]) + "</td>"
+        string += "<td>" + unicode(stats[s][2]) + "</td>"
         
         #Onsite/ofsite
         if stats[s][5] == True:
