@@ -70,11 +70,14 @@ contest as contest %} #} {% load i18n %}
 </script>
 
 
-<h1>Balloon table</h1>
+<h1>Balloon tables</h1>
 
-<small>Click on a table column to sort on that field</small>
+<small>Drag-and-Drop between the two tables</small>
+<br>
         <br /> <br />
-        <h3>Correct submissions not given balloon</h3>
+        
+        <h3>Not given balloon</h3>
+        <small> Teams that are awaiting balloon for a correct submission</small>
         <hr />
         <table id="TableCorrectSubmissions"
                 class="table table-bordered table-hover table-condensed tableSorter connectedSortable">
@@ -102,7 +105,8 @@ contest as contest %} #} {% load i18n %}
 		<br>
 		<br>
 		<br>
-        <h3>Correct submissions with form</h3>
+        <h3>Given Balloon</h3>
+        <small> Teams that have received a balloon for a correct submission</small>
         <hr />
         <table id="TableGivenBalloon"
                 class="table table-bordered table-hover table-condensed tableSorter connectedSortable">
