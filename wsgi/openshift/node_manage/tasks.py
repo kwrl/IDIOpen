@@ -51,8 +51,8 @@ def set_resource(time, memory, procs):
             resource.setrlimit(resource.RLIMIT_AS, (memory, memory))
         except Exception:
             resource.setrlimit(resource.RLIMIT_AS, mem)
-            
-
+    
+        os.nice(19)
     return result
     #limit.max_program_timeout, limit.max_memory, limit.max_processes
 
@@ -158,6 +158,7 @@ def run_tests(submission):
     command = get_submission_run_cmd(submission)
     compiler = submission.compileProfile
     limit = get_resource(submission,compiler)
+    limit.max_processes += 10
     dir_path, filename = os.path.split(os.path.abspath(submission.submission.path))
     test_cases = TestCase.objects.filter(problem__pk = submission.problem.pk)
     results = []
@@ -181,14 +182,18 @@ def run_tests(submission):
                                             stderr=stderr,
                                             retval=retval).save()
  
-        lines = stderr.split("\n")
-        lines = [x for x in lines if x != '']  
-        usertime= float(lines[-1])
-        systime = float(lines[-2])
-        submission.runtime = (usertime + systime)* 1000
-        stderr = '\n'.join(lines)
+        try:
+            lines = stderr.split("\n")
+            lines = [x for x in lines if x != '']  
+            usertime= float(lines[-1])
+            systime = float(lines[-2])
+            submission.runtime = (usertime + systime)* 1000
+            stderr = '\n'.join(lines)
+        except ValueError:
+            results.append([retval, stdout, stderr, False])
+            continue
 
-        if not test.validator is None:
+        if test.validator:
             if validate(stdout, test):
                 results.append([retval, stdout, stderr, True])
             else:
