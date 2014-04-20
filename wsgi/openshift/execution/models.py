@@ -56,7 +56,6 @@ def get_upload_path(instance, filename):
                         "%s/case" % (instance.problem),
                         filename)
 
-
 def get_upload_path2(instance, filename):
     """ Dynamically decide where to upload the case,
         based on the foreign key in instance, which is required to be
@@ -144,6 +143,10 @@ class TestCase(models.Model):
 
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null = True, blank = True, editable = False)
     problem = models.ForeignKey('execution.Problem')
+
+    compileProfile  = models.ForeignKey(CompilerProfile, null=True, blank=True)
+    validator       = models.FileField(upload_to=get_upload_path,null=True, blank=True,
+                            verbose_name="Custom validator source")
 
     def __unicode__(self):
         return "%s" % (self.short_description)
