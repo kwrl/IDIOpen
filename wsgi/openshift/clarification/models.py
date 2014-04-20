@@ -5,8 +5,8 @@ from django.conf import settings
 class Question (models.Model):
     
     class Meta:
-        verbose_name = "Click here to view and answer question"
-
+        verbose_name = "or add an answer to a question"
+        verbose_name_plural = "Click here to view and answer questions"
     subject     = models.CharField(max_length = 120)
     body        = models.TextField(max_length = 355)
     sender      = models.ForeignKey(Team)    
@@ -22,8 +22,9 @@ class Question (models.Model):
 class QuestionAnswer(models.Model):
 
     class Meta:
-        verbose_name = "Click here to view answer"
-
+        verbose_name = "Answer"
+        verbose_name_plural = "Click here to view answers"
+   
     subject     = models.CharField(max_length = 120)
     body        = models.TextField(max_length = 355)
     answered_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank = True, null=True) 
