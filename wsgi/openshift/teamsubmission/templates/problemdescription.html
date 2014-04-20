@@ -61,7 +61,7 @@
 
 <br>
 {% if problem %}
-    {{ problem.description }}
+    {{ problem.description | safe }}
 {% endif %}
 <br>
 
