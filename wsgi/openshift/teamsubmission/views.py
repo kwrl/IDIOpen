@@ -127,8 +127,6 @@ def submission_view(request):
     
     team = Team.objects.filter(contest=con).filter(members__id = user.id)
     problems = Problem.objects.filter(contest=con).order_by('title')
-    submissions = Submission.objects.filter(team=team).filter(solved_problem='True').order_by('date_uploaded').order_by('problem')
-    # Maybe not optimal solution
     prob_sub_dict = dict()
     
     for sub in Submission.objects.filter(team=team):
