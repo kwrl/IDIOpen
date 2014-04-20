@@ -2,11 +2,12 @@
 BROKER_URL = "amqp://guest:guest@localhost:5672//"
 CELERY_RESULT_BACKEND = "amqp"
 import subprocess
-
+'''
 CELERYD_NODES = "w1"
 CELERY_MULTI = "celery multi"
 
 DAJAXICE_DEBUG = True
+'''
 """
 Django settings for openshift project.
 

@@ -2,7 +2,7 @@ from __future__ import absolute_import
 from openshift.execution.models import CompilerProfile, TestCase, Resource, get_resource
 from openshift.teamsubmission.models import Submission, ExecutionLogEntry 
 from subprocess import call
-from openshift.messaging import celery_app as app
+from openshift import celery_app as app
 from subprocess import PIPE, Popen
 from signal import SIGKILL, SIGXCPU 
 import re
@@ -61,7 +61,8 @@ def evaluate_task(submission_id):
     submission  = Submission.objects.get(pk=submission_id)
     compiler    = submission.compileProfile
     problem     = submission.problem
-    
+    submission.status = Submission.RUNNING
+    submission.save()
     retval, stdout, stderr = compile(submission)
     if retval != 0:
         if retval in MEM_EXCEED:
@@ -103,6 +104,7 @@ def evaluate_task(submission_id):
                 submission.text_feedback = "Unspecified runtime error."   
             break
     logger.debug('Exec end')
+    submission.status = Submission.EVALUATED
     submission.save()
     return results
 
