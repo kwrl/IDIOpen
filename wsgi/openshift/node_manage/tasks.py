@@ -109,7 +109,7 @@ def evaluate_task(submission_id):
 def compile_submission(submission):
     compiler = submission.compileProfile
     limits = get_resource(submission, compiler)
-
+    command = compiler.compile
     retval, stdout, stderr = compile(compiler, limits, submission.submission.path)
     
     ExecutionLogEntry.objects.create(submission=submission, 
@@ -125,15 +125,24 @@ def compile_validator(test_case):
     resource = set_resource(-1,-1,-1)
 
     return compile( compiler,
-                    get_validator_resource(test_case),
+                    get_validator_resource(),
                     test_case.validator.path)
+
+def get_validator_resource():
+    resource = Resource()
+    resource.max_compile_time = 20
+    resource.max_filesize = 50
+    resource.max_memory = -1
+    resource.max_processes = -1
+    resource.max_program_timeout = 50
+    return resource
 
 def compile(compiler, limits, sourcepath):
     dir_path, filename = os.path.split(sourcepath)
     command = re.sub(FILENAME_SUB, filename, compiler.compile)
     command = re.sub(BASENAME_SUB, filename.split('.')[0], command)
     
-    retval, stdout, stderr =   run( command, dir_path, set_resouce(
+    retval, stdout, stderr =   run( command, dir_path, set_resource(
                                     limits.max_program_timeout,
                                     -1,
                                     -1), "")
@@ -147,7 +156,9 @@ def compile(compiler, limits, sourcepath):
 
 def run_tests(submission):
     command = get_submission_run_cmd(submission)
-
+    compiler = submission.compileProfile
+    limit = get_resource(submission,compiler)
+    dir_path, filename = os.path.split(os.path.abspath(submission.submission.path))
     test_cases = TestCase.objects.filter(problem__pk = submission.problem.pk)
     results = []
     for test in test_cases:
@@ -177,8 +188,8 @@ def run_tests(submission):
         submission.runtime = (usertime + systime)* 1000
         stderr = '\n'.join(lines)
 
-        if not submission.problem.validator is None:
-            if validate(stdout,output_content, submission.problem.validator):
+        if not test.validator is None:
+            if validate(stdout, test):
                 results.append([retval, stdout, stderr, True])
             else:
                 results.append([retval, stdout, stderr, False])
@@ -194,7 +205,7 @@ def get_submission_run_cmd(submission):
     compiler    = submission.compileProfile
     limit       = get_resource(submission, submission.compileProfile)
    
-    command = submission.run
+    command = compiler.run
     dir_path, filename = os.path.split(os.path.abspath(submission.submission.path))
     command = re.sub(BASENAME_SUB, filename.split('.')[0], command)
    
@@ -204,16 +215,22 @@ def get_submission_run_cmd(submission):
     return command
 
 def get_validator_run_cmd(test_case):
+    compiler = test_case.compileProfile
     dir_path, filename = os.path.split(test_case.validator.path)
     return re.sub(BASENAME_SUB, filename.split('.')[0], compiler.run)
 
 def validate(run_stdout, test_case):
     retval, stdout, stderr = compile_validator(test_case)
 
+    dir_path, filename = os.path.split(os.path.abspath(test_case.validator.path))
+    command = get_validator_run_cmd(test_case)
     if retval:
         return False
 
-    retval, stdout, stderr = run(command, dir_path, resource, run_stdout) 
+    limits = get_validator_resource()
+    res = set_resource(limits.max_program_timeout,limits.max_memory,limits.max_processes)
+
+    retval, stdout, stderr = run(command, dir_path, res, run_stdout) 
 
     return retval==0 
 
