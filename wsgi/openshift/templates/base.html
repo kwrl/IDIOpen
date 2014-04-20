@@ -174,35 +174,19 @@
 			<div class="col-lg-3">
 				<div class="panel panel-default">
 					<div class="panel-body">
+                        <p>Score table - Top 5 | <a href= {% url 'highscorePage' contest.url %}> All </a> </p>
 				    	<table class="table table-striped table-condensed">
 					        <thead>
 						        <tr>
 						          <th>#</th>
 						          <th>Team</th>
 						          <th>Solved</th>
-						          <th>Time</th>
+                                  <th>Onsite</th>
 						        </tr>
 						      </thead>
-						      <tbody>
-						        <tr>
-						          <td>1</td>
-						          <td>team1</td>
-						          <td>2690</td>
-						          <td>230.35 s</td>
-						        </tr>
-						        <tr>
-						          <td>2</td>
-						          <td>team2</td>
-						          <td>2256</td>
-						          <td>349.35 s</td>
-						        </tr>
-						        <tr>
-						          <td>3</td>
-						          <td>team3</td>
-						          <td>1977</td>
-						          <td>190.11 s</td>
-						        </tr>
-						      </tbody>
+						      <tbody id="highscoretable">
+
+                              </tbody>
 						</table>
 
 				  	</div>
@@ -232,6 +216,10 @@
 	
     <script src="{% static 'openshift/js/bootbox.min.js' %}"></script>
     <script>
+    		function show_highscore(){
+                Dajaxice.openshift.teamsubmission.get_highscore(Dajax.process,{'contest': '{{ contest.url }}'});
+    		}
+    
            function post_to_url(path) {
                 method = "post"; 
 
@@ -274,6 +262,7 @@
          });
         
         $( document ).ready(function() {
+            show_highscore();
         	check_radio_button();
         	});
     </script>
