@@ -43,7 +43,6 @@ def _get_table_lists():
         else:
             not_given_balloon.append(BalloonView(
                                 sub, timestamp=sub.date_uploaded))
-            
     return given_balloon, not_given_balloon
 
 def balloon_home(request):
