@@ -1,12 +1,12 @@
 #coding:utf-8
-from userregistration.models import CustomUser as User
+from openshift.userregistration.models import CustomUser as User
 from django.shortcuts import render, redirect, get_object_or_404
 from .forms import Team_Form, Team_Edit, Team_Add_Members
 from django.http import HttpResponseRedirect
-from article.models import Article
-from userregistration.models import CustomUser
-from userregistration.models import CustomUserManager
-from contest.models import Team, Invite, Contest, Link
+from openshift.article.models import Article
+from openshift.userregistration.models import CustomUser
+from openshift.userregistration.models import CustomUserManager
+from .models import Team, Invite, Contest, Link
 from django.contrib.auth import get_user_model
 from django.contrib.sites.models import get_current_site
 from django.contrib.auth.decorators import login_required
@@ -84,7 +84,8 @@ def is_member_of_team(request, contest):
 # @login_required
 def registration(request):
     '''
-    TODO: Ch3ck if you already have a team. 
+    TODO: Ch3ck if you already have a team.
+    Done? 
     '''
     if not request.user.is_authenticated():
         return render(request, 'registerForContest/requireLogin.html')

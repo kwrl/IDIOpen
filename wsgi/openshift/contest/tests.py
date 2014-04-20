@@ -1,10 +1,10 @@
 #coding:utf8
 from django.test import TestCase, Client
-from userregistration.forms import RegistrationForm
+from openshift.userregistration.forms import RegistrationForm
 from contest.forms import *
 import datetime
 from .models import Contest 
-import userregistration
+import openshift.userregistration
 
 # Create your tests here.
 '''
