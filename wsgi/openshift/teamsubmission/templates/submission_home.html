@@ -18,6 +18,10 @@ $(document).ready(function()
 <h2>Contest Page</h2>
 <hr>
 
+<a href= {% url 'clarificationAnswersPage' contest.url %}> View messages </a> |
+<a href= {% url 'clarificationPage' contest.url %}> Ask a question </a> |
+<a href= {% url 'highscorePage' contest.url %}> View score table </a>
+
 <h3>List of Problems</h3>
 
 <small>Click on a table row to go to the selected problem.</small>
@@ -54,18 +58,13 @@ $(document).ready(function()
     </tbody>
 </table>
 <br>
-<h3>Highscore list</h3>
-<p> Insert Highscore list for top 5 <p>
-<p> Insert this teams possitiion </p>
-<p> Move it to the right </p>
 
 
-<h3>Clarification</h3>
-<p> Insert text here </p>
 
-<a href= {% url 'clarificationAnswersPage' contest.url %}> View messages </a>
-<br>
-<a href= {% url 'clarificationPage' contest.url %}> Ask a question </a>
+<h3>Links</h3>
+<p> Thinking about removing this </p>
+
+
 
 
 {% endblock content %}
