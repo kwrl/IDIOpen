@@ -10,7 +10,6 @@ contest as contest %} #} {% load i18n %}
  <link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
   <script src="//code.jquery.com/jquery-1.10.2.js"></script>
   <script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
-  <link rel="stylesheet" href="/resources/demos/style.css">
 <!-- Tablesorter css -->
 <link href="/static/openshift/css/tablesorter/tablestyle.css"
         rel="stylesheet">
@@ -39,7 +38,7 @@ contest as contest %} #} {% load i18n %}
   });
  </script>
 
-<script type="text/javascript">
+<script type="text/java<script">
         function post_to_url(path, params) {
 
                 // The rest of this code assumes you are not using a library.
@@ -86,20 +85,23 @@ contest as contest %} #} {% load i18n %}
                                 <th data-toggle="tooltip" data-placement="top" title="">Problem</th>
                                 <th data-toggle="tooltip" data-placement="top"
                                         title="What problem this is about">Submission</th>
+                                <th data-toggle="tooltip" data-placement="top" title="">Time uploaded</th>
                         </tr>
                 </thead>
                	 <tbody>
                         {% for listitem in not_given_balloon %}
-                        <tr data-value="{{listitem.pk}}">
-                        <input type="hidden" value="{{listitem.pk}}" />
-                                <td>{{listitem.team}}</td>
-                                <td>{{listitem.problem}}</td>
-                                <td>{{listitem.submission}}</td>
+                        <tr data-value="{{listitem.submission.pk}}">
+                                <td>{{listitem.submission.team}}</td>
+                                <td>{{listitem.submission.problem}}</td>
+                                <td>{{listitem.submission.submission}}</td>
+                                <td>{{listitem.timestamp}}</td>
                         </tr>
                         {% endfor %}
                 </tbody>
         </table>
-
+		<br>
+		<br>
+		<br>
         <h3>Correct submissions with form</h3>
         <hr />
         <table id="TableGivenBalloon"
@@ -108,18 +110,21 @@ contest as contest %} #} {% load i18n %}
                         <tr class="not_draggable">
                                 <th data-toggle="tooltip" data-placement="top"
                                         title="The team this regards">Team</th>
-                                <th data-toggle="tooltip" data-placement="top" title="">Problem</th>
+                                <th data-toggle="tooltip" data-placement="top" title="What problem this is about">Problem</th>
                                 <th data-toggle="tooltip" data-placement="top"
-                                        title="What problem this is about">Submission</th>
+                                        title="Which submissions that was correct">Submission</th>
+                        		<th data-toggle="tooltip" data-placement="top"
+                                        title="The time a balloon was given">Timestamp</th>
+    
                         </tr>
                 </thead>
                 <tbody>
                         {% for listitem in given_balloon %}
-                        <tr data-value="{{listitem.pk}}">
-                        <input type="hidden" value="{{listitem.pk}}" />
-                                <td>{{listitem.team}}</td>
-                                <td>{{listitem.problem}}</td>
-                                <td>{{listitem.submission}}</td>
+                        <tr data-value="{{listitem.submission.pk}}">
+                                <td>{{listitem.submission.team}}</td>
+                                <td>{{listitem.submission.problem}}</td>
+                                <td>{{listitem.submission.submission}}</td>
+                                <td>{{listitem.timestamp}}</td>
                         </tr>
                         {% endfor %}
                 </tbody>
