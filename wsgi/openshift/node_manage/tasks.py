@@ -51,8 +51,8 @@ def set_resource(time, memory, procs):
             resource.setrlimit(resource.RLIMIT_AS, (memory, memory))
         except Exception:
             resource.setrlimit(resource.RLIMIT_AS, mem)
-            
-
+    
+        os.nice(19)
     return result
     #limit.max_program_timeout, limit.max_memory, limit.max_processes
 
@@ -63,7 +63,7 @@ def evaluate_task(submission_id):
     problem     = submission.problem
     submission.status = Submission.RUNNING
     submission.save()
-    retval, stdout, stderr = compile(submission)
+    retval, stdout, stderr = compile_submission(submission)
     if retval != 0:
         if retval in MEM_EXCEED:
             submission.text_feedback = "Compile time memory limit exceeded."
@@ -108,35 +108,61 @@ def evaluate_task(submission_id):
     submission.save()
     return results
 
-def compile(submission):
+def compile_submission(submission):
     compiler = submission.compileProfile
     limits = get_resource(submission, compiler)
+    command = compiler.compile
+    retval, stdout, stderr = compile(compiler, limits, submission.submission.path)
+    
+    ExecutionLogEntry.objects.create(submission=submission, 
+                                            command=command, 
+                                            stdout=stdout, 
+                                            stderr=stderr,
+                                            retval=retval).save()
+    
+    return retval, stdout, stderr
 
-    dir_path, filename = os.path.split(submission.submission.path)
+def compile_validator(test_case):
+    compiler = test_case.compileProfile
+    resource = set_resource(-1,-1,-1)
 
+    return compile( compiler,
+                    get_validator_resource(),
+                    test_case.validator.path)
+
+def get_validator_resource():
+    resource = Resource()
+    resource.max_compile_time = 20
+    resource.max_filesize = 50
+    resource.max_memory = -1
+    resource.max_processes = -1
+    resource.max_program_timeout = 50
+    return resource
+
+def compile(compiler, limits, sourcepath):
+    dir_path, filename = os.path.split(sourcepath)
     command = re.sub(FILENAME_SUB, filename, compiler.compile)
     command = re.sub(BASENAME_SUB, filename.split('.')[0], command)
-
-    retval, stdout, stderr = run_submission_job(command, dir_path, set_resource(
+    
+    retval, stdout, stderr =   run( command, dir_path, set_resource(
                                     limits.max_program_timeout,
                                     -1,
-                                    -1), submission, "")
+                                    -1), "")
 
     if os.path.exists(dir_path + '/' + filename.split('.')[0]):
         os.chmod(dir_path + '/' + filename.split('.')[0], 0751)
     else:
         logger.debug('Cant find executable')
-    return retval, stdout, stderr
  
+    return retval, stdout, stderr
+
 def run_tests(submission):
+    command = get_submission_run_cmd(submission)
     compiler = submission.compileProfile
-    test_cases = TestCase.objects.filter(problem__pk = submission.problem.pk)
-    limit = get_resource(submission, compiler)
-    command = compiler.run
+    limit = get_resource(submission,compiler)
+    limit.max_processes += 10
     dir_path, filename = os.path.split(os.path.abspath(submission.submission.path))
-    command = re.sub(BASENAME_SUB, filename.split('.')[0], command)
-    logger.debug(command)
-    command = use_run_user(command)
+    test_cases = TestCase.objects.filter(problem__pk = submission.problem.pk)
     results = []
     for test in test_cases:
         test.inputFile.open("rb")
@@ -145,49 +171,75 @@ def run_tests(submission):
         output_content= test.outputFile.read()
         test.inputFile.close()
         test.outputFile.close()
-
-        retval, stdout, stderr = run_timed_submission_job(command, dir_path, set_resource(
+        
+        retval, stdout, stderr = run(command, dir_path, set_resource(
                                         limit.max_program_timeout,
                                         limit.max_memory,
                                         limit.max_processes),
-                                        submission, input_content)       
- 
-        if stdout == output_content:
-            results.append([retval, stdout, stderr, True])
-        else:
-            results.append([retval, stdout, stderr, False])
-   
-        logger.debug('Results:')
-        logger.debug(results) 
-    return results
-
-def run_timed_submission_job(command, dir_path, resource, submission, stdin):
-    retval, stdout, stderr = run_submission_job(time_command(command),
-                                                dir_path,
-                                                resource,
-                                                submission,
-                                                stdin)
-    lines = stderr.split("\n")
-    lines = [x for x in lines if x != '']  
- 
-    usertime= float(lines[-1])
-    systime = float(lines[-2])
-
-    submission.runtime = (usertime + systime)* 1000
-    stderr = '\n'.join(lines)
-
-    return retval, stdout, stderr
-
-def run_submission_job(command, dir_path, resource, submission, stdin):
-    retval, stdout, stderr = run(command, dir_path, resource,stdin)
-
-    ExecutionLogEntry.objects.create(submission=submission, 
+                                        input_content)       
+        
+        ExecutionLogEntry.objects.create(submission=submission, 
                                             command=command, 
                                             stdout=stdout, 
                                             stderr=stderr,
                                             retval=retval).save()
-    return retval, stdout, stderr
-     
+ 
+        try:
+            lines = stderr.split("\n")
+            lines = [x for x in lines if x != '']  
+            usertime= float(lines[-1])
+            systime = float(lines[-2])
+            submission.runtime = (usertime + systime)* 1000
+            stderr = '\n'.join(lines)
+        except ValueError:
+            results.append([retval, stdout, stderr, False])
+            continue
+
+        if test.validator:
+            if validate(stdout, test):
+                results.append([retval, stdout, stderr, True])
+            else:
+                results.append([retval, stdout, stderr, False])
+        else:
+            if stdout==output_content:
+                results.append([retval, stdout, stderr, True])
+            else:
+                results.append([retval, stdout, stderr, False])
+   
+    return results
+
+def get_submission_run_cmd(submission):
+    compiler    = submission.compileProfile
+    limit       = get_resource(submission, submission.compileProfile)
+   
+    command = compiler.run
+    dir_path, filename = os.path.split(os.path.abspath(submission.submission.path))
+    command = re.sub(BASENAME_SUB, filename.split('.')[0], command)
+   
+    command = use_run_user(command)
+    command = time_command(command)
+    
+    return command
+
+def get_validator_run_cmd(test_case):
+    compiler = test_case.compileProfile
+    dir_path, filename = os.path.split(test_case.validator.path)
+    return re.sub(BASENAME_SUB, filename.split('.')[0], compiler.run)
+
+def validate(run_stdout, test_case):
+    retval, stdout, stderr = compile_validator(test_case)
+
+    dir_path, filename = os.path.split(os.path.abspath(test_case.validator.path))
+    command = get_validator_run_cmd(test_case)
+    if retval:
+        return False
+
+    limits = get_validator_resource()
+    res = set_resource(limits.max_program_timeout,limits.max_memory,limits.max_processes)
+
+    retval, stdout, stderr = run(command, dir_path, res, run_stdout) 
+
+    return retval==0 
 
 def run(command, dir_path, resource, stdin):
     args = shlex.split(command)

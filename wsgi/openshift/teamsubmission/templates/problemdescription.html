@@ -90,7 +90,7 @@ $( document ).ready(function() {
 
 <br>
 {% if problem %}
-     {{ problem.description|linebreaksbr }}
+    {{ problem.description | safe }}
 {% endif %}
 <br>
 
