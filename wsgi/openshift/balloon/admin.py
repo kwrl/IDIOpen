@@ -6,7 +6,7 @@ from django.conf.urls import url, patterns
 
 from openshift.contest.models import Contest, Team
 from openshift.execution.models import Problem
-from teamsubmission.models import Submission
+from openshift.teamsubmission.models import Submission
 from .models import BalloonStatus
 from .forms import BalloonSubmissionForm
 
