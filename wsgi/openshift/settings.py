@@ -2,11 +2,12 @@
 BROKER_URL = "amqp://guest:guest@localhost:5672//"
 CELERY_RESULT_BACKEND = "amqp"
 import subprocess
-
+'''
 CELERYD_NODES = "w1"
 CELERY_MULTI = "celery multi"
 
 DAJAXICE_DEBUG = True
+'''
 """
 Django settings for openshift project.
 
@@ -76,7 +77,7 @@ INSTALLED_APPS = (
     'openshift.clarification',
     'openshift.helpFunctions',
     'openshift.judge_supervise',
-
+    'openshift.balloon',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -157,7 +158,7 @@ USE_L10N = True
 # Timezone-aware or not
 USE_TZ = True
 
-#DEBUG_TOOLBAR_PATCH_SETTINGS = False
+DEBUG_TOOLBAR_PATCH_SETTINGS = False
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 STATIC_ROOT = os.path.join(BASE_DIR, '..', 'static')
