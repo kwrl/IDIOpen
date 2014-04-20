@@ -20,6 +20,11 @@ class ProblemAdmin(admin.ModelAdmin):
         if getattr(obj, 'author', None) is None:
             obj.author = request.user
         obj.save() 
+    class Media:
+        js = [
+            '/static/grappelli/tinymce/jscripts/tiny_mce/tiny_mce.js',
+            '/static/openshift/js/tinymce_setup.js',
+        ]
         
 class ResourceAdmin(admin.ModelAdmin):
     fieldsets = (
