@@ -96,16 +96,16 @@ class ScoreManager(models.Manager):
         
         """ 
         The statistics are:
-        [position,
-        team name,
-        solved problems,
-        total score,
-        total time (in minutes),
-        onsite,
-        year,
-        gender,
-        problem 1 submissions,
-        ...
+        [position,          - 0
+        team name,          - 1
+        solved problems,    -2
+        total score,        -3
+        total time (in minutes), -4
+        onsite,            -5
+        year,                -6
+        gender,            -7
+        problem 1 submissions, -8
+        ...        
         problem n submissions,]
         """
         statistics = []
@@ -135,6 +135,7 @@ class ScoreManager(models.Manager):
             s[0] = len(statistics) + 1
             statistics.append(s)
         return statistics
+    
 
 def file_function(instance, filename):
     tries = len(Submission.objects.filter(team__pk = instance.team.pk).filter(problem__pk = instance.problem.id).all())

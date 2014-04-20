@@ -135,7 +135,6 @@ if MYSQL:
 	     'PASSWORD'	: 'password',
 	     'HOST'	: 'localhost',
 	     'PORT'	: '3306',
-
          }
     }
 else:
