@@ -7,6 +7,8 @@ from django import template
 from openshift.contest.models import Contest
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import Http404
+from openshift.contest.models import Team
+
 import os
 
 register = template.Library()
@@ -46,3 +48,19 @@ def addcss(field, css):
 # There might be more pictures to return
 #    pass
     
+
+@register.assignment_tag(takes_context=True)
+def is_on_team(context):
+    request = context['request']
+    url = request.path.split('/')[1]
+    try:
+        contest = Contest.objects.get(url=url)
+        if not contest.isPublishable(): 
+            raise Http404;
+    except ObjectDoesNotExist:
+        raise Http404
+    team = Team.objects.filter(contest=contest).filter(members__id = request.user.id)
+    if team.count() > 0:
+        return True
+    else:
+        return False

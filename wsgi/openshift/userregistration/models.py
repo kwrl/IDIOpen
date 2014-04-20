@@ -11,8 +11,7 @@ from django.core.mail import send_mail
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.contrib.auth.models import BaseUserManager
 from django.template.loader import render_to_string
-
-
+ 
 
 '''
 try:
@@ -279,7 +278,4 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         self.temp_email = None
         self.email_activation_key = None
         
-    def is_on_team(self):
-        import pdb
-        pdb.set_trace()
-        pass
+    
