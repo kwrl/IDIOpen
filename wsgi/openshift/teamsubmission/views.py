@@ -127,16 +127,17 @@ def submission_view(request):
     
     team = Team.objects.filter(contest=con).filter(members__id = user.id)
     problems = Problem.objects.filter(contest=con).order_by('title')
-    submissions = Submission.objects.filter(team=team).filter(solved_problem='True').order_by('-date_uploaded').order_by('problem')
+    submissions = Submission.objects.filter(team=team).filter(solved_problem='True').order_by('date_uploaded').order_by('problem')
     # Maybe not optimal solution
     if not submissions:
-        submissions = Submission.objects.filter(team=team).order_by('-date_uploaded').order_by('problem')
-
+        submissions = Submission.objects.filter(team=team).order_by('date_uploaded').order_by('problem')
+    
     new_dict = dict()
     listProbSub = []
     
     for sub in submissions:
         new_dict[sub.problem] = sub
+                
     for prob in problems:
         if prob in new_dict:
             sub = new_dict[prob]
