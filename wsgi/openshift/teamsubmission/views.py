@@ -171,6 +171,8 @@ def highscore_view(request):
                }
     return render(request, 'highscore.html', context)
 
+from django.utils import timezone;
+
 class SubJoinProb(object):
     def __init__(self, submission, problem, score):
         if submission is not None:
@@ -179,7 +181,7 @@ class SubJoinProb(object):
                 self.submission.submission = \
                     str(submission.submission).split('/')[-1]
                 self.submission.date_uploaded = \
-                    submission.date_uploaded.strftime('%H:%M:%S')
+                    submission.date_uploaded
         self.problem = problem 
 
 # END OF LIFE
