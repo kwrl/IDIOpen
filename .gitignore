@@ -14,3 +14,5 @@
 /dist/
 /build/
 db.*
+/wsgi/private/
+/wsgi/media/problems/

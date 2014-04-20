@@ -21,7 +21,7 @@ $(document).ready(function()
 ); 
 </script>
 <h2>Highscore table</h2>
-
+<hr>
 <table id="highscoreTable" class="table table-bordered table-hover table-condensed tablesorter">
 	<thead>
             <tr>
@@ -30,6 +30,9 @@ $(document).ready(function()
             <th data-toggle="tooltip" data-placement="top" title="Solved">Solved</th>
             <th data-toggle="tooltip" data-placement="top" title="Scores">Total Score</th>
             <th data-toggle="tooltip" data-placement="top" title="Time">Time</th>
+            <th data-toggle="tooltip" data-placement="top" title="Onsite">Onsite</th>
+            <th data-toggle="tooltip" data-placement="top" title="Year">Year</th>
+            <th data-toggle="tooltip" data-placement="top" title="Gender">Gender</th>
             {% for p in problems %}
             	<th data-toggle="tooltip" data-placement="top" title="Problems">Problem {{ forloop.counter }}</th>
             {% endfor %}

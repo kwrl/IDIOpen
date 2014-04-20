@@ -4,8 +4,8 @@ from django.db import models
 from django.shortcuts import render
 from django.conf.urls import url, patterns
 
-from contest.models import Contest, Team
-from execution.models import Problem
+from openshift.contest.models import Contest, Team
+from openshift.execution.models import Problem
 from teamsubmission.models import Submission
 from .models import BalloonStatus
 from .forms import BalloonSubmissionForm
