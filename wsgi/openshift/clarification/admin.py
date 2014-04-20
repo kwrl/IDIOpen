@@ -7,7 +7,6 @@ class QuestionAnswerAdmin(admin.ModelAdmin):
     fields = ('subject', 'body', 'contest', 'question', )
     
     def save_model(self, request, obj, form, change):
-        import ipdb; ipdb.set_trace()
         if getattr(obj, 'answered_by', None) is None:
             obj.answered_by = request.user
         obj.save()
