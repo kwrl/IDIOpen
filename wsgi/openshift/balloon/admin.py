@@ -22,7 +22,6 @@ class judge_view_admin(admin.ModelAdmin):
         my_urls = patterns('',
            url(r'^$', admin.site.admin_view(balloon_home)),
         )
-
         return my_urls + urls
     
 class BalloonView(object):
@@ -33,7 +32,7 @@ class BalloonView(object):
 def _get_table_lists():
     balloons = BalloonStatus.objects.all()
     balloon_subs = dict([(ball.submission.pk, ball.timestamp) for ball in balloons])
-    corrrect_submissions = Submission.objects.filter(solved_problem = 'True')
+    corrrect_submissions = Submission.objects.filter(team__onsite = 'True').filter(solved_problem = 'True')
     
     given_balloon, not_given_balloon = [], []
         
@@ -55,7 +54,6 @@ def balloon_home(request):
         
         if form.is_valid():
             form.save()
-            #new_model = BalloonStatus()
         pass
         
     else:
