@@ -2,11 +2,12 @@
 BROKER_URL = "amqp://guest:guest@localhost:5672//"
 CELERY_RESULT_BACKEND = "amqp"
 import subprocess
-
+'''
 CELERYD_NODES = "w1"
 CELERY_MULTI = "celery multi"
 
-
+DAJAXICE_DEBUG = True
+'''
 """
 Django settings for openshift project.
 
@@ -59,12 +60,14 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    #'debug_toolbar',
+    'debug_toolbar',
     'openshift.contest',
     'openshift.article',
     'openshift.userregistration',
 	'django_jenkins',
     'south',
+    'dajaxice',
+    'dajax',
     'sortedm2m',
     'openshift.changeemail',
     'openshift.execution',
@@ -89,11 +92,21 @@ MIDDLEWARE_CLASSES = (
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
     'django.contrib.staticfiles.finders.FileSystemFinder',
+    'dajaxice.finders.DajaxiceFinder',
+)
+TEMPLATE_LOADERS = (
+    'django.template.loaders.filesystem.Loader',
+    'django.template.loaders.app_directories.Loader',
+    'django.template.loaders.eggs.Loader',
 )
 TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.request",
     'django.contrib.auth.context_processors.auth',
     'django.contrib.messages.context_processors.messages',
+    'django.core.context_processors.debug',
+    'django.core.context_processors.i18n',
+    'django.core.context_processors.media',
+    'django.core.context_processors.static',
 )
 
 
@@ -146,7 +159,7 @@ USE_L10N = True
 # Timezone-aware or not
 USE_TZ = True
 
-#DEBUG_TOOLBAR_PATCH_SETTINGS = False
+DEBUG_TOOLBAR_PATCH_SETTINGS = False
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 STATIC_ROOT = os.path.join(BASE_DIR, '..', 'static')

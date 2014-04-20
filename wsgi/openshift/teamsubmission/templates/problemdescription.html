@@ -7,15 +7,32 @@
 </div>
 
 <h2>{{problem.title}}</h2>
-
 <hr>
-
 {% if not submission.solved_problem %}
-<p> Attempts: <strong> {{ tries }} </strong> </p>
+{% if submission.status != submission.EVALUATED %}
+<script type="text/javascript">
 
+
+function doPoll(){
+	Dajaxice.openshift.teamsubmission.submission(Dajax.process, {'submission_id': {{ submission.pk }}});
+    setTimeout(doPoll,5000);
+}
+
+$( document ).ready(function() {
+	doPoll();
+});
+
+</script>
+<div>
+<h3>
+<ul class="fa-ul">
+	<li><i class="fa-li fa fa-spinner fa-spin"></i><span id='response'></span></li>
+</ul>
+</h3>
+</div>
 {% endif %}
-
 {% if tries > 0 %}
+<p> Attempts: <strong> {{ tries }} </strong> </p>
 <h3> Upload a new file to this problem </h3>
 {% else %}
 <h3> Upload a file for this problem </h3> 
@@ -41,16 +58,20 @@
     {% endfor %}
  {% endfor %}
  <br>
- <strong><p>3. Submitt the file </p></strong>
+ <strong><p>3. Submit the file </p></strong>
     <button type="submit" class = "btn btn-primary btn-sm">Submit file</button> 
     <br>
-    <i> <small>Please note that by submitting a file it will count as an attempt</small></i>
+    <em><small>Please note that by submitting a file it will count as an attempt</small></em>
 </div>
+</form>
     <h3> Feedback on submission </h3>
+{% else %}
+	<h3><strong>Problem solved!</strong></h3>
+{% endif %}
+
  <div class = 'well' >
 
 {% if submission.solved_problem %}
-	<strong><p>Problem solved! </strong></p>
 
 	<p> Feedback: <strong> <span class="bg-success"> {{submission.text_feedback}}</span></strong></p>
 	<p> Score for problem: <strong> {{ score }} </strong> </p>
@@ -63,7 +84,6 @@
 	<p> No feedback </p>
 {% endif %}
 </div>
-</form>
 <h3>Problem Description </h3>
 <hr> 
 {% if problem.author %}

@@ -141,8 +141,18 @@ def file_function(instance, filename):
     return '/'.join(['submissions', str(instance.team.id), str(instance.problem.id), str(tries), filename])
 
 class Submission(models.Model):
+    
+    QUEUED = 0
+    RUNNING = 1
+    EVALUATED = 2
+    STATES = (
+        (QUEUED, 'Queued'),
+        (RUNNING, 'Running'),
+        (EVALUATED, 'Evaluated'),
+    )
     #We should rename submission field.... 
     submission = models.FileField(storage=private_media, upload_to=file_function)
+    status = models.IntegerField(choices=STATES, default=QUEUED)
     compileProfile = models.ForeignKey('execution.CompilerProfile')
     date_uploaded = models.DateTimeField(auto_now = True)
     solved_problem = models.BooleanField(default=False) #E.g. Did this submission solve the the problem
