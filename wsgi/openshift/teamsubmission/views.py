@@ -82,14 +82,13 @@ def submission_problem(request, problemID):
         elif is_leader(request, contest):
             if form.is_valid():
                 form.save()
-                submission = Submission.objects.get(pk=submission.pk)
-                tries += 1
-                form = SubmissionForm(instance=submission);
                 return redirect('submission_problem', contest.url, problemID)
         else:
             messages.error(request, 'You have to be the leader of a team to upload submissions')
-    else:
+    elif not submission.solved_problem:
         form = SubmissionForm(instance=submission);
+    else:
+        form = None
     
     score = Submission.objects.get_problem_score(team, problem, contest)
     context = {
@@ -114,34 +113,31 @@ def submission_view(request):
         messages.error(request, 'You have to be logged in in order to view the contest page')
         return redirect('login', con.url)
     
-    
     if not is_member_of_team(request, con):
         messages.error(request, 'Please register a team to participate')
         return redirect('team_profile', con.url)
         
-    
     # Raise 404 if contest hasn't begun or contest has ended
     if not contest_begin(request):
         messages.error(request, 'Contest has not yet started')
         return redirect('contest_list', con.url)
-        
     
-    
-    if not user.is_authenticated():
-        return redirect('login', con.url)
-
     if contest_end(request):
         messages.warning(request, 'The contest has ended, you are not able to upload any more submissions.')
     
     team = Team.objects.filter(contest=con).filter(members__id = user.id)
     problems = Problem.objects.filter(contest=con).order_by('title')
-    submissions = Submission.objects.filter(team=team).order_by('-date_uploaded').order_by('problem')
+    submissions = Submission.objects.filter(team=team).filter(solved_problem='True').order_by('date_uploaded').order_by('problem')
+    # Maybe not optimal solution
+    if not submissions:
+        submissions = Submission.objects.filter(team=team).order_by('date_uploaded').order_by('problem')
     
     new_dict = dict()
     listProbSub = []
     
     for sub in submissions:
         new_dict[sub.problem] = sub
+                
     for prob in problems:
         if prob in new_dict:
             sub = new_dict[prob]
@@ -170,8 +166,6 @@ def highscore_view(request):
                'problems' : problems
                }
     return render(request, 'highscore.html', context)
-
-from django.utils import timezone;
 
 class SubJoinProb(object):
     def __init__(self, submission, problem, score):
