@@ -11,7 +11,7 @@ from django.core.mail import send_mail
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.contrib.auth.models import BaseUserManager
 from django.template.loader import render_to_string
-
+ 
 
 '''
 try:
@@ -277,3 +277,5 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         self.email = self.temp_email
         self.temp_email = None
         self.email_activation_key = None
+        
+    
