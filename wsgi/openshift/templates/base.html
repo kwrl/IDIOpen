@@ -134,7 +134,7 @@
                             {% if not user.is_authenticated %}
                             <a class="list-group-item" href="{% url 'registration_register' contest.url  %}">Register user</a>
                             {% endif %}
-                            {% if not team %}
+                            {% if not team  %}
                             <a class="list-group-item" href="{% url 'register_teams' contest.url %}">Register team</a>
                             {% endif %}
 
