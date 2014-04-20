@@ -3,8 +3,8 @@ from .models import QuestionAnswer, Question
 # Register your models here.
 
 class QuestionAnswerAdmin(admin.ModelAdmin):
-    list_display = ('subject', 'answered_by', 'answered_at', 'message')
-    fields = ('subject', 'body', 'contest', 'message')
+    list_display = ('subject', 'answered_by', 'answered_at', 'question', )
+    fields = ('subject', 'body', 'contest', 'question', )
     
     def save_model(self, request, obj, form, change):
         if form.changed_data:
@@ -29,7 +29,8 @@ class QuestionAdmin(admin.ModelAdmin):
     list_filter = ('sent_at',)
     date_hierarchy = 'sent_at'
     ordering = ('-sent_at', '-answered')
-    readonly_fields = ('subject', 'body', 'sender', 'contest')
+    fields = ('subject', 'body', 'sender', 'contest', 'answered',)
+    readonly_fields = ('subject', 'body', 'sender', 'contest',)
     
     def has_add_permission(self, request):
         return False
@@ -39,19 +40,18 @@ class QuestionAdmin(admin.ModelAdmin):
         instances = formset.save(commit=False)
         for instance in instances:
             instance.answered_by = request.user
-            instance.contest = instance.message.contest
+            instance.contest = instance.question.contest
             instance.save()
         formset.save_m2m()
     
     # Set Message.answered = True, when saving.     
     def save_model(self, request, obj, form, change):
-        # Check if the form has changed
-        if form.changed_data:
-            if 'answered' in form.changed_data: 
-                obj.save()
-            # Set answered to True, if not specified by the admin
-            else:
-                obj.answered = True
+        # Check if 'answered' field has been set manually
+        if 'answered' in form.changed_data: 
+            obj.save()
+        # Set answered to True, if not specified by the admin
+        else:
+            obj.answered = True
         obj.save()
         
 admin.site.register(Question, QuestionAdmin)
