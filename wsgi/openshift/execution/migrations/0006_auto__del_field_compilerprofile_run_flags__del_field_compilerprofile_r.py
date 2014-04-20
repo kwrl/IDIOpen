@@ -8,28 +8,55 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # Adding model 'Resource'
-        db.create_table(u'execution_resource', (
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('cProfile', self.gf('django.db.models.fields.related.ForeignKey')(related_name='resource_CompilerProfile', to=orm['execution.CompilerProfile'])),
-            ('problem', self.gf('django.db.models.fields.related.ForeignKey')(related_name='resource_problem', to=orm['execution.Problem'])),
-            ('max_compile_time', self.gf('django.db.models.fields.IntegerField')(default=30, max_length=20)),
-            ('max_program_timeout', self.gf('django.db.models.fields.IntegerField')(default=60, max_length=20)),
-            ('max_memory', self.gf('django.db.models.fields.IntegerField')(default=100000, max_length=20)),
-            ('max_processes', self.gf('django.db.models.fields.IntegerField')(default=5, max_length=10)),
-        ))
-        db.send_create_signal(u'execution', ['Resource'])
+        # Deleting field 'CompilerProfile.run_flags'
+        db.delete_column(u'execution_compilerprofile', 'run_flags')
 
-        # Adding unique constraint on 'Problem', fields ['title']
-        #db.create_unique(u'execution_problem', ['title'])
+        # Deleting field 'CompilerProfile.run_cmd'
+        db.delete_column(u'execution_compilerprofile', 'run_cmd')
+
+        # Deleting field 'CompilerProfile.compiler_flags'
+        db.delete_column(u'execution_compilerprofile', 'compiler_flags')
+
+        # Deleting field 'CompilerProfile.compiler_name_cmd'
+        db.delete_column(u'execution_compilerprofile', 'compiler_name_cmd')
+
+        # Adding field 'CompilerProfile.compile'
+        db.add_column(u'execution_compilerprofile', 'compile',
+                      self.gf('django.db.models.fields.CharField')(max_length=100, null=True, blank=True),
+                      keep_default=False)
+
+        # Adding field 'CompilerProfile.run'
+        db.add_column(u'execution_compilerprofile', 'run',
+                      self.gf('django.db.models.fields.CharField')(default='', max_length=100),
+                      keep_default=False)
 
 
     def backwards(self, orm):
-        # Removing unique constraint on 'Problem', fields ['title']
-        #db.delete_unique(u'execution_problem', ['title'])
+        # Adding field 'CompilerProfile.run_flags'
+        db.add_column(u'execution_compilerprofile', 'run_flags',
+                      self.gf('django.db.models.fields.CharField')(max_length=100, null=True, blank=True),
+                      keep_default=False)
 
-        # Deleting model 'Resource'
-        db.delete_table(u'execution_resource')
+        # Adding field 'CompilerProfile.run_cmd'
+        db.add_column(u'execution_compilerprofile', 'run_cmd',
+                      self.gf('django.db.models.fields.CharField')(default='', max_length=10),
+                      keep_default=False)
+
+        # Adding field 'CompilerProfile.compiler_flags'
+        db.add_column(u'execution_compilerprofile', 'compiler_flags',
+                      self.gf('django.db.models.fields.CharField')(max_length=100, null=True, blank=True),
+                      keep_default=False)
+
+        # Adding field 'CompilerProfile.compiler_name_cmd'
+        db.add_column(u'execution_compilerprofile', 'compiler_name_cmd',
+                      self.gf('django.db.models.fields.CharField')(max_length=10, null=True, blank=True),
+                      keep_default=False)
+
+        # Deleting field 'CompilerProfile.compile'
+        db.delete_column(u'execution_compilerprofile', 'compile')
+
+        # Deleting field 'CompilerProfile.run'
+        db.delete_column(u'execution_compilerprofile', 'run')
 
 
     models = {
@@ -67,6 +94,7 @@ class Migration(SchemaMigration):
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'links': ('sortedm2m.fields.SortedManyToManyField', [], {'to': u"orm['contest.Link']", 'symmetrical': 'False'}),
             'logo': ('filebrowser.fields.FileBrowseField', [], {'max_length': '200', 'null': 'True', 'blank': 'True'}),
+            'penalty_constant': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'publish_date': ('django.db.models.fields.DateTimeField', [], {}),
             'sponsors': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['contest.Sponsor']", 'symmetrical': 'False', 'blank': 'True'}),
             'start_date': ('django.db.models.fields.DateTimeField', [], {}),
@@ -91,14 +119,12 @@ class Migration(SchemaMigration):
         },
         u'execution.compilerprofile': {
             'Meta': {'object_name': 'CompilerProfile'},
-            'compiler_flags': ('django.db.models.fields.CharField', [], {'max_length': '100', 'null': 'True', 'blank': 'True'}),
-            'compiler_name_cmd': ('django.db.models.fields.CharField', [], {'max_length': '10', 'null': 'True', 'blank': 'True'}),
+            'compile': ('django.db.models.fields.CharField', [], {'max_length': '100', 'null': 'True', 'blank': 'True'}),
             'extensions': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['execution.FileExtension']", 'symmetrical': 'False'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'package_name': ('django.db.models.fields.CharField', [], {'max_length': '30'}),
-            'run_cmd': ('django.db.models.fields.CharField', [], {'max_length': '10'}),
-            'run_flags': ('django.db.models.fields.CharField', [], {'max_length': '100', 'null': 'True', 'blank': 'True'})
+            'run': ('django.db.models.fields.CharField', [], {'max_length': '100'})
         },
         u'execution.fileextension': {
             'Meta': {'object_name': 'FileExtension'},
@@ -117,6 +143,7 @@ class Migration(SchemaMigration):
             'title': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '200'})
         },
         u'execution.resource': {
+            'Max_filesize': ('django.db.models.fields.IntegerField', [], {'default': '50', 'max_length': '10'}),
             'Meta': {'object_name': 'Resource'},
             'cProfile': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'resource_CompilerProfile'", 'to': u"orm['execution.CompilerProfile']"}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
@@ -128,7 +155,7 @@ class Migration(SchemaMigration):
         },
         u'execution.testcase': {
             'Meta': {'object_name': 'TestCase'},
-            'author': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['userregistration.CustomUser']", 'null': 'True', 'on_delete': 'models.SET_NULL'}),
+            'author': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['userregistration.CustomUser']", 'null': 'True', 'on_delete': 'models.SET_NULL', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'inputDescription': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             'inputFile': ('django.db.models.fields.files.FileField', [], {'max_length': '100'}),

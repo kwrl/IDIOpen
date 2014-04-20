@@ -1,12 +1,11 @@
 from django.db import models
 
 from django.conf import settings
-from django.core.files.storage import Storage
 
 import os
 
-from execution.models import Problem
-from contest.models import Team, Contest
+from openshift.execution.models import Problem
+from openshift.contest.models import Team
 from django.core.files.storage import FileSystemStorage
 
 import operator
@@ -63,11 +62,23 @@ class ScoreManager(models.Manager):
         [solved problems,
         total score,
         time submitted (in minutes),
+        onsite,
+        year,
+        gender,
         problem 1 submissions/time solved,
         ...
         problem n submissions/time solved]
         """
-        statistics = [0, 0, 0]
+        statistics = [0, 0, 0, 0, 0, 0]
+        statistics[3] = team.onsite
+        statistics[4] = team.members.all()[0].skill_level
+        statistics[5] = team.members.all()[0].gender
+        for member in team.members.all():
+            if member.skill_level != statistics[4]:
+                statistics[4] = "--"
+            if member.gender != statistics[5]:
+                statistics[5] = "--"
+                
         for problem in problems:
             problemStat = ScoreManager.get_problem_score(self, team, problem, contest)
             if problemStat[0]:
@@ -90,6 +101,9 @@ class ScoreManager(models.Manager):
         solved problems,
         total score,
         total time (in minutes),
+        onsite,
+        year,
+        gender,
         problem 1 submissions,
         ...
         problem n submissions,]
@@ -122,15 +136,33 @@ class ScoreManager(models.Manager):
             statistics.append(s)
         return statistics
 
+def file_function(instance, filename):
+    tries = len(Submission.objects.filter(team__pk = instance.team.pk).filter(problem__pk = instance.problem.id).all())
+    return '/'.join(['submissions', str(instance.team.id), str(instance.problem.id), str(tries), filename])
+
 class Submission(models.Model):
     #We should rename submission field.... 
-    submission = models.FileField(storage=private_media, upload_to='submissions')
+    submission = models.FileField(storage=private_media, upload_to=file_function)
+    compileProfile = models.ForeignKey('execution.CompilerProfile')
     date_uploaded = models.DateTimeField(auto_now = True)
     solved_problem = models.BooleanField(default=False) #E.g. Did this submission solve the the problem
     text_feedback = models.CharField(max_length=50)
-    team = models.ForeignKey(Team)
-    problem = models.ForeignKey(Problem)
+    team = models.ForeignKey('contest.Team')
+    problem = models.ForeignKey('execution.Problem')
     runtime = models.IntegerField(max_length = 15, blank = True, null = True)  
     objects = ScoreManager()
+
+    def __unicode__(self):
+        return unicode(self.pk)
+
+class ExecutionLogEntry(models.Model):
+    submission  = models.ForeignKey(Submission)
+    command     = models.CharField(help_text="Command issued", max_length=200)
+    stdout      = models.TextField(help_text="Standard output")
+    stderr      = models.TextField(help_text="Standard error")
+    retval      = models.IntegerField(help_text="Return value")
+
+    def __unicode__(self):
+        return "Submission:\t" + unicode(self.submission.pk) + "\tCommand:\t " + self.command
     
 # EOF

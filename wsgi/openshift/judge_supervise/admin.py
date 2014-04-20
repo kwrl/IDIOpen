@@ -3,9 +3,9 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render
 from django.conf.urls import url, patterns
 
-from contest.models import Contest, Team
-from execution.models import Problem
-from teamsubmission.models import Submission
+from openshift.contest.models import Contest, Team
+from openshift.execution.models import Problem
+from openshift.teamsubmission.models import Submission
 
 from collections import defaultdict
 from decimal     import Decimal
@@ -99,16 +99,7 @@ class MyModelAdmin(admin.ModelAdmin):
                 admin.site.admin_view(judge_team_summary)),
         )
 
-        #import ipdb; ipdb.set_trace()
         return my_urls + urls
-
-    def get_inline_instances(self, request, obj=None):
-        return []
-    def get_fieldsets(self, request, obj=None):
-        return []
-    def get_list_display(self, request):
-        return []
-
 
 def get_unsolved_attemps(team_list):
     """ For all the problems, per team,

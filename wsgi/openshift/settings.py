@@ -1,4 +1,11 @@
 #coding:utf-8
+BROKER_URL = "amqp://guest:guest@localhost:5672//"
+CELERY_RESULT_BACKEND = "amqp"
+import subprocess
+
+CELERYD_NODES = "w1"
+CELERY_MULTI = "celery multi"
+
 
 """
 Django settings for openshift project.
@@ -15,10 +22,6 @@ import imp
 import uuid
 from datetime import datetime
 
-ON_OPENSHIFT = False
-if os.environ.has_key('OPENSHIFT_REPO_DIR'):
-    ON_OPENSHIFT = True
-
 BASE_DIR = os.path.dirname(os.path.realpath(__file__))
 print(BASE_DIR)
 
@@ -31,20 +34,12 @@ print(BASE_DIR)
 
 default_keys = { 'SECRET_KEY': 'vm4rl5*ymb@2&d_(gc$gb-^twq9w(u69hi--%$5xrh!xk(t%hw' }
 use_keys = default_keys
-if ON_OPENSHIFT:
-    imp.find_module('openshiftlibs')
-    import openshiftlibs
-    use_keys = openshiftlibs.openshift_secure(default_keys)
-
 
 SECRET_KEY = use_keys['SECRET_KEY']
 
 AUTH_USER_MODEL = 'userregistration.CustomUser'
 # SECURITY WARNING: don't run with debug turned on in production!
-if ON_OPENSHIFT:
-    DEBUG = True
-else:
-    DEBUG = True
+DEBUG = True
 
 TEMPLATE_DEBUG = DEBUG
 
@@ -64,26 +59,24 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'debug_toolbar',
-    'contest',
-    'article',
-    'userregistration',
+    #'debug_toolbar',
+    'openshift.contest',
+    'openshift.article',
+    'openshift.userregistration',
 	'django_jenkins',
     'south',
     'sortedm2m',
-    'execution',
-    'changeemail',
-    'teamsubmission',
-    'clarification',
-    'helpFunctions'
-    'judge_supervise',
+    'openshift.changeemail',
+    'openshift.execution',
+    'openshift.teamsubmission',
+    'openshift.node_manage',
+    'openshift.messaging',
+    'openshift.clarification',
+    'openshift.helpFunctions',
+    'openshift.judge_supervise',
+
 )
 
-'''
-if not ON_OPENSHIFT:
-    print 'not on openshift'
-    INSTALLED_APPS = ('debug_toolbar',) + INSTALLED_APPS
-'''
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -104,30 +97,12 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 )
 
 
-# If you want configure the REDISCLOUD
-if 'REDISCLOUD_URL' in os.environ and 'REDISCLOUD_PORT' in os.environ and 'REDISCLOUD_PASSWORD' in os.environ:
-    redis_server = os.environ['REDISCLOUD_URL']
-    redis_port = os.environ['REDISCLOUD_PORT']
-    redis_password = os.environ['REDISCLOUD_PASSWORD']
-    CACHES = {
-        'default' : {
-            'BACKEND' : 'redis_cache.RedisCache',
-            'LOCATION' : '%s:%d'%(redis_server,int(redis_port)),
-            'OPTIONS' : {
-                'DB':0,
-                'PARSER_CLASS' : 'redis.connection.HiredisParser',
-                'PASSWORD' : redis_password,
-            }
-        }
-    }
-    MIDDLEWARE_CLASSES = ('django.middleware.cache.UpdateCacheMiddleware',) + MIDDLEWARE_CLASSES + ('django.middleware.cache.FetchFromCacheMiddleware',)
-
-ROOT_URLCONF = 'urls'
+ROOT_URLCONF = 'openshift.urls'
 
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
 
-WSGI_APPLICATION = 'wsgi.application'
+WSGI_APPLICATION = 'openshift.wsgi.application'
 
 TEMPLATE_DIRS = (
      os.path.join(BASE_DIR,'templates'),
@@ -138,28 +113,15 @@ TEMPLATE_DIRS = (
 MYSQL = True
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
-if ON_OPENSHIFT:
+if MYSQL:
     DATABASES = {
          'default': {
-             'ENGINE': 'django.db.backends.mysql',
-             'NAME': os.environ['OPENSHIFT_APP_NAME'],
-             'USER': os.environ['OPENSHIFT_MYSQL_DB_USERNAME'],
-             'PASSWORD': os.environ['OPENSHIFT_MYSQL_DB_PASSWORD'],
-             'HOST': os.environ['OPENSHIFT_MYSQL_DB_HOST'],
-             'PORT': os.environ['OPENSHIFT_MYSQL_DB_PORT'],
-             }
-     }
-elif MYSQL:
-    DATABASES = {
-         'default': {
-             'ENGINE': 'django.db.backends.mysql',
-             'NAME': 'gentleidi',
-
-			#'USER': os.environ['USER'],
-             'USER': os.getenv('USER') or os.getenv('USERNAME'), #Added Windows support  
-			 'PASSWORD': 'password',
-			 'HOST': 'localhost',
-			 'PORT': '3306',
+             'ENGINE'	: 'django.db.backends.mysql',
+             'NAME'	: 'gentleidi',
+             'USER'	: os.getenv('USER'), #Added Windows support  
+	     'PASSWORD'	: 'password',
+	     'HOST'	: 'localhost',
+	     'PORT'	: '3306',
 
          }
     }
@@ -204,19 +166,41 @@ STATICFILES_DIRS = (
 FIXTURE_DIRS = (
    PROJECT_ROOT + '/fixtures/',
 )
+LOG_ROOT = os.path.join(BASE_DIR, '..' , 'log')
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
+    },
+    'handlers': {
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+	    'formatter': 'verbose',
+            'filename': LOG_ROOT + '/debug.log',
+        },
+    },
+    'loggers': {
+        'idiopen': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+	'django': {
+	    'handlers': ['file'],
+	    'level': 'INFO',
+	    'propagate': True,
+	},
+    },
+}
 
-
-def uploaded_filepath(instance, filename):
-    ext = filename.split('.')[-1]
-    filename = "%s.%s" % (uuid.uuid4(), ext)
-    today = datetime.now().strftime('%Y-%m-%d')
-    return os.path.join('attachement', today, filename)
-
-SUMMERNOTE_CONFIG = {
-                     'attachment_upload_to': uploaded_filepath,
-                     }
 GRAPPELLI_ADMIN_TITLE = 'IDI Open'
-
 
 ACCOUNT_ACTIVATION_DAYS = 7
 if DEBUG:

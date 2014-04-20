@@ -3,11 +3,11 @@ from .models import Submission
 from .forms import SubmissionForm
  
 
-from execution.models import Problem
-from contest.models import Contest, Link, Team
+from openshift.execution.models import Problem
+from openshift.contest.models import Contest, Link, Team
 import datetime
 from django.contrib.sites.models import Site
-from userregistration.models import CustomUser
+from openshift.userregistration.models import CustomUser
 
 # Create your tests here.
 
