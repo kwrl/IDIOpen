@@ -1,8 +1,8 @@
-{% extends "admin/app_index.html" %} {# {% load link_tags %} #} {# {%
-contest as contest %} #} {% load i18n %}
-
+{% extends "admin/app_index.html" %} 
+{% load i18n %}
+{% load tz %}
 <h3>{% blocktrans with filter_title=title %} By {{ filter_title }}
-	{% endblocktrans %}</h3>
+	{% endblocktrans %}</h3>z 
 
 
 {% block content %}
@@ -38,7 +38,7 @@ contest as contest %} #} {% load i18n %}
   });
  </script>
 
-<script type="text/java<script">
+<script type="text/javascript">
         function post_to_url(path, params) {
 
                 // The rest of this code assumes you are not using a library.
@@ -88,7 +88,7 @@ contest as contest %} #} {% load i18n %}
                                 <th data-toggle="tooltip" data-placement="top" title="">Problem</th>
                                 <th data-toggle="tooltip" data-placement="top"
                                         title="What problem this is about">Submission</th>
-                                <th data-toggle="tooltip" data-placement="top" title="">Time uploaded</th>
+                                <th data-toggle="tooltip" data-placement="top" title="">Time uploaded (hours:minutes)</th>
                         </tr>
                 </thead>
                	 <tbody>
@@ -97,7 +97,7 @@ contest as contest %} #} {% load i18n %}
                                 <td>{{listitem.submission.team}}</td>
                                 <td>{{listitem.submission.problem}}</td>
                                 <td>{{listitem.submission.submission}}</td>
-                                <td>{{listitem.timestamp}}</td>
+                                <td>{{listitem.timestamp | date:"H:i" }}</td>
                         </tr>
                         {% endfor %}
                 </tbody>
@@ -118,7 +118,7 @@ contest as contest %} #} {% load i18n %}
                                 <th data-toggle="tooltip" data-placement="top"
                                         title="Which submissions that was correct">Submission</th>
                         		<th data-toggle="tooltip" data-placement="top"
-                                        title="The time a balloon was given">Timestamp</th>
+                                        title="The time a balloon was given">Timestamp (hours:minutes)</th>
     
                         </tr>
                 </thead>
@@ -128,7 +128,7 @@ contest as contest %} #} {% load i18n %}
                                 <td>{{listitem.submission.team}}</td>
                                 <td>{{listitem.submission.problem}}</td>
                                 <td>{{listitem.submission.submission}}</td>
-                                <td>{{listitem.timestamp}}</td>
+                                <td>{{listitem.timestamp | date:"H:i"}}</td>
                         </tr>
                         {% endfor %}
                 </tbody>

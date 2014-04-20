@@ -41,7 +41,7 @@ $(document).ready(function()
             <button type="button" class="btn btn-default btn-xs btn-block">{{probsub.problem.title}}</button>
             </td>
             <td>{{probsub.submission.submission}}</td>
-            <td>{{probsub.submission.date_uploaded | date:"h:m:s"}}</td>
+            <td>{{probsub.submission.date_uploaded | date:"H:i"}}</td>
             <td>{{probsub.submission.text_feedback}}</td>
             {%if probsub.submission.solved_problem%}
             	<td class ="success">{{probsub.submission.solved_problem}}</td>
