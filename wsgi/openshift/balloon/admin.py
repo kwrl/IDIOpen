@@ -4,18 +4,16 @@ from django.db import models
 from django.shortcuts import render
 from django.conf.urls import url, patterns
 
-from openshift.contest.models import Contest, Team
-from openshift.execution.models import Problem
 from openshift.teamsubmission.models import Submission
-from .models import BalloonStatus
-from .forms import BalloonSubmissionForm
+from openshift.balloon.models import BalloonStatus
+from openshift.balloon.forms import BalloonSubmissionForm
 
 class judge_view_admin(admin.ModelAdmin):
     # FIXME
     """ Temporary solution to get a view connected iSubmissionn admin site
     """
     view_on_site = True
-   
+
     def get_urls(self):
         urls = super(judge_view_admin, self).get_urls()
         urls = [urls[0], ]
@@ -23,19 +21,19 @@ class judge_view_admin(admin.ModelAdmin):
            url(r'^$', admin.site.admin_view(balloon_home)),
         )
         return my_urls + urls
-    
+
 class BalloonView(object):
     def __init__(self, submission, timestamp=None):
         self.submission = submission
         self.timestamp = timestamp
-    
+
 def _get_table_lists():
     balloons = BalloonStatus.objects.all()
     balloon_subs = dict([(ball.submission.pk, ball.timestamp) for ball in balloons])
     corrrect_submissions = Submission.objects.filter(team__onsite = 'True').filter(solved_problem = 'True')
-    
+
     given_balloon, not_given_balloon = [], []
-        
+
     for sub in corrrect_submissions:
         if sub.pk in balloon_subs:
             given_balloon.append(BalloonView(
@@ -43,22 +41,18 @@ def _get_table_lists():
         else:
             not_given_balloon.append(BalloonView(
                                 sub, timestamp=sub.date_uploaded))
-            
+
     return given_balloon, not_given_balloon
 
 def balloon_home(request):
-   
+
     form = None
     if request.method == 'POST':
         form = BalloonSubmissionForm(request.POST);
-        
+
         if form.is_valid():
             form.save()
-        pass
-        
-    else:
-        pass
-       
+
     given_balloon, not_given_balloon = _get_table_lists()
     context = {
                'given_balloon': given_balloon,

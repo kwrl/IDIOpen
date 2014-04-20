@@ -1,22 +1,21 @@
 from django import forms
 
-from .models import BalloonStatus
+from openshift.balloon.models import BalloonStatus
 import datetime
 
-from execution.models import Problem
-from teamsubmission.models import Submission
+from openshift.teamsubmission.models import Submission
 
 class BalloonSubmissionForm(forms.Form):
     pk = forms.IntegerField()
-    
+
     def clean(self):
         try:
             Submission.objects.get(pk=self.cleaned_data.get('pk'))
         except Exception:
             pass
-            
+
         return self.cleaned_data
-    
+
     def save(self):
         submission = Submission.objects.get(pk=self.cleaned_data['pk'])
 
@@ -28,8 +27,8 @@ class BalloonSubmissionForm(forms.Form):
             new_model.timestamp = datetime.datetime.now()
             new_model.save()
         else:
-            obj = BalloonStatus.objects.get(submission=submission);
+            obj = BalloonStatus.objects.get(submission=submission)
             obj.delete()
-            
+
 
 # EOF
