@@ -3,8 +3,8 @@ from django import forms
 from .models import BalloonStatus
 import datetime
 
-from execution.models import Problem
-from teamsubmission.models import Submission
+from openshift.execution.models import Problem
+from openshift.teamsubmission.models import Submission
 
 class BalloonSubmissionForm(forms.Form):
     pk = forms.IntegerField()
