@@ -7,14 +7,11 @@ class QuestionAnswerAdmin(admin.ModelAdmin):
     fields = ('subject', 'body', 'contest', 'question', )
     
     def save_model(self, request, obj, form, change):
-        if form.changed_data:
-            if 'answered' in form.changed_data: 
-                obj.save()
-            # Set answered to True, if not specified by the admin
-            else:
-                obj.answered = True
+        import ipdb; ipdb.set_trace()
+        if getattr(obj, 'answered_by', None) is None:
+            obj.answered_by = request.user
         obj.save()
- 
+        
 class AnswerInline(admin.TabularInline):
     model = QuestionAnswer
     # Don't show any extra MessageAnswer's on default
