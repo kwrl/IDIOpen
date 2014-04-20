@@ -14,22 +14,9 @@
 <!--  Tablesorter and tooltip js -->
 <script type="text/javascript" src="/static/openshift/js/tablesorter/jquery.tablesorter.js"></script> 
 <script type="text/javascript" src="/static/openshift/js/tooltip.js"></script> 
-
-
-
+<script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
 
 <h1>Overview of Team "{{team.name}}"</h1>
-
-{% if messages %}
-<div class="row">
-    {% for message in messages %}
-    <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissable">
-        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-        {{ message }}
-    </div>
-    {% endfor %}
-</div>
-{% endif %}
 
 <h3>Submissions</h3>
 <table id="tableSubs" class="table table-bordered table-hover table-condensed tablesorter">
@@ -37,62 +24,76 @@
             <tr>
             <th data-toggle="tooltip" data-placement="top" title="The team this regards">Date Uploaded</th>
             <th data-toggle="tooltip" data-placement="top" title="">Problem</th>
-            <th data-toggle="tooltip" data-placement="top" title="What problem this is about">Text1</th>
-            <th data-toggle="tooltip" data-placement="top" title="What problem this is about">Text2</th>
-            <th data-toggle="tooltip" data-placement="top" title="What problem this is about">Text3</th>
+            <th data-toggle="tooltip" data-placement="top" title="What problem this is about">retval</th>
             </tr>
     </thead>
     <tbody>
-            {% for listitem in oracle_list %}
-            <tr class='clickableRow' href=''>
-            <td>{{listitem.date_uploaded}}</td>
-            <td>{{listitem.problem}}</td>
-            <td>{{listitem.text1}}</td>
-            <td>{{listitem.text2}}</td>
-            <td>{{listitem.text3}}</td>
-            {% endfor %}
-    </tbody>
-</table>
+            {% for listitem in sub_feed_items %}
+            <tr id={{listitem.submissions.pk}} class='clickableRow parent' >
+                <td > {{listitem.date_uploaded}}</td>
+                <td>{{listitem.problem}}</td>
+                <td>{{listitem.retval}}</td>
+            </tr>
+                <tr class="child-{{listitem.submissions.pk}}"> 
+                    <td colspan=3> {{listitem.subtext }}
+                         {{listitem.retval}}
+                        <pre class="prettyprint linenums">
+                            {{listitem.command}}
+                        </pre>
+                         {{listitem.stderr }}
 
-<h3> Types of error responses </h3>
-<table id="tableSubs" class="table table-bordered table-hover table-condensed tablesorter">
-	<thead>
-            <tr>
-            <th data-toggle="tooltip" data-placement="top" title="The team this regards">Type of Feedback</th>
-            <th data-toggle="tooltip" data-placement="top" title="What problem this is about">Total count</th>
-            {% for prob in problems %}
-            <th data-toggle="tooltip" data-placement="top" title="What problem this is about">{{prob}}</th>
-            {% endfor %}
-            </tr>
-    </thead>
-    <tbody>
-            {% for listitem in prob_row  %}
-            <tr class='clickableRow' href=''>
-            <td>{{listitem.feedback}}</td>
-            <td>{{listitem.total}}</td>
-            {% for prob_count in listitem.prob_count_list %}
-            <td> {{ prob_count }} </td>
-            {% endfor %}
+                        <pre class="prettyprint linenums">
+                        {{ listitem.file_content }} 
+                        </pre>
+                    </td>
+                </tr>
             {% endfor %}
     </tbody>
 </table>
 
 
 
-
+{# <h3> Types of error responses </h3> #}
+{# <table id="tableSubs" class="table table-bordered table-hover table-condensed tablesorter"> #}
+{# 	<thead> #}
+{#             <tr> #}
+{#             <th data-toggle="tooltip" data-placement="top" title="The team this regards">Type of Feedback</th> #}
+{#             <th data-toggle="tooltip" data-placement="top" title="What problem this is about">Total count</th> #}
+{#             {% for prob in problems %} #}
+{#             <th data-toggle="tooltip" data-placement="top" title="What problem this is about">{{prob}}</th> #}
+{#             {% endfor %} #}
+{#             </tr> #}
+{#     </thead> #}
+{#     <tbody> #}
+{#             {% for listitem in prob_row  %} #}
+{#             <tr class='clickableRow' href=''> #}
+{#             <td>{{listitem.feedback}}</td> #}
+{#             <td>{{listitem.total}}</td> #}
+{#             {% for prob_count in listitem.prob_count_list %} #}
+{#             <td> {{ prob_count }} </td> #}
+{#             {% endfor %} #}
+{#             {% endfor %} #}
+{#     </tbody> #}
+{# </table> #}
+{#  #}
 
 
 
 <script>
-$(document).ready(function() 
-    { 
-        $("#tableSubs").tablesorter( {sortList: [[0,0]], cssAsc: "", cssDesc: "", cssHeader: "",} ); 
+$(function() {
+    $('tr.parent')
+        .click(function(){
+            $(this).siblings('.child-'+this.id).toggle();
+        });
+    list = $(document.querySelectorAll('tr[class^="child-"]'))
+    for(var i = 0; i < list.length; i++)
+    {
+        $(list[i]).hide().children('td');
+    }
 
-      //  $(".clickableRow").click(function() {
-      //  	window.document.location = $(this).attr("href");
-      //	});
-    } 
-); 
+});
 </script>
+
+
 
 {% endblock content %}

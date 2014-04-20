@@ -5,10 +5,10 @@ from django.conf.urls import url, patterns
 
 from openshift.contest.models import Contest, Team
 from openshift.execution.models import Problem
-from openshift.teamsubmission.models import Submission
+from openshift.teamsubmission.models import Submission, ExecutionLogEntry
 
 from collections import defaultdict
-from decimal     import Decimal
+from decimal     import Decimal, getcontext
 
 ORACLE_FEEDBACK = [
         (1, 'FEED_1'),
@@ -17,16 +17,27 @@ ORACLE_FEEDBACK = [
         (4, 'FEED_4'),
         ]
 
-class Oracle(object):
+class SubFeedbackView(object):
     """ Return some random feedback"""
-    def __init__(self, submission):
-        from random import randint
-        self.text1 = ORACLE_FEEDBACK[randint(0, len(ORACLE_FEEDBACK) - 1)][1]
-        self.text2 = ORACLE_FEEDBACK[randint(0, len(ORACLE_FEEDBACK) - 1)][1]
-        self.text3 = ORACLE_FEEDBACK[randint(0, len(ORACLE_FEEDBACK) - 1)][1]
+    def __init__(self, submission, feedback=None):
+        if not feedback:
+            not_executed = "Not executed"
+            self.feedback = not_executed
+            self.retval = not_executed
+            self.command = not_executed
+            self.stderr = not_executed
+        else:
+            self.feedback = feedback
+            self.retval = feedback.retval
+            self.command = feedback.command
+            self.stderr = feedback.stderr
 
+        self.submissions = submission
+        self.file_content = submission.submission.read()
         self.problem= submission.problem
         self.date_uploaded = submission.date_uploaded
+
+        self.subtext = submission.submission
 
 
 class FeedbackPerProblem(object):
@@ -61,20 +72,22 @@ class SubTeamFailedView(object):
 class ProblemAttempsCount(object):
     """ Collection of data
     """
-    def __get_ratio(self):
+    def _get_ratio(self):
+        getcontext().prec = 2
+
         if self.successfull == 0:
             return 0
         if self.failed == 0:
             return self.successfull
 
-        return Decimal(self.successfull / self.failed)
+        return (Decimal(self.successfull) / Decimal(self.failed))
 
     def __init__(self, problem, failed, successfull):
         self.problem = problem
         self.failed = failed
         self.successfull = successfull
         self.total = failed + successfull
-        self.success_ratio = self.__get_ratio()
+        self.success_ratio = self._get_ratio()
 
 class judge_view_admin(admin.ModelAdmin):
     # FIXME
@@ -168,13 +181,13 @@ def get_attempt_count(contest):
 def judge_submission_team(request, team_pk, problem_pk):
     submissions = Submission.objects.filter(team=team_pk) \
                     .order_by('-date_uploaded').filter(problem=problem_pk)
-    oracle_list = []
+    sub_feed_items = []
 
     for sub in submissions:
-        oracle_list.append( Oracle(sub) )
+        sub_feed_items.append( SubFeedbackView(sub) )
 
     context = {
-            'oracle_list' : oracle_list,
+            'sub_feed_items' : sub_feed_items,
             'team': Team.objects.get(pk=team_pk),
             }
 
@@ -186,18 +199,28 @@ def judge_team_summary(request, team_pk):
     """ The page to render an overview of the team
     """
     feedback_prob_dict = dict()
+    feedback_dict = dict()
     submissions = Submission.objects.filter(team=team_pk)\
+                  .exclude(executionlogentry__isnull=True)\
                   .order_by('-date_uploaded')
-    prob_row, oracle_list = [], []
+    # TODO: get code
+
+    feedbacks = ExecutionLogEntry.objects.all()
+    prob_row, sub_feed_items = [], []
     prob_index = {}
     problems = Problem.objects.get_queryset() # all problems
 
     for index, problem in enumerate(problems):
         prob_index[problem] = index
 
+    for feedback in feedbacks:
+        feedback_dict[feedback.submission] = feedback
+
     for sub in submissions:
-        from random import randint
-        feedback = ORACLE_FEEDBACK[randint(0, len(ORACLE_FEEDBACK) - 1)][1]
+        feedback = None
+        if sub in feedback_dict:
+            feedback = feedback_dict[sub]
+
         # Put the feedback in to dict
         # , or, if empty, put an empty array
         feedback_prob_dict.setdefault(feedback, [0] * len(problems))
@@ -206,7 +229,7 @@ def judge_team_summary(request, team_pk):
         # the enumerate above
         feedback_prob_dict[feedback][prob_index[sub.problem]] += 1
 
-        oracle_list.append( Oracle(sub) )
+        sub_feed_items.append( SubFeedbackView(sub, feedback))
 
     total_count = dict([(feedback,sum(problems)) \
                     for feedback,problems in feedback_prob_dict.iteritems()])
@@ -217,7 +240,7 @@ def judge_team_summary(request, team_pk):
                                          prob_count_list = val))
 
     context = {
-            'oracle_list' : oracle_list,
+            'sub_feed_items' : sub_feed_items,
             'problems' : problems,
             'prob_row' : prob_row,
             'team': Team.objects.get(pk=team_pk),
