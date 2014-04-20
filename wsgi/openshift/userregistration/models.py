@@ -278,3 +278,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         self.email = self.temp_email
         self.temp_email = None
         self.email_activation_key = None
+        
+    def is_on_team(self):
+        import pdb
+        pdb.set_trace()
+        pass
