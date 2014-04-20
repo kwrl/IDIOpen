@@ -27,7 +27,7 @@ class judge_view_admin(admin.ModelAdmin):
 class BalloonView(object):
     def __init__(self, submission, timestamp=None):
         self.submission = submission
-        self.timestamp = timestamp.strftime("%H: %M")
+        self.timestamp = timestamp
     
 def _get_table_lists():
     balloons = BalloonStatus.objects.all()
