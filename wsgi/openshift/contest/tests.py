@@ -1,7 +1,7 @@
 #coding:utf8
 from django.test import TestCase, Client
 from openshift.userregistration.forms import RegistrationForm
-from contest.forms import *
+from openshift.contest.forms import *
 import datetime
 from .models import Contest 
 import openshift.userregistration
