@@ -1,5 +1,5 @@
 from django.test import TestCase
-from execution.models import CompilerProfile, FileExtension, TestCase, Resource, get_resource
+from openshift.execution.models import CompilerProfile, FileExtension, TestCase, Resource, get_resource
 
 #class EvaluationTest(TestCase):
 #    def setUp(self):
