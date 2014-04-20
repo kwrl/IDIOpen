@@ -51,12 +51,6 @@ def get_highscore(request, contest):
     contest = get_current_contest(contest)
     statistics = Submission.objects.get_highscore(contest)[:5]
     
-    
-    print statistics
-    #pdb.set_trace()    
-    '''
-    Sort based on score, get top 5
-    '''
 
     dajax.assign('#highscoretable', 'innerHTML', build_html_table(statistics))
     return dajax.json()
