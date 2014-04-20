@@ -76,7 +76,7 @@ class ProblemAttempsCount(object):
         self.total = failed + successfull
         self.success_ratio = self.__get_ratio()
 
-class MyModelAdmin(admin.ModelAdmin):
+class judge_view_admin(admin.ModelAdmin):
     # FIXME
     """ Temporary solution to get a view connected in admin site
     """
@@ -87,7 +87,7 @@ class MyModelAdmin(admin.ModelAdmin):
         """
 
     def get_urls(self):
-        urls = super(MyModelAdmin, self).get_urls()
+        urls = super(judge_view_admin, self).get_urls()
         urls = [urls[0], ]
         my_urls = patterns('',
            url(r'^$', admin.site.admin_view(judge_home,
@@ -270,6 +270,6 @@ class judge_view(models.Model):
         verbose_name = "Click here to supervise"
         verbose_name_plural = "Click here to supervise"
 
-admin.site.register(judge_view, MyModelAdmin)
+admin.site.register(judge_view, judge_view_admin)
 
 # EOF

@@ -122,6 +122,7 @@ class ScoreManager(models.Manager):
             statistics.append(s)
         return statistics
 
+from django.utils import timezone
 class Submission(models.Model):
     #We should rename submission field.... 
     submission = models.FileField(storage=private_media, upload_to='submissions')

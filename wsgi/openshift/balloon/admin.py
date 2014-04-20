@@ -1,5 +1,5 @@
+from django import forms
 from django.contrib import admin
-from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.shortcuts import render
 from django.conf.urls import url, patterns
@@ -7,47 +7,17 @@ from django.conf.urls import url, patterns
 from contest.models import Contest, Team
 from execution.models import Problem
 from teamsubmission.models import Submission
-
 from .models import BalloonStatus
-import datetime
+from .forms import BalloonSubmissionForm
 
-from django import forms
-from django.forms import ModelForm
-
-class BalloonSubmissionForm(forms.Form):
-    pk = forms.IntegerField()
-    
-    def clean(self):
-        try:
-            Submission.objects.get(pk=self.cleaned_data.get('pk'))
-        except Exception:
-            pass
-            
-        return self.cleaned_data
-    
-    def save(self):
-        submission = Submission.objects.get(pk=self.cleaned_data['pk'])
-
-        if not BalloonStatus.objects.filter(submission=submission).exists():
-            new_model = BalloonStatus()
-            new_model.submission = Submission.objects.get(pk=self.cleaned_data['pk'])
-            new_model.problem = new_model.submission.problem
-            new_model.team = new_model.submission.team
-            new_model.timestamp = datetime.datetime.now()
-            new_model.save()
-        else:
-            obj = BalloonStatus.objects.get(submission=submission);
-            obj.delete()
-            
-
-class MyModelAdmin(admin.ModelAdmin):
+class judge_view_admin(admin.ModelAdmin):
     # FIXME
     """ Temporary solution to get a view connected iSubmissionn admin site
     """
     view_on_site = True
    
     def get_urls(self):
-        urls = super(MyModelAdmin, self).get_urls()
+        urls = super(judge_view_admin, self).get_urls()
         urls = [urls[0], ]
         my_urls = patterns('',
            url(r'^$', admin.site.admin_view(balloon_home)),
@@ -55,24 +25,30 @@ class MyModelAdmin(admin.ModelAdmin):
 
         return my_urls + urls
     
+class BalloonView(object):
+    def __init__(self, submission, timestamp=None):
+        self.submission = submission
+        self.timestamp = timestamp.strftime("%H: %M")
+    
 def _get_table_lists():
     balloons = BalloonStatus.objects.all()
-    balloon_sub_dict = set([ball.submission.pk for ball in balloons])
+    balloon_subs = dict([(ball.submission.pk, ball.timestamp) for ball in balloons])
     corrrect_submissions = Submission.objects.filter(solved_problem = 'True')
     
     given_balloon, not_given_balloon = [], []
         
     for sub in corrrect_submissions:
-        if sub.pk in balloon_sub_dict:
-            given_balloon.append(sub)
+        if sub.pk in balloon_subs:
+            given_balloon.append(BalloonView(
+                                sub, timestamp=balloon_subs[sub.pk]))
         else:
-            not_given_balloon.append(sub)
+            not_given_balloon.append(BalloonView(
+                                sub, timestamp=sub.date_uploaded))
             
-    import ipdb; ipdb.set_trace()
     return given_balloon, not_given_balloon
 
 def balloon_home(request):
-    
+   
     form = None
     if request.method == 'POST':
         form = BalloonSubmissionForm(request.POST);
@@ -80,18 +56,15 @@ def balloon_home(request):
         if form.is_valid():
             form.save()
             #new_model = BalloonStatus()
-            
         pass
         
     else:
         pass
        
     given_balloon, not_given_balloon = _get_table_lists()
-
     context = {
                'given_balloon': given_balloon,
                'not_given_balloon': not_given_balloon,
-               'test' : BalloonSubmissionForm(),
                }
 
     return render(request,
@@ -120,6 +93,6 @@ class balloon_view(models.Model):
         verbose_name = "Click here to view balloon table"
         verbose_name_plural = "Click here to view balloon table"
 
-admin.site.register(balloon_view, MyModelAdmin)
+admin.site.register(balloon_view, judge_view_admin)
 
 # EOF
