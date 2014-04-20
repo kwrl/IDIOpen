@@ -1,3 +1,6 @@
+""" Render the views for judges
+"""
+
 from django.contrib import admin
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render
@@ -29,11 +32,11 @@ class SubFeedbackView(object):
         else:
             self.feedback = feedback
             self.retval = feedback.retval
-            self.command = feedback.command
+            self.command = '\n' + feedback.command.replace('\n', '\\n')
             self.stderr = feedback.stderr
 
         self.submissions = submission
-        self.file_content = submission.submission.read()
+        self.file_content = '\n' + submission.submission.read()
         self.problem= submission.problem
         self.date_uploaded = submission.date_uploaded
 
