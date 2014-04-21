@@ -28,8 +28,6 @@
 <script type="text/javascript" src="/static/openshift/js/tablesorter/jquery.tablesorter.js"></script> 
 <script type="text/javascript" src="/static/openshift/js/tooltip.js"></script> 
 
-Not the right contest? Select the right one below:
-<hr>
 <select name="selectContest" onchange="switchContest()">
  {% for con in  contests %}
  {% if con.pk == contest.pk %}
@@ -51,7 +49,7 @@ Not the right contest? Select the right one below:
 <small>Click on a table column to sort on that field</small>
 <br />
 <br />
-<h3> Unsolved, onsite teams </h3>
+<h3> Onsite teams </h3>
 <hr />
 <table id="tableUnsolved_onsite" class="table table-bordered table-hover table-condensed tablesorter">
 	<thead>
@@ -64,23 +62,17 @@ Not the right contest? Select the right one below:
             </tr>
     </thead>
     <tbody>
-            {% for listitem in fail_count_onsite %}
+            {% for listitem in team_tr_row_info_onsite %}
             <tr class='clickableRow' 
                 href='team{{listitem.team.pk}}/problem{{listitem.problem.pk}}'>
             <td>{{listitem.team}}</td>
             <td>{{listitem.prev_solved}}</td>
-            <td>{{listitem.problem}}</td>
-            <td>{{listitem.fail_count}}</td>
-            {%if listitem.solved_problem%}
-            	<td class ="success">True</td>
-            {%else%}
-            	<td class="danger">False</td>
-            {%endif%}
+            <td>{{listitem.fail_count}} </td>
             {% endfor %}
     </tbody>
 </table>
 
-<h3> Unsolved, offsite teams </h3>
+<h3> Offsite teams </h3>
 <hr />
 <table id="tableUnsolved_offsite" class="table table-bordered table-hover table-condensed tablesorter">
 	<thead>
@@ -94,18 +86,12 @@ Not the right contest? Select the right one below:
             </tr>
     </thead>
     <tbody>
-            {% for listitem in fail_count_offsite %}
+            {% for listitem in team_tr_row_info_offsite %}
             <tr class='clickableRow' 
                 href='team{{listitem.team.pk}}/problem{{listitem.problem.pk}}'>
             <td>{{listitem.team}}</td>
             <td>{{listitem.prev_solved}}</td>
-            <td>{{listitem.problem}}</td>
             <td>{{listitem.fail_count}}</td>
-            {%if listitem.solved_problem%}
-            	<td class ="success">True</td>
-            {%else%}
-            	<td class="danger">False</td>
-            {%endif%}
             <td>{{listitem.site_location}}</td>
             {% endfor %}
     </tbody>
