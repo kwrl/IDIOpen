@@ -71,7 +71,7 @@ def evaluate_task(submission_id):
             submission.text_feedback = "Compile timeout"
         else:
             submission.text_feedback = "Unspecified compile time error."
-        
+        submission.status = Submission.EVALUATED
         submission.save()
         return retval, stdout, stderr
 
@@ -109,11 +109,13 @@ def evaluate_task(submission_id):
     return results
 
 def compile_submission(submission):
+    path = os.path.abspath(submission.submission.path)
+    dir_path, filename = os.path.split(path)
     compiler = submission.compileProfile
     limits = get_resource(submission, compiler)
     command = compiler.compile
-    retval, stdout, stderr = compile(compiler, limits, submission.submission.path)
-    
+    retval, stdout, stderr = compile(compiler, limits, path)
+    command = re.sub(FILENAME_SUB, filename, compiler.compile)
     ExecutionLogEntry.objects.create(submission=submission, 
                                             command=command, 
                                             stdout=stdout, 
