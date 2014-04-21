@@ -9,5 +9,8 @@ class NodeAdmin(admin.ModelAdmin):
     # ordering = ('title',)
 
 
-admin.site.register(ExecutionNode, NodeAdmin)
+'''
+Removed by: Kwrl 
+'''
+#admin.site.register(ExecutionNode, NodeAdmin)
 # Register your models here.

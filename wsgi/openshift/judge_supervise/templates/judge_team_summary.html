@@ -18,14 +18,16 @@
 
 <h1>Overview of Team "{{team.name}}"</h1>
 
+<script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
 <style>
+
     .errorRow {
         background: #FFD1D1 !important;
     }
 
-</style>
-<script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
-<style>
+    table thead th {
+        background-size: auto;
+    }
     .ui-state-default {
         background: none;
     }
@@ -40,7 +42,7 @@
 </style>
 
 <h3>Submissions</h3>
-<table id="tableSubs" class="table table-bordered table-hover table-condensed tablesorter">
+<table id="tableTeamSubs" class="table table-bordered table-hover table-condensed tablesorter">
 	<thead>
             <tr>
             <th data-toggle="tooltip" data-placement="top" title="The team this regards">Date Uploaded</th>
@@ -119,7 +121,7 @@
                                 </div>
                                 <div id="collapseStderr{{listitem.submissions.pk}}" class="panel-collapse collapse">
                                     <div class="panel-body">
-                                        {{listitem.stderr}}
+                                        <b>{{listitem.stderr}}</b>
                                     </div>
                                 </div>
                             </div>
@@ -179,9 +181,16 @@ $(function() {
             return false; // Cancels the default action
         }
     });
-
 });
 
+    $(document).ready(function() 
+        { 
+        if ($("#tableTeamSubs").find("tr").size() > 1)
+        {
+            $("#tableTeamSubs").tablesorter( {sortList: [[0,1]]} ); 
+        }
+    }
+);
 </script>
 
 
