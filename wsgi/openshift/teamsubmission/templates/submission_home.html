@@ -19,7 +19,7 @@ $(document).ready(function()
 <hr>
 
 <a href= {% url 'clarificationAnswersPage' contest.url %}> View messages </a> |
-<a href= {% url 'clarificationPage' contest.url %}> Ask a question </a> |
+<a href= {% url 'clarificationPage' contest.url %}> Clarification </a> |
 <a href= {% url 'highscorePage' contest.url %}> View score table </a>
 
 <h3>List of Problems</h3>
@@ -59,9 +59,5 @@ $(document).ready(function()
 </table>
 <br>
 
-
-
-<h3>Links</h3>
-<p> Thinking about removing this </p>
 
 {% endblock content %}
