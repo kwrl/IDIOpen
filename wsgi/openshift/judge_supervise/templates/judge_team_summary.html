@@ -90,23 +90,36 @@
                                 </a>
                            </div>
                            <div id="collapseSrc{{listitem.submissions.pk}}" class="panel-collapse collapse">
-                                     <div class="panel-body">
-                                        <pre class="prettyprint linenums">
-                                         {{listitem.file_content}}
-                                        </pre>
-                                     </div>
-                                 </div>
+                                <div class="panel-body">
+                                    <pre class="prettyprint linenums">
+                                        {{listitem.file_content}}
+                                     </pre>
+                                </div>
+                            </div>
 
-                                 <div class="panel-heading">
-                                 <a data-toggle="collapse" data-parent="#accordion" href="#collapseOutput{{listitem.submissions.pk}}">
+                            <div class="panel-heading">
+                                <a data-toggle="collapse" data-parent="#accordion" href="#collapseOutput{{listitem.submissions.pk}}">
                                     <h4 class="panel-title">
                                         Command output
                                     </h4>
                                     </a>
                                 </div>
                                 <div id="collapseOutput{{listitem.submissions.pk}}" class="panel-collapse collapse">
+                                <div class="panel-body">
+                                    {{listitem.stdout}}
+                                </div>
+                            </div>
+
+                            <div class="panel-heading">
+                                <a data-toggle="collapse" data-parent="#accordion" href="#collapseStderr{{listitem.submissions.pk}}">
+                                    <h4 class="panel-title">
+                                        Stderr
+                                    </h4>
+                                    </a>
+                                </div>
+                                <div id="collapseStderr{{listitem.submissions.pk}}" class="panel-collapse collapse">
                                     <div class="panel-body">
-                                        {{listitem.stdout}}
+                                        {{listitem.stderr}}
                                     </div>
                                 </div>
                             </div>
@@ -135,7 +148,6 @@ $(function() {
     }
 
     // Inner/nested table
-    //$('#accordion').accordion({
     $(document.querySelectorAll('div[id^=accordion]')).accordion({
         collapsible:true,
         heightStyle: "content",
