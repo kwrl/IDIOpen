@@ -28,6 +28,24 @@
 <script type="text/javascript" src="/static/openshift/js/tablesorter/jquery.tablesorter.js"></script> 
 <script type="text/javascript" src="/static/openshift/js/tooltip.js"></script> 
 
+Not the right contest? Select the right one below:
+<hr>
+<select name="selectContest" onchange="switchContest()">
+ {% for con in  contests %}
+ {% if con.pk == contest.pk %}
+    <option selected value = "con{{con.pk}}">{{con.title}}</option>
+ {% else %}
+    <option value = "con{{con.pk}}">{{con.title}}</option>
+    {%endif %}
+ {% endfor %}
+</select>
+
+<br />
+<br />
+
+
+
+
 <h1>Submissions Overview</h1>
 
 <small>Click on a table column to sort on that field</small>
@@ -124,7 +142,7 @@
 
 <h2> Select team to inspect </h2>
 <hr>
-<select name="something" onchange="updateText()">
+<select name="selectTeam" onchange="updateText()">
  <option value = ''> Choose Manager </option>
  {% for team in team_list %}
  <option value = "team{{ team.pk}}">{{team.name}}</option>
@@ -159,7 +177,13 @@ $(document).ready(function()
 
     function updateText()
     {
-        window.document.location = $('select[name="something"] option:selected').val()
+        window.document.location = $('select[name="selectTeam"] option:selected').val();
+    }
+
+    function switchContest()
+
+    {
+        window.document.location = $('select[name="selectContest"] option:selected').val();
     }
 </script>
 

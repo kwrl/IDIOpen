@@ -3,7 +3,7 @@
 
 from django.contrib import admin
 from django.core.exceptions import ObjectDoesNotExist
-from django.shortcuts import render
+from django.shortcuts import render, HttpResponse
 from django.conf.urls import url, patterns
 
 from openshift.contest.models import Contest, Team
@@ -108,13 +108,16 @@ class judge_view_admin(admin.ModelAdmin):
         urls = super(judge_view_admin, self).get_urls()
         urls = [urls[0], ]
         my_urls = patterns('',
-           url(r'^$', admin.site.admin_view(judge_home,
-                                            cacheable=True)),
+           url(r'^$', 
+                    admin.site.admin_view(judge_home,
+                                          cacheable=True)),
            url(r'^team(?P<team_pk>[0-9]+)' +
                   '/problem(?P<problem_pk>[0-9]+)/$',
-                  admin.site.admin_view(judge_submission_team)),
+                    admin.site.admin_view(judge_submission_team)),
            url(r'^team(?P<team_pk>[0-9]+)',
-                admin.site.admin_view(judge_team_summary)),
+                    admin.site.admin_view(judge_team_summary)),
+           url(r'^con(?P<contest_pk>[0-9]+)$',
+                    admin.site.admin_view(judge_home)),
         )
 
         return my_urls + urls
@@ -246,17 +249,42 @@ def judge_team_summary(request, team_pk):
 
     context = {
             'sub_feed_items' : sub_feed_items,
-            'problems' : problems,
-            'prob_row' : prob_row,
-            'team': Team.objects.get(pk=team_pk),
+            'problems'       : problems,
+            'prob_row'       : prob_row,
+            'team'           : Team.objects.get(pk=team_pk),
             }
 
     return render(request,
                   'judge_team_summary.html',
                   context)
 
-def judge_home(request):
-    contest = Contest.objects.get()
+def date_in_range(dateobject, start, end):
+    return (start <= dateobject and dateobject  <= end)
+
+
+from openshift.helpFunctions.views import getTodayDate
+def get_current_contest():
+    #TODO or no contest?
+    today = getTodayDate()
+    contests = Contest.objects.all()
+
+    return next((date_in_range(today, con.start_date, con.end_date) \
+                 for con in contests))
+
+def judge_home(request, contest_pk=None):
+    given_contest = None
+    if contest_pk:
+        try:
+            given_contest = Contest.objects.get(id=contest_pk)
+        except TypeError:
+            pass
+
+    contest = given_contest  or get_current_contest() \
+                             or Contest.objets.earliest('teamreg_end_date')
+
+    if not contest: # if there are no contests
+        return HttpResponse('<h1> There are no contests in the database </h1>')
+
     try:
         team_list = Team.objects.filter(contest=contest)
     except ObjectDoesNotExist:
@@ -266,9 +294,11 @@ def judge_home(request):
     prob_attempt_counts = get_attempt_count(contest)
 
     context = {
-            'team_list' : team_list,
-            'fail_count_onsite':  fail_count_onsite,
-            'fail_count_offsite':  fail_count_offsite,
+            'contests'            : Contest.objects.all(),
+            'contest'             : contest,
+            'team_list'           : team_list,
+            'fail_count_onsite'   : fail_count_onsite,
+            'fail_count_offsite'  : fail_count_offsite,
             'prob_attempt_counts' : prob_attempt_counts,
             }
 
