@@ -162,7 +162,7 @@ def run_tests(submission):
     command = get_submission_run_cmd(submission)
     compiler = submission.compileProfile
     limit = get_resource(submission,compiler)
-    limit.max_processes += 10
+    limit.max_processes += 1
     dir_path, filename = os.path.split(os.path.abspath(submission.submission.path))
     test_cases = TestCase.objects.filter(problem__pk = submission.problem.pk)
     results = []
@@ -174,18 +174,20 @@ def run_tests(submission):
         test.inputFile.close()
         test.outputFile.close()
         
-        retval, stdout, stderr = run(command, dir_path, set_resource(
+        retval, stdout, stderr, utime, stime = run(command, dir_path, set_resource(
                                         limit.max_program_timeout,
                                         limit.max_memory,
                                         limit.max_processes),
-                                        input_content)       
+                                        input_content, True)       
         
         ExecutionLogEntry.objects.create(submission=submission, 
                                             command=command, 
                                             stdout=stdout, 
                                             stderr=stderr,
                                             retval=retval).save()
- 
+
+        submission.runtime = (utime+stime)*1000
+        ''' 
         try:
             lines = stderr.split("\n")
             lines = [x for x in lines if x != '']  
@@ -196,7 +198,7 @@ def run_tests(submission):
         except ValueError:
             results.append([retval, stdout, stderr, False])
             continue
-
+        '''
         if test.validator:
             if validate(stdout, test):
                 results.append([retval, stdout, stderr, True])
@@ -219,7 +221,7 @@ def get_submission_run_cmd(submission):
     command = re.sub(BASENAME_SUB, filename.split('.')[0], command)
    
     command = use_run_user(command)
-    command = time_command(command)
+    #command = time_command(command)
     
     return command
 
@@ -243,18 +245,22 @@ def validate(run_stdout, test_case):
 
     return retval==0 
 
-def run(command, dir_path, resource, stdin):
+def run(command, dir_path, res, stdin, time=False):
     args = shlex.split(command)
     logger.debug(args)
 
     process = Popen(args=args, stdin=PIPE, stdout=PIPE, stderr=PIPE,
-                preexec_fn=resource,
+                preexec_fn=res,
                 cwd=dir_path)
 
     stdout, stderr = process.communicate(stdin)
     retval = process.poll()
-
-    return retval, stdout, stderr
+    spent = resource.getrusage(resource.RUSAGE_CHILDREN)
+    logger.debug(spent)
+    if time:
+        return retval, stdout, stderr, spent.ru_utime, spent.ru_stime
+    else:
+        return retval, stdout, stderr
 
 def use_run_user(command):
     return 'sudo su ' + RUN_USER + ' -c "' + command + '"'
