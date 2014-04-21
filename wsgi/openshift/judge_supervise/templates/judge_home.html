@@ -31,68 +31,82 @@
 
 
 <h1>Submissions Overview</h1>
+<br />
+<br />
+<h2> Choose contest (default {{ contest.title }}) </h2>
 <select name="selectContest" onchange="switchContest()">
- {% for con in  contests %}
- {% if con.pk == contest.pk %}
-    <option selected value = "con{{con.pk}}">{{con.title}}</option>
- {% else %}
-    <option value = "con{{con.pk}}">{{con.title}}</option>
-    {%endif %}
+    {% for con in contests %}
+         {% if con.pk == contest.pk %}
+            <option selected value = "con{{con.pk}}">{{con.title}}</option>
+         {% else %}
+            <option value = "con{{con.pk}}">{{con.title}}</option>
+            {%endif %}
+         {% endfor %}
+        </select>
+
+<br />
+<br />
+<h2> Select team to inspect </h2>
+<hr>
+<select name="selectTeam" onchange="updateText()">
+ <option value = ''> Choose Manager </option>
+ {% for team in team_list %}
+ <option value = "team{{ team.pk}}">{{team.name}}</option>
  {% endfor %}
 </select>
 
 <br />
 <br />
 
-
-
 <small>Click on a table column to sort on that field</small>
 <br />
 <br />
 <h3> Onsite teams </h3>
 <hr />
-<table id="tableUnsolved_onsite" class="table table-bordered table-hover table-condensed tablesorter">
+<table id="tableTeamStats_onsite" class="table table-bordered table-hover table-condensed tablesorter">
 	<thead>
             <tr>
-            <th data-toggle="tooltip" data-placement="top" title="The team this regards">Team</th>
-            <th data-toggle="tooltip" data-placement="top" title="">Previously Solved Assignments</th>
-            <th data-toggle="tooltip" data-placement="top" title="What problem this is about">Problem</th>
-            <th data-toggle="tooltip" data-placement="top" title="Number of failed attempts">Failed Attempts</th>
-            <th data-toggle="tooltip" data-placement="top" title="e.g. timeout, wrong answer">Problem is Solved</th>
+                <th data-toggle="tooltip" data-placement="top" title="The team this regards">Team</th>
+                <th data-toggle="tooltip" data-placement="top" title="">Previously Solved Assignments</th>
+                <th data-toggle="tooltip" data-placement="top" title="What problem this is about">Problem</th>
+                <th data-toggle="tooltip" data-placement="top" title="Number of failed attempts">Failed Attempts</th>
+                <th data-toggle="tooltip" data-placement="top" title="e.g. timeout, wrong answer">Problem is Solved</th>
             </tr>
     </thead>
     <tbody>
             {% for listitem in team_tr_row_info_onsite %}
             <tr class='clickableRow' 
                 href='team{{listitem.team.pk}}/problem{{listitem.problem.pk}}'>
-            <td>{{listitem.team}}</td>
-            <td>{{listitem.prev_solved}}</td>
-            <td>{{listitem.fail_count}} </td>
+                <td>{{listitem.team}}</td>
+                <td>{{listitem.prev_solved}}</td>
+                <td>{{listitem.fail_count}} </td>
+            </tr>
             {% endfor %}
     </tbody>
 </table>
 
 <h3> Offsite teams </h3>
 <hr />
-<table id="tableUnsolved_offsite" class="table table-bordered table-hover table-condensed tablesorter">
+<table id="tableTeamStats_offsite" class="table table-bordered table-hover table-condensed tablesorter">
 	<thead>
             <tr>
-            <th data-toggle="tooltip" data-placement="top" title="The team this regards">Team</th>
-            <th data-toggle="tooltip" data-placement="top" title="">Previously Solved Assignments</th>
-            <th data-toggle="tooltip" data-placement="top" title="What problem this is about">Problem</th>
-            <th data-toggle="tooltip" data-placement="top" title="Number of failed attempts">Failed Attempts</th>
-            <th data-toggle="tooltip" data-placement="top" title="e.g. timeout, wrong answer">Problem is Solved</th>
-            <th data-toggle="tooltip" data-placement="top" title="e.g. timeout, wrong answer">Site-location</th>
+                <th data-toggle="tooltip" data-placement="top" title="The team this regards">Team</th>
+                <th data-toggle="tooltip" data-placement="top" title="">Previously Solved Assignments</th>
+                <th data-toggle="tooltip" data-placement="top" title="What problem this is about">Problem</th>
+                <th data-toggle="tooltip" data-placement="top" title="Number of failed attempts">Failed Attempts</th>
+                <th data-toggle="tooltip" data-placement="top" title="e.g. timeout, wrong answer">Problem is Solved</th>
+                <th data-toggle="tooltip" data-placement="top" title="e.g. timeout, wrong answer">Site-location</th>
             </tr>
     </thead>
     <tbody>
             {% for listitem in team_tr_row_info_offsite %}
             <tr class='clickableRow' 
                 href='team{{listitem.team.pk}}/problem{{listitem.problem.pk}}'>
-            <td>{{listitem.team}}</td>
-            <td>{{listitem.prev_solved}}</td>
-            <td>{{listitem.fail_count}}</td>
-            <td>{{listitem.site_location}}</td>
+                <td>{{listitem.team}}</td>
+                <td>{{listitem.prev_solved}}</td>
+                <td>{{listitem.fail_count}}</td>
+                <td>{{listitem.site_location}}</td>
+            </tr>
             {% endfor %}
     </tbody>
 </table>
@@ -106,7 +120,7 @@
 
 
 
-<h3> Solved </h3>
+<h3> Problem Overview</h3>
 <hr />
 <table id="tableSolved" class="table table-bordered table-hover table-condensed tablesorter">
 	<thead>
@@ -134,32 +148,16 @@
 
 
 
-<h2> Select team to inspect </h2>
-<hr>
-<select name="selectTeam" onchange="updateText()">
- <option value = ''> Choose Manager </option>
- {% for team in team_list %}
- <option value = "team{{ team.pk}}">{{team.name}}</option>
- {% endfor %}
-</select>
-
-<br />
-<br />
-
 <script>
 $(document).ready(function() 
     { 
-        if ($("#tableUnsolved_onsite").find("tr").size() > 1)
+        if ($("#tableTeamStats_onsite").find("tr").size() > 1)
         {
-            $("#tableUnsolved_onsite").tablesorter( {sortList: [[3,1]], cssAsc: "", cssDesc: "", cssHeader: "",} ); 
+            $("#tableTeamStats_onsite").tablesorter( {sortList: [[0,1]]} ); 
         }
-        if ($("#tableUnsolved_offsite").find("tr").size() > 1)
+        if ($("#tableTeamStats_offsite").find("tr").size() > 1)
         {
-            $("#tableUnsolved_offsite").tablesorter( {sortList: [[3,1]], cssAsc: "", cssDesc: "", cssHeader: "",} ); 
-        }
-        if ($("tableSolved").find("tr").size() > 1)
-        {
-            $("#tableSolved").tablesorter( {sortList: [[0,0]], cssAsc: "", cssDesc: "", cssHeader: "",} ); 
+            $("#tableTeamStats_offsite").tablesorter( {sortList: [[0,1]]} ); 
         }
 
         $(".clickableRow").click(function() {
