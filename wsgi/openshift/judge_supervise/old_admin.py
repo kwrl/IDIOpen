@@ -262,17 +262,6 @@ def date_in_range(dateobject, start, end):
     return (start <= dateobject and dateobject  <= end)
 
 
-""" A view showing info about the team
-
-    <team> <solved assignments> <attempts> <
-    
-    divide by onsite/offsite
-    
-
-
-    keeping the problem overview
-"""
-
 from openshift.helpFunctions.views import getTodayDate
 def get_current_contest():
     #TODO or no contest?

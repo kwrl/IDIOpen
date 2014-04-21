@@ -112,13 +112,6 @@ Not the right contest? Select the right one below:
 </table>
 <br />
 
-<style>
-    table.tablesorter tbody td:hover {
-        background : #C3C3C3;
-    }
-   </style>
-
-
 
 <h3> Solved </h3>
 <hr />
@@ -135,7 +128,7 @@ Not the right contest? Select the right one below:
     <tbody>
             {% for listitem in prob_attempt_counts %}
             <tr >
-            <td >{{listitem.problem}}</td>
+            <td>{{listitem.problem}}</td>
             <td>{{listitem.failed}}</td>
             <td>{{listitem.successfull}}</td>
             <td>{{listitem.total}}</td>
@@ -145,7 +138,6 @@ Not the right contest? Select the right one below:
     </tbody>
 </table>
 <br />
-
 
 
 <h2> Select team to inspect </h2>

@@ -32,6 +32,11 @@
     .ui-state-hover {
         background: #B9B9B9;
     }
+
+   // table.tablesorter tbody td:hover {
+   //     background : #C3C3C3 !important;
+   // }
+
 </style>
 
 <h3>Submissions</h3>
@@ -58,10 +63,10 @@
             </tr>
                 <tr class="child-{{listitem.submissions.pk}}"> 
                     <td colspan=3> 
-                        <div class="panel-group" id="accordion">
+                        <div class="panel-group" id="accordion{{listitem.submissions.pk}}">
                             <div class="panel panel-default">
                                 <div class="panel-heading">
-                                <a data-toggle="collapse" data-parent="#accordion" href="#collapseCommand">
+                                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseCommand{{listitem.submissions.pk}}">
                                     <h4 class="panel-title">
                                             Command to execute
                                     </h4>
@@ -69,22 +74,22 @@
                                 </div>
                             </div>
                                 
-                                <div id="collapseCommand" class="panel-collapse collapse ">
-                                    <div class="panel-body">
+                            <div id="collapseCommand{{listitem.submissions.pk}}" class="panel-collapse collapse ">
+                                <div class="panel-body">
                                     <pre class="prettyprint linenums">
                                         {{listitem.command}}
                                     </pre>
-                                    </div>
                                 </div>
+                            </div>
                                 
                             <div class="panel-heading">
-                                <a data-toggle="collapse" data-parent="#accordion" href="#collapseSrc">
+                                <a data-toggle="collapse" data-parent="#accordion" href="#collapseSrc{{listitem.submissions.pk}}">
                                      <h4 class="panel-title">
                                         Source code
                                     </h4>
                                 </a>
-                                </div>
-                                 <div id="collapseSrc" class="panel-collapse collapse">
+                           </div>
+                           <div id="collapseSrc{{listitem.submissions.pk}}" class="panel-collapse collapse">
                                      <div class="panel-body">
                                         <pre class="prettyprint linenums">
                                          {{listitem.file_content}}
@@ -93,20 +98,19 @@
                                  </div>
 
                                  <div class="panel-heading">
-                                 <a data-toggle="collapse" data-parent="#accordion" href="#collapseOutput">
+                                 <a data-toggle="collapse" data-parent="#accordion" href="#collapseOutput{{listitem.submissions.pk}}">
                                     <h4 class="panel-title">
                                         Command output
                                     </h4>
                                     </a>
                                 </div>
-                                <div id="collapseOutput" class="panel-collapse collapse">
+                                <div id="collapseOutput{{listitem.submissions.pk}}" class="panel-collapse collapse">
                                     <div class="panel-body">
                                         {{listitem.stdout}}
                                     </div>
                                 </div>
                             </div>
                         </div>
-
                     </td>
                 </tr>
             {% endfor %}
@@ -115,6 +119,7 @@
 
  <script>
 $(function() {
+    // Top table
     $('tr.parent')
         .click(function(){
             $(this).siblings('.child-'+this.id).toggle();
@@ -129,7 +134,9 @@ $(function() {
         $(list[i]).hide().children('td');
     }
 
-    $('#accordion').accordion({
+    // Inner/nested table
+    //$('#accordion').accordion({
+    $(document.querySelectorAll('div[id^=accordion]')).accordion({
         collapsible:true,
         heightStyle: "content",
         active:false,
