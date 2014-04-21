@@ -9,6 +9,7 @@
 <h2>{{problem.title}}</h2>
 <hr>
 {% if not submission.solved_problem %}
+{% if submission.submission %}
 {% if submission.status != submission.EVALUATED %}
 <script type="text/javascript">
 
@@ -31,7 +32,6 @@ $( document ).ready(function() {
 </h3>
 </div>
 {% endif %}
-{% if tries > 0 %}
 <p> Attempts: <strong> {{ tries }} </strong> </p>
 <h3> Upload a new file to this problem </h3>
 {% else %}
