@@ -1,13 +1,11 @@
 from django.shortcuts import render, get_object_or_404, redirect, HttpResponse, Http404
-from openshift.contest.views import get_current_contest, is_leader, is_member_of_team
+from openshift.contest.views import get_current_contest, is_member_of_team
 from openshift.contest.models import Team
 from openshift.execution.models import Problem
 
 from .models import Submission
 from .forms import SubmissionForm
 
-from itertools import groupby, imap, izip_longest
-from operator import itemgetter
 from django.contrib import messages
 from openshift.contest.views import contest_begin, contest_end
 
