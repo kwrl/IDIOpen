@@ -6,7 +6,8 @@ class Question (models.Model):
     
     class Meta:
         verbose_name = "or add an answer to a question"
-        verbose_name_plural = "Click here to view and answer questions"
+        verbose_name_plural = "View and answer questions"
+        
     subject     = models.CharField(max_length = 120)
     body        = models.TextField(max_length = 355)
     sender      = models.ForeignKey(Team)    
@@ -22,12 +23,12 @@ class Question (models.Model):
 class QuestionAnswer(models.Model):
 
     class Meta:
-        verbose_name = "Answer"
-        verbose_name_plural = "Click here to view/add messages"
+        verbose_name = "Clarification"
+        verbose_name_plural = "View/add Clarifications"
    
     subject     = models.CharField(max_length = 120)
     body        = models.TextField(max_length = 355)
     answered_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank = True, null=True) 
     answered_at = models.DateTimeField(null=True, blank=True, auto_now = True)  
-    question    = models.ForeignKey(Question, null=True, blank=True, default = None)
+    question    = models.ForeignKey(Question, null=True, blank=True, default = None,  help_text = "?")
     contest     = models.ForeignKey(Contest)
