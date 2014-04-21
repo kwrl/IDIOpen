@@ -9,8 +9,9 @@
 <h2>{{problem.title}}</h2>
 <hr>
 {% if not submission.solved_problem %}
+{{ submission.status }}
 {% if submission.submission %}
-{% if submission.status != submission.EVALUATED %}
+{% if submission.status and submission.status != submission.EVALUATED %}
 <script type="text/javascript">
 
 

@@ -143,7 +143,7 @@ def submission_view(request):
         sub = None
         if prob in prob_sub_dict:
             sub= prob_sub_dict[prob]
-        listProbSub.append(SubJoinProb(prob_sub_dict[prob], prob,
+        listProbSub.append(SubJoinProb(sub, prob,
                          Submission.objects.get_problem_score(team, prob, con)))
             
     """
