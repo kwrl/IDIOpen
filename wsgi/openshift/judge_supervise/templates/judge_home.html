@@ -18,6 +18,7 @@
 
 {% block content %}
 
+
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 <script src="https://code.jquery.com/jquery.js"></script>
 <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
@@ -28,6 +29,8 @@
 <script type="text/javascript" src="/static/openshift/js/tablesorter/jquery.tablesorter.js"></script> 
 <script type="text/javascript" src="/static/openshift/js/tooltip.js"></script> 
 
+
+<h1>Submissions Overview</h1>
 <select name="selectContest" onchange="switchContest()">
  {% for con in  contests %}
  {% if con.pk == contest.pk %}
@@ -42,9 +45,6 @@
 <br />
 
 
-
-
-<h1>Submissions Overview</h1>
 
 <small>Click on a table column to sort on that field</small>
 <br />

@@ -1,7 +1,7 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render, HttpResponse
 
-from collections import defaultdict
+from collections import Counter, defaultdict
 
 from openshift.contest.models import Contest, Team
 from openshift.execution.models import Problem
@@ -17,30 +17,22 @@ def date_in_range(dateobject, start, end):
 def get_team_assignments(team_list):
     onsite_list, offsite_list = [], []
     for team in team_list:
-        submissions = Submission.objects.filter(team=team) \
-                      .order_by('-date_uploaded').order_by('problem')
+        submissions = Submission.objects.filter(team=team)
 
-        prob_to_subs_dict = defaultdict( list )
-        solved_count = 0
-        for sub in submissions:
-            if sub.solved_problem == True:
-                solved_count += 1
-            prob_to_subs_dict[sub.problem].append(sub)
+        c = Counter([sub.solved_problem for sub in submissions])
+        count_succeeded, count_failed = c[True], c[False]
 
-        for prob in prob_to_subs_dict:
-            sub_list = prob_to_subs_dict[prob]
-
-            if team.onsite == True:
-                stfv = TeamSummaryRow(team=team,
-                                         fail_count=len(sub_list),
-                                         prev_solved=solved_count )
-                onsite_list.append(stfv)
-            else:
-                stfv = TeamSummaryRow(team=team,
-                                         fail_count=len(sub_list),
-                                         prev_solved=solved_count,
-                                         site_location = team.offsite)
-                offsite_list.append(stfv)
+        if team.onsite == True:
+            stfv = TeamSummaryRow(team=team,
+                                     fail_count=count_failed,
+                                     prev_solved=count_succeeded)
+            onsite_list.append(stfv)
+        else:
+            stfv = TeamSummaryRow(team=team,
+                                     fail_count=count_failed,
+                                     prev_solved=count_succeeded,
+                                     site_location = team.offsite)
+            offsite_list.append(stfv)
 
     return onsite_list, offsite_list
 
@@ -171,7 +163,6 @@ def judge_home(request, contest_pk=None):
     except ObjectDoesNotExist:
         team_list = []
 
-
     prob_attempt_counts = get_attempt_count(contest)
 
     team_tr_row_info_onsite, team_tr_row_info_offsite = \
@@ -190,5 +181,4 @@ def judge_home(request, contest_pk=None):
                   'judge_home.html',
                   context,
                   )
-
 # EOF
