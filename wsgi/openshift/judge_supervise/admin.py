@@ -43,3 +43,4 @@ class judge_view(models.Model):
 admin.site.register(judge_view, judge_view_admin)
 
 # EOF
+

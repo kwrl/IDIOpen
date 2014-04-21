@@ -19,6 +19,13 @@
 {% block content %}
 
 
+<style>
+table thead th {
+background-size: auto;
+}
+
+</style>
+
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 <script src="https://code.jquery.com/jquery.js"></script>
 <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
@@ -68,9 +75,7 @@
             <tr>
                 <th data-toggle="tooltip" data-placement="top" title="The team this regards">Team</th>
                 <th data-toggle="tooltip" data-placement="top" title="">Previously Solved Assignments</th>
-                <th data-toggle="tooltip" data-placement="top" title="What problem this is about">Problem</th>
                 <th data-toggle="tooltip" data-placement="top" title="Number of failed attempts">Failed Attempts</th>
-                <th data-toggle="tooltip" data-placement="top" title="e.g. timeout, wrong answer">Problem is Solved</th>
             </tr>
     </thead>
     <tbody>
@@ -92,9 +97,7 @@
             <tr>
                 <th data-toggle="tooltip" data-placement="top" title="The team this regards">Team</th>
                 <th data-toggle="tooltip" data-placement="top" title="">Previously Solved Assignments</th>
-                <th data-toggle="tooltip" data-placement="top" title="What problem this is about">Problem</th>
                 <th data-toggle="tooltip" data-placement="top" title="Number of failed attempts">Failed Attempts</th>
-                <th data-toggle="tooltip" data-placement="top" title="e.g. timeout, wrong answer">Problem is Solved</th>
                 <th data-toggle="tooltip" data-placement="top" title="e.g. timeout, wrong answer">Site-location</th>
             </tr>
     </thead>
@@ -122,12 +125,12 @@
 
 <h3> Problem Overview</h3>
 <hr />
-<table id="tableSolved" class="table table-bordered table-hover table-condensed tablesorter">
+<table id="tableProblemOverview" class="table table-bordered table-hover table-condensed tablesorter">
 	<thead>
             <tr>
             <th data-toggle="tooltip" data-placement="top" title="The team this regards">Problem</th>
-            <th data-toggle="tooltip" data-placement="top" title="">Failed attempts</th>
             <th data-toggle="tooltip" data-placement="top" title="What problem this is about">Successfull attempts</th>
+            <th data-toggle="tooltip" data-placement="top" title="">Failed attempts</th>
             <th data-toggle="tooltip" data-placement="top" title="What problem this is about">Total</th>
             <th data-toggle="tooltip" data-placement="top" title="What problem this is about">Success/Failed Ratio</th>
             </tr>
@@ -158,6 +161,11 @@ $(document).ready(function()
         if ($("#tableTeamStats_offsite").find("tr").size() > 1)
         {
             $("#tableTeamStats_offsite").tablesorter( {sortList: [[0,1]]} ); 
+        }
+
+        if ($("#tableProblemOverview").find("tr").size() > 1)
+        {
+            $("#tableProblemOverview").tablesorter( {sortList: [[0,1]]} ); 
         }
 
         $(".clickableRow").click(function() {
