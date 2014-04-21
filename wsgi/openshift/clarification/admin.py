@@ -3,8 +3,8 @@ from .models import QuestionAnswer, Question
 # Register your models here.
 
 class QuestionAnswerAdmin(admin.ModelAdmin):
-    list_display = ('subject', 'answered_by', 'answered_at', 'question', )
-    fields = ('subject', 'body', 'contest', 'question', )
+    list_display = ('subject', 'answered_by', 'answered_at')
+    fields = ('subject', 'body', 'contest')
     
     def save_model(self, request, obj, form, change):
         if getattr(obj, 'answered_by', None) is None:
