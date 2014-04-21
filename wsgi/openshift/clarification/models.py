@@ -23,7 +23,7 @@ class QuestionAnswer(models.Model):
 
     class Meta:
         verbose_name = "Answer"
-        verbose_name_plural = "Click here to view answers"
+        verbose_name_plural = "Click here to view/add messages"
    
     subject     = models.CharField(max_length = 120)
     body        = models.TextField(max_length = 355)
