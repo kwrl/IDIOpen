@@ -89,7 +89,7 @@ def submission_problem(request, problemID):
         form = SubmissionForm(instance=submission);
     else:
         form = None
-    
+
     score = Submission.objects.get_problem_score(team, problem, contest)
     context = {
              'problem' : problem,
@@ -97,6 +97,7 @@ def submission_problem(request, problemID):
              'submission_form' : form,
              'tries':tries,
              'score' : score[0],
+             
               }
     
     return render(request,
@@ -125,6 +126,7 @@ def submission_view(request):
     if contest_end(request):
         messages.warning(request, 'The contest has ended, you are not able to upload any more submissions.')
     
+    #Todo: Try catch. 
     team = Team.objects.filter(contest=con).filter(members__id = user.id)
     problems = Problem.objects.filter(contest=con).order_by('title')
     submissions = Submission.objects.filter(team=team).filter(solved_problem='True').order_by('date_uploaded').order_by('problem')
@@ -146,9 +148,16 @@ def submission_view(request):
         listProbSub.append((SubJoinProb(sub, prob, 
                 Submission.objects.get_problem_score(team, prob, con)))
         )
+        
+    contest = get_current_contest(request)
     
+    
+    # Tried to add score
+    #team_score = Submission.objects.get_team_score(team, contest)
+     
     context = {
                'prob_sub': listProbSub,
+     #          'team_score' : team_score
                }    
     
     return render(request, 'submission_home.html', context)
