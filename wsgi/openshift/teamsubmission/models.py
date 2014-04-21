@@ -70,7 +70,16 @@ class ScoreManager(models.Manager):
         problem n submissions/time solved]
         """
         statistics = [0, 0, 0, 0, 0, 0]
+        
+        '''
+        Altered by Typo
+        '''
+        #if team.onsite: 
         statistics[3] = team.onsite
+        
+       # else: 
+       #     statistics[3] = None
+            
         statistics[4] = team.members.all()[0].skill_level
         statistics[5] = team.members.all()[0].gender
         for member in team.members.all():
