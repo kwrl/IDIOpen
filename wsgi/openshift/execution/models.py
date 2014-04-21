@@ -94,12 +94,12 @@ class Resource (models.Model):
                                            help_text = 'The maximum compile time in <strong>seconds</strong>') #in sec
     
     #How long the program can run before 
-    max_program_timeout = models.IntegerField(max_length = 20, default = 60,
+    max_program_timeout = models.IntegerField(max_length = 20, default = 1,
                                               help_text = 'The maximum run time in <strong>seconds</strong>')# in sec 
     
     #Maximum memory a program can use for this problem  
-    max_memory = models.IntegerField(max_length = 20, default = 102400000,
-                                     help_text = 'The maximum adress space in <strong>bytes</strong>') # in bytes
+    max_memory = models.IntegerField(max_length = 20, default = 1024,
+                                     help_text = 'The maximum adress space in <strong>MegaBytes</strong>') # in bytes
     
     #The maximum number of child processes. (avoid fork bombs)
     max_processes = models.IntegerField(max_length = 10, default = 5,
