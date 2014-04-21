@@ -8,7 +8,7 @@ import os
 PROBLEM_ROOT_DIR = 'problems'
 
 class FileExtension(models.Model):
-    extension = models.CharField(max_length=4)
+    extension = models.CharField(max_length=4, help_text = 'e.g java, c or cpp. Write the extension name without dot in front. ')
 
     def __unicode__(self):
         return self.extension

@@ -31,7 +31,7 @@ def _get_table_lists():
     balloons = BalloonStatus.objects.all()
     balloon_subs = dict([(ball.submission.pk, ball.timestamp) for ball in balloons])
     corrrect_submissions = Submission.objects.filter(team__onsite = 'True').filter(solved_problem = 'True')
-
+    
     given_balloon, not_given_balloon = [], []
 
     for sub in corrrect_submissions:
