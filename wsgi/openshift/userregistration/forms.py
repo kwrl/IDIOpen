@@ -263,9 +263,9 @@ class PasswordForm(forms.ModelForm):
         """ Ensure that the password is hashed before updating it in the model
         """
         pw = self.cleaned_data['password']
-
         self.instance.set_password(pw)
-
+        self.instance.save()
+        
     class Meta:
         model = CustomUser
         fields = ['password']
