@@ -1,13 +1,11 @@
 from django.shortcuts import render, get_object_or_404, redirect, HttpResponse, Http404
-from openshift.contest.views import get_current_contest, is_leader, is_member_of_team
+from openshift.contest.views import get_current_contest, is_member_of_team
 from openshift.contest.models import Team
 from openshift.execution.models import Problem
 
 from .models import Submission
 from .forms import SubmissionForm
 
-from itertools import groupby, imap, izip_longest
-from operator import itemgetter
 from django.contrib import messages
 from openshift.contest.views import contest_begin, contest_end
 
@@ -40,33 +38,33 @@ def submission_problem(request, problemID):
         return redirect('login', contest.url)
     # Raise 404 if contest hasn't begun or has ended, and if user is not member of team
     if not contest_begin(request) or not is_member_of_team(request, contest):
-        raise Http404    
+        raise Http404
     if contest_end(request):
         messages.warning(request, 'The contest has ended, you are not able to upload any more submissions.')
-   
+
     if not is_leader(request, contest):
         messages.warning(request, 'Only leader can upload a solution')
-   
-    #TODO: Only leader can upload check    
+
+    #TODO: Only leader can upload check
     problem = get_object_or_404(Problem.objects.filter(pk=problemID))
     user = request.user
     team = Team.objects.filter(contest=contest).get(members__id = user.id)
     submission = Submission.objects.filter(team=team).filter(problem=problemID).order_by('-date_uploaded')
     tries = len(submission)
-    
-    
+
+
     if len(submission.values_list()) > 0:
         submission = submission[0]
         problem = submission.problem
-    
+
     else:
         submission = Submission()
         submission.problem = problem
         submission.team = team
-    
+
     '''
     Does not look good
-    if is_problem_solved(team, problemID): 
+    if is_problem_solved(team, problemID):
         messages.success(request, 'This problem is solved!')
     '''
 
@@ -75,10 +73,10 @@ def submission_problem(request, problemID):
                                instance=submission)
         if not request.FILES:
             messages.error(request, 'You need to choose a file to upload')
-        
+
         elif contest_end(request):
             messages.error(request, 'You can\'t upload any more files after the contest has ended')
-        
+
         elif is_leader(request, contest):
             if form.is_valid():
                 form.save()
@@ -89,7 +87,7 @@ def submission_problem(request, problemID):
         form = SubmissionForm(instance=submission);
     else:
         form = None
-    
+
     score = Submission.objects.get_problem_score(team, problem, contest)
     context = {
              'problem' : problem,
@@ -98,7 +96,7 @@ def submission_problem(request, problemID):
              'tries':tries,
              'score' : score[0],
               }
-    
+
     return render(request,
                   'problemdescription.html',
                   context,
@@ -108,27 +106,27 @@ def submission_problem(request, problemID):
 def submission_view(request):
     user = request.user
     con = get_current_contest(request)
-    
+
     if not user.is_authenticated():
         messages.error(request, 'You have to be logged in in order to view the contest page')
         return redirect('login', con.url)
-    
+
     if not is_member_of_team(request, con):
         messages.error(request, 'Please register a team to participate')
         return redirect('team_profile', con.url)
-        
+
     # Raise 404 if contest hasn't begun or contest has ended
     if not contest_begin(request):
         messages.error(request, 'Contest has not yet started')
         return redirect('contest_list', con.url)
-    
+
     if contest_end(request):
         messages.warning(request, 'The contest has ended, you are not able to upload any more submissions.')
-    
+
     team = Team.objects.filter(contest=con).filter(members__id = user.id)
     problems = Problem.objects.filter(contest=con).order_by('title')
     prob_sub_dict = dict()
-    
+
     for sub in Submission.objects.filter(team=team):
         if sub.problem in prob_sub_dict:
             old_sub = prob_sub_dict[sub.problem]
@@ -138,7 +136,7 @@ def submission_view(request):
         else:
             # Insert new
             prob_sub_dict[sub.problem] = sub
-            
+
     listProbSub = []
     for prob in problems:
         sub = None
@@ -146,18 +144,18 @@ def submission_view(request):
             sub= prob_sub_dict[prob]
         listProbSub.append(SubJoinProb(sub, prob,
                          Submission.objects.get_problem_score(team, prob, con)))
-            
+
     """
     For testing:
-    SELECT ts.submission, ts.date_uploaded, ep.title, ts.solved_problem 
-    FROM teamsubmission_submission AS ts, execution_problem AS ep 
+    SELECT ts.submission, ts.date_uploaded, ep.title, ts.solved_problem
+    FROM teamsubmission_submission AS ts, execution_problem AS ep
     WHERE ts.problem_id = ep.id AND ts.team_id = 7 ;
     """
-               
+
     context = {
                'prob_sub': listProbSub,
-               }    
-    
+               }
+
     return render(request, 'submission_home.html', context)
 
 def highscore_view(request):
@@ -166,7 +164,7 @@ def highscore_view(request):
     problems = []
     if statistics:
         problems = statistics[0][8:]
-    
+
     context = {
                'contest' : contest,
                'statistics' : statistics,
@@ -183,6 +181,6 @@ class SubJoinProb(object):
                 str(submission.submission).split('/')[-1]
             self.submission.date_uploaded = \
                 submission.date_uploaded
-        self.problem = problem 
+        self.problem = problem
 
 # END OF LIFE
