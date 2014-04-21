@@ -24,6 +24,15 @@
     }
 
 </style>
+<script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+<style>
+    .ui-state-default {
+        background: none;
+    }
+    .ui-state-hover {
+        background: #B9B9B9;
+    }
+</style>
 
 <h3>Submissions</h3>
 <table id="tableSubs" class="table table-bordered table-hover table-condensed tablesorter">
@@ -49,53 +58,62 @@
             </tr>
                 <tr class="child-{{listitem.submissions.pk}}"> 
                     <td colspan=3> 
-                         {# {{listitem.subtext }} #}
-                         {# {{listitem.retval}} #}
-                         <h2> Command: </h2>
-                        <pre class="prettyprint linenums">
-                            {{listitem.command}}
-                        </pre>
-                         {{listitem.stderr }}
+                        <div class="panel-group" id="accordion">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                <a data-toggle="collapse" data-parent="#accordion" href="#collapseCommand">
+                                    <h4 class="panel-title">
+                                            Command to execute
+                                    </h4>
+                                    </a>
+                                </div>
+                            </div>
+                                
+                                <div id="collapseCommand" class="panel-collapse collapse ">
+                                    <div class="panel-body">
+                                    <pre class="prettyprint linenums">
+                                        {{listitem.command}}
+                                    </pre>
+                                    </div>
+                                </div>
+                                
+                            <div class="panel-heading">
+                                <a data-toggle="collapse" data-parent="#accordion" href="#collapseSrc">
+                                     <h4 class="panel-title">
+                                        Source code
+                                    </h4>
+                                </a>
+                                </div>
+                                 <div id="collapseSrc" class="panel-collapse collapse">
+                                     <div class="panel-body">
+                                        <pre class="prettyprint linenums">
+                                         {{listitem.file_content}}
+                                        </pre>
+                                     </div>
+                                 </div>
 
-                         <h2> Code:</h2>
-                        <pre class="prettyprint linenums">
-                        {{ listitem.file_content }} 
-                        </pre>
+                                 <div class="panel-heading">
+                                 <a data-toggle="collapse" data-parent="#accordion" href="#collapseOutput">
+                                    <h4 class="panel-title">
+                                        Command output
+                                    </h4>
+                                    </a>
+                                </div>
+                                <div id="collapseOutput" class="panel-collapse collapse">
+                                    <div class="panel-body">
+                                        {{listitem.stdout}}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                     </td>
                 </tr>
             {% endfor %}
     </tbody>
 </table>
 
-
-
-{# <h3> Types of error responses </h3> #}
-{# <table id="tableSubs" class="table table-bordered table-hover table-condensed tablesorter"> #}
-{# 	<thead> #}
-{#             <tr> #}
-{#             <th data-toggle="tooltip" data-placement="top" title="The team this regards">Type of Feedback</th> #}
-{#             <th data-toggle="tooltip" data-placement="top" title="What problem this is about">Total count</th> #}
-{#             {% for prob in problems %} #}
-{#             <th data-toggle="tooltip" data-placement="top" title="What problem this is about">{{prob}}</th> #}
-{#             {% endfor %} #}
-{#             </tr> #}
-{#     </thead> #}
-{#     <tbody> #}
-{#             {% for listitem in prob_row  %} #}
-{#             <tr class='clickableRow' href=''> #}
-{#             <td>{{listitem.feedback}}</td> #}
-{#             <td>{{listitem.total}}</td> #}
-{#             {% for prob_count in listitem.prob_count_list %} #}
-{#             <td> {{ prob_count }} </td> #}
-{#             {% endfor %} #}
-{#             {% endfor %} #}
-{#     </tbody> #}
-{# </table> #}
-{#  #}
-
-
-
-<script>
+ <script>
 $(function() {
     $('tr.parent')
         .click(function(){
@@ -111,7 +129,40 @@ $(function() {
         $(list[i]).hide().children('td');
     }
 
+    $('#accordion').accordion({
+        collapsible:true,
+        heightStyle: "content",
+        active:false,
+
+        beforeActivate: function(event, ui) {
+             // The accordion believes a panel is being opened
+            if (ui.newHeader[0]) {
+                var currHeader  = ui.newHeader;
+                var currContent = currHeader.next('.ui-accordion-content');
+             // The accordion believes a panel is being closed
+            } else {
+                var currHeader  = ui.oldHeader;
+                var currContent = currHeader.next('.ui-accordion-content');
+            }
+             // Since we've changed the default behavior, this detects the actual status
+            var isPanelSelected = currHeader.attr('aria-selected') == 'true';
+
+             // Toggle the panel's header
+            currHeader.toggleClass('ui-corner-all',isPanelSelected).toggleClass('accordion-header-active ui-state-active ui-corner-top',!isPanelSelected).attr('aria-selected',((!isPanelSelected).toString()));
+
+            // Toggle the panel's icon
+            currHeader.children('.ui-icon').toggleClass('ui-icon-triangle-1-e',isPanelSelected).toggleClass('ui-icon-triangle-1-s',!isPanelSelected);
+
+             // Toggle the panel's content
+            currContent.toggleClass('accordion-content-active',!isPanelSelected)    
+            if (isPanelSelected) { currContent.slideUp(); }  else { currContent.slideDown(); }
+
+            return false; // Cancels the default action
+        }
+    });
+
 });
+
 </script>
 
 
