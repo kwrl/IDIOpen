@@ -29,6 +29,7 @@ def submission(request, submission_id):
     try:
         sub  = Submission.objects.get(id = int(submission_id))
     except ObjectDoesNotExist:
+        sub = None
         return dajax.json()
     # TODO: Filter only latest?
     members = sub.team.members.all()

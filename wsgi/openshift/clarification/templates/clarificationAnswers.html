@@ -7,25 +7,27 @@
 <a href="{% url 'submission_page' contest.url %}" class="btn btn-primary btn-large">Go To Contest Page</a>
 </div>
 
-<h2>Messages</h2>
+<h2>Clarifications</h2>
 <hr>
-<br>
-<p> insert text here </p>
-<a href= {% url 'clarificationPage' contest.url %}> Ask a question </a>
 
-<br>
+<p> Below you will find clarifications sent from our team of judges </p>
+<p> Wondering something? Feel free to <a href= {% url 'clarificationPage' contest.url %}> ask a question </a> </p>
+
 {% if answers %}
 {% for answer in answers %}
 		<h3>{{ answer.subject }}</h3>
 		<p class="text-muted">
-			Published: {{answers.created_at|date:"d.m.Y - H.i"}}, 
-			Author: {{ answers.answered_by.get_full_name }}
+		<small>
+			Published: {{answer.answered_at|date:"d.m.Y - H.i"}}, 
+			Author: {{ answer.answered_by.get_full_name }}
+		</small>
 		</p>	
 		<div>{{ answer.body|safe}}</div>
 <br>
 {% endfor %}
 {% else %}
-	<p>No asked questions found </p>
+	<br>
+	<p>No messages found </p>
 {% endif %}
 
 

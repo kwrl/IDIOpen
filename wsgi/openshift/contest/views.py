@@ -17,9 +17,6 @@ from django.contrib import messages
 import datetime;
 from django.utils import timezone;
 
-
-
-
 # Create your views here.
 
 def index(request):
