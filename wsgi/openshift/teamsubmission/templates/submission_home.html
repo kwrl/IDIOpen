@@ -18,7 +18,7 @@ $(document).ready(function()
 <h2>Contest Page</h2>
 <hr>
 
-<a href= {% url 'clarificationAnswersPage' contest.url %}> View messages </a> |
+<a href= {% url 'clarificationAnswersPage' contest.url %}> Clarification </a> |
 <a href= {% url 'clarificationPage' contest.url %}> Ask a question </a> |
 <a href= {% url 'highscorePage' contest.url %}> View score table </a>
 
@@ -32,7 +32,7 @@ $(document).ready(function()
             <tr>
             <th data-toggle="tooltip" data-placement="top" title="The problems given for this competition">Problem</th>
             <th data-toggle="tooltip" data-placement="top" title="Your latest submission">Last Submission</th>
-            <th data-toggle="tooltip" data-placement="top" title="The date of your last uploaded file">Date Uploaded</th>
+            <th data-toggle="tooltip" data-placement="top" title="The date of your last uploaded file">Time</th>
             <th data-toggle="tooltip" data-placement="top" title="e.g. timeout, wrong answer">Feedback</th>
             <th data-toggle="tooltip" data-placement="top" title="The status of the problem">Solved</th>
             <th data-toggle="tooltip" data-placement="top" title="The score achieved for the problem">Score</th>
@@ -61,7 +61,5 @@ $(document).ready(function()
 
 
 
-<h3>Links</h3>
-<p> Thinking about removing this </p>
 
 {% endblock content %}

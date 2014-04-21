@@ -119,7 +119,7 @@ $(document).ready(function()
                                 <td>{{listitem.submission.problem}}</td>
                                 <td>{{listitem.submission.submission}}</td>
                                 <td>{{listitem.timestamp | date:"H:i" }}</td>
-                        		<td><input type="checkbox" name="received_balloon" onchange="onCheckBoxChange({{listitem.submission.pk}})"> 
+                        	<td><input type="checkbox" name="received_balloon" onchange="onCheckBoxChange({{listitem.submission.pk}})"> 
                         </tr>
                         {% endfor %}
                 </tbody>
@@ -136,12 +136,13 @@ $(document).ready(function()
                         <tr class="not_draggable">
                                 <th data-toggle="tooltip" data-placement="top"
                                         title="The team this regards">Team</th>
-                                <th data-toggle="tooltip" data-placement="top" title="What problem this is about">Problem</th>
+                                <th data-toggle="tooltip" data-placement="top" 
+                                	title="What problem this is about">Problem</th>
                                 <th data-toggle="tooltip" data-placement="top"
                                         title="Which submissions that was correct">Submission</th>
-                        		<th data-toggle="tooltip" data-placement="top"
+                        	<th data-toggle="tooltip" data-placement="top"
                                         title="The time a balloon was given">Timestamp (hours:minutes)</th>
-    							<th data-toggle="tooltip" data-placement="top"
+    				<th data-toggle="tooltip" data-placement="top"
                                        	title="Received balloon">Undo</th>
                         </tr>
                 </thead>
