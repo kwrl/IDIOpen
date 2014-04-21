@@ -42,8 +42,6 @@
 <link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
   <script src="//code.jquery.com/jquery-1.9.1.js"></script>
   <script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
-  <link rel="stylesheet" href="/resources/demos/style.css">
-
 
     {% if userpw.errors %}
         <script>$(document).ready( function () {
@@ -164,7 +162,7 @@
 							<td><p class="text-muted">No</p></td>
 						{% endif %}
 						<td>
-						<form action="." method="post"> {% csrf_token %}
+						<form action="." method="post"> 
 							<input type="hidden" value="{{ invite.id }}" name="id">
 							{% if have_team %}
 								<button type="submit" name="submit" value="accept" disabled="disabled" class="btn btn-primary btn-xs">Accept</button>
