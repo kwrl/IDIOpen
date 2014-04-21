@@ -28,7 +28,7 @@ MEM_EXCEED      = [-9]
 
 def set_resource(time, memory, procs):
     def result():
-        
+        memory  = memory*(1024**2)
         nproc   = resource.getrlimit(resource.RLIMIT_NPROC)
         tcpu    = resource.getrlimit(resource.RLIMIT_CPU)
         mem     = resource.getrlimit(resource.RLIMIT_DATA)

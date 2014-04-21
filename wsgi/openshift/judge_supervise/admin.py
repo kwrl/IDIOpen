@@ -29,11 +29,13 @@ class SubFeedbackView(object):
             self.retval = not_executed
             self.command = not_executed
             self.stderr = not_executed
+            self.cmd_output = not_executed
         else:
             self.feedback = feedback
             self.retval = feedback.retval
             self.command = '\n' + feedback.command.replace('\n', '\\n')
             self.stderr = feedback.stderr
+        self.cmd_output = feedback.stdout
 
         self.submissions = submission
         self.file_content = '\n' + submission.submission.read()

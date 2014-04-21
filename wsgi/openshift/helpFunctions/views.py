@@ -80,7 +80,7 @@ def is_member_of_team(request):
 #===============================================================================
 def get_all_answers(request):
     contest = get_current_contest(request)
-    answers = QuestionAnswer.objects.filter(contest=contest)
+    answers = QuestionAnswer.objects.filter(contest=contest).order_by("-answered_at")
      
     if(answers.count() < 0):
         return None
