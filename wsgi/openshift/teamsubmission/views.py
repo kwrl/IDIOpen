@@ -129,32 +129,35 @@ def submission_view(request):
     #Todo: Try catch. 
     team = Team.objects.filter(contest=con).filter(members__id = user.id)
     problems = Problem.objects.filter(contest=con).order_by('title')
-    submissions = Submission.objects.filter(team=team).filter(solved_problem='True').order_by('date_uploaded').order_by('problem')
-    # Maybe not optimal solution
-    if not submissions:
-        submissions = Submission.objects.filter(team=team).order_by('date_uploaded').order_by('problem')
+    prob_sub_dict = dict()
     
-    new_dict = dict()
-    listProbSub = []
-    
-    for sub in submissions:
-        new_dict[sub.problem] = sub
-                
-    for prob in problems:
-        if prob in new_dict:
-            sub = new_dict[prob]
+    for sub in Submission.objects.filter(team=team):
+        if sub.problem in prob_sub_dict:
+            old_sub = prob_sub_dict[sub.problem]
+            # Replace with better
+            if old_sub.date_uploaded < sub.date_uploaded:
+                prob_sub_dict[sub.problem] = sub
         else:
-            sub = None
-        listProbSub.append((SubJoinProb(sub, prob, 
-                Submission.objects.get_problem_score(team, prob, con)))
-        )
-        
-    contest = get_current_contest(request)
-    
-    
-    # Tried to add score
-    #team_score = Submission.objects.get_team_score(team, contest)
+            # Insert new
+            prob_sub_dict[sub.problem] = sub
+            
+    listProbSub = []
+    for prob in problems:
      
+
+        sub = None
+        if prob in prob_sub_dict:
+            sub= prob_sub_dict[prob]
+        listProbSub.append(SubJoinProb(prob_sub_dict[prob], prob,
+                         Submission.objects.get_problem_score(team, prob, con)))
+            
+    """
+    For testing:
+    SELECT ts.submission, ts.date_uploaded, ep.title, ts.solved_problem 
+    FROM teamsubmission_submission AS ts, execution_problem AS ep 
+    WHERE ts.problem_id = ep.id AND ts.team_id = 7 ;
+    """
+               
     context = {
                'prob_sub': listProbSub,
      #          'team_score' : team_score
@@ -179,12 +182,12 @@ def highscore_view(request):
 class SubJoinProb(object):
     def __init__(self, submission, problem, score):
         if submission is not None:
-                self.score = score[0]
-                self.submission = submission
-                self.submission.submission = \
-                    str(submission.submission).split('/')[-1]
-                self.submission.date_uploaded = \
-                    submission.date_uploaded
+            self.score = score[0]
+            self.submission = submission
+            self.submission.submission = \
+                str(submission.submission).split('/')[-1]
+            self.submission.date_uploaded = \
+                submission.date_uploaded
         self.problem = problem 
 
 # END OF LIFE
