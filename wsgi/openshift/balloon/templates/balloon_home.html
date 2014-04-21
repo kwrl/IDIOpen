@@ -2,10 +2,15 @@
 {% load i18n %}
 {% load tz %}
 <h3>{% blocktrans with filter_title=title %} By {{ filter_title }}
-	{% endblocktrans %}</h3>z 
-
+	{% endblocktrans %}</h3> 
 
 {% block content %}
+<style>
+table thead th {
+background-size: auto;
+}
+
+</style>
 
  <link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
   <script src="//code.jquery.com/jquery-1.10.2.js"></script>
@@ -13,24 +18,24 @@
 <!-- Tablesorter css -->
 <link href="/static/openshift/css/tablesorter/tablestyle.css"
         rel="stylesheet">
+        
 <!--  Tablesorter and tooltip js -->
 <script type="text/javascript"
         src="/static/openshift/js/tablesorter/jquery.tablesorter.js"></script>
 <script type="text/javascript" src="/static/openshift/js/tooltip.js"></script>
 
-<style>
-        #TableCorrectSubmissions, #TableGivenBalloon { list-style-type: none; margin: 0; padding: 0 0 2.5em; float: left; margin-right: 10px; }
-        #TableCorrectSubmissions table, #TableGivenBalloon table { margin: 0 5px 5px 5px; padding: 5px; font-size: 1.2em; width: 120px; }
-</style>
- 
 
  <script>
  function onRemove(event, ui)
  {
-	 post_to_url("", {'pk': ui.item.data('value')});
+	post_to_url("", {'pk': ui.item.data('value')});
+ }
+ function onCheckBoxChange(pk_value)
+ {
+ 	post_to_url("", {'pk': pk_value});
  }
   $(function() {
-    $( "#TableCorrectSubmissions, #TableGivenBalloon" ).sortable({
+    $( "#TableNotGivenBalloon, #TableGivenBalloon" ).sortable({
       connectWith: ".connectedSortable",
       items: "tr:not(.not_draggable)",
       remove: onRemove,
@@ -40,7 +45,6 @@
 
 <script type="text/javascript">
         function post_to_url(path, params) {
-
                 // The rest of this code assumes you are not using a library.
                 // It can be made less wordy if you use one.
                 var form = document.createElement("form");
@@ -63,32 +67,49 @@
                                 form.appendChild(hiddenField);
                         }
                 }
-
                 document.body.appendChild(form);
                 form.submit();
         }
 </script>
 
+<script>
+$(document).ready(function() 
+    { 
+        $("#TableNotGivenBalloon").tablesorter( {sortList: [[3,0], [0,1]]} ); 
+         $("#TableGivenBalloon").tablesorter( {sortList: [[3,1], [0,1]]} ); 
+        $(".clickableRow").click(function() {
+        	window.document.location = $(this).attr("href");
+      	});
+    } 
+);
+</script>
 
 <h1>Balloon tables</h1>
 
-<small>Drag-and-Drop between the two tables</small>
-<br>
+<small>Drag-and-Drop between the two tables or click on the checkbox.
+<br />
+		Sort multiple columns simultaneously by holding down the shift key and clicking a second
+		, third or even fourth column header. 
+</small>
+<br />
         <br /> <br />
-        
         <h3>Not given balloon</h3>
         <small> Teams that are awaiting balloon for a correct submission</small>
         <hr />
-        <table id="TableCorrectSubmissions"
-                class="table table-bordered table-hover table-condensed tableSorter connectedSortable">
+        <table id="TableNotGivenBalloon"
+                class="table table-bordered table-hover table-condensed tablesorter connectedSortable">
                 <thead>
                         <tr class="not_draggable">
                                 <th data-toggle="tooltip" data-placement="top"
                                         title="The team this regards">Team</th>
-                                <th data-toggle="tooltip" data-placement="top" title="">Problem</th>
+                                <th data-toggle="tooltip" data-placement="top" 
+                                		title="">Problem</th>
                                 <th data-toggle="tooltip" data-placement="top"
-                                        title="What problem this is about">Submission</th>
-                                <th data-toggle="tooltip" data-placement="top" title="">Time uploaded (hours:minutes)</th>
+                                        title="The submission this is about">Submission</th>
+                                <th data-toggle="tooltip" data-placement="top" 
+                                		title="The time the submission was uploaded">Time uploaded (hours:minutes)</th>
+                                <th data-toggle="tooltip" data-placement="top"
+                                        title="Check the box when the team has received a balloon">Give Balloon</th>
                         </tr>
                 </thead>
                	 <tbody>
@@ -98,6 +119,7 @@
                                 <td>{{listitem.submission.problem}}</td>
                                 <td>{{listitem.submission.submission}}</td>
                                 <td>{{listitem.timestamp | date:"H:i" }}</td>
+                        	<td><input type="checkbox" name="received_balloon" onchange="onCheckBoxChange({{listitem.submission.pk}})"> 
                         </tr>
                         {% endfor %}
                 </tbody>
@@ -109,17 +131,19 @@
         <small> Teams that have received a balloon for a correct submission</small>
         <hr />
         <table id="TableGivenBalloon"
-                class="table table-bordered table-hover table-condensed tableSorter connectedSortable">
+                class="table table-bordered table-hover table-condensed tablesorter connectedSortable">
                 <thead>
                         <tr class="not_draggable">
                                 <th data-toggle="tooltip" data-placement="top"
                                         title="The team this regards">Team</th>
-                                <th data-toggle="tooltip" data-placement="top" title="What problem this is about">Problem</th>
+                                <th data-toggle="tooltip" data-placement="top" 
+                                	title="What problem this is about">Problem</th>
                                 <th data-toggle="tooltip" data-placement="top"
                                         title="Which submissions that was correct">Submission</th>
-                        		<th data-toggle="tooltip" data-placement="top"
+                        	<th data-toggle="tooltip" data-placement="top"
                                         title="The time a balloon was given">Timestamp (hours:minutes)</th>
-    
+    				<th data-toggle="tooltip" data-placement="top"
+                                       	title="Received balloon">Undo</th>
                         </tr>
                 </thead>
                 <tbody>
@@ -129,9 +153,9 @@
                                 <td>{{listitem.submission.problem}}</td>
                                 <td>{{listitem.submission.submission}}</td>
                                 <td>{{listitem.timestamp | date:"H:i"}}</td>
+                                <td><input type="checkbox" name="received_balloon" onchange="onCheckBoxChange({{listitem.submission.pk}})"> 
                         </tr>
                         {% endfor %}
                 </tbody>
         </table> 
-
 {% endblock content %}
