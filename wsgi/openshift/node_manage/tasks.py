@@ -5,11 +5,9 @@ from subprocess import call
 from openshift import celery_app as app
 from subprocess import PIPE, Popen
 from signal import SIGKILL, SIGXCPU 
+from django.utils.encoding import smart_str
 import re
 import os
-import threading
-import time
-import pwd
 import shlex
 import resource
 import logging
@@ -71,7 +69,7 @@ def evaluate_task(submission_id):
             submission.text_feedback = "Compile timeout"
         else:
             submission.text_feedback = "Unspecified compile time error."
-        
+        submission.status = Submission.EVALUATED
         submission.save()
         return retval, stdout, stderr
 
@@ -109,15 +107,17 @@ def evaluate_task(submission_id):
     return results
 
 def compile_submission(submission):
+    path = os.path.abspath(submission.submission.path)
+    dir_path, filename = os.path.split(path)
     compiler = submission.compileProfile
     limits = get_resource(submission, compiler)
     command = compiler.compile
-    retval, stdout, stderr = compile(compiler, limits, submission.submission.path)
-    
+    retval, stdout, stderr = compile(compiler, limits, path)
+    command = re.sub(FILENAME_SUB, filename, compiler.compile)
     ExecutionLogEntry.objects.create(submission=submission, 
                                             command=command, 
-                                            stdout=stdout, 
-                                            stderr=stderr,
+                                            stdout=smart_str(stdout), 
+                                            stderr=smart_str(stderr),
                                             retval=retval).save()
     
     return retval, stdout, stderr
@@ -160,7 +160,6 @@ def run_tests(submission):
     command = get_submission_run_cmd(submission)
     compiler = submission.compileProfile
     limit = get_resource(submission,compiler)
-    limit.max_processes += 10
     dir_path, filename = os.path.split(os.path.abspath(submission.submission.path))
     test_cases = TestCase.objects.filter(problem__pk = submission.problem.pk)
     results = []
@@ -172,28 +171,19 @@ def run_tests(submission):
         test.inputFile.close()
         test.outputFile.close()
         
-        retval, stdout, stderr = run(command, dir_path, set_resource(
+        retval, stdout, stderr, utime, stime = run(command, dir_path, set_resource(
                                         limit.max_program_timeout,
                                         limit.max_memory,
                                         limit.max_processes),
-                                        input_content)       
+                                        input_content, True)       
         
         ExecutionLogEntry.objects.create(submission=submission, 
                                             command=command, 
                                             stdout=stdout, 
                                             stderr=stderr,
                                             retval=retval).save()
- 
-        try:
-            lines = stderr.split("\n")
-            lines = [x for x in lines if x != '']  
-            usertime= float(lines[-1])
-            systime = float(lines[-2])
-            submission.runtime = (usertime + systime)* 1000
-            stderr = '\n'.join(lines)
-        except ValueError:
-            results.append([retval, stdout, stderr, False])
-            continue
+
+        submission.runtime = (utime+stime)*1000
 
         if test.validator:
             if validate(stdout, test):
@@ -217,7 +207,7 @@ def get_submission_run_cmd(submission):
     command = re.sub(BASENAME_SUB, filename.split('.')[0], command)
    
     command = use_run_user(command)
-    command = time_command(command)
+    #command = time_command(command)
     
     return command
 
@@ -241,18 +231,27 @@ def validate(run_stdout, test_case):
 
     return retval==0 
 
-def run(command, dir_path, resource, stdin):
+def run(command, dir_path, res, stdin, time=False):
     args = shlex.split(command)
     logger.debug(args)
-
-    process = Popen(args=args, stdin=PIPE, stdout=PIPE, stderr=PIPE,
-                preexec_fn=resource,
+    process = Runner(args=args, stdin=PIPE, stdout=PIPE, stderr=PIPE,
+                preexec_fn=res,
                 cwd=dir_path)
-
     stdout, stderr = process.communicate(stdin)
     retval = process.poll()
+    times = process.timer()
+    logger.debug(times[0])
+    logger.debug(times[1])
+    if time:
+        return retval, stdout, stderr, times[0], times[1]
+    else:
+        return retval, stdout, stderr
 
-    return retval, stdout, stderr
+class Runner(Popen):
+    def timer(self):
+        usage = resource.getrusage(resource.RUSAGE_CHILDREN)
+        return usage.ru_utime, usage.ru_stime
+        
 
 def use_run_user(command):
     return 'sudo su ' + RUN_USER + ' -c "' + command + '"'

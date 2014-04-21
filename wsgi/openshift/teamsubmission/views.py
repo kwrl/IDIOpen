@@ -61,7 +61,6 @@ def submission_problem(request, problemID):
         submission = Submission()
         submission.problem = problem
         submission.team = team
-
     '''
     Does not look good
     if is_problem_solved(team, problemID):
