@@ -1,6 +1,5 @@
 {% extends 'base.html' %}
 {% load link_tags %}
-{% load set_var %}
 {% contest as contest %}
 {% block content %}
 <script>
@@ -21,8 +20,24 @@ $(document).ready(function()
     } 
 ); 
 </script>
-{% set teams = statistics %}
 <h2>Highscore table</h2>
+<div>
+{% url 'highscorePageRes' contest.url 'all' as all %}
+{% url 'highscorePageRes' contest.url 'onsite' as onsite %}
+{% url 'highscorePageRes' contest.url 'offsite' as offsite %}
+{% url 'highscorePageRes' contest.url 'student' as student %}
+{% url 'highscorePageRes' contest.url 'pro' as pro %}
+
+Show for location:
+<a href="{{ all }}"> All </a>
+<a href="{{ onsite }}"> Onsite </a>
+<a href="{{ offsite }}"> Offsite </a>
+</br>
+Show for team type:
+<a href="{{ all }}"> All </a>
+<a href="{{ student }}"> Student </a>
+<a href="{{ pro }}"> Pro </a>
+</div>
 <hr>
 <table id="highscoreTable" class="table table-bordered table-hover table-condensed tablesorter">
 	<thead>
@@ -39,7 +54,7 @@ $(document).ready(function()
             </tr>
     </thead>
     <tbody>
-            {% for stat in teams %}
+            {% for stat in statistics %}
 	            <tr>
 	            {% for s in stat %}
 	            	{% if forloop.counter != 7 and forloop.counter != 8 %}
