@@ -8,14 +8,11 @@ from collections import Counter, defaultdict
 
 from openshift.contest.models import Contest, Team
 from openshift.execution.models import Problem
-from openshift.helpFunctions.views import getTodayDate
+from openshift.helpFunctions.views import get_most_plausible_contest
 from openshift.teamsubmission.models import Submission, ExecutionLogEntry
 
 from .html_view_classes import CountFeedbackRow, ProblemAttempsCount,\
                                SubFeedbackView, TeamSummaryRow
-
-def date_in_range(dateobject, start, end):
-    return (start <= dateobject and dateobject  <= end)
 
 def get_team_assignments(team_list):
     onsite_list, offsite_list = [], []
@@ -39,24 +36,6 @@ def get_team_assignments(team_list):
 
     return onsite_list, offsite_list
 
-def get_current_contest():
-    today = getTodayDate()
-    contests = Contest.objects.all()
-
-    return next((con for con in contests \
-            if date_in_range(today, con.start_date, con.end_date)))
-
-
-def get_most_plausible_contest(contest_pk):
-    given_contest = None
-    if contest_pk:
-        try:
-            given_contest = Contest.objects.get(id=contest_pk)
-        except TypeError:
-            pass
-
-    return next((x for x in [given_contest, get_current_contest(), \
-                    Contest.objects.earliest('teamreg_end_date')] if x))
 
 def get_attempt_count(contest):
     problems = Problem.objects.filter(contest=contest).order_by('title')
