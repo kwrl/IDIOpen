@@ -1,3 +1,6 @@
+""" The view (functions) for judges
+"""
+
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render, HttpResponse
 
@@ -40,8 +43,8 @@ def get_current_contest():
     today = getTodayDate()
     contests = Contest.objects.all()
 
-    return next((date_in_range(today, con.start_date, con.end_date) \
-                 for con in contests))
+    return next((con for con in contests \
+            if date_in_range(today, con.start_date, con.end_date)))
 
 
 def get_most_plausible_contest(contest_pk):
@@ -52,8 +55,8 @@ def get_most_plausible_contest(contest_pk):
         except TypeError:
             pass
 
-    return given_contest  or get_current_contest() \
-                          or Contest.objets.earliest('teamreg_end_date')
+    return next((x for x in [given_contest, get_current_contest(), \
+                    Contest.objects.earliest('teamreg_end_date')] if x))
 
 def get_attempt_count(contest):
     problems = Problem.objects.filter(contest=contest).order_by('title')

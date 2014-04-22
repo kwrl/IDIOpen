@@ -34,11 +34,6 @@
     .ui-state-hover {
         background: #B9B9B9;
     }
-
-   // table.tablesorter tbody td:hover {
-   //     background : #C3C3C3 !important;
-   // }
-
 </style>
 
 <h3>Submissions</h3>
@@ -54,9 +49,9 @@
             {% for listitem in sub_feed_items %}
             <tr id={{listitem.submissions.pk}} class='clickableRow parent' >
                 {% if listitem.retval >= 1 %}
-                <td class="errorRow" > {{listitem.date_uploaded}}</td>
-                <td class="errorRow">{{listitem.problem}}</td>
-                <td class="errorRow">{{listitem.retval}}</td>
+                <td class="errorRow" data-value="date"> {{listitem.date_uploaded}}</td>
+                <td class="errorRow" data-value="problem">{{listitem.problem}}</td>
+                <td class="errorRow" data-value="retval">{{listitem.retval}}</td>
                 {% else %}
                 <td> {{listitem.date_uploaded}}</td>
                 <td>{{listitem.problem}}</td>
@@ -111,8 +106,7 @@
                                     {{listitem.stdout}}
                                 </div>
                             </div>
-
-                            <div class="panel-heading">
+                            <div class="panel-heading" >
                                 <a data-toggle="collapse" data-parent="#accordion" href="#collapseStderr{{listitem.submissions.pk}}">
                                     <h4 class="panel-title">
                                         Stderr
@@ -138,16 +132,14 @@ $(function() {
     $('tr.parent')
         .click(function(){
             $(this).siblings('.child-'+this.id).toggle();
-            for(var i = 0; i < this.children.length; i++)
-            {
-                //this.children[i].style.background = "#B1FFFB";
-                }
-        });
+           });
     list = $(document.querySelectorAll('tr[class^="child-"]'))
     for(var i = 0; i < list.length; i++)
     {
         $(list[i]).hide().children('td');
     }
+
+     
 
     // Inner/nested table
     $(document.querySelectorAll('div[id^=accordion]')).accordion({
@@ -182,14 +174,32 @@ $(function() {
         }
     });
 });
+   
+    
 
     $(document).ready(function() 
         { 
         if ($("#tableTeamSubs").find("tr").size() > 1)
         {
-            $("#tableTeamSubs").tablesorter( {sortList: [[0,1]]} ); 
+            $("#tableTeamSubs").tablesorter({
+                sortList: [[0,1]],
+                textExtraction: function(node)  {  
+                    var parentNode = document.getElementById(node.parentNode.className.replace( /^\D+/g, '')) ;
+                    if (parentNode != null)
+                    {
+                        // http://www.bbc.co.uk/ouch/images/flush_286/mr_bean.jpg
+                        return parentNode.childNodes[1].innerHTML;
+                     }
+                        
+                     return node.innerHTML;
+                    },
+                // To sort on the other headers there needs to be a more clever
+                // way to append the child <tr>
+                headers: { 1: {sorter: false }, 2: {sorter: false} },
+            }
+        );
         }
-    }
+        }
 );
 </script>
 

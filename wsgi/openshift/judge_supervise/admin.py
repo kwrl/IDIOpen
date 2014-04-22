@@ -2,6 +2,7 @@
 """
 
 from django.contrib import admin
+from django.db import models
 
 from .urls import get_urls
 
@@ -31,7 +32,6 @@ class string_with_title(str):
     __copy__ = lambda self: self
     __deepcopy__ = lambda self, memodict: self
 
-from django.db import models
 class judge_view(models.Model):
     class Meta:
         app_label = string_with_title("Judge_Supervisor", "Judge_Supervisor")
