@@ -57,7 +57,6 @@ def get_highscore(request, contest):
         dajax.assign('#highscore_done', 'innerHTML', build_closed_string(contest))
         return dajax.json()
     
-     
     statistics = Submission.objects.get_highscore(contest)[:5]
     dajax.assign('#highscoretable', 'innerHTML', build_html_table(statistics))
     return dajax.json()
@@ -95,7 +94,6 @@ def build_html_table(stats):
         #TEAM NAME
         if len(stats[s][1].encode('utf-8')) > 10:
             string += "<td>" + unicode(stats[s][1].encode("utf-8")[:10], "utf-8", errors="ignore") + "..." + "</td>"
-        
         else:
             string += "<td>" + unicode(stats[s][1]) + "</td>"
         
@@ -110,13 +108,9 @@ def build_html_table(stats):
             string += "<td>" + "No"  + "</td>"
         
         #string += "<td>" + str(stats[s][5]) + "</td>"
-        
-        
-        
-        
         #Score
-        #string += "<td>" + str(stats[s][3]) + "</td>"
         
+        #string += "<td>" + str(stats[s][3]) + "</td>"
         string += "</tr>"
     
     return string

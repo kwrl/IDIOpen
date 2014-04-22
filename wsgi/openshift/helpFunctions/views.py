@@ -24,7 +24,7 @@ def get_current_contest(request):
     return current_contest;
 
 #Return the date of today
-def getTodayDate(request):
+def getTodayDate():
     return timezone.make_aware(datetime.datetime.now(),
                                timezone.get_default_timezone());
                                
@@ -48,7 +48,6 @@ def get_team(request):
     queryset = Team.objects.filter(contest=con).filter(members__in = [user])
     team = get_object_or_404(queryset)
     return team
-
 
 def contest_begin(request):
     try: 
