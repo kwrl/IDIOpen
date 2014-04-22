@@ -95,6 +95,7 @@ class SubmissionForm(forms.ModelForm):
         new_sub.problem = self.instance.problem
         new_sub.validate = False
         new_sub.team = self.instance.team
+        new_sub.status = new_sub.QUEUED
         new_sub.save()
         print 'running task'
         evaluate_task.delay(new_sub.pk)

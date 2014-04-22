@@ -142,7 +142,6 @@
                             <a class="list-group-item" href="{% url 'register_teams' contest.url %}">Register team</a>
                             {% endif %}
 
-
 						</div>
 						{% if contest.sponsors.all %}
 						<h4 class="text-center">Sponsors</h4>
@@ -189,6 +188,7 @@
 						        </tr>
 						      </thead>
 						      <tbody id="highscoretable">
+                              <p id = "highscore_done"> </p>
 
                               </tbody>
 						</table>
