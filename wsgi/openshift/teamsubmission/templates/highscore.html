@@ -22,6 +22,7 @@ $(document).ready(function()
 </script>
 <h2>Highscore table</h2>
 <hr>
+{% if freeze %}
 <table id="highscoreTable" class="table table-bordered table-hover table-condensed tablesorter">
 	<thead>
             <tr>
@@ -48,6 +49,10 @@ $(document).ready(function()
 			{% endfor %}
     </tbody>
 </table>
+{% else %}
+<p> There is less than 1 hour left in the competition. You can view the Highscore after that.</p>
+<p> <strong> Good Luck! </strong><p>
+{% endif %}
 {% block highscore %}
 {% endblock %}
 {% endblock content %}

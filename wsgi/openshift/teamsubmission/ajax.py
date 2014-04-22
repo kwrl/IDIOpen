@@ -8,14 +8,9 @@ from dajax.core import Dajax
 from dajaxice.decorators import dajaxice_register
 from django.core.exceptions import ObjectDoesNotExist
 from .models import Submission
-from openshift.contest.models import Team
 from openshift.contest.models import Contest
 import datetime
 from datetime import timedelta
-from django.core import serializers
-import json
-from datetime import date
-from django.db.models.sql.datastructures import Date
 from django.utils.timezone import utc
 CLOSE_TIME = 1 #Hour
 
@@ -65,7 +60,6 @@ def get_highscore(request, contest):
 '''
 Returs false if highscore should be hidden
 '''
-
 def show_contest(contest):
     
     now = datetime.datetime.utcnow().replace(tzinfo=utc)
