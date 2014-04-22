@@ -3,6 +3,7 @@ Created on Apr 9, 2014
 
 @author: filip
 '''
+
 from dajax.core import Dajax
 from dajaxice.decorators import dajaxice_register
 from django.core.exceptions import ObjectDoesNotExist
@@ -10,8 +11,13 @@ from .models import Submission
 from openshift.contest.models import Team
 from openshift.contest.models import Contest
 import datetime
+from datetime import timedelta
 from django.core import serializers
 import json
+from datetime import date
+from django.db.models.sql.datastructures import Date
+from django.utils.timezone import utc
+CLOSE_TIME = 1 #Hour
 
 @dajaxice_register
 def ajaxalert(request):
@@ -24,8 +30,7 @@ def ajaxalert(request):
 
 @dajaxice_register
 def submission(request, submission_id):
-    dajax = Dajax()
-    
+    dajax = Dajax()    
     try:
         sub  = Submission.objects.get(id = int(submission_id))
     except ObjectDoesNotExist:
@@ -43,19 +48,41 @@ def submission(request, submission_id):
 
 @dajaxice_register
 def get_highscore(request, contest):
-    '''
-    Note: contest is url!
-    '''
+    #contest is first URL
     dajax = Dajax()
     
     #Gets the current contest
     contest = get_current_contest(contest)
-    statistics = Submission.objects.get_highscore(contest)[:5]
+    if not show_contest(contest):
+        dajax.assign('#highscore_done', 'innerHTML', build_closed_string(contest))
+        return dajax.json()
     
-
+     
+    statistics = Submission.objects.get_highscore(contest)[:5]
     dajax.assign('#highscoretable', 'innerHTML', build_html_table(statistics))
     return dajax.json()
 
+
+'''
+Returs false if highscore should be hidden
+'''
+
+def show_contest(contest):
+    
+    now = datetime.datetime.utcnow().replace(tzinfo=utc)
+    day = datetime.date.today()
+    
+    #We subtract on hour    
+    close_time_first = contest.end_date-timedelta(hours=CLOSE_TIME)
+    close_time_completed = contest.end_date
+    
+    if (now > close_time_first and now < close_time_completed):
+        return False
+    else:
+        return True
+
+    
+    
 #gets the curent contest based on url string
 def build_html_table(stats):
     string = ""
@@ -69,7 +96,7 @@ def build_html_table(stats):
         if len(stats[s][1].encode('utf-8')) > 10:
             string += "<td>" + unicode(stats[s][1].encode("utf-8")[:10], "utf-8", errors="ignore") + "..." + "</td>"
         
-	else:
+        else:
             string += "<td>" + unicode(stats[s][1]) + "</td>"
         
         #Number of solved
@@ -93,6 +120,14 @@ def build_html_table(stats):
         string += "</tr>"
     
     return string
+
+
+def build_closed_string(contest):
+    close_time_first = contest.end_date-timedelta(hours=CLOSE_TIME)
+    close_time_completed = contest.end_date
+    return "<smalL> Highscore frozen.  </small>"
+    #delta = close_time_completed - close_time_first
+    
     
 def get_current_contest(url):
     try: 
