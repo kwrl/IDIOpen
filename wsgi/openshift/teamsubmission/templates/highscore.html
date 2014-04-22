@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load link_tags %}
+{% load set_var %}
 {% contest as contest %}
 {% block content %}
 <script>
@@ -20,6 +21,7 @@ $(document).ready(function()
     } 
 ); 
 </script>
+{% set teams = statistics %}
 <h2>Highscore table</h2>
 <hr>
 <table id="highscoreTable" class="table table-bordered table-hover table-condensed tablesorter">
@@ -30,21 +32,21 @@ $(document).ready(function()
             <th data-toggle="tooltip" data-placement="top" title="Solved">Solved</th>
             <th data-toggle="tooltip" data-placement="top" title="Scores">Total Score</th>
             <th data-toggle="tooltip" data-placement="top" title="Time">Time</th>
-            <th data-toggle="tooltip" data-placement="top" title="Onsite">Onsite</th>
-            <th data-toggle="tooltip" data-placement="top" title="Year">Year</th>
-            <th data-toggle="tooltip" data-placement="top" title="Gender">Gender</th>
+            <th data-toggle="tooltip" data-placement="top" title="Offsite">Offsite</th>
             {% for p in problems %}
             	<th data-toggle="tooltip" data-placement="top" title="Problems"> {{ forloop.counter }}</th>
             {% endfor %}
             </tr>
     </thead>
     <tbody>
-            {% for stat in statistics %}
-            <tr>
-            {% for s in stat %}
-            <td>{{s}}</td>
-            {% endfor %}
-            </tr>
+            {% for stat in teams %}
+	            <tr>
+	            {% for s in stat %}
+	            	{% if forloop.counter != 7 and forloop.counter != 8 %}
+		        	<td>{{ s }}</td>
+		        	{% endif %}
+				{% endfor %}
+	        	</tr>
 			{% endfor %}
     </tbody>
 </table>
