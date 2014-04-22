@@ -161,44 +161,43 @@ def highscore_view(request):
     contest = get_current_contest(request)
     statistics = Submission.objects.get_highscore(contest)
     problems = []
-    offsite = []
-    onsite = []
-    students = []
-    pros = []
-    girls = []
-    boys = []
-    mixed = []
     
     if statistics:
         problems = statistics[0][8:]
-        for team in statistics:
-            if team[5]:
-                offsite.append(team)
-            else:
-                onsite.append(team)
-            if team[6] < 7:
-                students.append(team)
-            else:
-                pros.append(team)
-            if team[7] == "F":
-                girls.append(team)
-            elif team[7] == "M":
-                boys.append(team)
-            else:
-                mixed.append(team)
-                
-
+        
     context = {
                'contest' : contest,
                'statistics' : statistics,
                'problems' : problems,
-               'offsite' : offsite,
-               'onsite' : onsite,
-               'students' : students,
-               'pros' : pros,
-               'girls' : girls,
-               'boys' : boys,
-               'mixed' : mixed,
+               }
+    return render(request, 'highscore.html', context)
+
+def highscore_view_res(request, sort_res):
+    contest = get_current_contest(request)
+    statistics = Submission.objects.get_highscore(contest)
+    problems = []
+    teams = []
+    
+    if statistics:
+        problems = statistics[0][8:]
+        for team in statistics:
+            if sort_res == "all":
+                teams = statistics
+                break
+            elif sort_res == "offsite" and team[5]:
+                teams.append(team)
+            elif sort_res == "onsite" and not team[5]:
+                teams.append(team)
+            elif sort_res == "student" and team[6] <= 6:
+                teams.append(team)
+            elif sort_res == "pro" and team[6] > 6:
+                teams.append(team)
+    
+    
+    context = {
+               'contest' : contest,
+               'statistics' : teams,
+               'problems' : problems,
                }
     return render(request, 'highscore.html', context)
 
