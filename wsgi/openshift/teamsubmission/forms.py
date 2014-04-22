@@ -77,8 +77,10 @@ class SubmissionForm(forms.ModelForm):
         content_type = submission.name.split('.')[-1]
         FILE_EXT = get_file_extensions()
         MAX_FILESIZE = get_max_file_size(self.instance.problem, cProfile) * 1024
+        
+        # MAX_FILESIZE = 0 when no resource is found
         if (MAX_FILESIZE == 0):
-            self._errors['compileProfile'] = self.error_class([('Please contact support')])
+            self._errors['compileProfile'] = self.error_class([('No resource set for the compiler profile selected')])
             return self.cleaned_data
         # Check if submission has an allowed file extension
         if content_type in [str(x) for x in FILE_EXT]:
