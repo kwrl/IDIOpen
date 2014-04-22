@@ -1,6 +1,6 @@
 from django.db import models
 
-from openshift.contest.models import Team
+from openshift.contest.models import Team, Contest
 from openshift.teamsubmission.models import Submission, Problem
 
 class BalloonStatus(models.Model):
