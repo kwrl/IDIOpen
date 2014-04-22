@@ -161,13 +161,44 @@ def highscore_view(request):
     contest = get_current_contest(request)
     statistics = Submission.objects.get_highscore(contest)
     problems = []
+    offsite = []
+    onsite = []
+    students = []
+    pros = []
+    girls = []
+    boys = []
+    mixed = []
+    
     if statistics:
         problems = statistics[0][8:]
+        for team in statistics:
+            if team[5]:
+                offsite.append(team)
+            else:
+                onsite.append(team)
+            if team[6] < 7:
+                students.append(team)
+            else:
+                pros.append(team)
+            if team[7] == "F":
+                girls.append(team)
+            elif team[7] == "M":
+                boys.append(team)
+            else:
+                mixed.append(team)
+                
 
     context = {
                'contest' : contest,
                'statistics' : statistics,
-               'problems' : problems
+               'problems' : problems,
+               'offsite' : offsite,
+               'onsite' : onsite,
+               'students' : students,
+               'pros' : pros,
+               'girls' : girls,
+               'boys' : boys,
+               'mixed' : mixed,
                }
     return render(request, 'highscore.html', context)
 
