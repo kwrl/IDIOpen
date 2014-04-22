@@ -24,11 +24,10 @@ RUN_USER = "gentlemember"
 USER_TIMEOUT    = [137, 35072]
 USER_CRASH      = [1,9,128,257,300]
 PROC_EXCEED     = [11, 139]
-MEM_EXCEED      = [-9]
+MEM_EXCEED      = [-9,134]
 
-def set_resource(time, memory, procs):
+def set_resource(time, memory=-1, procs=-1):
     def result():
-        memory  = memory*(1024**2)
         nproc   = resource.getrlimit(resource.RLIMIT_NPROC)
         tcpu    = resource.getrlimit(resource.RLIMIT_CPU)
         mem     = resource.getrlimit(resource.RLIMIT_DATA)
@@ -51,6 +50,7 @@ def set_resource(time, memory, procs):
             resource.setrlimit(resource.RLIMIT_AS, mem)
     
         os.nice(19)
+    
     return result
     #limit.max_program_timeout, limit.max_memory, limit.max_processes
 
@@ -124,7 +124,7 @@ def compile_submission(submission):
 
 def compile_validator(test_case):
     compiler = test_case.compileProfile
-    resource = set_resource(-1,-1,-1)
+    resource = set_resource(time=-1)
 
     return compile( compiler,
                     get_validator_resource(),
@@ -144,10 +144,7 @@ def compile(compiler, limits, sourcepath):
     command = re.sub(FILENAME_SUB, filename, compiler.compile)
     command = re.sub(BASENAME_SUB, filename.split('.')[0], command)
     
-    retval, stdout, stderr =   run( command, dir_path, set_resource(
-                                    limits.max_program_timeout,
-                                    -1,
-                                    -1), "")
+    retval, stdout, stderr =   run( command, dir_path, set_resource(time=limits.max_compile_time), "")
 
     if os.path.exists(dir_path + '/' + filename.split('.')[0]):
         os.chmod(dir_path + '/' + filename.split('.')[0], 0751)
@@ -155,6 +152,9 @@ def compile(compiler, limits, sourcepath):
         logger.debug('Cant find executable')
  
     return retval, stdout, stderr
+
+def MBtoB(mbcount):
+    return mbcount*(1024**2)
 
 def run_tests(submission):
     command = get_submission_run_cmd(submission)
@@ -172,9 +172,9 @@ def run_tests(submission):
         test.outputFile.close()
         
         retval, stdout, stderr, utime, stime = run(command, dir_path, set_resource(
-                                        limit.max_program_timeout,
-                                        limit.max_memory,
-                                        limit.max_processes),
+                                        time=limit.max_program_timeout,
+                                        memory=MBtoB(limit.max_memory),
+                                        procs=limit.max_processes),
                                         input_content, True)       
         
         ExecutionLogEntry.objects.create(submission=submission, 
@@ -225,7 +225,9 @@ def validate(run_stdout, test_case):
         return False
 
     limits = get_validator_resource()
-    res = set_resource(limits.max_program_timeout,limits.max_memory,limits.max_processes)
+    res = set_resource( time=limits.max_program_timeout,
+                        memory=MBtoB(limits.max_memory),
+                        procs=limits.max_processes)
 
     retval, stdout, stderr = run(command, dir_path, res, run_stdout) 
 
