@@ -143,17 +143,19 @@ def file_function(instance, filename):
 
 class Submission(models.Model):
     
-    QUEUED = 0
-    RUNNING = 1
-    EVALUATED = 2
+    NOTSET = 0
+    QUEUED = 1
+    RUNNING = 2
+    EVALUATED = 3
     STATES = (
+        (NOTSET, 'Not Set'),
         (QUEUED, 'Queued'),
         (RUNNING, 'Running'),
         (EVALUATED, 'Evaluated'),
     )
     #We should rename submission field.... 
     submission = models.FileField(storage=private_media, upload_to=file_function)
-    status = models.IntegerField(choices=STATES, default=QUEUED)
+    status = models.IntegerField(choices=STATES, default=NOTSET)
     compileProfile = models.ForeignKey('execution.CompilerProfile')
     date_uploaded = models.DateTimeField(auto_now = True)
     solved_problem = models.BooleanField(default=False) #E.g. Did this submission solve the the problem
