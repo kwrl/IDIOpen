@@ -49,7 +49,6 @@ def get_team(request):
     team = get_object_or_404(queryset)
     return team
 
-
 def contest_begin(request):
     try: 
         contest = get_current_contest(request)
