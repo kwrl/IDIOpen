@@ -24,7 +24,7 @@ def get_current_contest(request):
     return current_contest;
 
 #Return the date of today
-def getTodayDate(request):
+def getTodayDate():
     return timezone.make_aware(datetime.datetime.now(),
                                timezone.get_default_timezone());
                                
