@@ -159,6 +159,7 @@ def submission_view(request):
 
     context = {
                'prob_sub': listProbSub,
+               'problemSet': con.problemSet
                }
 
     return render(request, 'submission_home.html', context)

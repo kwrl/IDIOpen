@@ -81,7 +81,6 @@ def build_html_table(stats):
     string = ""
     for s in range(len(stats)):
         string += "<tr>"
-        
         #PLACE
         string +=  "<td>" + unicode(stats[s][0]) + "</td>"
         

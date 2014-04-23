@@ -1,18 +1,23 @@
 #coding: utf-8
-from openshift.userregistration.models import CustomUser as User 
-from sortedm2m.fields import SortedManyToManyField
-from django.core.exceptions import ValidationError
-from django.db import models
-from django.conf import settings
-from filebrowser.fields import FileBrowseField
-from django.template.loader import render_to_string
-from django.core.mail import send_mail
-from django.core.exceptions import ObjectDoesNotExist
-from openshift.userregistration.models import CustomUser as User
 import datetime
+import os
+
+from django.conf import settings
+from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ValidationError
+from django.core.mail import send_mail
+from django.db import models
+from django.template.loader import render_to_string
 from django.utils import timezone
+from filebrowser.fields import FileBrowseField
+from sortedm2m.fields import SortedManyToManyField
+
+from openshift.userregistration.models import CustomUser as User
+from openshift.userregistration.models import CustomUser as User 
+
 
 # Create your models here.
+PROBLEM_ROOT_DIR = 'problemSet'
 
 '''
 Contest model
@@ -20,7 +25,14 @@ Contest model
 TODO: Add location, fix start, end, publish date, validate
 Is done now right?
 '''
-
+def get_upload_path(instance, filename):
+    """ Dynamically decide where to upload the case,
+        based on the foreign key in instance, which is required to be
+        a testcase.
+    """
+    # path.join appends a trailing / in between each argument
+    return os.path.join("%s" % PROBLEM_ROOT_DIR,
+                        filename)
 
 def getTodayDate():
     return timezone.make_aware(datetime.datetime.now(), timezone.get_default_timezone())
@@ -51,7 +63,13 @@ class Contest(models.Model):
     logo = FileBrowseField('Logo', max_length=200, directory='logo/', 
                           extensions=['.jpg','.jpeg','.png','.gif'], blank=True, null=True,
                           help_text='Select logo image, allowed formats jpg, jpeg, png, gif')
-
+    
+    
+    problemSet = models.FileField(upload_to=get_upload_path,
+                       verbose_name="Problem set (file)", blank = True, null=True, 
+                       help_text='Upload problem set. UPLOAD ON CONTEST START!! NOT BEFORE')
+    
+    
     def isPublishable(self):
         return self.publish_date.__lt__(getTodayDate())
 
