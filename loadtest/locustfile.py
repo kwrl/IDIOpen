@@ -1,5 +1,3 @@
-#! /home/andesil/pyenv/bin/python
-
 from locust import HttpLocust, TaskSet, task, ResponseError
 
 from random import randint
@@ -72,3 +70,4 @@ class WebsiteUser(HttpLocust):
     host = "http://vps.filip0.com"
 
 # EOF
+
