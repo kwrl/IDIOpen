@@ -22,6 +22,25 @@ $(document).ready(function()
 </script>
 <h2>Highscore table</h2>
 <hr>
+<div>
+{% url 'highscorePageRes' contest.url 'all' as all %}
+{% url 'highscorePageRes' contest.url 'onsite' as onsite %}
+{% url 'highscorePageRes' contest.url 'offsite' as offsite %}
+{% url 'highscorePageRes' contest.url 'student' as student %}
+{% url 'highscorePageRes' contest.url 'pro' as pro %}
+
+Show for location:
+<a href="{{ all }}"> All </a>
+|<a href="{{ onsite }}"> Onsite </a>
+| <a href="{{ offsite }}"> Offsite </a>
+</br>
+Show for team type:
+<a href="{{ all }}"> All </a>
+ |<a href="{{ student }}"> Student </a>
+ |<a href="{{ pro }}"> Pro </a>
+</div>
+
+{% if freeze %}
 <table id="highscoreTable" class="table table-bordered table-hover table-condensed tablesorter">
 	<thead>
             <tr>
@@ -30,9 +49,7 @@ $(document).ready(function()
             <th data-toggle="tooltip" data-placement="top" title="Solved">Solved</th>
             <th data-toggle="tooltip" data-placement="top" title="Scores">Total Score</th>
             <th data-toggle="tooltip" data-placement="top" title="Time">Time</th>
-            <th data-toggle="tooltip" data-placement="top" title="Onsite">Onsite</th>
-            <th data-toggle="tooltip" data-placement="top" title="Year">Year</th>
-            <th data-toggle="tooltip" data-placement="top" title="Gender">Gender</th>
+            <th data-toggle="tooltip" data-placement="top" title="Offsite">Offsite</th>
             {% for p in problems %}
             	<th data-toggle="tooltip" data-placement="top" title="Problems"> {{ forloop.counter }}</th>
             {% endfor %}
@@ -40,14 +57,28 @@ $(document).ready(function()
     </thead>
     <tbody>
             {% for stat in statistics %}
-            <tr>
-            {% for s in stat %}
-            <td>{{s}}</td>
-            {% endfor %}
-            </tr>
+	            <tr>
+	            {% for s in stat %}
+	            	{% if forloop.counter != 7 and forloop.counter != 8 %}
+	            		{% if s|first != "0" and s|last == "-"%}
+		        			<td class="problem-rejected">
+	            		{% elif "/" in s and s|first != "0" and s|last != "-"%}
+		        			<td class="problem-accepted">
+		        		{% else %}
+		        			<td>
+		        		{% endif %}
+		        		{{ s }}</td>
+		        	{% endif %}
+				{% endfor %}
+	        	</tr>
 			{% endfor %}
     </tbody>
 </table>
+{% else %}
+<br>
+<p> There is less than 1 hour left in the competition. You can view the Highscore after that.</p>
+<p> <strong> Good Luck! </strong><p>
+{% endif %}
 {% block highscore %}
 {% endblock %}
 {% endblock content %}

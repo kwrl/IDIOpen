@@ -15,6 +15,29 @@ This view is suppose to hold functiones used by several modules.
 Please mark 
 '''
 
+def date_in_range(dateobject, start, end):
+    return (start <= dateobject and dateobject  <= end)
+
+def plausible_today_contest():
+    today = getTodayDate()
+    contests = Contest.objects.all()
+
+    return next((con for con in contests \
+            if date_in_range(today, con.start_date, con.end_date)))
+
+def get_most_plausible_contest(contest_pk=None):
+    given_contest = None
+    if contest_pk:
+        try:
+            given_contest = Contest.objects.get(id=contest_pk)
+        except TypeError:
+            pass
+
+    return next((x for x in [given_contest, plausible_today_contest(), \
+                    Contest.objects.earliest('teamreg_end_date')] \
+                        if x is not None),
+                None)
+
 # Returns the current contest.
 def get_current_contest(request):
     try: 
@@ -24,7 +47,7 @@ def get_current_contest(request):
     return current_contest;
 
 #Return the date of today
-def getTodayDate(request):
+def getTodayDate():
     return timezone.make_aware(datetime.datetime.now(),
                                timezone.get_default_timezone());
                                
@@ -48,7 +71,6 @@ def get_team(request):
     queryset = Team.objects.filter(contest=con).filter(members__in = [user])
     team = get_object_or_404(queryset)
     return team
-
 
 def contest_begin(request):
     try: 

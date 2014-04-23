@@ -8,14 +8,9 @@ from dajax.core import Dajax
 from dajaxice.decorators import dajaxice_register
 from django.core.exceptions import ObjectDoesNotExist
 from .models import Submission
-from openshift.contest.models import Team
 from openshift.contest.models import Contest
 import datetime
 from datetime import timedelta
-from django.core import serializers
-import json
-from datetime import date
-from django.db.models.sql.datastructures import Date
 from django.utils.timezone import utc
 CLOSE_TIME = 1 #Hour
 
@@ -24,7 +19,7 @@ def ajaxalert(request):
     user = request.user
     dajax = Dajax()
     dajax.alert('Test')
-    dajax.alert(user.get_full_name())
+   #s dajax.alert(user.get_full_name())
     return dajax.json()
 
 
@@ -57,16 +52,14 @@ def get_highscore(request, contest):
         dajax.assign('#highscore_done', 'innerHTML', build_closed_string(contest))
         return dajax.json()
     
-     
     statistics = Submission.objects.get_highscore(contest)[:5]
     dajax.assign('#highscoretable', 'innerHTML', build_html_table(statistics))
     return dajax.json()
 
 
 '''
-Returs false if highscore should be hidden
+Returns false if highscore should be hidden
 '''
-
 def show_contest(contest):
     
     now = datetime.datetime.utcnow().replace(tzinfo=utc)
@@ -95,7 +88,6 @@ def build_html_table(stats):
         #TEAM NAME
         if len(stats[s][1].encode('utf-8')) > 10:
             string += "<td>" + unicode(stats[s][1].encode("utf-8")[:10], "utf-8", errors="ignore") + "..." + "</td>"
-        
         else:
             string += "<td>" + unicode(stats[s][1]) + "</td>"
         
@@ -103,20 +95,19 @@ def build_html_table(stats):
         string += "<td>" + unicode(stats[s][2]) + "</td>"
         
         #Onsite/ofsite
-        if stats[s][5] == True:
+        if stats[s][5]:
             #string += "<td>" + "<span class=\"label label-success\"> \" \" </span>"  + "</td>"
-            string += "<td>" + "Yes" + "</td>"
+            if len(stats[s][5]) > 3: 
+                string += "<td>" + stats[s][5][:3] + ".." "</td>"
+            else:
+                string += "<td>" + stats[s][5][:3] + "</td>"
         else: 
-            string += "<td>" + "No"  + "</td>"
+            string += "<td>" + "Yes"  + "</td>"
         
         #string += "<td>" + str(stats[s][5]) + "</td>"
-        
-        
-        
-        
         #Score
-        #string += "<td>" + str(stats[s][3]) + "</td>"
         
+        #string += "<td>" + str(stats[s][3]) + "</td>"
         string += "</tr>"
     
     return string
