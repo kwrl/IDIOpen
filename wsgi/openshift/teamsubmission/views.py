@@ -168,12 +168,43 @@ def highscore_view(request):
     contest = get_current_contest(request)
     statistics = Submission.objects.get_highscore(contest)
     problems = []
+    
     if statistics:
         problems = statistics[0][8:]
-
+        
     context = {
                'contest' : contest,
                'statistics' : statistics,
+               'problems' : problems,
+               'freeze' : show_contest(contest)
+               }
+    return render(request, 'highscore.html', context)
+
+def highscore_view_res(request, sort_res):
+    contest = get_current_contest(request)
+    statistics = Submission.objects.get_highscore(contest)
+    problems = []
+    teams = []
+    
+    if statistics:
+        problems = statistics[0][8:]
+        for team in statistics:
+            if sort_res == "all":
+                teams = statistics
+                break
+            elif sort_res == "offsite" and team[5]:
+                teams.append(team)
+            elif sort_res == "onsite" and not team[5]:
+                teams.append(team)
+            elif sort_res == "student" and team[6] <= 6:
+                teams.append(team)
+            elif sort_res == "pro" and team[6] > 6:
+                teams.append(team)
+    
+    
+    context = {
+               'contest' : contest,
+               'statistics' : teams,
                'problems' : problems,
                'freeze' : show_contest(contest)
                }
