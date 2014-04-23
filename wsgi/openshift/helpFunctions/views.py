@@ -11,7 +11,7 @@ import datetime;
 from django.utils import timezone;
 
 '''
-This view is suppose to hold functiones used by several modules. 
+This view is supposed to hold functions used by several modules. 
 Please mark 
 '''
 
@@ -23,7 +23,7 @@ def plausible_today_contest():
     contests = Contest.objects.all()
 
     return next((con for con in contests \
-            if date_in_range(today, con.start_date, con.end_date)))
+            if date_in_range(today, con.start_date, con.end_date)), None)
 
 def get_most_plausible_contest(contest_pk=None):
     given_contest = None

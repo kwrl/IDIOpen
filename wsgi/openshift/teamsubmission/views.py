@@ -57,7 +57,7 @@ def submission_problem(request, problemID):
     team = Team.objects.filter(contest=contest).get(members__id = user.id)
     submission = Submission.objects.filter(team=team).filter(problem=problemID).order_by('-date_uploaded')
     tries = len(submission)
-
+    
 
     if len(submission.values_list()) > 0:
         submission = submission[0]
@@ -72,22 +72,29 @@ def submission_problem(request, problemID):
     if is_problem_solved(team, problemID):
         messages.success(request, 'This problem is solved!')
     '''
-
+    
+    
     if request.method == "POST":
         form = SubmissionForm(request.POST, request.FILES,
                                instance=submission)
+        
         if not request.FILES:
             messages.error(request, 'You need to choose a file to upload')
 
         elif contest_end(request):
             messages.error(request, 'You can\'t upload any more files after the contest has ended')
-
+        
+        elif (submission.status != submission.EVALUATED and submission.status != submission.NOTSET):
+            messages.info(request, 'Please wait. Only one submisison at a time')
+        
         elif is_leader(request, contest):
             if form.is_valid():
                 form.save()
                 return redirect('submission_problem', contest.url, problemID)
+
         else:
             messages.error(request, 'You have to be the leader of a team to upload submissions')
+        
     elif not submission.solved_problem:
         form = SubmissionForm(instance=submission);
     else:
@@ -98,8 +105,8 @@ def submission_problem(request, problemID):
              'problem' : problem,
              'submission' : submission,
              'submission_form' : form,
-             'tries':tries,
-             'score' : score[0],
+             'tries': tries,
+             'score' : score[0] 
               }
 
     return render(request,
@@ -159,42 +166,26 @@ def submission_view(request):
 
     context = {
                'prob_sub': listProbSub,
+               'team_score' : Submission.objects.get_team_score(team[0], con)[1]
                }
 
     return render(request, 'submission_home.html', context)
 
-
-def highscore_view(request):
-    contest = get_current_contest(request)
-    statistics = Submission.objects.get_highscore(contest)
-    problems = []
-    
-    if statistics:
-        problems = statistics[0][8:]
-        
-    context = {
-               'contest' : contest,
-               'statistics' : statistics,
-               'problems' : problems,
-               'freeze' : show_contest(contest)
-               }
-    return render(request, 'highscore.html', context)
-
-def highscore_view_res(request, sort_res):
+def highscore_view(request, sort_res="all"):
     contest = get_current_contest(request)
     statistics = Submission.objects.get_highscore(contest)
     problems = []
     teams = []
     
     if statistics:
-        problems = statistics[0][8:]
+        problems = Problem.objects.filter(contest=contest)
         for team in statistics:
             if sort_res == "all":
                 teams = statistics
                 break
-            elif sort_res == "offsite" and team[5]:
+            elif sort_res == "offsite" and team[2]:
                 teams.append(team)
-            elif sort_res == "onsite" and not team[5]:
+            elif sort_res == "onsite" and not team[2]:
                 teams.append(team)
             elif sort_res == "student" and team[6] <= 6:
                 teams.append(team)
