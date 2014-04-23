@@ -35,10 +35,10 @@ class ScoreManager(models.Manager):
 
         """ 
         The statistics are:
-        [total score,
-        time submitted (in minutes),
-        submission score,
-        number of submissions]
+        [total score,                - 0
+        time submitted (in minutes), - 1
+        submission score,            - 2
+        number of submissions]       - 3
         """
         statistics = [0, 0, 0, len(submissions)]
         if(len(correctSubmissions) > 0):
@@ -57,15 +57,15 @@ class ScoreManager(models.Manager):
         
         """ 
         The statistics are:
-        [offsite,
-        solved problems,
-        total score,
-        time submitted (in minutes),
-        year,
-        gender,
-        problem 1 submissions/time solved,
-        ...
-        problem n submissions/time solved]
+        [offsite,                            - 0
+        solved problems,                     - 1
+        total score,                         - 2
+        time submitted (in minutes),         - 3
+        year,                                - 4
+        gender,                              - 5
+        problem 1 submissions/time solved,   - 6
+        ...                                  - .
+        problem n submissions/time solved]   - n
         """
         statistics = [0, 0, 0, 0, 0, 0]
         statistics[0] = team.offsite
