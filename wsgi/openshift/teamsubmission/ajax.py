@@ -1,7 +1,7 @@
 '''
 Created on Apr 9, 2014
 
-@author: filip
+@author: filip, typo
 '''
 
 from dajax.core import Dajax
