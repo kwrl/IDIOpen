@@ -57,6 +57,7 @@ def submission_problem(request, problemID):
     team = Team.objects.filter(contest=contest).get(members__id = user.id)
     submission = Submission.objects.filter(team=team).filter(problem=problemID).order_by('-date_uploaded')
     tries = len(submission)
+    
 
 
     if len(submission.values_list()) > 0:
@@ -98,8 +99,8 @@ def submission_problem(request, problemID):
              'problem' : problem,
              'submission' : submission,
              'submission_form' : form,
-             'tries':tries,
-             'score' : score[0],
+             'tries': tries,
+             'score' : score[0] 
               }
 
     return render(request,
@@ -159,6 +160,7 @@ def submission_view(request):
 
     context = {
                'prob_sub': listProbSub,
+               'team_score' : Submission.objects.get_team_score(team[0], con)[1]
                }
 
     return render(request, 'submission_home.html', context)
