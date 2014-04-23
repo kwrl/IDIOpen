@@ -179,7 +179,7 @@ def highscore_view_res(request, sort_res):
     teams = []
     
     if statistics:
-        problems = statistics[0][8:]
+        problems = Problem.objects.filter(contest=contest)
         for team in statistics:
             if sort_res == "all":
                 teams = statistics
