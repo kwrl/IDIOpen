@@ -174,14 +174,7 @@ background-size: auto;
             {% for stat in statistics %}
 	            <tr>
 	            {% for s in stat %}
-            		{% if s|first != "0" and s|last == "-"%}
-	        			<td class="problem-rejected">
-            		{% elif "/" in s and s|first != "0" and s|last != "-"%}
-	        			<td class="problem-accepted">
-	        		{% else %}
-	        			<td>
-	        		{% endif %}
-	        		{{ s }}</td>
+	        			<td>{{ s }}</td>
 				{% endfor %}
 	        	</tr>
 			{% endfor %}

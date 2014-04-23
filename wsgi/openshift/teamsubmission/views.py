@@ -177,9 +177,9 @@ def highscore_view(request, sort_res="all"):
             if sort_res == "all":
                 teams = statistics
                 break
-            elif sort_res == "offsite" and team[5]:
+            elif sort_res == "offsite" and team[2]:
                 teams.append(team)
-            elif sort_res == "onsite" and not team[5]:
+            elif sort_res == "onsite" and not team[2]:
                 teams.append(team)
             elif sort_res == "student" and team[6] <= 6:
                 teams.append(team)
