@@ -24,6 +24,8 @@ BASENAME_SUB = "{BASENAME}"
 
 RUN_USER = "gentlemember"
 
+REALTIME_MULTIPLIER = 3
+
 USER_TIMEOUT    = [137, 35072]
 USER_CRASH      = [1,9,128,257,300]
 PROC_EXCEED     = [11, 139]
@@ -65,7 +67,7 @@ def evaluate_task(submission_id):
     problem     = submission.problem
     submission.status = Submission.RUNNING
     submission.save()
-    retval, stdout, stderr, utime, stime = compile_submission(submission)
+    retval, stdout, stderr = compile_submission(submission)
     if retval != 0:
         if retval in MEM_EXCEED:
             submission.text_feedback = "Compile time memory limit exceeded."
@@ -79,7 +81,7 @@ def evaluate_task(submission_id):
 
     logger.debug('Exec start')
 
-    results = run_tests(submission, utime, stime)
+    results = run_tests(submission)
     exretval = 0
 
     for res in results:
@@ -122,7 +124,7 @@ def compile_submission(submission):
     compiler = submission.compileProfile
     limits = get_resource(submission, compiler)
     command = compiler.compile
-    retval, stdout, stderr, utime, stime = compile(compiler, limits, path)
+    retval, stdout, stderr = compile(compiler, limits, path)
     command = re.sub(FILENAME_SUB, filename, compiler.compile)
     command = re.sub(BASENAME_SUB, filename.split('.')[0], command)
     ExecutionLogEntry.objects.create(submission=submission, 
@@ -131,7 +133,7 @@ def compile_submission(submission):
                                             stderr=smart_str(stderr),
                                             retval=retval).save()
     
-    return retval, stdout, stderr, utime, stime
+    return retval, stdout, stderr
 
 def compile_validator(test_case):
     compiler = test_case.compileProfile
@@ -155,22 +157,21 @@ def compile(compiler, limits, sourcepath):
     command = re.sub(FILENAME_SUB, filename, compiler.compile)
     command = re.sub(BASENAME_SUB, filename.split('.')[0], command)
     
-    retval, stdout, stderr, utime, stime = run( command, 
-                                                dir_path, 
-                                                set_resource(time=limits.max_compile_time), 
-                                                "")
+    retval, stdout, stderr = run( command, dir_path, 
+                                  set_resource(time=limits.max_compile_time), 
+                                  "", timeout=limits.max_compile_time*REALTIME_MULTIPLIER)
 
     if os.path.exists(dir_path + '/' + filename.split('.')[0]):
         os.chmod(dir_path + '/' + filename.split('.')[0], 0751)
     else:
         logger.debug('Cant find executable')
  
-    return retval, stdout, stderr, utime, stime
+    return retval, stdout, stderr
 
 def MBtoB(mbcount):
     return mbcount*(1024**2)
 
-def run_tests(submission, cutime, cstime):
+def run_tests(submission):
     command = get_submission_run_cmd(submission)
     compiler = submission.compileProfile
     limit = get_resource(submission,compiler)
@@ -185,16 +186,13 @@ def run_tests(submission, cutime, cstime):
         test.inputFile.close()
         test.outputFile.close()
         
-        retval, stdout, stderr, utime, stime = run(command, dir_path, set_resource(
+        retval, stdout, stderr = run(command, dir_path, set_resource(
                                         time=limit.max_program_timeout,
                                         memory=MBtoB(limit.max_memory),
                                         procs=limit.max_processes),
-                                        input_content, True)
+                                        input_content, True, 
+                                        timeout=limit.max_program_timeout*REALTIME_MULTIPLIER)
                                         
-        logger.debug('Timer')
-        logger.debug('Usertime: '+ str(float(utime)-float(cutime)))
-        logger.debug('Systemtime: ' + str(float(stime)-float(cstime)))
-
         ExecutionLogEntry.objects.create(submission=submission, 
                                             command=command, 
                                             stdout=stdout, 
@@ -258,11 +256,11 @@ def validate(run_stdout, test_case):
                         memory=MBtoB(limits.max_memory),
                         procs=limits.max_processes)
 
-    retval, stdout, stderr, utime, stime = run(command, dir_path, res, run_stdout) 
+    retval, stdout, stderr = run(command, dir_path, res, run_stdout) 
 
     return retval==0 
 
-def run(command, dir_path, res, stdin,time=False, timeout = 30):
+def run(command, dir_path, res, stdin,time=False, timeout = -1):
     
     class Alarm(Exception):
         pass
@@ -300,20 +298,12 @@ def run(command, dir_path, res, stdin,time=False, timeout = 30):
             #os.kill(pid, psutil.signal.SIGKILL)
         except OSError, psutil.AccessDenied:
             pass
-        utime, stime = process.timer()
-        logger.debug(utime)
-        logger.debug(stime)
-        return 137, '', '0.0\n0.0', utime, stime       
+        return 137, '', '0.0\n0.0'      
 
-    logger.debug('Times')
-    utime, stime = process.timer()
-    #times = process.cpu_times()
-    logger.debug(utime)
-    logger.debug(stime)
     retval = process.poll()
     
     #times = process.timer()
-    return retval, stdout, stderr, utime, stime
+    return retval, stdout, stderr
 
 class Runner(psutil.Popen):
     def timer(self):
