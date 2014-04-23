@@ -165,31 +165,14 @@ def submission_view(request):
 
     return render(request, 'submission_home.html', context)
 
-
-def highscore_view(request):
-    contest = get_current_contest(request)
-    statistics = Submission.objects.get_highscore(contest)
-    problems = []
-    
-    if statistics:
-        problems = statistics[0][8:]
-        
-    context = {
-               'contest' : contest,
-               'statistics' : statistics,
-               'problems' : problems,
-               'freeze' : show_contest(contest)
-               }
-    return render(request, 'highscore.html', context)
-
-def highscore_view_res(request, sort_res):
+def highscore_view(request, sort_res="all"):
     contest = get_current_contest(request)
     statistics = Submission.objects.get_highscore(contest)
     problems = []
     teams = []
     
     if statistics:
-        problems = statistics[0][8:]
+        problems = Problem.objects.filter(contest=contest)
         for team in statistics:
             if sort_res == "all":
                 teams = statistics
