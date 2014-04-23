@@ -1,6 +1,5 @@
 """ Render the views for judges
 """
-
 from django.contrib import admin
 from django.db import models
 from .models import judge_view
