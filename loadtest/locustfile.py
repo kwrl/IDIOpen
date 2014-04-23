@@ -3,14 +3,17 @@ from locust import HttpLocust, TaskSet, task, ResponseError
 from random import randint
 
 files = [open('test.java', 'r'), open('test2.java', 'r')]
+usernames = open('output.txt', 'r').read()
+usernames.pop()
 
 class RegistrationTask(TaskSet):
     @task
     def register(self):
+        global usernames
         postDict = {
-                'email'       : 'and@sild.com',
-                'first_name'  : 'anders',
-                'last_name'   : 'sildnes',
+                'email'       : usernames.pop(),
+                'first_name'  : 'first',
+                'last_name'   : 'last',
                 'nickname'    : 'nick',
                 'password1'   : 'password',
                 'password2'   : 'password',
