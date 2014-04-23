@@ -158,17 +158,17 @@ class RunJob():
             command = time_command(command)
         if restricted:
             command = use_run_user(command)
-
+            
         timeout = self.limit.max_program_timeout
         resource = set_resource(timeout, 
-                                self.limit.max_memory, 
+                                MBtoB(self.limit.max_memory), 
                                 self.limit.max_processes)
         retval, stdout, stderr = execute(command, 
                                          self.dir_path, 
                                          resource, 
                                          stdin, 
                                          timeout=timeout*REALTIME_MULTIPLIER)
-        return retval, stdout, stderr
+        return retval, stdout, stderr, command
     
     
     def cmd_replace(self, command):
@@ -196,15 +196,15 @@ def run_tests(runJob, submission):
         test.inputFile.close()
         test.outputFile.close()
         
-        retval, stdout, stderr = runJob.run(input_content)
-        runLogger(submission, runJob.runCMD, stdout, stderr, retval)
+        retval, stdout, stderr, command = runJob.run(input_content)
+        runLogger(submission, command, stdout, stderr, retval)
                                         
         try:
             lines = [x for x in stderr.split("\n") if x != '']
             time = lines[-1]
             usertime, systime = time.split('n')
             submission.runtime = (float(usertime) + float(systime))* 1000
-        except ValueError:
+        except (ValueError, IndexError):
             results.append([retval, stdout, stderr, False])
             continue
 
@@ -233,6 +233,8 @@ def get_validator_resource():
 
 
 def MBtoB(mbcount):
+    if mbcount == -1:
+        return mbcount
     return mbcount*(1024**2)
 
 
