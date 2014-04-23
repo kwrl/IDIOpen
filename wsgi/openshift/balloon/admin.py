@@ -5,14 +5,19 @@ from django.shortcuts import render
 from django.conf.urls import url, patterns
 
 from openshift.teamsubmission.models import Submission
-from openshift.balloon.models import BalloonStatus
+from openshift.balloon.models import BalloonStatus, balloon_view
 from openshift.balloon.forms import BalloonSubmissionForm
 
 class judge_view_admin(admin.ModelAdmin):
     # FIXME
     """ Temporary solution to get a view connected iSubmissionn admin site
     """
-    view_on_site = True
+
+    def has_add_permission(self, request):
+        return False
+    
+    def has_delete_permission(self, request):
+        return False
 
     def get_urls(self):
         urls = super(judge_view_admin, self).get_urls()
@@ -71,26 +76,6 @@ def balloon_home(request):
                   'balloon_home.html',
                   context,
                   )
-
-class string_with_title(str):
-    def __new__(cls, value, title):
-        instance = str.__new__(cls, value)
-        instance._title = title
-        return instance
-
-    def title(self):
-        return self._title
-
-    __copy__ = lambda self: self
-    __deepcopy__ = lambda self, memodict: self
-
-
-class balloon_view(models.Model):
-    class Meta:
-        app_label = string_with_title("Balloon_table", "Balloon_table")
-        managed = False # prevent from entering the DB
-        verbose_name = "Click here to view balloon table"
-        verbose_name_plural = "Click here to view balloon table"
 
 admin.site.register(balloon_view, judge_view_admin)
 
