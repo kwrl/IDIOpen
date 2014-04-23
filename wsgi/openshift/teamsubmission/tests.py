@@ -3,7 +3,7 @@ from .models import Submission
 from .forms import SubmissionForm
  
 
-from openshift.execution.models import Problem
+from openshift.execution.models import Problem, CompilerProfile
 from openshift.contest.models import Contest, Link, Team
 import datetime
 from django.contrib.sites.models import Site
@@ -77,11 +77,17 @@ class submissionTestCase(TestCase):
         
         #=======================================================================
 
+        CompilerProfile.objects.create(name = "Java",
+                                       compile = "cnc",
+                                       package_name = "randomPakke",
+                                       run = "rc"
+                                       )
         
         Submission.objects.create(submission = 'media/submissions/DoNotDelete.pdf', 
                                   text_feedback = self.set_text_feedback(),
                                   team = Team.objects.get(name = "TestTeamSubmission"),
-                                  problem = Problem.objects.get(title = "TPS")
+                                  problem = Problem.objects.get(title = "TPS"),
+                                  compileProfile = CompilerProfile.objects.get(name = "java") 
                                   )        
 
     
