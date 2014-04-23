@@ -23,7 +23,7 @@ $(document).ready(function()
 <h2>Highscore table</h2>
 <hr>
 <div>
-{% url 'highscorePageRes' contest.url 'all' as all %}
+{% url 'highscorePage' contest.url as all %}
 {% url 'highscorePageRes' contest.url 'onsite' as onsite %}
 {% url 'highscorePageRes' contest.url 'offsite' as offsite %}
 {% url 'highscorePageRes' contest.url 'student' as student %}
@@ -46,12 +46,12 @@ Show for team type:
             <tr>
             <th data-toggle="tooltip" data-placement="top" title="Positions"></th>
             <th data-toggle="tooltip" data-placement="top" title="Teams">Team</th>
-            <th data-toggle="tooltip" data-placement="top" title="Solved">Solved</th>
-            <th data-toggle="tooltip" data-placement="top" title="Scores">Total Score</th>
-            <th data-toggle="tooltip" data-placement="top" title="Time">Time</th>
             <th data-toggle="tooltip" data-placement="top" title="Offsite">Offsite</th>
+            <th data-toggle="tooltip" data-placement="top" title="Solved">Solved</th>
+            <th data-toggle="tooltip" data-placement="top" title="Total Score">Total Score</th>
+            <th data-toggle="tooltip" data-placement="top" title="Time">Time</th>
             {% for p in problems %}
-            	<th data-toggle="tooltip" data-placement="top" title="Problems"> {{ forloop.counter }}</th>
+            	<th data-toggle="tooltip" data-placement="top" title="{{ p.title }}"> {{ forloop.counter }}</th>
             {% endfor %}
             </tr>
     </thead>
@@ -59,7 +59,7 @@ Show for team type:
             {% for stat in statistics %}
 	            <tr>
 	            {% for s in stat %}
-	            	{% if forloop.counter != 7 and forloop.counter != 8 %}
+	            	{% if forloop.counter0 != 6 and forloop.counter0 != 7 %}
 	            		{% if s|first != "0" and s|last == "-"%}
 		        			<td class="problem-rejected">
 	            		{% elif "/" in s and s|first != "0" and s|last != "-"%}
