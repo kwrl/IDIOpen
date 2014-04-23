@@ -8,14 +8,9 @@ from dajax.core import Dajax
 from dajaxice.decorators import dajaxice_register
 from django.core.exceptions import ObjectDoesNotExist
 from .models import Submission
-from openshift.contest.models import Team
 from openshift.contest.models import Contest
 import datetime
 from datetime import timedelta
-from django.core import serializers
-import json
-from datetime import date
-from django.db.models.sql.datastructures import Date
 from django.utils.timezone import utc
 CLOSE_TIME = 1 #Hour
 
@@ -24,7 +19,7 @@ def ajaxalert(request):
     user = request.user
     dajax = Dajax()
     dajax.alert('Test')
-    dajax.alert(user.get_full_name())
+   #s dajax.alert(user.get_full_name())
     return dajax.json()
 
 
@@ -63,9 +58,8 @@ def get_highscore(request, contest):
 
 
 '''
-Returs false if highscore should be hidden
+Returns false if highscore should be hidden
 '''
-
 def show_contest(contest):
     
     now = datetime.datetime.utcnow().replace(tzinfo=utc)
@@ -103,7 +97,10 @@ def build_html_table(stats):
         #Onsite/ofsite
         if stats[s][5]:
             #string += "<td>" + "<span class=\"label label-success\"> \" \" </span>"  + "</td>"
-            string += "<td>" + stats[s][5] + "</td>"
+            if len(stats[s][5]) > 3: 
+                string += "<td>" + stats[s][5][:3] + ".." "</td>"
+            else:
+                string += "<td>" + stats[s][5][:3] + "</td>"
         else: 
             string += "<td>" + "Yes"  + "</td>"
         
