@@ -27,9 +27,9 @@ RUN_USER = "gentlemember"
 USER_TIMEOUT    = [137, 35072]
 USER_CRASH      = [1,9,128,257,300]
 PROC_EXCEED     = [11, 139]
-MEM_EXCEED      = [-9]
+MEM_EXCEED      = [-9,134]
 
-def set_resource(time, memory, procs):
+def set_resource(time, memory=-1, procs=-1):
     def result():
         nproc   = resource.getrlimit(resource.RLIMIT_NPROC)
         tcpu    = resource.getrlimit(resource.RLIMIT_CPU)
@@ -53,9 +53,7 @@ def set_resource(time, memory, procs):
             resource.setrlimit(resource.RLIMIT_AS, mem)
     
         os.nice(19)
-        
-    if memory != 0:
-        memory  = memory*(1024**2)
+    
     return result
     #limit.max_program_timeout, limit.max_memory, limit.max_processes
 
@@ -137,7 +135,7 @@ def compile_submission(submission):
 
 def compile_validator(test_case):
     compiler = test_case.compileProfile
-    resource = set_resource(-1,-1,-1)
+    resource = set_resource(time=-1)
 
     return compile( compiler,
                     get_validator_resource(),
@@ -157,10 +155,10 @@ def compile(compiler, limits, sourcepath):
     command = re.sub(FILENAME_SUB, filename, compiler.compile)
     command = re.sub(BASENAME_SUB, filename.split('.')[0], command)
     
-    retval, stdout, stderr, utime, stime =   run( command, dir_path, set_resource(
-                                    limits.max_program_timeout,
-                                    -1,
-                                    -1), "")
+    retval, stdout, stderr, utime, stime = run( command, 
+                                                dir_path, 
+                                                set_resource(time=limits.max_compile_time), 
+                                                "")
 
     if os.path.exists(dir_path + '/' + filename.split('.')[0]):
         os.chmod(dir_path + '/' + filename.split('.')[0], 0751)
@@ -168,6 +166,9 @@ def compile(compiler, limits, sourcepath):
         logger.debug('Cant find executable')
  
     return retval, stdout, stderr, utime, stime
+
+def MBtoB(mbcount):
+    return mbcount*(1024**2)
 
 def run_tests(submission, cutime, cstime):
     command = get_submission_run_cmd(submission)
@@ -185,13 +186,15 @@ def run_tests(submission, cutime, cstime):
         test.outputFile.close()
         
         retval, stdout, stderr, utime, stime = run(command, dir_path, set_resource(
-                                        limit.max_program_timeout,
-                                        limit.max_memory,
-                                        limit.max_processes),
-                                        input_content)       
+                                        time=limit.max_program_timeout,
+                                        memory=MBtoB(limit.max_memory),
+                                        procs=limit.max_processes),
+                                        input_content, True)
+                                        
         logger.debug('Timer')
         logger.debug('Usertime: '+ str(float(utime)-float(cutime)))
         logger.debug('Systemtime: ' + str(float(stime)-float(cstime)))
+
         ExecutionLogEntry.objects.create(submission=submission, 
                                             command=command, 
                                             stdout=stdout, 
@@ -201,8 +204,10 @@ def run_tests(submission, cutime, cstime):
         try:
             lines = stderr.split("\n")
             lines = [x for x in lines if x != '']
-            usertime= float(lines[-1])
-            systime = float(lines[-2])
+            time = lines[-1]
+            usertime, systime = time.split('n')
+            usertime= float(usertime)
+            systime = float(systime)
             submission.runtime = (usertime + systime)* 1000
             stderr = '\n'.join(lines)
         except ValueError:
@@ -230,8 +235,8 @@ def get_submission_run_cmd(submission):
     dir_path, filename = os.path.split(os.path.abspath(submission.submission.path))
     command = re.sub(BASENAME_SUB, filename.split('.')[0], command)
    
-    command = use_run_user(command)
     command = time_command(command)
+    command = use_run_user(command)
     
     return command
 
@@ -249,13 +254,15 @@ def validate(run_stdout, test_case):
         return False
 
     limits = get_validator_resource()
-    res = set_resource(limits.max_program_timeout,limits.max_memory,limits.max_processes)
+    res = set_resource( time=limits.max_program_timeout,
+                        memory=MBtoB(limits.max_memory),
+                        procs=limits.max_processes)
 
     retval, stdout, stderr, utime, stime = run(command, dir_path, res, run_stdout) 
 
     return retval==0 
 
-def run(command, dir_path, res, stdin,time=False, timeout = 10):
+def run(command, dir_path, res, stdin,time=False, timeout = 30):
     
     class Alarm(Exception):
         pass
@@ -293,7 +300,10 @@ def run(command, dir_path, res, stdin,time=False, timeout = 10):
             #os.kill(pid, psutil.signal.SIGKILL)
         except OSError, psutil.AccessDenied:
             pass
-        return 137, '', '0.0\n0.0'        
+        utime, stime = process.timer()
+        logger.debug(utime)
+        logger.debug(stime)
+        return 137, '', '0.0\n0.0', utime, stime       
 
     logger.debug('Times')
     utime, stime = process.timer()
@@ -315,5 +325,5 @@ def use_run_user(command):
     return 'sudo su ' + RUN_USER + ' -c "' + command + '"'
 
 def time_command(command):
-    return '/usr/bin/time -f "%S\n%U" -q ' + command
+    return '/usr/bin/time -f "%Sn%U" -q ' + command
 
