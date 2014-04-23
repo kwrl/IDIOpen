@@ -21,6 +21,7 @@ $(document).ready(function()
 ); 
 </script>
 <h2>Highscore table</h2>
+<hr>
 <div>
 {% url 'highscorePageRes' contest.url 'all' as all %}
 {% url 'highscorePageRes' contest.url 'onsite' as onsite %}
@@ -30,15 +31,16 @@ $(document).ready(function()
 
 Show for location:
 <a href="{{ all }}"> All </a>
-<a href="{{ onsite }}"> Onsite </a>
-<a href="{{ offsite }}"> Offsite </a>
+|<a href="{{ onsite }}"> Onsite </a>
+| <a href="{{ offsite }}"> Offsite </a>
 </br>
 Show for team type:
 <a href="{{ all }}"> All </a>
-<a href="{{ student }}"> Student </a>
-<a href="{{ pro }}"> Pro </a>
+ |<a href="{{ student }}"> Student </a>
+ |<a href="{{ pro }}"> Pro </a>
 </div>
-<hr>
+
+{% if freeze %}
 <table id="highscoreTable" class="table table-bordered table-hover table-condensed tablesorter">
 	<thead>
             <tr>
@@ -72,6 +74,11 @@ Show for team type:
 			{% endfor %}
     </tbody>
 </table>
+{% else %}
+<br>
+<p> There is less than 1 hour left in the competition. You can view the Highscore after that.</p>
+<p> <strong> Good Luck! </strong><p>
+{% endif %}
 {% block highscore %}
 {% endblock %}
 {% endblock content %}
