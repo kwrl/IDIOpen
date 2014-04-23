@@ -87,11 +87,29 @@ $(document).ready(function()
         $(".clickableRow").click(function() {
         	window.document.location = $(this).attr("href");
       	});
-    } 
-);
+
+       } );
+
+      function switchContest()
+        {
+             window.document.location = $('select[name="selectContest"] option:selected').val();
+        }
 </script>
 
 <h1>Balloon tables |  <a id="new_balloons" href="."> </a> </h1>
+
+<h2> Choose contest </h2>
+<select name="selectContest" onchange="switchContest()">
+    {% for con in contests %}
+         {% if con.pk == contest.pk %}
+            <option selected value = "con{{con.pk}}">{{con.title}}</option>
+         {% else %}
+            <option value = "con{{con.pk}}">{{con.title}}</option>
+            {%endif %}
+         {% endfor %}
+        </select>
+
+
 
 
 <small>Drag-and-Drop between the two tables or click on the checkbox.

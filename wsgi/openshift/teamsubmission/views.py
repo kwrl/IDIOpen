@@ -9,6 +9,12 @@ from .forms import SubmissionForm
 from django.contrib import messages
 from openshift.contest.views import contest_begin, contest_end
 
+import datetime
+from datetime import timedelta
+from django.utils.timezone import utc
+CLOSE_TIME = 1 #Hour
+
+
 def is_problem_solved(team, problemID):
     submission = Submission.objects.filter(team=team).filter(problem=problemID).filter(solved_problem = True)
     if submission:
@@ -157,6 +163,7 @@ def submission_view(request):
 
     return render(request, 'submission_home.html', context)
 
+
 def highscore_view(request):
     contest = get_current_contest(request)
     statistics = Submission.objects.get_highscore(contest)
@@ -169,6 +176,7 @@ def highscore_view(request):
                'contest' : contest,
                'statistics' : statistics,
                'problems' : problems,
+               'freeze' : show_contest(contest)
                }
     return render(request, 'highscore.html', context)
 
@@ -198,7 +206,9 @@ def highscore_view_res(request, sort_res):
                'contest' : contest,
                'statistics' : teams,
                'problems' : problems,
+               'freeze' : show_contest(contest)
                }
+    
     return render(request, 'highscore.html', context)
 
 class SubJoinProb(object):
@@ -212,4 +222,24 @@ class SubJoinProb(object):
                 submission.date_uploaded
         self.problem = problem
 
+
+
+'''
+Returs false if highscore should be hidden
+TODO: This could be maybe be a templatetag? 
+'''
+def show_contest(contest):    
+    now = datetime.datetime.utcnow().replace(tzinfo=utc)
+    day = datetime.date.today()
+    
+    #We subtract on hour    
+    close_time_first = contest.end_date-timedelta(hours=CLOSE_TIME)
+    close_time_completed = contest.end_date
+    
+    if (now > close_time_first and now < close_time_completed):
+        return False
+    else:
+        return True
+
 # END OF LIFE
+
