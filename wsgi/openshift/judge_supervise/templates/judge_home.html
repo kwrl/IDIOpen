@@ -151,6 +151,43 @@ background-size: auto;
 
 
 
+<h3> Highscores </h3>
+<hr />
+
+<table id="highscoreTable" class="table table-bordered table-hover table-condensed tablesorter">
+	<thead>
+            <tr>
+            <th data-toggle="tooltip" data-placement="top" title="Positions"></th>
+            <th data-toggle="tooltip" data-placement="top" title="Teams">Team</th>
+            <th data-toggle="tooltip" data-placement="top" title="Offsite">Offsite</th>
+            <th data-toggle="tooltip" data-placement="top" title="Solved">Solved</th>
+            <th data-toggle="tooltip" data-placement="top" title="Total Score">Total Score</th>
+            <th data-toggle="tooltip" data-placement="top" title="Time">Time</th>
+            <th data-toggle="tooltip" data-placement="top" title="Year">Year</th>
+            <th data-toggle="tooltip" data-placement="top" title="Gender">Gender</th>
+            {% for p in problems %}
+            	<th data-toggle="tooltip" data-placement="top" title="{{ p.title }}"> {{ forloop.counter }}</th>
+            {% endfor %}
+            </tr>
+    </thead>
+    <tbody>
+            {% for stat in statistics %}
+	            <tr>
+	            {% for s in stat %}
+            		{% if s|first != "0" and s|last == "-"%}
+	        			<td class="problem-rejected">
+            		{% elif "/" in s and s|first != "0" and s|last != "-"%}
+	        			<td class="problem-accepted">
+	        		{% else %}
+	        			<td>
+	        		{% endif %}
+	        		{{ s }}</td>
+				{% endfor %}
+	        	</tr>
+			{% endfor %}
+    </tbody>
+</table>
+
 <script>
 $(document).ready(function() 
     { 
@@ -172,6 +209,18 @@ $(document).ready(function()
         	window.document.location = $(this).attr("href");
       	});
 
+		$.tablesorter.formatInt = function (s) {
+            var i = parseInt(s);
+            return (isNaN(i)) ? null : i;
+        };
+        $.tablesorter.formatFloat = function (s) {
+            var i = parseFloat(s);
+            return (isNaN(i)) ? null : i;
+        };
+        $("#highscoreTable").tablesorter( {sortList: [[0,0]]} ); 
+        $(".clickableRow").click(function() {
+        	window.document.location = $(this).attr("href");
+      	});
     } 
 ); 
 

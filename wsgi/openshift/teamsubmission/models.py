@@ -95,8 +95,8 @@ class ScoreManager(models.Manager):
         """ 
         The statistics are a list of teams with:
         [position,                - 0
-        offsite,                  - 1
-        team name,                - 2
+        team name,                - 1
+        offsite,                  - 2
         solved problems,          - 3
         total score,              - 4
         total time (in minutes),  - 5
@@ -116,12 +116,12 @@ class ScoreManager(models.Manager):
         for team in teams:
             teamStats = ScoreManager.get_team_score(self, team, contest)
             highscore = [0, team.name]
-            if(teamStats[0]):
+            if(teamStats[1]):
                 for field in teamStats:
                     highscore.append(field)
                 statistics.append(highscore)
             else:
-                teamStats[0] = ""
+                teamStats[1] = ""
                 for field in teamStats:
                     highscore.append(field)
                 zeros.append(highscore)
@@ -129,8 +129,9 @@ class ScoreManager(models.Manager):
         for i in range(len(statistics)):
             statistics[i][0] = i + 1
         
+        lowestPlace = len(statistics)
         for s in zeros:
-            s[0] = len(statistics) + 1
+            s[0] = lowestPlace + 1
             statistics.append(s)
         return statistics
     
