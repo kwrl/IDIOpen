@@ -33,40 +33,38 @@ class BalloonView(object):
         self.submission = submission
         self.timestamp = timestamp
 
-def in_contest(contest, submission):
+def in_contest(submission, contest):
 #The alternative, giving each balloon a contest key, is feasible.
 #    However, the chain goes on: why not give a submissions a relation?
 #
 #    Instead of thinking and performing a large refactoring, I wrote this...
     # After all, it's "only" 2 chains...
-    return contest.pk == submission.team.contest
+    return contest.pk == submission.team.contest.pk
 
 def _get_table_lists(contest):
     balloons = BalloonStatus.objects.all()
     balloon_subs = dict([(ball.submission.pk, ball.timestamp) \
                             for ball in balloons \
-                                if in_contest(contest, ball.submission)])
+                                if in_contest(ball.submission, contest)])
 
     submissions = Submission.objects.filter(team__onsite = 'True')\
                            .filter(solved_problem = 'True')
 
-    correct_submissions = [sub for sub in submissions \
-                                if in_contest(contest, sub)]
-
-    if correct_submissions :
-        last_solved_submission = correct_submissions.latest('date_uploaded')
-    else:
-        last_solved_submission = None
+    if submissions.count < 1:
+        return [], [], None
 
     given_balloon, not_given_balloon = [], []
-
-    for sub in correct_submissions:
-        if sub.pk in balloon_subs:
-            given_balloon.append(BalloonView(
-                                sub, timestamp=balloon_subs[sub.pk]))
-        else:
-            not_given_balloon.append(BalloonView(
-                                sub, timestamp=sub.date_uploaded))
+    last_solved_submission = submissions[0]
+    for sub in submissions:
+        if in_contest(sub, contest):
+            if sub.pk in balloon_subs:
+                given_balloon.append(BalloonView(
+                                    sub, timestamp=balloon_subs[sub.pk]))
+            else:
+                not_given_balloon.append(BalloonView(
+                                    sub, timestamp=sub.date_uploaded))
+        if sub.date_uploaded > last_solved_submission.date_uploaded:
+            last_solved_submission = sub
 
     return given_balloon, not_given_balloon, last_solved_submission
 
