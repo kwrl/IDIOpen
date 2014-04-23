@@ -50,7 +50,7 @@ def _get_table_lists(contest):
     submissions = Submission.objects.filter(team__onsite = 'True')\
                            .filter(solved_problem = 'True')
 
-    if submissions.count < 1:
+    if submissions.count() < 1:
         return [], [], None
 
     given_balloon, not_given_balloon = [], []
