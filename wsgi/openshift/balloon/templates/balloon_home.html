@@ -1,29 +1,30 @@
 {% extends "admin/app_index.html" %} 
 {% load i18n %}
 {% load tz %}
+{% load dajaxice_templatetags %}
+
 <h3>{% blocktrans with filter_title=title %} By {{ filter_title }}
 	{% endblocktrans %}</h3> 
 
 {% block content %}
+{% dajaxice_js_import %}
 <style>
 table thead th {
 background-size: auto;
 }
-
 </style>
-
  <link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
   <script src="//code.jquery.com/jquery-1.10.2.js"></script>
   <script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
 <!-- Tablesorter css -->
 <link href="/static/openshift/css/tablesorter/tablestyle.css"
         rel="stylesheet">
-        
+         
 <!--  Tablesorter and tooltip js -->
 <script type="text/javascript"
         src="/static/openshift/js/tablesorter/jquery.tablesorter.js"></script>
 <script type="text/javascript" src="/static/openshift/js/tooltip.js"></script>
-
+<script type="text/javascript" src="/static/dajax/jquery.dajax.core.js"></script>
 
  <script>
  function onRemove(event, ui)
@@ -41,8 +42,13 @@ background-size: auto;
       remove: onRemove,
      }).disableSelection();
   });
+  
+  function doPoll(){
+ 	Dajaxice.openshift.balloon.ajaxalert(Dajax.process, {'contest': '{{ contest.url }}', 'last_solved_submission': '{{ last_solved_submission }}' });
+    setTimeout(doPoll,5000);
+  }
  </script>
-
+ 
 <script type="text/javascript">
         function post_to_url(path, params) {
                 // The rest of this code assumes you are not using a library.
@@ -75,16 +81,36 @@ background-size: auto;
 <script>
 $(document).ready(function() 
     { 
+        doPoll();
         $("#TableNotGivenBalloon").tablesorter( {sortList: [[3,0], [0,1]]} ); 
          $("#TableGivenBalloon").tablesorter( {sortList: [[3,1], [0,1]]} ); 
         $(".clickableRow").click(function() {
         	window.document.location = $(this).attr("href");
       	});
-    } 
-);
+
+       } );
+
+      function switchContest()
+        {
+             window.document.location = $('select[name="selectContest"] option:selected').val();
+        }
 </script>
 
-<h1>Balloon tables</h1>
+<h1>Balloon tables |  <a id="new_balloons" href="."> </a> </h1>
+
+<h2> Choose contest </h2>
+<select name="selectContest" onchange="switchContest()">
+    {% for con in contests %}
+         {% if con.pk == contest.pk %}
+            <option selected value = "con{{con.pk}}">{{con.title}}</option>
+         {% else %}
+            <option value = "con{{con.pk}}">{{con.title}}</option>
+            {%endif %}
+         {% endfor %}
+        </select>
+
+
+
 
 <small>Drag-and-Drop between the two tables or click on the checkbox.
 <br />
@@ -92,6 +118,10 @@ $(document).ready(function()
 		, third or even fourth column header. 
 </small>
 <br />
+
+<table>
+
+
         <br /> <br />
         <h3>Not given balloon</h3>
         <small> Teams that are awaiting balloon for a correct submission</small>

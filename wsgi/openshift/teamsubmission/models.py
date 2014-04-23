@@ -8,8 +8,6 @@ from openshift.execution.models import Problem
 from openshift.contest.models import Team
 from django.core.files.storage import FileSystemStorage
 
-import operator
-
 private_media = FileSystemStorage(location=settings.PRIVATE_MEDIA_ROOT,
                                   base_url=settings.PRIVATE_MEDIA_URL,
                                   )
@@ -62,7 +60,7 @@ class ScoreManager(models.Manager):
         [solved problems,
         total score,
         time submitted (in minutes),
-        onsite,
+        offsite,
         year,
         gender,
         problem 1 submissions/time solved,
@@ -70,7 +68,7 @@ class ScoreManager(models.Manager):
         problem n submissions/time solved]
         """
         statistics = [0, 0, 0, 0, 0, 0]
-        statistics[3] = team.onsite
+        statistics[3] = team.offsite
         statistics[4] = team.members.all()[0].skill_level
         statistics[5] = team.members.all()[0].gender
         for member in team.members.all():
@@ -95,18 +93,18 @@ class ScoreManager(models.Manager):
         teams = Team.objects.filter(contest=contest)
         
         """ 
-        The statistics are:
-        [position,          - 0
-        team name,          - 1
-        solved problems,    -2
-        total score,        -3
-        total time (in minutes), -4
-        onsite,            -5
-        year,                -6
-        gender,            -7
-        problem 1 submissions, -8
-        ...        
-        problem n submissions,]
+        The statistics are a list of teams with:
+        [position,                - 0
+        team name,                - 1
+        solved problems,          - 2
+        total score,              - 3
+        total time (in minutes),  - 4
+        offsite,                  - 5
+        year,                     - 6
+        gender,                   - 7
+        problem 1 submissions,    - 8
+        ...                       - .
+        problem n submissions,]   - n
         """
         statistics = []
         
