@@ -246,11 +246,15 @@ def validate(run_stdout, test_case):
     if retval:
         return False
 
-    retval, stdout, stderr = runner.run(run_stdout,restricted=False, timed=False) 
+    retval, stdout, stderr, command = runner.run(run_stdout,restricted=False, timed=False) 
 
     return retval==0 
 
 def runLogger(submission, command, stdout, stderr, retval):
+    if len(bytearray(stdout.encode("ascii"))) > 4*1024:
+        stdout = 'stdout to large'
+    if len(bytearray(stderr.encode("ascii"))) > 4*1024:
+        stderr = 'stderr to large'
     ExecutionLogEntry.objects.create(submission=submission,
                                     command=command,
                                     stdout=stdout,
@@ -278,7 +282,7 @@ def execute(command, dir_path, res, stdin=None, timeout = -1):
             alarm(0)
     except Alarm:
         procs = (process.children(recursive=True))
-        pids = [proc.pid for proc in procs]
+        pids = [str(proc.pid) for proc in procs]
         try:
             logger.debug('KILLING')
             cmd = shlex.split('sudo kill ' + ' '.join(pids))
