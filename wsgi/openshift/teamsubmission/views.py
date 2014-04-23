@@ -58,7 +58,6 @@ def submission_problem(request, problemID):
     submission = Submission.objects.filter(team=team).filter(problem=problemID).order_by('-date_uploaded')
     tries = len(submission)
 
-
     if len(submission.values_list()) > 0:
         submission = submission[0]
         problem = submission.problem
@@ -72,22 +71,33 @@ def submission_problem(request, problemID):
     if is_problem_solved(team, problemID):
         messages.success(request, 'This problem is solved!')
     '''
-
+    
+    
     if request.method == "POST":
         form = SubmissionForm(request.POST, request.FILES,
                                instance=submission)
+        
         if not request.FILES:
             messages.error(request, 'You need to choose a file to upload')
 
         elif contest_end(request):
             messages.error(request, 'You can\'t upload any more files after the contest has ended')
-
+        
+        
+        elif ( not submission.status == submission.EVALUATED or not submission.status == submission.NOTSET):
+            messages.info(request, 'Please wait. Only one submisison at a time')
+        
+            
         elif is_leader(request, contest):
             if form.is_valid():
                 form.save()
                 return redirect('submission_problem', contest.url, problemID)
+
+         
         else:
             messages.error(request, 'You have to be the leader of a team to upload submissions')
+        
+        
     elif not submission.solved_problem:
         form = SubmissionForm(instance=submission);
     else:
@@ -106,6 +116,7 @@ def submission_problem(request, problemID):
                   'problemdescription.html',
                   context,
                   )
+
 
 #Login required
 def submission_view(request):
