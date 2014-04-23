@@ -36,10 +36,9 @@ class testExecutionModels(TestCase):
         
         # for some reason i cant add FileExtension..    
         CompilerProfile.objects.create(name = "Java",
-                                       compiler_name_cmd = "cnc",
+                                       compile = "cnc",
                                        package_name = "randomPakke",
-                                       run_cmd = "rc",
-                                       run_flags = "rf"
+                                       run = "rc"
                                        )   
     
         
@@ -76,7 +75,7 @@ class testExecutionModels(TestCase):
         self.assertEqual(resource.problem, Problem.objects.get(title = "TestProblem"), "Something is wrong with the Problem")
         self.assertEqual(resource.max_compile_time, 30, "The defualt value is not equal to 30")
         self.assertEqual(resource.max_program_timeout, 60, "The default value is not equal 60")
-        self.assertEqual(resource.max_memory, 100000, "The default value is not equal to 100000")
+        self.assertEqual(resource.max_memory, 1024, "The default value is not equal to 100000")
         self.assertEqual(resource.max_processes, 5, "The default value is not equal to 5")
         
     
