@@ -23,7 +23,7 @@ $(document).ready(function()
 <h2>Highscore table</h2>
 <hr>
 <div>
-{% url 'highscorePageRes' contest.url 'all' as all %}
+{% url 'highscorePage' contest.url as all %}
 {% url 'highscorePageRes' contest.url 'onsite' as onsite %}
 {% url 'highscorePageRes' contest.url 'offsite' as offsite %}
 {% url 'highscorePageRes' contest.url 'student' as student %}
