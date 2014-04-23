@@ -1,6 +1,5 @@
 from dajax.core import Dajax
 from dajaxice.decorators import dajaxice_register
-from django.core.exceptions import ObjectDoesNotExist
 from openshift.teamsubmission.models import Submission
 
 

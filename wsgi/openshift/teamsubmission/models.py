@@ -8,8 +8,6 @@ from openshift.execution.models import Problem
 from openshift.contest.models import Team
 from django.core.files.storage import FileSystemStorage
 
-import operator
-
 private_media = FileSystemStorage(location=settings.PRIVATE_MEDIA_ROOT,
                                   base_url=settings.PRIVATE_MEDIA_URL,
                                   )
