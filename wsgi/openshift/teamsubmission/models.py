@@ -59,10 +59,10 @@ class ScoreManager(models.Manager):
         
         """ 
         The statistics are:
-        [solved problems,
+        [offsite,
+        solved problems,
         total score,
         time submitted (in minutes),
-        offsite,
         year,
         gender,
         problem 1 submissions/time solved,
@@ -70,7 +70,7 @@ class ScoreManager(models.Manager):
         problem n submissions/time solved]
         """
         statistics = [0, 0, 0, 0, 0, 0]
-        statistics[3] = team.offsite
+        statistics[0] = team.offsite
         statistics[4] = team.members.all()[0].skill_level
         statistics[5] = team.members.all()[0].gender
         for member in team.members.all():
@@ -82,9 +82,9 @@ class ScoreManager(models.Manager):
         for problem in problems:
             problemStat = ScoreManager.get_problem_score(self, team, problem, contest)
             if problemStat[0]:
-                statistics[0] = statistics[0] + 1
-            statistics[1] = statistics[1] + problemStat[0]
-            statistics[2] = statistics[2] + problemStat[1]
+                statistics[1] = statistics[1] + 1
+            statistics[2] = statistics[2] + problemStat[0]
+            statistics[3] = statistics[3] + problemStat[1]
             if(problemStat[1]):
                 statistics.append(str(problemStat[3]) + "/" + str(problemStat[1]))
             else:
@@ -97,11 +97,11 @@ class ScoreManager(models.Manager):
         """ 
         The statistics are a list of teams with:
         [position,                - 0
-        team name,                - 1
-        solved problems,          - 2
-        total score,              - 3
-        total time (in minutes),  - 4
-        offsite,                  - 5
+        offsite,                  - 1
+        team name,                - 2
+        solved problems,          - 3
+        total score,              - 4
+        total time (in minutes),  - 5
         year,                     - 6
         gender,                   - 7
         problem 1 submissions,    - 8
@@ -127,7 +127,7 @@ class ScoreManager(models.Manager):
                 for field in teamStats:
                     highscore.append(field)
                 zeros.append(highscore)
-        statistics = sorted(statistics, key=lambda x : (-x[2], x[3]))
+        statistics = sorted(statistics, key=lambda x : (-x[3], x[4]))
         for i in range(len(statistics)):
             statistics[i][0] = i + 1
         
