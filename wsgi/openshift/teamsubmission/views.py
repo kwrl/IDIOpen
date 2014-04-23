@@ -208,6 +208,7 @@ def highscore_view_res(request, sort_res):
                'problems' : problems,
                'freeze' : show_contest(contest)
                }
+    
     return render(request, 'highscore.html', context)
 
 class SubJoinProb(object):

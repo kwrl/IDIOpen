@@ -19,7 +19,7 @@ def ajaxalert(request):
     user = request.user
     dajax = Dajax()
     dajax.alert('Test')
-    dajax.alert(user.get_full_name())
+   #s dajax.alert(user.get_full_name())
     return dajax.json()
 
 
@@ -58,7 +58,7 @@ def get_highscore(request, contest):
 
 
 '''
-Returs false if highscore should be hidden
+Returns false if highscore should be hidden
 '''
 def show_contest(contest):
     
@@ -97,7 +97,10 @@ def build_html_table(stats):
         #Onsite/ofsite
         if stats[s][5]:
             #string += "<td>" + "<span class=\"label label-success\"> \" \" </span>"  + "</td>"
-            string += "<td>" + stats[s][5] + "</td>"
+            if len(stats[s][5]) > 3: 
+                string += "<td>" + stats[s][5][:3] + ".." "</td>"
+            else:
+                string += "<td>" + stats[s][5][:3] + "</td>"
         else: 
             string += "<td>" + "Yes"  + "</td>"
         
