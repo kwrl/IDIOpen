@@ -1,5 +1,6 @@
 from dajax.core import Dajax
 from dajaxice.decorators import dajaxice_register
+from django.core.exceptions import ObjectDoesNotExist
 from openshift.teamsubmission.models import Submission
 
 
@@ -27,4 +28,7 @@ def check_new_submission(last_solved_submission):
     
 
 
+<<<<<<< HEAD
+=======
 
+>>>>>>> 89bf6c75c3d4d9fa45347ab5d9d434c979881da1
