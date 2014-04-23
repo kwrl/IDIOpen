@@ -35,8 +35,7 @@ class string_with_title(str):
 class judge_view(models.Model):
     class Meta:
         app_label = string_with_title("Judge_Supervisor", "Judge_Supervisor")
-
-        managed = False # prevent from entering the DB
+        managed = True # prevent from entering the DB
         verbose_name = "Click here to supervise"
         verbose_name_plural = "Click here to supervise"
 
