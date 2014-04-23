@@ -101,11 +101,11 @@ def build_html_table(stats):
         string += "<td>" + unicode(stats[s][2]) + "</td>"
         
         #Onsite/ofsite
-        if stats[s][5] == True:
+        if stats[s][5]:
             #string += "<td>" + "<span class=\"label label-success\"> \" \" </span>"  + "</td>"
-            string += "<td>" + "Yes" + "</td>"
+            string += "<td>" + stats[s][5] + "</td>"
         else: 
-            string += "<td>" + "No"  + "</td>"
+            string += "<td>" + "Yes"  + "</td>"
         
         #string += "<td>" + str(stats[s][5]) + "</td>"
         #Score
