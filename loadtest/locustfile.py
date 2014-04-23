@@ -2,6 +2,10 @@
 
 from locust import HttpLocust, TaskSet, task, ResponseError
 
+from random import randint
+
+files = [open('test.java', 'r'), open('test2.java', 'r')]
+
 class RegistrationTask(TaskSet):
     @task
     def register(self):
@@ -15,16 +19,17 @@ class RegistrationTask(TaskSet):
                 'skill_level' : '1',
                 'gender'      : 'M',
                 }
+
         c = self.client.post("/open14/accounts/register/",
-                              postDict)
+                              data=postDict)
+        #print c
         print c
-        print c.content
 
 class SubmissionTask(TaskSet):
 	def on_start(self):
 		loginDict = {
-			'username': 'admin@gmail.com',
-			'password': 'admin123',
+			'username': 'test@test.no',
+			'password': 'test123',
 			}
 			
 		c = self.client.post("/open14/accounts/login/", loginDict)
@@ -35,11 +40,16 @@ class SubmissionTask(TaskSet):
 
 	@task(1)
 	def upload_submission(self):
-		subDict = {
-			'compileProfile': '1',
-			'submission' : """class Test{public static void main(String[] args) { }}""",
-		}
-		c = self.client.post("/open14/accounts/login/", loginDict)
+		submission_json = {
+			'compileProfile': {'1'},
+			}
+		file_upload = files[randint(0, len(files) -1)]
+	
+		file_json = { 
+			'submission' : file_upload,
+			}
+			
+		c = self.client.post("/open14/problem/1/", submission_json, files=file_json)
 		print c.content
 
 
@@ -59,12 +69,6 @@ class WebsiteUser(HttpLocust):
 
     """ the target, as a prefix """
     host = "http://127.0.0.1:8000"
-
-"""
-
-&email=email%40email.com&firs
-t_name=FIRST&last_name=NAME&nickname=NICK&password1=PASS&password2=PASS&skill_lev
-el=Pro&gender=M
-"""
+    host = "http://vps.filip0.com"
 
 # EOF
