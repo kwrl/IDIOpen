@@ -150,6 +150,13 @@ def judge_home(request, contest_pk=None):
     team_tr_row_info_onsite, team_tr_row_info_offsite = \
                                                 get_team_assignments(team_list)
 
+
+    statistics = Submission.objects.get_highscore(contest)
+    problems = []
+    
+    if statistics:
+        problems = Problem.objects.filter(contest=contest)
+    
     context = {
             'contests'            : Contest.objects.all(),
             'contest'             : contest,
@@ -157,6 +164,8 @@ def judge_home(request, contest_pk=None):
             'team_tr_row_info_onsite'   : team_tr_row_info_onsite,
             'team_tr_row_info_offsite'  : team_tr_row_info_offsite,
             'prob_attempt_counts' : prob_attempt_counts,
+            'statistics' : statistics,
+            'problems' : problems,
             }
 
     return render(request,
