@@ -78,6 +78,11 @@ body {
     padding: 10px 10px 10px 10px;
 }
 
+#highscoreTable td
+{
+	overflow: hidden; width: 200px;
+}
+
 #highscoreTable td.problem-rejected
 {
 	background:#FFC0CB;
