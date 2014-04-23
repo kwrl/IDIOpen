@@ -83,20 +83,16 @@ def submission_problem(request, problemID):
         elif contest_end(request):
             messages.error(request, 'You can\'t upload any more files after the contest has ended')
         
-        
-        elif ( not submission.status == submission.EVALUATED or not submission.status == submission.NOTSET):
+        elif (submission.status != submission.EVALUATED and submission.status != submission.NOTSET):
             messages.info(request, 'Please wait. Only one submisison at a time')
         
-            
         elif is_leader(request, contest):
             if form.is_valid():
                 form.save()
                 return redirect('submission_problem', contest.url, problemID)
 
-         
         else:
             messages.error(request, 'You have to be the leader of a team to upload submissions')
-        
         
     elif not submission.solved_problem:
         form = SubmissionForm(instance=submission);
@@ -116,7 +112,6 @@ def submission_problem(request, problemID):
                   'problemdescription.html',
                   context,
                   )
-
 
 #Login required
 def submission_view(request):
