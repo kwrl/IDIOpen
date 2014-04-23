@@ -115,7 +115,6 @@ class string_with_title(str):
 class balloon_view(models.Model):
     class Meta:
         app_label = string_with_title("Balloon_table", "Balloon_table")
-
         managed = False # prevent from entering the DB
         verbose_name = "Click here to view balloon table"
         verbose_name_plural = "Click here to view balloon table"
