@@ -78,6 +78,15 @@ body {
     padding: 10px 10px 10px 10px;
 }
 
+#highscoreTable td.problem-rejected
+{
+	background:#FFC0CB;
+}
+
+#highscoreTable td.problem-accepted
+{
+	background:#90EE90;
+}
 
 /* Lastly, apply responsive CSS fixes as necessary */
 @media (max-width: 767px) {
