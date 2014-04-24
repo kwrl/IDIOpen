@@ -1,0 +1,14 @@
+2
+1 1
+1 slacker
+book 6 1 worker
+3 6
+2 plumber nurse
+2 nurse assassin
+2 assassin plumber
+cancel 1
+book 1 2 plumber assassin
+book 123 1 nurse
+book 4 3 assassin nurse plumber
+cancel 1
+book 4 2 nurse assassin
