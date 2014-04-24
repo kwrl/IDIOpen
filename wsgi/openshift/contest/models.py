@@ -76,14 +76,15 @@ class Link(models.Model):
     # If true, url gets added to contest url
     # eg. url is 'article/1' if true gives '/open14/article/1'
     # contestUrl = models.BooleanField(help_text='Contest URLs are extensions of the contest root URL. '             'Example: \'/idiopen14/accounts/register/\'')
-    contestUrl = models.BooleanField(help_text=
-    '''Contest URLs are extensions of the contest root URL. Example: /idiopen14/accounts/register/...
-    Note that registration links are now added per default in the HTML''')
+    contestUrl = models.BooleanField(verbose_name='Is this a link from this website?',
+                                     help_text=
+    'If this is a link from this website, the {contest-url} will be put at the root of the URL for you.'+
+    'E.g.: /idiopen14/accounts/register/{your new article/url}')
     url = models.CharField(max_length=50, 
                            help_text=' Internal links need leading and trailing slashes.'+
                            ' External links are required to start with "http://"')
 
-    separator = models.BooleanField(help_text = 'seperator is for creating \"whitespace\" in the meny at left '
+    separator = models.BooleanField(help_text = 'Seperator is for creating \"whitespace\" in the left-hand link menu.'
                                     )
     def __unicode__(self):
         return self.text
@@ -97,7 +98,7 @@ class Team(models.Model):
     leader = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='leader', null = True)
     members = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='members')
     contest = models.ForeignKey('Contest', related_name='contest', null=True)
-    offsite = models.CharField(max_length=30, blank = True)
+    offsite = models.CharField(max_length=30, blank = True, verbose_name = "Offsite Location")
 
     def __unicode__(self):
         return self.name
