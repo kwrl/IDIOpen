@@ -6,10 +6,10 @@ from locust import HttpLocust, TaskSet, task
 from os import walk
 from random import randint
 
-files = [open('subfiles/test.java', 'r'), open('subfiles/test2.java', 'r'), open('subfiles/angry_rs.java', 'r')]
-ffiles = [(path, lol, file) for path, lol, file in os.walk("subfiles")][0][2]
+#files = [open('subfiles/test.java', 'r'), open('subfiles/test2.java', 'r'), open('subfiles/angry_rs.java', 'r')]
+ffiles = [(path, lol, file) for path, lol, file in walk("subfiles")][0][2]
 javafiles= [java for java in ffiles if "java" in java]
-
+files = javafiles
 
 usernames = open('emails.txt', 'r').read()
 usernames = usernames.split('\n')
