@@ -80,7 +80,7 @@ class Problem(models.Model):
     def __unicode__(self):
         return "%s" % (self.title)
 
-#Author: Typo
+#Author: typo
 class Resource (models.Model):
     '''
     This models contains all "limitations" on each Profile. 
