@@ -47,7 +47,7 @@ class NestTask(TaskSet):
             submission_json = {
                     'compileProfile': {'1'},
                     }
-            file_upload = files[randint(0, len(javafiles) -1)]
+            file_upload = files[randint(0, len(JAVA_FILES) -1)]
 
             file_json = {
                         'submission' : file_upload,
