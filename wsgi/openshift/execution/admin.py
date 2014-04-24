@@ -1,5 +1,6 @@
 from django.contrib import admin
-
+from django import forms
+from django.contrib.admin.widgets import AdminTextInputWidget
 from .models import TestCase, Problem, CompilerProfile, FileExtension, Resource
 
 
@@ -39,9 +40,32 @@ class ResourceAdmin(admin.ModelAdmin):
             ' profile for Java and the limits here should be set to <strong>-1</strong>. This means unlimited'
         }),
         
-    )       
+    )      
+class CompilerProfileForm(forms.ModelForm):
+    class Meta:
+        model = CompilerProfile
+        widgets = {
+                  'compile' : AdminTextInputWidget(attrs={'placeholder' : 'gcc -w --std=c99 -O2 -o {BASENAME} {FILENAME} -lm'}),
+                  'run' : AdminTextInputWidget(attrs={'placeholder' : './{BASENAME}'}),
+                  'package_name' : AdminTextInputWidget(attrs={'placeholder': 'gcc'})
+        }
+    
+class CompilerProfileAdmin(admin.ModelAdmin):
+    form = CompilerProfileForm
+    
+
+class FileExtensionForm(forms.ModelForm):
+    class Meta:
+        model = FileExtension
+        widgets = {
+                  'extension' : AdminTextInputWidget(attrs={'placeholder' : '*.{File extension}'})
+        }
+
+class FileExtensionAdmin(admin.ModelAdmin):
+    form = FileExtensionForm
+     
         
 admin.site.register(Problem, ProblemAdmin)
-admin.site.register(FileExtension)
-admin.site.register(CompilerProfile)
+admin.site.register(FileExtension, FileExtensionAdmin)
+admin.site.register(CompilerProfile, CompilerProfileAdmin)
 admin.site.register(Resource, ResourceAdmin)
