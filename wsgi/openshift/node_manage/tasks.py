@@ -251,9 +251,9 @@ def validate(run_stdout, test_case):
     return retval==0 
 
 def runLogger(submission, command, stdout, stderr, retval):
-    if len(bytearray(stdout.encode("ascii"))) > 4*1024:
+    if len(bytearray(stdout.encode("ascii"))) > 512*1024:
         stdout = 'stdout to large'
-    if len(bytearray(stderr.encode("ascii"))) > 4*1024:
+    if len(bytearray(stderr.encode("ascii"))) > 512*1024:
         stderr = 'stderr to large'
     ExecutionLogEntry.objects.create(submission=submission,
                                     command=command,
