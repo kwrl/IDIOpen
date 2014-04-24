@@ -67,6 +67,7 @@ class ScoreManager(models.Manager):
         ...                                  - .
         problem n submissions/time solved]   - n
         """
+         
         statistics = [0, 0, 0, 0, 0, 0]
         statistics[0] = team.offsite
         statistics[4] = team.members.all()[0].skill_level
