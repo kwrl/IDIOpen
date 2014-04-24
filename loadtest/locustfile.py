@@ -5,7 +5,7 @@ from locust import HttpLocust, TaskSet, task
 
 from random import randint
 
-files = [open('test.java', 'r'), open('test2.java', 'r')]
+files = [open('subfiles/test.java', 'r'), open('subfiles/test2.java', 'r'), open('subfiles/angry_rs.java', 'r')]
 usernames = open('emails.txt', 'r').read()
 usernames = usernames.split('\n')
 usernames.pop()
