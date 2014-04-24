@@ -52,8 +52,7 @@ class ScoreManager(models.Manager):
         
         return statistics    
     
-    def get_team_score(self, team, contest):
-        problems = Problem.objects.filter(contest=contest)
+    def get_team_score(self, team, contest, problems):
         
         """ 
         The statistics are:
@@ -74,9 +73,9 @@ class ScoreManager(models.Manager):
         statistics[5] = team.members.all()[0].gender
         for member in team.members.all():
             if member.skill_level != statistics[4]:
-                statistics[4] = "--"
+                statistics[4] = "-"
             if member.gender != statistics[5]:
-                statistics[5] = "--"
+                statistics[5] = "-"
                 
         for problem in problems:
             problemStat = ScoreManager.get_problem_score(self, team, problem, contest)
@@ -87,11 +86,12 @@ class ScoreManager(models.Manager):
             if(problemStat[1]):
                 statistics.append(str(problemStat[3]) + "/" + str(problemStat[1]))
             else:
-                statistics.append(str(problemStat[3]) + "/--")
+                statistics.append(str(problemStat[3]) + "/-")
         return statistics
     
     def get_highscore(self, contest):
         teams = Team.objects.filter(contest=contest)
+        problems = Problem.objects.filter(contest=contest)
         
         """ 
         The statistics are a list of teams with:
@@ -115,7 +115,7 @@ class ScoreManager(models.Manager):
         """
         zeros = []
         for team in teams:
-            teamStats = ScoreManager.get_team_score(self, team, contest)
+            teamStats = ScoreManager.get_team_score(self, team, contest, problems)
             highscore = [0, team.name]
             if(teamStats[1]):
                 for field in teamStats:
