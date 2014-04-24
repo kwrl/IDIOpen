@@ -103,7 +103,7 @@ class Resource (models.Model):
     
     #The maximum number of child processes. (avoid fork bombs)
     max_processes = models.IntegerField(max_length = 10, default = 5,
-                                        help_text = 'The maximum number of processes')
+                                        help_text = 'The maximum number of processes. Java needs a minimum of 10.')
      
     #Maximum filesize, 
     max_filesize = models.IntegerField(max_length = 10, default = 50,
