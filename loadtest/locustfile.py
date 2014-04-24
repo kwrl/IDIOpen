@@ -4,26 +4,37 @@
 from locust import HttpLocust, TaskSet, task
 
 from os import walk
+import sys
 from random import randint
 
-#files = [open('subfiles/test.java', 'r'), open('subfiles/test2.java', 'r'), open('subfiles/angry_rs.java', 'r')]
-ffiles = [(path, lol, file) for path, lol, file in walk("subfiles")][0][2]
-javafiles= [open("./subfiles/" + java, 'r') for java in ffiles if "java" in java]
-files = javafiles
+
+ALL_SUBS = [(path, lol, file) for path, lol, file in walk("subfiles")][0][2]
+FILETYPES = [".java", ".cpp", "c"]
+FILES_PREFIX = "./subfiles/"
+def get_files(extension, fileList=ALL_SUBS):
+    return [open(FILES_PREFIX + filename, 'r') for filename in ALL_SUBS \
+                                        if extension in ALL_SUBS]
 
 
-usernames = open('emails.txt', 'r').read()
-usernames = usernames.split('\n')
-usernames.pop()
 
-problems = [1, 6, 7, 8, 11, 12, 13, 14, 17, 18, 19, 21, 22]
+JAVA_FILES = get_files(".java")
+C_FILES = get_files(".java")
+CPP_FILES = get_files(".java")
+files = JAVA_FILES
+
+USERNAME_LIST = open('emails.txt', 'r').read()
+USERNAME_LIST = USERNAME_LIST.split('\n')
+USERNAME_LIST.pop()
+USERNAME_LIST = USERNAME_LIST[::-1]
+
+PROBLEMS = [1, 6, 7, 8, 11, 12, 13, 14, 17, 18, 19, 21, 22]
 
 class NestTask(TaskSet):
-    @task
+    #@task
     class SubmissionTask(TaskSet):
         def on_start(self):
-            global usernames
-            user = usernames[randint(0, len(usernames)-1)]
+            global USERNAME_LIST
+            user = USERNAME_LIST[randint(0, len(USERNAME_LIST)-1)]
             loginDict = {
                     'username': user,
                     'password': 'password',
@@ -36,29 +47,29 @@ class NestTask(TaskSet):
             submission_json = {
                     'compileProfile': {'1'},
                     }
-            file_upload = files[randint(0, len(javafiles) -1)]
+            file_upload = files[randint(0, len(JAVA_FILES) -1)]
 
             file_json = {
                         'submission' : file_upload,
                         }
 
-            problem = problems[randint(0, len(problems)-1)]
+            problem = PROBLEMS[randint(0, len(PROBLEMS)-1)]
             c = self.client.post("/open14/problem/" + str(problem) + "/", submission_json,
                                  files=file_json)
             print c.content
 
     #@task
     class RegisterTeam(TaskSet):
-        global usernames
-        #user = usernames[randint(0, len(usernames)-1)]
-        user = usernames.pop()
+        global USERNAME_LIST
+        user = USERNAME_LIST[randint(0, len(USERNAME_LIST)-1)]
+        #user = USERNAME_LIST.pop()
 
         def on_start(self):
-            global usernames
-            user = usernames[randint(0, len(usernames)-1)]
+            #global USERNAME_LIST
+            #user = USERNAME_LIST[randint(0, len(USERNAME_LIST)-1)]
             #user = self.user
             loginDict = {
-                    'username': user,
+                    'username': self.user,
                     'password': 'password',
                     }
 
@@ -69,24 +80,7 @@ class NestTask(TaskSet):
             """
             """
             # Strip away ".com" and remove the at and period mark
-        @task
-        def registerTeam(self):
-            """
-            """
-            # Strip away ".com" and remove the at and period mark
-        @task
-        def registerTeam(self):
-            """
-            """
-            # Strip away ".com" and remove the at and period mark
-        @task
-        def registerTeam(self):
-            """
-            """
-            # Strip away ".com" and remove the at and period mark
-            #teamname = "team" + self.user.translate(None, '@.')[:-3]
             teamname = "team" + self.user.translate(None, '@.')[:-3]
-            #teamname = "team" + usernames[randint(0, len(usernames)-1)]
             teamurl = "/open14/team/register/"
             postDict = {
                     'name'       : teamname,
@@ -96,14 +90,15 @@ class NestTask(TaskSet):
                 }
 
             c = self.client.post(teamurl, postDict)
-            self.interrupt(reschedule=True)
+            #self.interrupt(reschedule=False)
+            sys.exit(0)
 
 
-    #@task
+    @task
     class RegisterUser(TaskSet):
-        global usernames
-        user = usernames[randint(0, len(usernames)-1)]
-        #@task
+        global USERNAME_LIST
+        user = USERNAME_LIST[randint(0, len(USERNAME_LIST)-1)]
+        @task
         def registerUser(self):
             postDict = {
                     'email'       : self.user,
@@ -118,8 +113,7 @@ class NestTask(TaskSet):
 
             c = self.client.post("/open14/accounts/register/",
                     data=postDict)
-            #print c
-            print c
+            self.interrupt()
 
     @task
     class GetUrls(TaskSet):
@@ -168,8 +162,6 @@ class NestTask(TaskSet):
 class WebsiteUser(HttpLocust):
     """ Emulate a real user browsing the pages.
     """
-    #task_set = WebsiteTasks
-    #task_set = RegistrationTask
     task_set = NestTask
     """ minimum wait before doing a task as a user """
     min_wait = 10000 #
@@ -183,5 +175,3 @@ class WebsiteUser(HttpLocust):
     host = "http://vps.filip0.com"
 
 # EOF
-
-
