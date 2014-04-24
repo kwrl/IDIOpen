@@ -51,7 +51,7 @@ Show for team type:
             <th data-toggle="tooltip" data-placement="top" title="Total Score">Total Score</th>
             <th data-toggle="tooltip" data-placement="top" title="Time">Time</th>
             {% for p in problems %}
-            	<th data-toggle="tooltip" data-placement="top" title="{{ p.title }}"> {{ forloop.counter }}</th>
+            	<th class="problem" data-toggle="tooltip" data-placement="top" title="{{ p.title }}"> {{ forloop.counter }}</th>
             {% endfor %}
             </tr>
     </thead>

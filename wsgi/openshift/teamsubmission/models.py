@@ -73,9 +73,9 @@ class ScoreManager(models.Manager):
         statistics[5] = team.members.all()[0].gender
         for member in team.members.all():
             if member.skill_level != statistics[4]:
-                statistics[4] = "--"
+                statistics[4] = "-"
             if member.gender != statistics[5]:
-                statistics[5] = "--"
+                statistics[5] = "-"
                 
         for problem in problems:
             problemStat = ScoreManager.get_problem_score(self, team, problem, contest)
@@ -86,7 +86,7 @@ class ScoreManager(models.Manager):
             if(problemStat[1]):
                 statistics.append(str(problemStat[3]) + "/" + str(problemStat[1]))
             else:
-                statistics.append(str(problemStat[3]) + "/--")
+                statistics.append(str(problemStat[3]) + "/-")
         return statistics
     
     def get_highscore(self, contest):
