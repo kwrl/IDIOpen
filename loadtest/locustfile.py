@@ -3,9 +3,14 @@
 
 from locust import HttpLocust, TaskSet, task
 
+from os import walk
 from random import randint
 
 files = [open('subfiles/test.java', 'r'), open('subfiles/test2.java', 'r'), open('subfiles/angry_rs.java', 'r')]
+ffiles = [(path, lol, file) for path, lol, file in os.walk("subfiles")][0][2]
+javafiles= [java for java in ffiles if "java" in java]
+
+
 usernames = open('emails.txt', 'r').read()
 usernames = usernames.split('\n')
 usernames.pop()
@@ -30,7 +35,7 @@ class NestTask(TaskSet):
             submission_json = {
                     'compileProfile': {'1'},
                     }
-            file_upload = files[randint(0, len(files) -1)]
+            file_upload = files[randint(0, len(javafiles) -1)]
 
             file_json = {
                         'submission' : file_upload,
