@@ -68,11 +68,6 @@ class SubmissionForm(forms.ModelForm):
         widgets = {'submission' : FileInputInitial(),}
         
     
-    def __init__(self, *args, **kwargs):
-        super(SubmissionForm, self).__init__(*args, **kwargs)
-        selected_choices = None
-         #self.fields['compileProfile'].choices = ["pikk"]
-        pass
         
     def clean(self):
         submission = self.cleaned_data.get('submission')
