@@ -1,27 +1,25 @@
 """ You need trailing slashes in all URLS
 """
-
-from locust import HttpLocust, TaskSet, task
+from locust import TaskSet, task, HttpLocust, Locust
 
 from os import walk
+
 import sys
 from random import randint
 
 
-ALL_SUBS = [(path, lol, file) for path, lol, file in walk("subfiles")][0][2]
+ALL_SUBS = [(path, lol, file) for path, lol, file in walk("./subfiles")][0][2]
 FILETYPES = [".java", ".cpp", "c"]
 FILES_PREFIX = "./subfiles/"
 def get_files(extension, fileList=ALL_SUBS):
+
     return [open(FILES_PREFIX + filename, 'r') for filename in ALL_SUBS \
-                                        if extension in ALL_SUBS]
+                                        if extension in filename]
 
-
-
-JAVA_FILES = get_files(".java")
+JAVA_FILES = get_files("java", ALL_SUBS)
 C_FILES = get_files(".java")
 CPP_FILES = get_files(".java")
 files = JAVA_FILES
-
 USERNAME_LIST = open('emails.txt', 'r').read()
 USERNAME_LIST = USERNAME_LIST.split('\n')
 USERNAME_LIST.pop()
@@ -30,13 +28,14 @@ USERNAME_LIST = USERNAME_LIST[::-1]
 PROBLEMS = [1, 6, 7, 8, 11, 12, 13, 14, 17, 18, 19, 21, 22]
 
 class NestTask(TaskSet):
-    #@task
+    @task
     class SubmissionTask(TaskSet):
         def on_start(self):
             global USERNAME_LIST
-            user = USERNAME_LIST[randint(0, len(USERNAME_LIST)-1)]
+            # user = USERNAME_LIST[randint(0, len(USERNAME_LIST)-1)]
+            self.user = USERNAME_LIST.pop()
             loginDict = {
-                    'username': user,
+                    'username': self.user,
                     'password': 'password',
                     }
 
@@ -61,13 +60,13 @@ class NestTask(TaskSet):
     #@task
     class RegisterTeam(TaskSet):
         global USERNAME_LIST
-        user = USERNAME_LIST[randint(0, len(USERNAME_LIST)-1)]
         #user = USERNAME_LIST.pop()
 
         def on_start(self):
             #global USERNAME_LIST
             #user = USERNAME_LIST[randint(0, len(USERNAME_LIST)-1)]
             #user = self.user
+            self.user = USERNAME_LIST.pop()
             loginDict = {
                     'username': self.user,
                     'password': 'password',
@@ -90,13 +89,16 @@ class NestTask(TaskSet):
                 }
 
             c = self.client.post(teamurl, postDict)
-            #self.interrupt(reschedule=False)
-            sys.exit(0)
+            print c.content
+            self.interrupt()
 
-    @task
+    #@task
     class RegisterUser(TaskSet):
         global USERNAME_LIST
-        user = USERNAME_LIST[randint(0, len(USERNAME_LIST)-1)]
+        # user = USERNAME_LIST[randint(0, len(USERNAME_LIST)-1)]
+        def on_start(self):
+            self.user = USERNAME_LIST.pop()
+
         @task
         def registerUser(self):
             postDict = {
@@ -114,7 +116,7 @@ class NestTask(TaskSet):
                     data=postDict)
             self.interrupt()
 
-    @task
+    #@task
     class GetUrls(TaskSet):
         
         def on_start(self):
@@ -163,9 +165,9 @@ class WebsiteUser(HttpLocust):
     """
     task_set = NestTask
     """ minimum wait before doing a task as a user """
-    min_wait = 1000 #
+    min_wait = 10000 #
     """ maximum wait before executing a task"""
-    max_wait = 3000 #
+    max_wait = 20000 #
     """ Weight, how often to run task relative to others"""
     weight = 3
 
