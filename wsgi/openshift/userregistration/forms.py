@@ -104,9 +104,9 @@ class RegistrationForm(forms.Form):
                                _("Nickname (optional)"),
                                required=False)
     password1 = forms.CharField(widget=forms.PasswordInput,
-                                label=_("Password"))
+                                label=_("New password"))
     password2 = forms.CharField(widget=forms.PasswordInput,
-                                label=_("Password (again)"))
+                                label=_("New Password (again)"))
 
     skill_level = forms.ChoiceField(label="Year of study",
                                   choices=YEAR_OF_STUDY,
