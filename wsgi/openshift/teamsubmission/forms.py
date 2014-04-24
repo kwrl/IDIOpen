@@ -67,6 +67,13 @@ class SubmissionForm(forms.ModelForm):
         fields = ['submission', 'compileProfile']
         widgets = {'submission' : FileInputInitial(),}
         
+    
+    def __init__(self, *args, **kwargs):
+        super(SubmissionForm, self).__init__(*args, **kwargs)
+        selected_choices = None
+         #self.fields['compileProfile'].choices = ["pikk"]
+        pass
+        
     def clean(self):
         submission = self.cleaned_data.get('submission')
         cProfile = self.cleaned_data.get('compileProfile')
@@ -99,6 +106,7 @@ class SubmissionForm(forms.ModelForm):
         new_sub.team = self.instance.team
         new_sub.status = new_sub.QUEUED
         new_sub.save()
-        print 'running task'
+       #print 'running task'
         evaluate_task.delay(new_sub.pk)
-# EOF
+
+# End of life
