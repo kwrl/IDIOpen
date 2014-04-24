@@ -11,6 +11,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils.encoding import force_text
 from django.utils.safestring import mark_safe
 from django.utils.html import conditional_escape, format_html
+from openshift.execution.models import Problem
 import os
 # 2.5MB - 2621440
 # 5MB - 5242880
@@ -63,7 +64,6 @@ class SubmissionForm(forms.ModelForm):
         fields = ['submission', 'compileProfile']
         widgets = {'submission' : FileInputInitial(),}
         
-    
         
     def clean(self):
         submission = self.cleaned_data.get('submission')
