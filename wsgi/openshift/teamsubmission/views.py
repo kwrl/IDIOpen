@@ -168,7 +168,7 @@ def submission_view(request):
 
     context = {
                'prob_sub': listProbSub,
-               'team_score' : Submission.objects.get_team_score(team[0], con)[1]
+               'team_score' : Submission.objects.get_team_score(team[0], con, problems)[1]
                }
 
     return render(request, 'submission_home.html', context)
@@ -185,18 +185,18 @@ def highscore_view(request, sort_res="all"):
     teams = []    
     if statistics:
         problems = Problem.objects.filter(contest=contest)
-        for team in statistics:
-            if sort_res == "all":
-                teams = statistics
-                break
-            elif sort_res == "offsite" and team[2]:
-                teams.append(team)
-            elif sort_res == "onsite" and not team[2]:
-                teams.append(team)
-            elif sort_res == "student" and team[6] <= 6:
-                teams.append(team)
-            elif sort_res == "pro" and team[6] > 6:
-                teams.append(team)
+        if sort_res == "all":
+            teams = statistics
+        else:
+            for team in statistics:
+                if sort_res == "offsite" and team[2]:
+                    teams.append(team)
+                elif sort_res == "onsite" and not team[2]:
+                    teams.append(team)
+                elif sort_res == "student" and team[6] <= 6:
+                    teams.append(team)
+                elif sort_res == "pro" and team[6] > 6:
+                    teams.append(team)
     
     
     context = {
