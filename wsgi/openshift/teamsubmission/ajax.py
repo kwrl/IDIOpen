@@ -95,12 +95,12 @@ def build_html_table(stats):
         string += "<td>" + unicode(stats[s][3]) + "</td>"
         
         #Onsite/ofsite
-        if stats[s][5]:
+        if stats[s][2]:
             #string += "<td>" + "<span class=\"label label-success\"> \" \" </span>"  + "</td>"
-            if len(stats[s][2]) > 3: 
-                string += "<td>" + stats[s][2][:3] + ".." "</td>"
+            if len(unicode(stats[s][2])) > 4:
+                string += "<td>" + unicode(stats[s][2])[:4] + ".." "</td>"
             else:
-                string += "<td>" + stats[s][2][:3] + "</td>"
+                string += "<td>" + stats[s][2] + "</td>"
         else: 
             string += "<td>" + "Yes"  + "</td>"
         
