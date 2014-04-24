@@ -7,7 +7,7 @@ class BalloonStatus(models.Model):
     """ Model
     """
     timestamp = models.DateTimeField()
-    """ Whether a ballon has actually been given to the team or not
+    """ Whether a balloon has actually been given to the team or not
     """
     submission = models.ForeignKey(Submission)
     problem = models.ForeignKey(Problem)
