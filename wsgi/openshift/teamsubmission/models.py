@@ -29,7 +29,7 @@ class ScoreManager(models.Manager):
         This constant is the penalty
         for delivering incorrect submissions.
         """
-        submission_penalty = 0
+        submission_penalty = contest.penalty_constant
         incorrectSubmissions = []
         correctSubmissions = []
         for submission in submissions:
