@@ -169,7 +169,6 @@ class Submission(models.Model):
         return unicode(self.pk)
 
 class ExecutionLogEntry(models.Model):
-    submission  = models.ForeignKey(Submission)
     command     = models.CharField(help_text="Command issued", max_length=200)
     stdout      = models.TextField(help_text="Standard output")
     stderr      = models.TextField(help_text="Standard error")

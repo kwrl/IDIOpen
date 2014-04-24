@@ -56,6 +56,8 @@ def submission_problem(request, problemID):
     user = request.user
     team = Team.objects.filter(contest=contest).get(members__id = user.id)
     submission = Submission.objects.filter(team=team).filter(problem=problemID).order_by('-date_uploaded')
+    
+    
     tries = len(submission)
     
 
@@ -173,10 +175,14 @@ def submission_view(request):
 
 def highscore_view(request, sort_res="all"):
     contest = get_current_contest(request)
-    statistics = Submission.objects.get_highscore(contest)
+
+    if show_contest(contest):
+        statistics = Submission.objects.get_highscore(contest)
+    else:
+        statistics=[]
+        
     problems = []
-    teams = []
-    
+    teams = []    
     if statistics:
         problems = Problem.objects.filter(contest=contest)
         for team in statistics:
