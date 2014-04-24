@@ -1,6 +1,5 @@
 #!/bin/bash
 
-locust --no-web -c1 -L DEBUG -r1 
+locust --no-web -c 100 -r 100 -L CRITICAL
 
 # EOF
-
