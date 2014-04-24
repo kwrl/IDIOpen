@@ -3,7 +3,7 @@ from django.db import models
 from django.conf import settings
 
 import os
-
+from datetime import datetime
 from openshift.execution.models import Problem
 from openshift.contest.models import Team
 from django.core.files.storage import FileSystemStorage
@@ -138,8 +138,9 @@ class ScoreManager(models.Manager):
     
 
 def file_function(instance, filename):
-    tries = len(Submission.objects.filter(team__pk = instance.team.pk).filter(problem__pk = instance.problem.id).all())
-    return '/'.join(['submissions', str(instance.team.id), str(instance.problem.id), str(tries), filename])
+    return '/'.join(['submissions', str(instance.team.contest.id), str(instance.team.id), 
+				    str(instance.problem.id), datetime.strftime(datetime.now(), '%d%m%y%H%M%S'), filename])
+
 
 class Submission(models.Model):
     
