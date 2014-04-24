@@ -56,6 +56,8 @@ def submission_problem(request, problemID):
     user = request.user
     team = Team.objects.filter(contest=contest).get(members__id = user.id)
     submission = Submission.objects.filter(team=team).filter(problem=problemID).order_by('-date_uploaded')
+    
+    
     tries = len(submission)
     
 
@@ -166,31 +168,35 @@ def submission_view(request):
 
     context = {
                'prob_sub': listProbSub,
-               'team_score' : Submission.objects.get_team_score(team[0], con)[1]
+               'team_score' : Submission.objects.get_team_score(team[0], con, problems)[1]
                }
 
     return render(request, 'submission_home.html', context)
 
 def highscore_view(request, sort_res="all"):
     contest = get_current_contest(request)
-    statistics = Submission.objects.get_highscore(contest)
+
+    if show_contest(contest):
+        statistics = Submission.objects.get_highscore(contest)
+    else:
+        statistics=[]
+        
     problems = []
-    teams = []
-    
+    teams = []    
     if statistics:
         problems = Problem.objects.filter(contest=contest)
-        for team in statistics:
-            if sort_res == "all":
-                teams = statistics
-                break
-            elif sort_res == "offsite" and team[2]:
-                teams.append(team)
-            elif sort_res == "onsite" and not team[2]:
-                teams.append(team)
-            elif sort_res == "student" and team[6] <= 6:
-                teams.append(team)
-            elif sort_res == "pro" and team[6] > 6:
-                teams.append(team)
+        if sort_res == "all":
+            teams = statistics
+        else:
+            for team in statistics:
+                if sort_res == "offsite" and team[2]:
+                    teams.append(team)
+                elif sort_res == "onsite" and not team[2]:
+                    teams.append(team)
+                elif sort_res == "student" and team[6] <= 6:
+                    teams.append(team)
+                elif sort_res == "pro" and team[6] > 6:
+                    teams.append(team)
     
     
     context = {
