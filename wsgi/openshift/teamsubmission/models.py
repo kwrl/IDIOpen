@@ -45,7 +45,6 @@ class ScoreManager(models.Manager):
         submission score,            - 2
         number of submissions]       - 3
         """
-        statistics = [0, 0, 0, 0]
         statistics = [0, 0, 0, len(incorrectSubmissions)]
         if correctSubmissions:
             time = int((correctSubmissions[0].date_uploaded - problem.contest.start_date).total_seconds()) / 60
