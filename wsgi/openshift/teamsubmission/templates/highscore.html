@@ -60,9 +60,9 @@ Show for team type:
 	            <tr>
 	            {% for s in stat %}
 	            	{% if forloop.counter0 != 6 and forloop.counter0 != 7 %}
-	            		{% if s|first != "0" and s|last == "-"%}
+	            		{% if forloop.counter0 > 7 and s|first != "0" and s|last == "-" %}
 		        			<td class="problem-rejected">
-	            		{% elif "/" in s and s|first != "0" and s|last != "-"%}
+	            		{% elif forloop.counter0 > 7 and s|first != "0" and s|last != "-" %}
 		        			<td class="problem-accepted">
 		        		{% else %}
 		        			<td>
