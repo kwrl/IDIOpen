@@ -209,7 +209,7 @@ def run_tests(runJob, submission):
             continue
 
         if test.validator:
-            if validate(stdout, test):
+            if validate(input_content, stdout, test):
                 results.append([retval, stdout, stderr, True])
             else:
                 results.append([retval, stdout, stderr, False])
@@ -238,7 +238,7 @@ def MBtoB(mbcount):
     return mbcount*(1024**2)
 
 
-def validate(run_stdout, test_case):
+def validate(input_content, run_stdout, test_case):
     
     runner = RunJob(test_case.validator, test_case.compileProfile, get_validator_resource())
     retval, stdout, stderr = runner.compile()
@@ -246,9 +246,11 @@ def validate(run_stdout, test_case):
     if retval:
         return False
 
-    retval, stdout, stderr, command = runner.run(run_stdout,restricted=False, timed=False) 
-
-    return retval==0 
+    retval, stdout, stderr, command = runner.run(input_content+run_stdout,restricted=False, timed=False) 
+    try:
+        return int(stdout) == 1
+    except:
+        return False
 
 def runLogger(submission, command, stdout, stderr, retval):
     if len(bytearray(stdout.encode("ascii"))) > 512*1024:
