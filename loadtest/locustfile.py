@@ -69,6 +69,21 @@ class NestTask(TaskSet):
             """
             """
             # Strip away ".com" and remove the at and period mark
+        @task
+        def registerTeam(self):
+            """
+            """
+            # Strip away ".com" and remove the at and period mark
+        @task
+        def registerTeam(self):
+            """
+            """
+            # Strip away ".com" and remove the at and period mark
+        @task
+        def registerTeam(self):
+            """
+            """
+            # Strip away ".com" and remove the at and period mark
             #teamname = "team" + self.user.translate(None, '@.')[:-3]
             teamname = "team" + self.user.translate(None, '@.')[:-3]
             #teamname = "team" + usernames[randint(0, len(usernames)-1)]
@@ -106,7 +121,50 @@ class NestTask(TaskSet):
             #print c
             print c
 
+    @task
+    class GetUrls(TaskSet):
         
+        def on_start(self):
+            loginDict = {
+                        'username': 'idi@open.no',
+                        'password': 'idiopen',
+                    }
+            c = self.client.post("/open14/accounts/login/", loginDict)
+
+        @task
+        def getHighScore(self):
+            c = self.client.get("/open14/highscore/")
+        
+        @task
+        def getContestView(self):
+            c = self.client.get("/open14/problem/")
+
+        @task
+        def getClarifications(self):
+            c = self.client.get("/open14/problem/answers/")
+
+        @task
+        def getTeamView(self):
+            c = self.client.get("/open14/team/")
+
+        @task
+        def getProfileView(self):
+            c = self.client.get("/open14/accounts/profile/")
+
+        @task
+        def getTeamsView(self):
+            c = self.client.get("/open14/teams/")
+
+#Admin site
+        @task
+        def getBalloonView(self):
+            c = self.client.get("/admin/balloon/balloon_view/")
+
+        @task
+        def getJudgeView(self):
+            c = self.client.get("/admin/judge_supervise/judge_view/")
+
+
 class WebsiteUser(HttpLocust):
     """ Emulate a real user browsing the pages.
     """
