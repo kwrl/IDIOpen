@@ -1,12 +1,11 @@
-from django.db import models
-
 from django.conf import settings
-
+from django.core.files.storage import FileSystemStorage
+from django.db import models
 import os
 from datetime import datetime
 from openshift.execution.models import Problem
 from openshift.contest.models import Team
-from django.core.files.storage import FileSystemStorage
+
 
 private_media = FileSystemStorage(location=settings.PRIVATE_MEDIA_ROOT,
                                   base_url=settings.PRIVATE_MEDIA_URL,
@@ -24,15 +23,21 @@ def get_upload_path(instance, filename):
                         filename);
 
 class ScoreManager(models.Manager):
-    def get_problem_score(self, team, problem, contest):
+    def get_problem_score(self, problem, contest, submissions):
+        
         """ 
         This constant is the penalty
         for delivering incorrect submissions.
         """
         submission_penalty = contest.penalty_constant
-        submissions = Submission.objects.filter(team=team).filter(problem=problem).filter(solved_problem=False).order_by('-date_uploaded')
-        correctSubmissions = Submission.objects.filter(team=team).filter(problem=problem).filter(solved_problem=True).order_by('date_uploaded')
-
+        incorrectSubmissions = []
+        correctSubmissions = []
+        for submission in submissions:
+            if(submission.solved_problem):
+                correctSubmissions.append(submission)
+            else:
+                incorrectSubmissions.append(submission)
+        
         """ 
         The statistics are:
         [total score,                - 0
@@ -40,19 +45,18 @@ class ScoreManager(models.Manager):
         submission score,            - 2
         number of submissions]       - 3
         """
-        statistics = [0, 0, 0, len(submissions)]
-        if(len(correctSubmissions) > 0):
+        statistics = [0, 0, 0, len(incorrectSubmissions)]
+        if correctSubmissions:
             time = int((correctSubmissions[0].date_uploaded - problem.contest.start_date).total_seconds()) / 60
-            submissionScore = len(submissions) * submission_penalty
-            
+            submissionScore = len(incorrectSubmissions) * submission_penalty
+             
             statistics[0] = time + submissionScore
             statistics[1] = time
             statistics[2] = submissionScore
-            statistics[3] = len(submissions) + 1
-        
+            statistics[3] = len(incorrectSubmissions) + 1
         return statistics    
     
-    def get_team_score(self, team, contest, problems):
+    def get_team_score(self, team, contest, problems, submissions):
         
         """ 
         The statistics are:
@@ -69,8 +73,9 @@ class ScoreManager(models.Manager):
          
         statistics = [0, 0, 0, 0, 0, 0]
         statistics[0] = team.offsite
-        statistics[4] = team.members.all()[0].skill_level
-        statistics[5] = team.members.all()[0].gender
+        if team.members.all():
+            statistics[4] = team.members.all()[0].skill_level
+            statistics[5] = team.members.all()[0].gender
         for member in team.members.all():
             if member.skill_level != statistics[4]:
                 statistics[4] = "-"
@@ -78,7 +83,11 @@ class ScoreManager(models.Manager):
                 statistics[5] = "-"
                 
         for problem in problems:
-            problemStat = ScoreManager.get_problem_score(self, team, problem, contest)
+            problemSubmissions = []
+            for submission in submissions:
+                if(submission.problem == problem):
+                    problemSubmissions.append(submission)
+            problemStat = ScoreManager.get_problem_score(self, problem, contest, problemSubmissions)
             if problemStat[0]:
                 statistics[1] = statistics[1] + 1
             statistics[2] = statistics[2] + problemStat[0]
@@ -90,9 +99,10 @@ class ScoreManager(models.Manager):
         return statistics
     
     def get_highscore(self, contest):
-        teams = Team.objects.filter(contest=contest)
-        problems = Problem.objects.filter(contest=contest)
         
+        teams = list(Team.objects.filter(contest=contest))
+        problems = list(Problem.objects.filter(contest=contest))
+        submissions = list(Submission.objects.all())
         """ 
         The statistics are a list of teams with:
         [position,                - 0
@@ -115,7 +125,11 @@ class ScoreManager(models.Manager):
         """
         zeros = []
         for team in teams:
-            teamStats = ScoreManager.get_team_score(self, team, contest, problems)
+            teamSubmissions = []
+            for submission in submissions:
+                if(submission.team == team):
+                    teamSubmissions.append(submission)
+            teamStats = ScoreManager.get_team_score(self, team, contest, problems, teamSubmissions)
             highscore = [0, team.name]
             if(teamStats[1]):
                 for field in teamStats:
@@ -134,8 +148,9 @@ class ScoreManager(models.Manager):
         for s in zeros:
             s[0] = lowestPlace + 1
             statistics.append(s)
+        
         return statistics
-    
+   
 
 def file_function(instance, filename):
     return '/'.join(['submissions', str(instance.team.contest.id), str(instance.team.id), 
