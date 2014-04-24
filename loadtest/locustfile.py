@@ -93,7 +93,6 @@ class NestTask(TaskSet):
             #self.interrupt(reschedule=False)
             sys.exit(0)
 
-
     @task
     class RegisterUser(TaskSet):
         global USERNAME_LIST
@@ -121,9 +120,9 @@ class WebsiteUser(HttpLocust):
     """
     task_set = NestTask
     """ minimum wait before doing a task as a user """
-    min_wait = 10000 #
+    min_wait = 1000 #
     """ maximum wait before executing a task"""
-    max_wait = 15000 #
+    max_wait = 3000 #
     """ Weight, how often to run task relative to others"""
     weight = 3
 
