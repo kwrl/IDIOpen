@@ -4,17 +4,16 @@
 {% block content %}
 <h2>Register team</h2>
 <hr>
+<p>
+By registering a team you sign up for this contest.
 <br>
-Register by providing a team name. You will be added to the new team by default, you can also specify two additional team members, however, this is optional.    
-Note that by registering a team, you also sign up for the contest.
 <br>
+Register a team by completing the below form. You will be added to the new team by default, 
+but you can also specify two additional (and optional) team members.    
+</p>
 <br>
 
 {%if user.is_authenticated %}
-<p>
-If you are going to participate online (not being present at NTNU), 
-please specify what city you are participating from in in the offsite field
-</p>
 		<form class="form-horizontal" method="post" action="." role="form">
 		  {% csrf_token %}
 		    
@@ -31,6 +30,10 @@ please specify what city you are participating from in in the offsite field
 						  </label>
 						</div>
 						{% endfor %}
+						<p class="text-muted"><small>
+						If you are not competing onsite (not seated at P15, NTNU), 
+						we would like to know where you are competing from!
+						</small></p>
 					{% else %}
 		            {{ field|addcss:"form-control"}}					
 		            {% endif %}

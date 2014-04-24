@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django import forms
+from django.contrib.admin.widgets import AdminTextInputWidget
 from .models import Article
 
 
@@ -7,6 +8,10 @@ from .models import Article
 class ArticleForm(forms.ModelForm):
     class Meta:
         model = Article
+        widgets = {
+                  'url' : AdminTextInputWidget(attrs={'placeholder' : 'E.g The appended {url} you want = /{url}/'})
+        }
+        
     def clean_url(self):
         return self.cleaned_data['url'] or None
 
@@ -15,7 +20,6 @@ class ArticleAdmin(admin.ModelAdmin):
     fieldsets = (
         (None, {
             'fields': ('title', 'contest','visible_article_list', 'url', 'is_urgent', 'text'),
-            'description': "You can here create a new article. Please note that if is_urgent is sat, those articles will come before all other articles"
         }),
     )
     
