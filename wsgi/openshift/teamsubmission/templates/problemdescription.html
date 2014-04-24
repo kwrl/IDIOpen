@@ -43,7 +43,6 @@ $( document ).ready(function() {
 	<h3><strong>Problem solved!</strong></h3>
 {% endif %}
 
-
 <div class = 'well' >
 
 {% if submission.solved_problem %}
@@ -59,6 +58,8 @@ $( document ).ready(function() {
 {% endif %}
 </div>
 
+
+{% if not submission.solved_problem %}
 <h3> Upload a file for this problem </h3>
 <form id="fileUpload" method="POST" action="" enctype="multipart/form-data">
     {% csrf_token %} 
@@ -86,12 +87,14 @@ $( document ).ready(function() {
     <button type="submit" class = "btn btn-primary btn-sm ">Submit file</button>
     {% else %}
     <button type="submit" class = "btn btn-primary btn-sm disabled">Submit file</button>
-    <em><small> Only one submission at a time </small></em>
+    <em><small> Only one submission at a time. Please wait </small></em>
     {% endif %}
     <br>
     <em><small>Please note that by submitting a file it will count as an attempt</small></em>
 </div>
 </form>
+
+{% endif %}
 
 
 <h3>Problem Description </h3>
