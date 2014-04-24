@@ -22,7 +22,7 @@ import os
 # 500MB - 429916160
 MAX_UPLOAD_SIZE = "5242880" # 5 MB
 
-# Maybe not the best way, could get file extension for each compiler profile connected to a specific problem
+# Maybe not the best way, could get file extensions for each compiler profile connected to a specific problem
 def get_file_extensions():
     return FileExtension.objects.all()
 
@@ -31,6 +31,7 @@ def get_max_file_size(problem, cProfile):
     if resource:
         return resource[0].max_filesize
     else:
+        # No resource found so return 0
         return 0
     
 class FileInputInitial(ClearableFileInput):
@@ -76,8 +77,7 @@ class SubmissionForm(forms.ModelForm):
         # The file extension for the given submission
         content_type = submission.name.split('.')[-1]
         FILE_EXT = get_file_extensions()
-        MAX_FILESIZE = get_max_file_size(self.instance.problem, cProfile) * 1024
-        
+        MAX_FILESIZE = get_max_file_size(self.instance.problem, cProfile) * 1024 # Multiply with 1024 to get it in KB instead of Bytes
         # MAX_FILESIZE = 0 when no resource is found
         if (MAX_FILESIZE == 0):
             self._errors['compileProfile'] = self.error_class([('No resource set for the compiler profile selected')])

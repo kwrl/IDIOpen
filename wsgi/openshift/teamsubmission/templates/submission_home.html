@@ -20,7 +20,9 @@ $(document).ready(function()
 
 <a href= {% url 'clarificationAnswersPage' contest.url %}> Clarification </a> |
 <a href= {% url 'clarificationPage' contest.url %}> Ask a question </a> |
-<a href= {% url 'highscorePage' contest.url %}> View score table </a>
+<a href= {% url 'highscorePage' contest.url %}> View score table </a> |
+Team score:   <strong>{{ team_score }}</strong>
+
 
 <h3>List of Problems</h3>
 
