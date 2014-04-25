@@ -100,18 +100,18 @@
 						<div class = "panel panel-default">
 							<div class = "panel-body">
 							{% block contestInfo %}
-									<b>Next Contest:</b>
-									<br>
+									<b>{{contest.title}}:</b>
 									{% if contest %}
-										{{contest.title}},
 										<small>
 										<br> 
-										Starting: {{contest.start_date | date:"N d"}}
+										Date: <em>{{contest.start_date | date:"N d"}}</em><br>
+										Time: <em>{{contest.start_date | date:"H:i"}} - {{contest.end_date | date:"H:i"}}</em>
 										Registration:
 										{% if contest.isRegOpen %}
 											<a href="{% url 'register_teams' contest.url %}"><b>Open</b></a>
 											<br>
-											Until: {{ contest.teamreg_end_date | date:"N d H:i" }}																					
+											Registration ends: <br>
+											<em>{{ contest.teamreg_end_date | date:"N dS - H:i" }}</em>																					
 										{% else %}
 											<b>Closed</b>
 										{% endif %}

@@ -104,9 +104,9 @@ class RegistrationForm(forms.Form):
                                _("Nickname (optional)"),
                                required=False)
     password1 = forms.CharField(widget=forms.PasswordInput,
-                                label=_("Password"))
+                                label=_("New password"))
     password2 = forms.CharField(widget=forms.PasswordInput,
-                                label=_("Password (again)"))
+                                label=_("New Password (again)"))
 
     skill_level = forms.ChoiceField(label="Year of study",
                                   choices=YEAR_OF_STUDY,
@@ -212,9 +212,9 @@ class PasswordForm(forms.ModelForm):
         Uses an extra field, password_validation, to prevent user errors.
     """
     password_validation = forms.CharField(widget=forms.PasswordInput(),
-                                          label=u'Password (confirm)')
+                                          label=u'Repeat New Password')
     old_password = forms.CharField(widget=forms.PasswordInput(),
-                                   label=u'Old password')
+                                   label=u'Old Password')
 
     def __init__(self, *args, **kwargs):
         """ Initialize, and explicitly set the order of the fields
@@ -275,6 +275,9 @@ class PasswordForm(forms.ModelForm):
         widgets = {
                 'password' : forms.PasswordInput()
             }
+        labels = {
+                 'password': 'New Password'
+        }
 
 class PIForm(forms.ModelForm):
     """ Form to update the personal information of activated contestants
