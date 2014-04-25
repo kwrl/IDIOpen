@@ -38,8 +38,12 @@ class _RadioSelect(forms.RadioSelect):
 
 class Team_Form(forms.ModelForm):
 
-    member_one = forms.EmailField(required=False, widget=forms.TextInput(attrs= {'placeholder':'(Optional)Insert email to add a team member.'}));
-    member_two = forms.EmailField(required=False, widget=forms.TextInput(attrs= {'placeholder':'(Optional)Insert email to add another team member.'}));
+    member_one = forms.EmailField(required=False, 
+                                  label= u'Second Team Member',
+                                  widget=forms.TextInput(attrs= {'placeholder':'(Optional) Insert team member email.'}));
+    member_two = forms.EmailField(required=False, 
+                                  label = u'Third Team Member',
+                                  widget=forms.TextInput(attrs= {'placeholder':'(Optional) Insert team member email'}));
         
     
     def disable_fields(self):

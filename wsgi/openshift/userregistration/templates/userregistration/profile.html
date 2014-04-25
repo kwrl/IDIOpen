@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
 
-	<h2> Profile page</h2>
+	<h2>User profile</h2>
 	<hr>
 
     <em><p style="font-size: 250%;">{{ user.get_name_nick }}</p></em>
@@ -13,14 +13,19 @@
  		<li><a style="font-size: 150%;" href="{% url 'team_profile' contest.url %}"> {{ team.name }}</a></li>	
  	</ul>
 	{% else %}
-	<em>You are currently not on a team</em>
+	<em>You need to register a team to participate in the event!</em>
+	<br>
 	<br>
 	{% endif %}
 
     <p>
+    Date joined: <b><em>{{ user.date_joined|date:"d.m.Y"}}</em></b>
+   	<br>
+    Email: <b><em>{{ user.email }}</em></b>
+   	<br>
     Year of Study: <b><em>{{ user.skill_level }}</em></b>
-   <br>
-   Your gender: <b><em>
+   	<br>
+   	Gender: <b><em>
     {% if user.gender = 'M' %}
         Male
     {% elif user.gender = 'F' %}
@@ -29,15 +34,9 @@
         Not Specified	
     {% endif %}
     </b></em>
-
-   <br>    
-   Email: <b><em>{{ user.email }}</em></b>
-   <br>
-   Date joined: <b><em>{{ user.date_joined|date:"d.m.Y"}}</em></b>
-   <br>
-   </p> 
-
-   <hr>
+	<br>    
+   	</p> 
+   	<hr>
 
 <link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
   <script src="//code.jquery.com/jquery-1.9.1.js"></script>
@@ -126,7 +125,7 @@
     </div>
 </div>
 	<hr>
-	<h4>List over invites: </h4>
+	<h4>List over pending team invites: </h4>
 	{% if invites %}
 		{% if have_team %}
 			<p><strong> You already have a team</strong></p>
@@ -182,7 +181,7 @@
 				</tbody>
 			</table>
 	{% else %}
-		<p class="text-muted">Empty</p>
+		<p class="text-muted">No pending invites.</p>
 	{% endif %}
 {% endblock content %}
 

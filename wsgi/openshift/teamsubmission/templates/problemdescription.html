@@ -8,12 +8,12 @@
 
 <h2>{{problem.title}}</h2>
 <hr>
+
 {% if not submission.solved_problem %}
-{{ submission.status }}
+{% comment %} {{ submission.status }} {% endcomment %}
 {% if submission.submission %}
 {% if submission.status and submission.status != submission.EVALUATED %}
 <script type="text/javascript">
-
 
 function doPoll(){
 	Dajaxice.openshift.teamsubmission.submission(Dajax.process, {'submission_id': {{ submission.pk }}});
@@ -33,14 +33,36 @@ $( document ).ready(function() {
 </h3>
 </div>
 {% endif %}
-<p> Attempts: <strong> {{ tries }} </strong> </p>
-<h3> Upload a new file to this problem </h3>
+
 {% else %}
-<h3> Upload a file for this problem </h3> 
+ 
 {% endif %}
 
+<h3> Submission feedback </h3>
+{% else %}
+	<h3><strong>Problem solved!</strong></h3>
+{% endif %}
+
+<div class = 'well' >
+
+{% if submission.solved_problem %}
+	<p> Feedback: <strong> <span class="bg-success"> {{submission.text_feedback}}</span></strong></p>
+	<p> Score for problem: <strong> {{ score }} </strong> </p>
+	<p> Attempts: <strong> {{ tries }} </strong> </p>
+{% elif submission.text_feedback %}
+	<p>{{submission.text_feedback}}</p>
+	<p> Attempts: <strong> {{ tries }} </strong> </p>
+{% else %}
+	<p> No feedback </p>
+	<p> Attempts: <strong> {{ tries }} </strong> </p>
+{% endif %}
+</div>
+
+
+{% if not submission.solved_problem %}
+<h3> Upload a file for this problem </h3>
 <form id="fileUpload" method="POST" action="" enctype="multipart/form-data">
-    {% csrf_token %}
+    {% csrf_token %} 
 <div class = 'well'>
 
 <strong><p>1. Pick a compiler profile</p></strong>
@@ -58,31 +80,23 @@ $( document ).ready(function() {
              <br>
     {% endfor %}
  {% endfor %}
- <br>
+
  <strong><p>3. Submit the file </p></strong>
-    <button type="submit" class = "btn btn-primary btn-sm">Submit file</button> 
+ 	
+ 	{% if submission.status = submission.EVALUATED or submission.status = submission.NOTSET %} 
+    <button type="submit" class = "btn btn-primary btn-sm ">Submit file</button>
+    {% else %}
+    <button type="submit" class = "btn btn-primary btn-sm disabled">Submit file</button>
+    <em><small> Only one submission at a time. Please wait </small></em>
+    {% endif %}
     <br>
     <em><small>Please note that by submitting a file it will count as an attempt</small></em>
 </div>
 </form>
-    <h3> Feedback on submission </h3>
-{% else %}
-	<h3><strong>Problem solved!</strong></h3>
+
 {% endif %}
 
- <div class = 'well' >
 
-{% if submission.solved_problem %}
-
-	<p> Feedback: <strong> <span class="bg-success"> {{submission.text_feedback}}</span></strong></p>
-	<p> Score for problem: <strong> {{ score }} </strong> </p>
-	<p> Attempts: <strong> {{ tries }} </strong> </p>
-{% elif submission.text_feedback %}
-	<p>{{submission.text_feedback}}</p>
-{% else %}
-	<p> No feedback </p>
-{% endif %}
-</div>
 <h3>Problem Description </h3>
 <hr> 
 {% if problem.author %}
