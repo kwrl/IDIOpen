@@ -18,7 +18,7 @@ class TriesTimeSolved(object):
         self.attempts = attempts
         self.solved = solved
 
-class TeamTrRow():
+class TeamTrRow(object):
     def __init__(self, team, problemsLen):
         self.problemList = [None] * problemsLen
         self.team = team
@@ -26,6 +26,17 @@ class TeamTrRow():
         self.total_score = 0
         self.total_time = 0
         self.total_solved = 0
+        self.skill_level = team.members.first()
+        self.pro = False
+        if self.skill_level == 'pro':
+            self.pro = True
+
+        if team.members.count() > 0:
+            for member in team.members.all()[1:]:
+                if member.skill_level != self.skill_level:
+                    self.skill_level = '-'
+                    if member.skill_level == 'pro':
+                        self.pro = True
 
 def get_upload_path(instance, filename):
     """

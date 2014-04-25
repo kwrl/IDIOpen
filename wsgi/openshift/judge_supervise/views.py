@@ -9,7 +9,7 @@ from collections import Counter, defaultdict
 from openshift.contest.models import Contest, Team
 from openshift.execution.models import Problem
 from openshift.helpFunctions.views import get_most_plausible_contest
-from openshift.teamsubmission.models import Submission, ExecutionLogEntry
+from openshift.teamsubmission.models import Submission, ExecutionLogEntry, TeamTrRow
 
 from .html_view_classes import CountFeedbackRow, ProblemAttempsCount,\
                                SubFeedbackView, TeamSummaryRow
@@ -134,6 +134,15 @@ def judge_team_summary(request, team_pk):
                   context)
 
 
+class TeamJudgeTrRow(TeamTrRow):
+    def __init__(self, team, problemsLen):
+        super(TeamTrRow, self).__init__()
+        self.gender = team.members.first().gender
+        if team.members.count() > 0:
+            for member in team.members.all()[1:]:
+                if member.gender != self.gender:
+                    self.gender = '-'
+
 def judge_home(request, contest_pk=None):
     contest = get_most_plausible_contest(contest_pk)
 
@@ -150,12 +159,19 @@ def judge_home(request, contest_pk=None):
     team_tr_row_info_onsite, team_tr_row_info_offsite = \
                                                 get_team_assignments(team_list)
 
-
     statistics = Submission.objects.get_highscore(contest)
-    problems = []
-    
-    if statistics:
-        problems = Problem.objects.filter(contest=contest)
+    judge_exclusive_highscore = []
+    for score in statistics:
+        # .......... lazy
+        judge_view_score = TeamJudgeTrRow(score.team, len(score.problemList))
+        judge_view_score.total_score = score.total_score
+        judge_view_score.total_time = score.total_time
+        judge_view_score.total_solved = score.total_solved
+        judge_view_score.pro = score.pro
+
+        judge_exclusive_highscore.append(judge_view_score)
+        
+    problems = Problem.objects.filter(contest=contest)
     
     context = {
             'contests'            : Contest.objects.all(),
@@ -164,7 +180,7 @@ def judge_home(request, contest_pk=None):
             'team_tr_row_info_onsite'   : team_tr_row_info_onsite,
             'team_tr_row_info_offsite'  : team_tr_row_info_offsite,
             'prob_attempt_counts' : prob_attempt_counts,
-            'statistics' : statistics,
+            'highscore' : judge_exclusive_highscore,
             'problems' : problems,
             }
 
