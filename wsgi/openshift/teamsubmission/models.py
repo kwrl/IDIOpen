@@ -144,3 +144,4 @@ class ExecutionLogEntry(models.Model):
         return "Submission:\t" + unicode(self.submission.pk) + "\tCommand:\t " + self.command
 
 # EOF
+

@@ -101,4 +101,3 @@ class SubmissionForm(forms.ModelForm):
 
 # End of life
 
-
