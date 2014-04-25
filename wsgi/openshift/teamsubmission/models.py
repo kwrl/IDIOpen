@@ -5,16 +5,32 @@ import os
 from datetime import datetime
 from openshift.execution.models import Problem
 from openshift.contest.models import Team
+from openshift.helpFunctions.views import get_score
 
+from collections import defaultdict
 
 private_media = FileSystemStorage(location=settings.PRIVATE_MEDIA_ROOT,
                                   base_url=settings.PRIVATE_MEDIA_URL,
                                   )
+class TriesTimeSolved(object):
+    def __init__(self, tries, attempts, solved):
+        self.tries = tries
+        self.attempts = attempts
+        self.solved = solved
+
+class TeamTrRow():
+    def __init__(self, team, problemsLen):
+        self.problemList = [None] * problemsLen
+        self.team = team
+        self.site = team.offsite
+        self.total_score = 0
+        self.total_time = 0
+        self.total_solved = 0
 
 def get_upload_path(instance, filename):
-    """ 
+    """
     Dynamically decide where to upload the case,
-    based on the foreign key in instance, which is required to be 
+    based on the foreign key in instance, which is required to be
     a Submission.
     """
     # path.join appends a trailing / in between each argument
@@ -23,142 +39,75 @@ def get_upload_path(instance, filename):
                         filename);
 
 class ScoreManager(models.Manager):
-    def get_problem_score(self, problem, contest, submissions):
-        
-        """ 
-        This constant is the penalty
-        for delivering incorrect submissions.
-        """
-        submission_penalty = contest.penalty_constant
-        incorrectSubmissions = []
-        correctSubmissions = []
-        for submission in submissions:
-            if(submission.solved_problem):
-                correctSubmissions.append(submission)
-            else:
-                incorrectSubmissions.append(submission)
-        
-        """ 
-        The statistics are:
-        [total score,                - 0
-        time submitted (in minutes), - 1
-        submission score,            - 2
-        number of submissions]       - 3
-        """
-        statistics = [0, 0, 0, len(incorrectSubmissions)]
-        if correctSubmissions:
-            time = int((correctSubmissions[0].date_uploaded - problem.contest.start_date).total_seconds()) / 60
-            submissionScore = len(incorrectSubmissions) * submission_penalty
-             
-            statistics[0] = time + submissionScore
-            statistics[1] = time
-            statistics[2] = submissionScore
-            statistics[3] = len(incorrectSubmissions) + 1
-        return statistics    
-    
-    def get_team_score(self, team, contest, problems, submissions):
-        
-        """ 
-        The statistics are:
-        [offsite,                            - 0
-        solved problems,                     - 1
-        total score,                         - 2
-        time submitted (in minutes),         - 3
-        year,                                - 4
-        gender,                              - 5
-        problem 1 submissions/time solved,   - 6
-        ...                                  - .
-        problem n submissions/time solved]   - n
-        """
-         
-        statistics = [0, 0, 0, 0, 0, 0]
-        statistics[0] = team.offsite
-        if team.members.all():
-            statistics[4] = team.members.all()[0].skill_level
-            statistics[5] = team.members.all()[0].gender
-        for member in team.members.all():
-            if member.skill_level != statistics[4]:
-                statistics[4] = "-"
-            if member.gender != statistics[5]:
-                statistics[5] = "-"
-                
-        for problem in problems:
-            problemSubmissions = []
-            for submission in submissions:
-                if(submission.problem == problem):
-                    problemSubmissions.append(submission)
-            problemStat = ScoreManager.get_problem_score(self, problem, contest, problemSubmissions)
-            if problemStat[0]:
-                statistics[1] = statistics[1] + 1
-            statistics[2] = statistics[2] + problemStat[0]
-            statistics[3] = statistics[3] + problemStat[1]
-            if(problemStat[1]):
-                statistics.append(str(problemStat[3]) + "/" + str(problemStat[1]))
-            else:
-                statistics.append(str(problemStat[3]) + "/-")
-        return statistics
-    
     def get_highscore(self, contest):
-        
-        teams = list(Team.objects.filter(contest=contest))
-        problems = list(Problem.objects.filter(contest=contest))
-        submissions = list(Submission.objects.all())
-        """ 
-        The statistics are a list of teams with:
-        [position,                - 0
-        team name,                - 1
-        offsite,                  - 2
-        solved problems,          - 3
-        total score,              - 4
-        total time (in minutes),  - 5
-        year,                     - 6
-        gender,                   - 7
-        problem 1 submissions,    - 8
-        ...                       - .
-        problem n submissions,]   - n
-        """
-        statistics = []
-        
-        """ 
-        zeros is a list of teams that have 0 in total score. These teams haven't
-        solved any problems, and should be at the bottom of the scoreboard.
-        """
-        zeros = []
-        for team in teams:
-            teamSubmissions = []
-            for submission in submissions:
-                if(submission.team == team):
-                    teamSubmissions.append(submission)
-            teamStats = ScoreManager.get_team_score(self, team, contest, problems, teamSubmissions)
-            highscore = [0, team.name]
-            if(teamStats[1]):
-                for field in teamStats:
-                    highscore.append(field)
-                statistics.append(highscore)
+        teams = Team.objects.all()
+        submissions = Submission.objects.all()
+        team_problem_submissionscore = defaultdict( dict )
+        #FIXME: assuming null
+        team_problem_incorrect = defaultdict( lambda: defaultdict (int) )
+
+        for sub in submissions:
+            if sub.solved_problem:
+                team_problem_submissionscore[sub.team][sub.problem]  \
+                    = sub; #sub.date_uploaded
             else:
-                teamStats[1] = ""
-                for field in teamStats:
-                    highscore.append(field)
-                zeros.append(highscore)
-        statistics = sorted(statistics, key=lambda x : (-x[3], x[4]))
-        for i in range(len(statistics)):
-            statistics[i][0] = i + 1
-        
-        lowestPlace = len(statistics)
-        for s in zeros:
-            s[0] = lowestPlace + 1
-            statistics.append(s)
-        
-        return statistics
-   
+                team_problem_incorrect[sub.team][sub.problem] += 1
+
+        team_score_list = []
+        # give score
+
+        problem_index_dict = dict()
+        problems = Problem.objects.all()
+
+        for index, prob in enumerate(problems):
+            problem_index_dict[prob] = index
+        num_problems = index + 1
+            
+
+        for team in teams:
+            ttr = TeamTrRow(team, num_problems)
+            total_score = 0
+            total_solved = 0
+            for problem in problems:
+                prob_index = problem_index_dict[problem]
+                incorrect_count = 0
+                score = ""
+                solved = False
+                time = ""
+                sub = None
+                if team_problem_incorrect[team]:
+                    if problem in team_problem_incorrect[team]:
+                        incorrect_count = team_problem_incorrect\
+                                                [team][problem]
+                if team_problem_submissionscore[team]:
+                    if problem in team_problem_submissionscore[team]:
+                        sub = team_problem_submissionscore[team][problem]
+                        total_solved += 1
+                        solved = True
+
+                        #incorrect_count += 1 # incorrect_count also for success
+
+                time, score = get_score(sub, incorrect_count, contest)
+                ttr.total_time += time
+                total_score += score
+                ttr.problemList[prob_index] = TriesTimeSolved(incorrect_count,
+                                                        time, solved)
+
+            # end for problem`
+            ttr.total_score = total_score
+            ttr.total_solved = total_solved
+            team_score_list.append(ttr)
+
+        return team_score_list
+
 
 def file_function(instance, filename):
-    return '/'.join(['submissions', str(instance.team.contest.id), str(instance.team.id), 
+    return '/'.join(['submissions', str(instance.team.contest.id), str(instance.team.id),
 				    str(instance.problem.id), datetime.strftime(datetime.now(), '%d%m%y%H%M%S'), filename])
 
 
 class Submission(models.Model):
-    
+
     NOTSET = 0
     QUEUED = 1
     RUNNING = 2
@@ -169,7 +118,7 @@ class Submission(models.Model):
         (RUNNING, 'Running'),
         (EVALUATED, 'Evaluated'),
     )
-    #We should rename submission field.... 
+    #We should rename submission field....
     submission = models.FileField(storage=private_media, upload_to=file_function)
     status = models.IntegerField(choices=STATES, default=NOTSET)
     compileProfile = models.ForeignKey('execution.CompilerProfile')
@@ -178,7 +127,7 @@ class Submission(models.Model):
     text_feedback = models.CharField(max_length=50)
     team = models.ForeignKey('contest.Team')
     problem = models.ForeignKey('execution.Problem')
-    runtime = models.IntegerField(max_length = 15, blank = True, null = True)  
+    runtime = models.IntegerField(max_length = 15, blank = True, null = True)
     objects = ScoreManager()
 
     def __unicode__(self):
@@ -193,5 +142,6 @@ class ExecutionLogEntry(models.Model):
 
     def __unicode__(self):
         return "Submission:\t" + unicode(self.submission.pk) + "\tCommand:\t " + self.command
-    
+
 # EOF
+

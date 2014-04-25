@@ -100,3 +100,4 @@ class SubmissionForm(forms.ModelForm):
         evaluate_task.delay(new_sub.pk)
 
 # End of life
+

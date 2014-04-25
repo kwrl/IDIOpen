@@ -94,7 +94,6 @@ def registration(request):
         return render(request, 'registerForContest/registration.html', {
                     'form': tf,
                     });
-
     if request.method == 'POST' and is_member_of_team(request, con):
         messages.warning(request, 'Unfortunately you can only be part of one team for this contest. :( ')
 
