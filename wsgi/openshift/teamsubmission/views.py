@@ -201,9 +201,10 @@ def submission_view(request):
     return render(request, 'submission_home.html', context)
 
 def highscore_view(request, sort_res="all"):
+    # sort res can say offsite of onsite or student or pro
     contest = get_current_contest(request)
 
-    highscore = Submission.objects.get_highscore(contest)
+    highscore = Submission.objects.get_highscore(contest, sort_res)
     problems = Problem.objects.all()
         
     context = {
