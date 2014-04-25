@@ -80,18 +80,10 @@ INSTALLED_APPS = (
     'openshift.balloon',
 )
 
-class disableCSRF:
-    def process_request(self, request):
-        setattr(request, '_dont_enforce_csrf_checks', True)
-        return None
-
-
-
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'openshift.settings.disableCSRF',
-    #'django.middleware.csrf.CsrfViewMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
