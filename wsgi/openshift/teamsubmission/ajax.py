@@ -55,9 +55,6 @@ def get_highscore(request, contest):
     
     stats = Submission.objects.get_highscore(contest)[:5]
     
-    test = build_html_table(stats)
-    
-    
     dajax.assign('#highscoretable', 'innerHTML', build_html_table(stats))
     return dajax.json()
 
@@ -92,7 +89,6 @@ def build_html_table(stats):
         
         #PLACE
         string +=  "<td>" + unicode(s+1) + "</td>"
-        #ipdb.set_trace()
         #TEAM NAME
         teamname = stats[s].team.name.encode('utf-8')
         if len(teamname) > 10:
