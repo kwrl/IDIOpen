@@ -8,6 +8,8 @@ from dajax.core import Dajax
 from dajaxice.decorators import dajaxice_register
 from django.core.exceptions import ObjectDoesNotExist
 from .models import Submission
+import operator
+from .models import TeamTrRow
 from openshift.contest.models import Contest
 import datetime
 from datetime import timedelta
@@ -40,7 +42,26 @@ def submission(request, submission_id):
             dajax.script('location.reload();')
     return dajax.json()
 
-
+"""
+class TeamTrRow():
+    def __init__(self, team, problemsLen):
+        self.problemList = [None] * problemsLen
+        self.team = team
+        self.site = team.offsite
+        self.total_score = 0
+        self.total_time = 0
+        self.total_solved = 0
+        
+         [position, - 0
+        team name, - 1
+        offsite, - 2
+        solved problems, - 3
+        total score, - 4
+        total time (in minutes), - 5
+        year, - 6
+        gender, - 7
+        problem 1 submissions, - 8
+"""
 @dajaxice_register
 def get_highscore(request, contest):
     #contest is first URL
@@ -52,8 +73,12 @@ def get_highscore(request, contest):
         dajax.assign('#highscore_done', 'innerHTML', build_closed_string(contest))
         return dajax.json()
     
-    statistics = Submission.objects.get_highscore(contest)[:5]
-    dajax.assign('#highscoretable', 'innerHTML', build_html_table(statistics))
+    stats = Submission.objects.get_highscore(contest)[:5]
+    
+    test = build_html_table(stats.)
+    import ipdb; ipdb.set_trace()
+    
+    dajax.assign('#highscoretable', 'innerHTML', build_html_table(stats))
     return dajax.json()
 
 
@@ -78,15 +103,18 @@ def show_contest(contest):
     
 #gets the curent contest based on url string
 def build_html_table(stats):
+    stats.sort(key=operator.attrgetter('total_score'), reverse=False)
+    
     string = ""
     for s in range(len(stats)):
         string += "<tr>"
         
         #PLACE
-        string +=  "<td>" + unicode(stats[s][0]) + "</td>"
+        string +=  "<td>" + unicode(s) + "</td>"
         
         #TEAM NAME
-        if len(stats[s][1].encode('utf-8')) > 10:
+        teamname = stats[s].team.name.encode('utf-8')
+        if len(teamname) > 10:
             string += "<td>" + unicode(stats[s][1].encode("utf-8")[:10], "utf-8", errors="ignore") + "..." + "</td>"
         else:
             string += "<td>" + unicode(stats[s][1]) + "</td>"
