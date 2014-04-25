@@ -20,7 +20,8 @@ class LinkAdmin(admin.ModelAdmin):
     fieldsets = (
         (None, {
             'fields': ('text', 'contestUrl', 'url','separator'),
-            'description': "To create a separator, create a Link with url \'separator\' without slashes. If you want to create new pages that onlys include an article (e.g rules) write /page/[url] in url field"
+            'description': 'To create a separator, tick off the "Seperator" tickbox.'+
+            ' If you want to create new page that only includes an article (e.g rules) write /page/[url] in url field. '
         }),
     )
     list_display = ('text', 'contestUrl', 'url',)

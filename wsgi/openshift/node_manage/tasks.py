@@ -32,6 +32,15 @@ PROC_EXCEED     = [11, 139]
 MEM_EXCEED      = [-9,134]
 
 def set_resource(time, memory=-1, procs=-1):
+    '''
+    Return a function that sets resources for a subprocess
+    -1 is equivalent of unlimited, or os max limits. The funtion will also set nice to 19 for the process
+
+    Keyword arguments:
+    time -- maximum cpu time in seconds
+    memory -- maximum memory in bytes (default -1)
+    procs -- maximum processes (default -1)
+    '''
     def result():
         nproc   = resource.getrlimit(resource.RLIMIT_NPROC)
         tcpu    = resource.getrlimit(resource.RLIMIT_CPU)
@@ -125,7 +134,9 @@ def evaluate_task(submission_id):
 
 
 class RunJob():
-    
+    '''
+    Class that compiles and runs the given sourcefile
+    '''
     def __init__(self, sourceFile, compilerProfile, limit):
         self.dir_path, self.filename = os.path.split(os.path.abspath(sourceFile.path))
         self.compiler   = compilerProfile
@@ -176,15 +187,6 @@ class RunJob():
         command = re.sub(BASENAME_SUB, self.filename.split('.')[0], command)
         return command
     
-    '''    
-    def create_log_entry(self):
-        ExecutionLogEntry.objects.create(submission=self.submission, 
-                                                command=command, 
-                                                stdout=smart_str(stdout), 
-                                                stderr=smart_str(stderr),
-                                                retval=retval).save()
-    '''
-
 def run_tests(runJob, submission):
     test_cases = TestCase.objects.filter(problem__pk = submission.problem.pk)
     results = []
@@ -209,7 +211,7 @@ def run_tests(runJob, submission):
             continue
 
         if test.validator:
-            if validate(stdout, test):
+            if validate(input_content, stdout, test):
                 results.append([retval, stdout, stderr, True])
             else:
                 results.append([retval, stdout, stderr, False])
@@ -222,6 +224,9 @@ def run_tests(runJob, submission):
     return results
 
 def get_validator_resource():
+    '''
+    Returns a resource object for use with validators
+    '''
     resource = Resource()
     resource.max_compile_time = 20
     resource.max_filesize = 50
@@ -238,7 +243,7 @@ def MBtoB(mbcount):
     return mbcount*(1024**2)
 
 
-def validate(run_stdout, test_case):
+def validate(input_content, run_stdout, test_case):
     
     runner = RunJob(test_case.validator, test_case.compileProfile, get_validator_resource())
     retval, stdout, stderr = runner.compile()
@@ -246,11 +251,21 @@ def validate(run_stdout, test_case):
     if retval:
         return False
 
-    retval, stdout, stderr = runner.run(run_stdout,restricted=False, timed=False) 
-
-    return retval==0 
+    retval, stdout, stderr, command = runner.run(input_content+run_stdout,restricted=False, timed=False) 
+    try:
+        return int(stdout) == 1
+    except:
+        return False
 
 def runLogger(submission, command, stdout, stderr, retval):
+    '''
+    Creates a ExecutionLogEntry for the given parameters.
+    It will also limit stdout and stderr to 512kB
+    '''
+    if len(bytearray(stdout.encode("ascii"))) > 512*1024:
+        stdout = 'stdout to large'
+    if len(bytearray(stderr.encode("ascii"))) > 512*1024:
+        stderr = 'stderr to large'
     ExecutionLogEntry.objects.create(submission=submission,
                                     command=command,
                                     stdout=stdout,
@@ -258,32 +273,41 @@ def runLogger(submission, command, stdout, stderr, retval):
                                     retval=retval).save()
 
 def execute(command, dir_path, res, stdin=None, timeout = -1):
-    
+    '''
+    Will execute the given command
+
+    Keyword arguments:
+    command -- the command to be executed
+    dir_path -- the location where the command should be executed
+    res -- the resource function to the applied before the command is executed
+    stdin -- the input that should be piped to the command (default None)
+    timeout -- When the process and all of its children should be killed (default -1)
+    '''
     class Alarm(Exception):
         pass
     def alarm_handler(signum, frame):
         raise Alarm
-    args = shlex.split(command)
+    args = shlex.split(command) # Split command based on os?
     logger.debug(args)
     process = psutil.Popen(args=args, 
                            stdin=PIPE, stdout=PIPE, stderr=PIPE,
                            preexec_fn=res,
                            cwd=dir_path)
-    if timeout != -1:
-        signal(SIGALRM, alarm_handler)
-        alarm(timeout)
+    if timeout != -1: # If there should be a timeout
+        signal(SIGALRM, alarm_handler) # Catch SIGALRM and call alarm_handler
+        alarm(timeout) # Will call SIGALRM after timeout
     try:
-        stdout, stderr = process.communicate(stdin)
+        stdout, stderr = process.communicate(stdin) # Communicates stdin and waits for the process to end
         if timeout != -1:
             alarm(0)
-    except Alarm:
-        procs = (process.children(recursive=True))
-        pids = [proc.pid for proc in procs]
+    except Alarm: # If the alarm is trigered it will kill all children
+        procs = (process.children(recursive=True)) # Gets all children recursively
+        pids = [str(proc.pid) for proc in procs] 
         try:
             logger.debug('KILLING')
             cmd = shlex.split('sudo kill ' + ' '.join(pids))
             subprocess.call(cmd)
-        except OSError, psutil.AccessDenied:
+        except OSError, psutil.AccessDenied: # May not get these exceptions
             pass
         return 137, '', '0.0n0.0'      
     retval = process.poll()
