@@ -71,7 +71,7 @@ def submission_problem(request, problemID):
     problem = get_object_or_404(Problem.objects.filter(pk=problemID))
     user = request.user
     team = Team.objects.filter(contest=contest).get(members__id = user.id)
-    submission = Submission.objects.filter(team=team).filter(problem=problemID)
+    submission = Submission.objects.filter(team=team).filter(problem=problemID).order_by('date_uploaded')
     prob_sub_dict = dict()
 
     if len(submission.values_list()) > 0:
@@ -151,7 +151,7 @@ def submission_view(request):
         messages.warning(request, 'The contest has ended, you are not able to upload any more submissions.')
 
     team = Team.objects.filter(contest=contest, members__id = user.id)
-    problems = Problem.objects.filter(contest=contest)
+    problems = Problem.objects.filter(contest=contest).order_by('title')
     prob_sub_dict = dict()
 
     """ Get the latest submission for each problem
