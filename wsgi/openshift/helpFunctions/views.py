@@ -10,6 +10,16 @@ from django.shortcuts import get_object_or_404
 import datetime;
 from django.utils import timezone;
 
+def in_contest(submission, contest):
+#The alternative, giving each balloon a contest key, is feasible.
+#    However, the chain goes on: why not give a submissions a relation?
+#
+#    Instead of thinking and performing a large refactoring, I wrote this...
+    # After all, it's "only" 2 chains...
+    return contest.pk == submission.team.contest.pk
+
+
+
 def get_score(sub, incorrect_count, contest):
     if not sub:
         return 0, (incorrect_count * contest.penalty_constant) 

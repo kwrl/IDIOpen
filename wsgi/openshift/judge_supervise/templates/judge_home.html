@@ -179,14 +179,14 @@ background-size: auto;
                 <td> {{entry.total_solved }} </td>
                 <td> {{entry.total_score}}</td>
                 <td> {{entry.total_time }}</td>
+                <td> {{entry.skill_level }} </td>
+                <td> {{entry.gender}} </td>
                 {% for x in entry.problemList %}
                 {% if x.solved %}
                 <td style="background: #90EE90"> {{x.tries|add:"1"}}/{{x.attempts}} </td>
                 {% else %}
                 <td style="background: #FFC0CB"> {{x.tries}}/{{x.attempts}} </td>
                 {% endif %}
-                <td> {{entry.year}} </td>
-                <td> {{entry.gender}} </td>
                 {% endfor %}
             </tr>
 			{% endfor %}
