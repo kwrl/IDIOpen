@@ -42,26 +42,6 @@ def submission(request, submission_id):
             dajax.script('location.reload();')
     return dajax.json()
 
-"""
-class TeamTrRow():
-    def __init__(self, team, problemsLen):
-        self.problemList = [None] * problemsLen
-        self.team = team
-        self.site = team.offsite
-        self.total_score = 0
-        self.total_time = 0
-        self.total_solved = 0
-        
-         [position, - 0
-        team name, - 1
-        offsite, - 2
-        solved problems, - 3
-        total score, - 4
-        total time (in minutes), - 5
-        year, - 6
-        gender, - 7
-        problem 1 submissions, - 8
-"""
 @dajaxice_register
 def get_highscore(request, contest):
     #contest is first URL
@@ -75,8 +55,8 @@ def get_highscore(request, contest):
     
     stats = Submission.objects.get_highscore(contest)[:5]
     
-    test = build_html_table(stats.)
-    import ipdb; ipdb.set_trace()
+    test = build_html_table(stats)
+    
     
     dajax.assign('#highscoretable', 'innerHTML', build_html_table(stats))
     return dajax.json()
@@ -103,32 +83,33 @@ def show_contest(contest):
     
 #gets the curent contest based on url string
 def build_html_table(stats):
-    stats.sort(key=operator.attrgetter('total_score'), reverse=False)
+
+    stats.sort(key=operator.attrgetter('total_score'), reverse=True)
     
     string = ""
     for s in range(len(stats)):
         string += "<tr>"
         
         #PLACE
-        string +=  "<td>" + unicode(s) + "</td>"
-        
+        string +=  "<td>" + unicode(s+1) + "</td>"
+        #ipdb.set_trace()
         #TEAM NAME
         teamname = stats[s].team.name.encode('utf-8')
         if len(teamname) > 10:
-            string += "<td>" + unicode(stats[s][1].encode("utf-8")[:10], "utf-8", errors="ignore") + "..." + "</td>"
+            string += "<td>" + unicode(teamname[:10], "utf-8", errors="ignore") + "..." + "</td>"
         else:
-            string += "<td>" + unicode(stats[s][1]) + "</td>"
-        
+            string += "<td>" + unicode(teamname) + "</td>"
+            
         #Number of solved
-        string += "<td>" + unicode(stats[s][3]) + "</td>"
+        string += "<td>" + unicode(stats[s].total_solved) + "</td>"
         
         #Onsite/ofsite
-        if stats[s][2]:
+        if stats[s].site:
             #string += "<td>" + "<span class=\"label label-success\"> \" \" </span>"  + "</td>"
-            if len(unicode(stats[s][2])) > 4:
-                string += "<td>" + unicode(stats[s][2])[:4] + ".." "</td>"
+            if len(unicode(stats[s].site)) > 4:
+                string += "<td>" + unicode(stats[s].site)[:4] + ".." "</td>"
             else:
-                string += "<td>" + stats[s][2] + "</td>"
+                string += "<td>" + stats[s].site + "</td>"
         else: 
             string += "<td>" + "Yes"  + "</td>"
         
