@@ -10,6 +10,16 @@ from django.shortcuts import get_object_or_404
 import datetime;
 from django.utils import timezone;
 
+def get_score(sub, incorrect_count, contest):
+    if not sub:
+        return 0, (incorrect_count * contest.penalty_constant) 
+
+    time = int((sub.date_uploaded
+            - contest.start_date).total_seconds()) / 60
+    # FIXME: floating point?
+    return time, time + (incorrect_count * contest.penalty_constant) 
+
+
 '''
 This view is supposed to hold functions used by several modules. 
 Please mark 

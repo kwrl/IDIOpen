@@ -1,19 +1,35 @@
+""" Views related to submissions
+"""
+from django.contrib import messages
 from django.shortcuts import render, get_object_or_404, redirect, HttpResponse, Http404
-from openshift.contest.views import get_current_contest, is_member_of_team
+from django.utils.timezone import utc
+
+from openshift.contest.views import contest_begin, contest_end, get_current_contest, is_member_of_team
 from openshift.contest.models import Team
 from openshift.execution.models import Problem
-
+from openshift.helpFunctions.views import get_score
 from .models import Submission
 from .forms import SubmissionForm
 
-from django.contrib import messages
-from openshift.contest.views import contest_begin, contest_end
-
 import datetime
 from datetime import timedelta
-from django.utils.timezone import utc
+from collections import defaultdict
+
 CLOSE_TIME = 1 #Hour
 
+def get_problem_score_tries(team, problem, contest):
+    prob_subs = Submission.objects.filter(team=team, problem=problem)
+    incorrect_counts = 0
+    valid_sub = None
+    sub = None
+    for sub in prob_subs:
+        if sub.solved_problem:
+            sub = sub
+        else:
+            incorrect_counts += 1
+    _, score = get_score(sub, incorrect_counts, contest)
+    if sub: incorrect_counts +=1
+    return score, incorrect_counts
 
 def is_problem_solved(team, problemID):
     submission = Submission.objects.filter(team=team).filter(problem=problemID).filter(solved_problem = True)
@@ -55,11 +71,8 @@ def submission_problem(request, problemID):
     problem = get_object_or_404(Problem.objects.filter(pk=problemID))
     user = request.user
     team = Team.objects.filter(contest=contest).get(members__id = user.id)
-    submission = Submission.objects.filter(team=team).filter(problem=problemID).order_by('-date_uploaded')
-    
-    
-    tries = len(submission)
-    
+    submission = Submission.objects.filter(team=team).filter(problem=problemID)
+    prob_sub_dict = dict()
 
     if len(submission.values_list()) > 0:
         submission = submission[0]
@@ -102,13 +115,13 @@ def submission_problem(request, problemID):
     else:
         form = None
 
-    score = Submission.objects.get_problem_score(team, problem, contest)
+    score, tries = get_problem_score_tries(team, problem, contest)
     context = {
              'problem' : problem,
              'submission' : submission,
              'submission_form' : form,
              'tries': tries,
-             'score' : score[0] 
+             'score' : score,
               }
 
     return render(request,
@@ -119,29 +132,37 @@ def submission_problem(request, problemID):
 #Login required
 def submission_view(request):
     user = request.user
-    con = get_current_contest(request)
+    contest = get_current_contest(request)
 
     if not user.is_authenticated():
         messages.error(request, 'You have to be logged in in order to view the contest page')
-        return redirect('login', con.url)
+        return redirect('login', contest.url)
 
-    if not is_member_of_team(request, con):
+    if not is_member_of_team(request, contest):
         messages.error(request, 'Please register a team to participate')
-        return redirect('team_profile', con.url)
+        return redirect('team_profile', contest.url)
 
     # Raise 404 if contest hasn't begun or contest has ended
     if not contest_begin(request):
         messages.error(request, 'Contest has not yet started')
-        return redirect('contest_list', con.url)
+        return redirect('contest_list', contest.url)
 
     if contest_end(request):
         messages.warning(request, 'The contest has ended, you are not able to upload any more submissions.')
 
-    team = Team.objects.filter(contest=con).filter(members__id = user.id)
-    problems = Problem.objects.filter(contest=con).order_by('title')
+    team = Team.objects.filter(contest=contest).filter(members__id = user.id)
+    problems = Problem.objects.filter(contest=contest).order_by('title')
     prob_sub_dict = dict()
 
+    """ Get the latest submission for each problem
+    """
+    prob_attempts = defaultdict( int )
     for sub in Submission.objects.filter(team=team):
+        """ Get the amount of attempts for a problem
+        """
+        prob_attempts[sub.problem] += 1
+
+        """ we're trying for latest date"""
         if sub.problem in prob_sub_dict:
             old_sub = prob_sub_dict[sub.problem]
             # Replace with better
@@ -151,13 +172,19 @@ def submission_view(request):
             # Insert new
             prob_sub_dict[sub.problem] = sub
 
+
     listProbSub = []
+    team_score = 0
     for prob in problems:
         sub = None
         if prob in prob_sub_dict:
             sub= prob_sub_dict[prob]
+            incorrect_tries = prob_attempts[prob]
+            if sub.solved_problem and incorrect_tries > 0:
+                incorrect_tries -= 1
+            team_score += get_score(sub, incorrect_tries , contest)[1]
         listProbSub.append(SubJoinProb(sub, prob,
-                         Submission.objects.get_problem_score(team, prob, con)))
+                         get_problem_score_tries(team, prob, contest)[0]))
 
     """
     For testing:
@@ -168,7 +195,7 @@ def submission_view(request):
 
     context = {
                'prob_sub': listProbSub,
-               'team_score' : Submission.objects.get_team_score(team[0], con, problems)[1]
+               'team_score' : team_score,
                }
 
     return render(request, 'submission_home.html', context)
@@ -176,32 +203,13 @@ def submission_view(request):
 def highscore_view(request, sort_res="all"):
     contest = get_current_contest(request)
 
-    if show_contest(contest):
-        statistics = Submission.objects.get_highscore(contest)
-    else:
-        statistics=[]
+    highscore = Submission.objects.get_highscore(contest)
+    problems = Problem.objects.all()
         
-    problems = []
-    teams = []    
-    if statistics:
-        problems = Problem.objects.filter(contest=contest)
-        if sort_res == "all":
-            teams = statistics
-        else:
-            for team in statistics:
-                if sort_res == "offsite" and team[2]:
-                    teams.append(team)
-                elif sort_res == "onsite" and not team[2]:
-                    teams.append(team)
-                elif sort_res == "student" and team[6] <= 6:
-                    teams.append(team)
-                elif sort_res == "pro" and team[6] > 6:
-                    teams.append(team)
-    
-    
     context = {
                'contest' : contest,
-               'statistics' : teams,
+               #'statistics' : teams,
+               'highscore' : highscore,
                'problems' : problems,
                'freeze' : show_contest(contest)
                }
@@ -211,16 +219,13 @@ def highscore_view(request, sort_res="all"):
 class SubJoinProb(object):
     def __init__(self, submission, problem, score):
         if submission is not None:
-            self.score = score[0]
+            self.score = score
             self.submission = submission
             self.submission.submission = \
                 str(submission.submission).split('/')[-1]
             self.submission.date_uploaded = \
                 submission.date_uploaded
         self.problem = problem
-
-
-
 '''
 Returs false if highscore should be hidden
 TODO: This could be maybe be a templatetag? 

@@ -56,21 +56,22 @@ Show for team type:
             </tr>
     </thead>
     <tbody>
-            {% for stat in statistics %}
-	            <tr>
-	            {% for s in stat %}
-	            	{% if forloop.counter0 != 6 and forloop.counter0 != 7 %}
-	            		{% if forloop.counter0 > 7 and s|first != "0" and s|last == "-" %}
-		        			<td class="problem-rejected">
-	            		{% elif forloop.counter0 > 7 and s|first != "0" and s|last != "-" %}
-		        			<td class="problem-accepted">
-		        		{% else %}
-		        			<td>
-		        		{% endif %}
-		        		{{ s }}</td>
-		        	{% endif %}
-				{% endfor %}
-	        	</tr>
+            {% for entry in highscore %}
+            <tr>
+                <td> ID </td>
+                <td> {{entry.team}} </td>
+                <td> {{entry.site}}</td>
+                <td> {{entry.total_solved }} </td>
+                <td> {{entry.total_score}}</td>
+                <td> {{entry.total_time }}</td>
+                {% for x in entry.problemList %}
+                {% if x.solved %}
+                <td style="background: #90EE90"> {{x.tries|add:"1"}}/{{x.attempts}} </td>
+                {% else %}
+                <td style="background: #FFC0CB"> {{x.tries}}/{{x.attempts}} </td>
+                {% endif %}
+                {% endfor %}
+            </tr>
 			{% endfor %}
     </tbody>
 </table>
@@ -82,3 +83,4 @@ Show for team type:
 {% block highscore %}
 {% endblock %}
 {% endblock content %}
+
