@@ -55,9 +55,6 @@ def get_highscore(request, contest):
     
     stats = Submission.objects.get_highscore(contest)[:5]
     
-    test = build_html_table(stats)
-    
-    
     dajax.assign('#highscoretable', 'innerHTML', build_html_table(stats))
     return dajax.json()
 
