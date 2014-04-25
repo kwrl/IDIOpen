@@ -171,12 +171,22 @@ background-size: auto;
             </tr>
     </thead>
     <tbody>
-            {% for stat in statistics %}
-	            <tr>
-	            {% for s in stat %}
-	        			<td>{{ s }}</td>
-				{% endfor %}
-	        	</tr>
+            {% for entry in highscore %}
+            <tr>
+                <td> ID </td>
+                <td> {{entry.team}} </td>
+                <td> {{entry.site}}</td>
+                <td> {{entry.total_solved }} </td>
+                <td> {{entry.total_score}}</td>
+                <td> {{entry.total_time }}</td>
+                {% for x in entry.problemList %}
+                {% if x.solved %}
+                <td style="background: #90EE90"> {{x.tries|add:"1"}}/{{x.attempts}} </td>
+                {% else %}
+                <td style="background: #FFC0CB"> {{x.tries}}/{{x.attempts}} </td>
+                {% endif %}
+                {% endfor %}
+            </tr>
 			{% endfor %}
     </tbody>
 </table>
