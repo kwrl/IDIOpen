@@ -60,7 +60,7 @@ class ScoreManager(models.Manager):
             teams = Team.objects.filter(contest=contest)
             
 
-        submissions = Submission.objects.all()
+        submissions = Submission.objects.select_related('team', 'problem').all()
         team_problem_submissionscore = defaultdict( dict )
         #FIXME: assuming null
         team_problem_incorrect = defaultdict( lambda: defaultdict (int) )

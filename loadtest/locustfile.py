@@ -16,14 +16,14 @@ def get_files(extension, fileList=ALL_SUBS):
     return [open(FILES_PREFIX + filename, 'r') for filename in ALL_SUBS \
                                         if extension in filename]
 
-JAVA_FILES = get_files("java", ALL_SUBS)
-C_FILES = get_files(".java")
-CPP_FILES = get_files(".java")
+JAVA_FILES = get_files(".java", ALL_SUBS)
+C_FILES = get_files(".c")
+CPP_FILES = get_files(".cpp")
 files = JAVA_FILES
 USERNAME_LIST = open('emails.txt', 'r').read()
 USERNAME_LIST = USERNAME_LIST.split('\n')
 USERNAME_LIST.pop()
-USERNAME_LIST = USERNAME_LIST[::-1]
+USERNAME_LIST = USERNAME_LIST
 
 PROBLEMS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
@@ -44,8 +44,20 @@ class NestTask(TaskSet):
         @task
         def upload_submission(self):
             submission_json = {
-                    'compileProfile': {'1'},
+                    'compileProfile' : {'1'},
+                    'compileProfile' : {'2'},
+                    'compileProfile' : {'3'},
                     }
+            
+            submission_json[1] = JAVAFILES
+
+            submission_json[2] = C_FILES
+            
+            submission_json[3] = CPP_FILES
+
+            #submission_json = {
+            #        'compileProfile': {'1'},
+            #        }
             file_upload = files[randint(0, len(JAVA_FILES) -1)]
 
             file_json = {
@@ -159,7 +171,7 @@ class NestTask(TaskSet):
         def getBalloonView(self):
             c = self.client.get("/admin/balloon/balloon_view/")
 
-        #@task
+        @task
         def getJudgeView(self):
             c = self.client.get("/admin/judge_supervise/judge_view/")
 
