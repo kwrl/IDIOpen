@@ -16,19 +16,18 @@ def get_files(extension, fileList=ALL_SUBS):
     return [open(FILES_PREFIX + filename, 'r') for filename in ALL_SUBS \
                                         if extension in filename]
 
-JAVA_FILES = get_files(".java", ALL_SUBS)
+JAVA_FILES = get_files(".java")
 C_FILES = get_files(".c")
 CPP_FILES = get_files(".cpp")
-files = JAVA_FILES
 USERNAME_LIST = open('emails.txt', 'r').read()
 USERNAME_LIST = USERNAME_LIST.split('\n')
 USERNAME_LIST.pop()
-USERNAME_LIST = USERNAME_LIST
+USERNAME_LIST = USERNAME_LIST[::-1]
 
-PROBLEMS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+PROBLEMS =[2]
 
 class NestTask(TaskSet):
-    #@task
+    @task
     class SubmissionTask(TaskSet):
         def on_start(self):
             global USERNAME_LIST
@@ -49,25 +48,26 @@ class NestTask(TaskSet):
                     'compileProfile' : {'3'},
                     }
             
-            submission_json[1] = JAVAFILES
-
-            submission_json[2] = C_FILES
+            file_type_list = [(3, JAVA_FILES), (2, C_FILES), (1, CPP_FILES)]
             
-            submission_json[3] = CPP_FILES
-
             #submission_json = {
             #        'compileProfile': {'1'},
             #        }
-            file_upload = files[randint(0, len(JAVA_FILES) -1)]
+
+            compiler, files = file_type_list[randint(1, 3) -1]
+            # random_filetype = file_type_list[randint(1, 3)]
+            
+            file_upload = files[randint(0, len(files))-1]
+
+            # file_upload = random_filetype[randint(0, len(filetype[])- 1]
 
             file_json = {
                         'submission' : file_upload,
                         }
 
             problem = PROBLEMS[randint(0, len(PROBLEMS)-1)]
-            c = self.client.post("/secrettest/problem/" + str(problem) + "/", submission_json,
+            c = self.client.post("/secrettest/problem/" + str(problem) + "/", {'compileProfile' : {compiler}},
                                  files=file_json)
-            print c.content
 
     #@task
     class RegisterTeam(TaskSet):
@@ -101,7 +101,6 @@ class NestTask(TaskSet):
                 }
 
             c = self.client.post(teamurl, postDict)
-            print c.content
             self.interrupt()
 
     #@task
@@ -128,7 +127,7 @@ class NestTask(TaskSet):
                     data=postDict)
             self.interrupt()
 
-    @task
+    #@task
     class GetUrls(TaskSet):
         
         def on_start(self):

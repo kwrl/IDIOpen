@@ -11,4 +11,6 @@ do
     done
 done
 
+#head -n200 emails.txt > emails.txt
+
 # EOF
