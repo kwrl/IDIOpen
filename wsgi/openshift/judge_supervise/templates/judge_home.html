@@ -173,7 +173,7 @@ background-size: auto;
     <tbody>
             {% for entry in highscore %}
             <tr>
-                <td> ID </td>
+                <td> {{forloop.counter}} </td>
                 <td> {{entry.team}} </td>
                 <td> {{entry.site}}</td>
                 <td> {{entry.total_solved }} </td>
@@ -185,6 +185,8 @@ background-size: auto;
                 {% else %}
                 <td style="background: #FFC0CB"> {{x.tries}}/{{x.attempts}} </td>
                 {% endif %}
+                <td> {{entry.year}} </td>
+                <td> {{entry.gender}} </td>
                 {% endfor %}
             </tr>
 			{% endfor %}
