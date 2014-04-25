@@ -25,8 +25,8 @@ def append_field_error(instance, field, message):
 class EmailForm(forms.Form):
     """ Form to update the email of activated contestants
     """
-    email = forms.EmailField()
-    email_validation = forms.EmailField()
+    email = forms.EmailField(label=u'New Email')
+    email_validation = forms.EmailField(label=u'Repeat New Email')
 
     def __init__(self, *args, **kwargs):
         super(EmailForm, self).__init__(*args, **kwargs)

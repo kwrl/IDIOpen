@@ -57,12 +57,12 @@ body {
 	color: #F2F0EB;
 }
 #footer {
-  background-color: #193C59;
+  background-color: #403c3d;
   margin-top: 20px;
 }
 
 #logo {
-	background-color: #193C59;
+	background-color: #403c3d;
 	margin-bottom: 10px;
 }
 
@@ -76,6 +76,21 @@ body {
 { 
     float:right;
     padding: 10px 10px 10px 10px;
+}
+
+#highscoreTable td
+{
+	overflow: hidden; width: 200px;
+}
+
+#highscoreTable td.problem-rejected
+{
+	background:#FFC0CB;
+}
+
+#highscoreTable td.problem-accepted
+{
+	background:#90EE90;
 }
 
 /* Lastly, apply responsive CSS fixes as necessary */
