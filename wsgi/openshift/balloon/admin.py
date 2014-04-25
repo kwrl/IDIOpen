@@ -7,7 +7,7 @@ from django.shortcuts import render, HttpResponse
 from django.conf.urls import url, patterns
 
 from openshift.contest.models import Contest
-from openshift.helpFunctions.views import get_most_plausible_contest
+from openshift.helpFunctions.views import get_most_plausible_contest, in_contest
 from openshift.teamsubmission.models import Submission
 from openshift.balloon.models import BalloonStatus, balloon_view
 from openshift.balloon.forms import BalloonSubmissionForm
@@ -37,14 +37,6 @@ class BalloonView(object):
     def __init__(self, submission, timestamp=None):
         self.submission = submission
         self.timestamp = timestamp
-
-def in_contest(submission, contest):
-#The alternative, giving each balloon a contest key, is feasible.
-#    However, the chain goes on: why not give a submissions a relation?
-#
-#    Instead of thinking and performing a large refactoring, I wrote this...
-    # After all, it's "only" 2 chains...
-    return contest.pk == submission.team.contest.pk
 
 def _get_table_lists(contest):
     balloons = BalloonStatus.objects.all()
