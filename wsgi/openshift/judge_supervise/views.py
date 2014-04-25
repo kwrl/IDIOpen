@@ -8,7 +8,7 @@ from collections import Counter, defaultdict
 
 from openshift.contest.models import Contest, Team
 from openshift.execution.models import Problem
-from openshift.helpFunctions.views import get_most_plausible_contest
+from openshift.helpFunctions.views import get_most_plausible_contest, in_contest
 from openshift.teamsubmission.models import Submission, ExecutionLogEntry, TeamTrRow
 
 from .html_view_classes import CountFeedbackRow, ProblemAttempsCount,\
@@ -136,7 +136,7 @@ def judge_team_summary(request, team_pk):
 
 class TeamJudgeTrRow(TeamTrRow):
     def __init__(self, team, problemsLen):
-        super(TeamTrRow, self).__init__()
+        super(TeamJudgeTrRow, self).__init__(team, problemsLen)
         self.gender = team.members.first().gender
         if team.members.count() > 0:
             for member in team.members.all()[1:]:
@@ -165,6 +165,7 @@ def judge_home(request, contest_pk=None):
         # .......... lazy
         judge_view_score = TeamJudgeTrRow(score.team, len(score.problemList))
         judge_view_score.total_score = score.total_score
+
         judge_view_score.total_time = score.total_time
         judge_view_score.total_solved = score.total_solved
         judge_view_score.pro = score.pro

@@ -5,7 +5,7 @@ import os
 from datetime import datetime
 from openshift.execution.models import Problem
 from openshift.contest.models import Team
-from openshift.helpFunctions.views import get_score
+from openshift.helpFunctions.views import get_score, in_contest
 
 from collections import defaultdict
 
@@ -26,7 +26,7 @@ class TeamTrRow(object):
         self.total_score = 0
         self.total_time = 0
         self.total_solved = 0
-        self.skill_level = team.members.first()
+        self.skill_level = team.members.first().skill_level
         self.pro = False
         if self.skill_level == 'pro':
             self.pro = True
@@ -50,14 +50,24 @@ def get_upload_path(instance, filename):
                         filename);
 
 class ScoreManager(models.Manager):
-    def get_highscore(self, contest):
-        teams = Team.objects.all()
+    def get_highscore(self, contest, sort_res=''):
+        teams = None
+        if sort_res == 'onsite':
+            teams = Team.objects.filter(contest=contest, onsite=True)
+        elif sort_res == 'offsite':
+            teams = Team.objects.filter(contest=contest, onsite=False)
+        else:
+            teams = Team.objects.filter(contest=contest)
+            
+
         submissions = Submission.objects.all()
         team_problem_submissionscore = defaultdict( dict )
         #FIXME: assuming null
         team_problem_incorrect = defaultdict( lambda: defaultdict (int) )
 
         for sub in submissions:
+            if not in_contest(sub, contest):
+                continue
             if sub.solved_problem:
                 team_problem_submissionscore[sub.team][sub.problem]  \
                     = sub; #sub.date_uploaded
@@ -77,6 +87,11 @@ class ScoreManager(models.Manager):
 
         for team in teams:
             ttr = TeamTrRow(team, num_problems)
+            if ttr.pro == False and sort_res == 'pro' \
+            or ttr.pro == True  and sort_res == 'student':
+                continue
+
+
             total_score = 0
             total_solved = 0
             for problem in problems:

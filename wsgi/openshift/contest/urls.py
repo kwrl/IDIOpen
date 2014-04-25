@@ -29,6 +29,7 @@ urlpatterns = patterns('',
     url(r'^cage$', views.cage_me, name = 'nic_cage'), 
     url(r'^highscore/$', highscore_view, name = 'highscorePage'),
     url(r'^highscore/(?P<sort_res>\w+)/$', highscore_view, name = 'highscorePageRes'),
+    #url(r'^highscore/(?P<sort_res>\studw+)/$', highscore_view, name = 'highscorePageRes'),
 )
 
 # EOF
