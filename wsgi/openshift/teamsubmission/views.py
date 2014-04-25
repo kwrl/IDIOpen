@@ -150,8 +150,8 @@ def submission_view(request):
     if contest_end(request):
         messages.warning(request, 'The contest has ended, you are not able to upload any more submissions.')
 
-    team = Team.objects.filter(contest=contest).filter(members__id = user.id)
-    problems = Problem.objects.filter(contest=contest).order_by('title')
+    team = Team.objects.filter(contest=contest, members__id = user.id)
+    problems = Problem.objects.filter(contest=contest)
     prob_sub_dict = dict()
 
     """ Get the latest submission for each problem

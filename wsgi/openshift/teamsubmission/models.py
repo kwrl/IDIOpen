@@ -61,7 +61,7 @@ class ScoreManager(models.Manager):
 
         for index, prob in enumerate(problems):
             problem_index_dict[prob] = index
-        num_problems = index + 1
+        num_problems = problems.count()
             
 
         for team in teams:
