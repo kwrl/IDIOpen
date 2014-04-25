@@ -25,10 +25,10 @@ USERNAME_LIST = USERNAME_LIST.split('\n')
 USERNAME_LIST.pop()
 USERNAME_LIST = USERNAME_LIST[::-1]
 
-PROBLEMS = [1, 6, 7, 8, 11, 12, 13, 14, 17, 18, 19, 21, 22]
+PROBLEMS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
 class NestTask(TaskSet):
-    @task
+    #@task
     class SubmissionTask(TaskSet):
         def on_start(self):
             global USERNAME_LIST
@@ -116,13 +116,13 @@ class NestTask(TaskSet):
                     data=postDict)
             self.interrupt()
 
-    #@task
+    @task
     class GetUrls(TaskSet):
         
         def on_start(self):
             loginDict = {
-                        'username': 'idi@open.no',
-                        'password': 'idiopen',
+                        'username': 'haakon.konrad@gmail.com',
+                        'password': 'penis123',
                     }
             c = self.client.post("/open14/accounts/login/", loginDict)
 
@@ -149,7 +149,11 @@ class NestTask(TaskSet):
         @task
         def getTeamsView(self):
             c = self.client.get("/open14/teams/")
-
+        
+        @task
+        def getProblemView(self):
+            c = self.client.get("/open14/problem/1/")
+            
 #Admin site
         @task
         def getBalloonView(self):
@@ -172,7 +176,8 @@ class WebsiteUser(HttpLocust):
     weight = 3
 
     """ the target, as a prefix """
-    #host = "http://127.0.0.1:8000"
-    host = "http://vps.filip0.com"
+    host = "http://127.0.0.1:8000"
+    #host = "http://vps.filip0.com"
+    #host = "http://hv-6146.idi.ntnu.no"
 
 # EOF
