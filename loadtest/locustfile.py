@@ -27,7 +27,7 @@ USERNAME_LIST = USERNAME_LIST[::-1]
 PROBLEMS =[2]
 
 class NestTask(TaskSet):
-    @task
+    #@task
     class SubmissionTask(TaskSet):
         def on_start(self):
             global USERNAME_LIST
@@ -38,7 +38,7 @@ class NestTask(TaskSet):
                     'password': 'password',
                     }
 
-            c = self.client.post("/secrettest/accounts/login/", loginDict)
+            c = self.client.post("/open14/accounts/login/", loginDict)
 
         @task
         def upload_submission(self):
@@ -66,7 +66,7 @@ class NestTask(TaskSet):
                         }
 
             problem = PROBLEMS[randint(0, len(PROBLEMS)-1)]
-            c = self.client.post("/secrettest/problem/" + str(problem) + "/", {'compileProfile' : {compiler}},
+            c = self.client.post("/open14/problem/" + str(problem) + "/", {'compileProfile' : {compiler}},
                                  files=file_json)
 
     #@task
@@ -84,7 +84,7 @@ class NestTask(TaskSet):
                     'password': 'password',
                     }
 
-            c = self.client.post("/secrettest/accounts/login/", loginDict)
+            c = self.client.post("/open14/accounts/login/", loginDict)
 
         @task
         def registerTeam(self):
@@ -92,7 +92,7 @@ class NestTask(TaskSet):
             """
             # Strip away ".com" and remove the at and period mark
             teamname = "team" + self.user.translate(None, '@.')[:-3]
-            teamurl = "/secrettest/team/register/"
+            teamurl = "/open14/team/register/"
             postDict = {
                     'name'       : teamname,
                     'onsite'     : 'True',
@@ -123,11 +123,11 @@ class NestTask(TaskSet):
                     'gender'      : 'M',
                     }
 
-            c = self.client.post("/secrettest/accounts/register/",
+            c = self.client.post("/open14/accounts/register/",
                     data=postDict)
             self.interrupt()
 
-    #@task
+    @task
     class GetUrls(TaskSet):
         
         def on_start(self):
@@ -135,35 +135,35 @@ class NestTask(TaskSet):
                         'username': 'haakon.konrad@gmail.com',
                         'password': 'penis123',
                     }
-            c = self.client.post("/secrettest/accounts/login/", loginDict)
+            c = self.client.post("/open14/accounts/login/", loginDict)
 
         @task
         def getHighScore(self):
-            c = self.client.get("/secrettest/highscore/")
+            c = self.client.get("/open14/highscore/")
         
-        @task
+        #@task
         def getContestView(self):
-            c = self.client.get("/secrettest/problem/")
+            c = self.client.get("/open14/problem/")
 
-        @task
+        #@task
         def getClarifications(self):
-            c = self.client.get("/secrettest/problem/answers/")
+            c = self.client.get("/open14/problem/answers/")
 
         @task
         def getTeamView(self):
-            c = self.client.get("/secrettest/team/")
+            c = self.client.get("/open14/team/")
 
         @task
         def getProfileView(self):
-            c = self.client.get("/secrettest/accounts/profile/")
+            c = self.client.get("/open14/accounts/profile/")
 
         @task
         def getTeamsView(self):
-            c = self.client.get("/secrettest/teams/")
+            c = self.client.get("/open14/teams/")
         
         #@task
         def getProblemView(self):
-            c = self.client.get("/secrettest/problem/1/")
+            c = self.client.get("/open14/problem/1/")
             
 #Admin site
         @task

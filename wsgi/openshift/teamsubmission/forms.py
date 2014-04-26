@@ -13,7 +13,7 @@ from django.utils.safestring import mark_safe
 from django.utils.html import conditional_escape, format_html
 from openshift.execution.models import Problem
 import os
-# 2.5MB - 2621440
+# 2.<5MB - 2621440
 # 5MB - 5242880
 # 10MB - 10485760
 # 20MB - 20971520
@@ -96,7 +96,6 @@ class SubmissionForm(forms.ModelForm):
         new_sub.team = self.instance.team
         new_sub.status = new_sub.QUEUED
         new_sub.save()
-       #print 'running task'
         evaluate_task.delay(new_sub.pk)
 
 # End of life
