@@ -137,7 +137,12 @@ def judge_team_summary(request, team_pk):
 class TeamJudgeTrRow(TeamTrRow):
     def __init__(self, team, problemsLen):
         super(TeamJudgeTrRow, self).__init__(team, problemsLen)
-        self.gender = team.members.first().gender
+        self.gender = '-'
+        x = team.members.first()
+
+        x = team.members.first()
+        if x:
+            self.gender = x.gender
         if team.members.count() > 0:
             for member in team.members.all()[1:]:
                 if member.gender != self.gender:
@@ -163,12 +168,21 @@ def judge_home(request, contest_pk=None):
     judge_exclusive_highscore = []
     for score in statistics:
         # .......... lazy
-        judge_view_score = TeamJudgeTrRow(score.team, len(score.problemList))
-        judge_view_score.total_score = score.total_score
+        ts = score.total_score
+        tt = score.total_time
+        tosol = score.total_solved
+        prostat = score.pro
+        probList = score.problemList
 
-        judge_view_score.total_time = score.total_time
-        judge_view_score.total_solved = score.total_solved
-        judge_view_score.pro = score.pro
+
+        judge_view_score = TeamJudgeTrRow(score.team, len(score.problemList))
+
+        judge_view_score.total_score  = ts
+        judge_view_score.total_time   = tt
+        judge_view_score.total_solved = tosol
+        judge_view_score.pro          = prostat
+        judge_view_score.problemList     = probList
+
 
         judge_exclusive_highscore.append(judge_view_score)
         
