@@ -13,15 +13,6 @@ from django.utils.safestring import mark_safe
 from django.utils.html import conditional_escape, format_html
 from openshift.execution.models import Problem
 import os
-# 2.5MB - 2621440
-# 5MB - 5242880
-# 10MB - 10485760
-# 20MB - 20971520
-# 50MB - 5242880
-# 100MB 104857600
-# 250MB - 214958080
-# 500MB - 429916160
-MAX_UPLOAD_SIZE = "5242880" # 5 MB
 
 def get_max_file_size(problem, cProfile):
     resource = Resource.objects.filter(problem=problem).filter(cProfile=cProfile)
@@ -96,7 +87,6 @@ class SubmissionForm(forms.ModelForm):
         new_sub.team = self.instance.team
         new_sub.status = new_sub.QUEUED
         new_sub.save()
-       #print 'running task'
         evaluate_task.delay(new_sub.pk)
 
 # End of life

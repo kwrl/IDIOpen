@@ -3,7 +3,6 @@
 from django.contrib import messages
 from django.shortcuts import render, get_object_or_404, redirect, HttpResponse, Http404
 from django.utils.timezone import utc
-
 from openshift.contest.views import contest_begin, contest_end, get_current_contest, is_member_of_team
 from openshift.contest.models import Team
 from openshift.execution.models import Problem
@@ -24,11 +23,12 @@ def get_problem_score_tries(team, problem, contest):
     sub = None
     for sub in prob_subs:
         if sub.solved_problem:
-            sub = sub
+            valid_sub = sub # Set equal valid_sub?
         else:
             incorrect_counts += 1
     _, score = get_score(sub, incorrect_counts, contest)
-    if sub: incorrect_counts +=1
+    if valid_sub:  # Check if valid sub?
+        incorrect_counts +=1
     return score, incorrect_counts
 
 def is_problem_solved(team, problemID):
@@ -71,7 +71,7 @@ def submission_problem(request, problemID):
     problem = get_object_or_404(Problem.objects.filter(pk=problemID))
     user = request.user
     team = Team.objects.filter(contest=contest).get(members__id = user.id)
-    submission = Submission.objects.filter(team=team).filter(problem=problemID)
+    submission = Submission.objects.filter(team=team).filter(problem=problemID).order_by('date_uploaded')
     prob_sub_dict = dict()
 
     if len(submission.values_list()) > 0:
@@ -92,7 +92,6 @@ def submission_problem(request, problemID):
     if request.method == "POST":
         form = SubmissionForm(request.POST, request.FILES,
                                instance=submission)
-        
         if not request.FILES:
             messages.error(request, 'You need to choose a file to upload')
 
@@ -114,8 +113,9 @@ def submission_problem(request, problemID):
         form = SubmissionForm(instance=submission);
     else:
         form = None
-
+    
     score, tries = get_problem_score_tries(team, problem, contest)
+    
     context = {
              'problem' : problem,
              'submission' : submission,
@@ -151,7 +151,7 @@ def submission_view(request):
         messages.warning(request, 'The contest has ended, you are not able to upload any more submissions.')
 
     team = Team.objects.filter(contest=contest, members__id = user.id)
-    problems = Problem.objects.filter(contest=contest)
+    problems = Problem.objects.filter(contest=contest).order_by('title')
     prob_sub_dict = dict()
 
     """ Get the latest submission for each problem
@@ -245,4 +245,3 @@ def show_contest(contest):
         return True
 
 # END OF LIFE
-
