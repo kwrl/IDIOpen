@@ -5,7 +5,7 @@ from subprocess import call
 from openshift import celery_app as app
 from subprocess import PIPE, Popen
 from signal import SIGKILL, SIGXCPU, SIGALRM, alarm, signal 
-from django.utils.encoding import smart_str
+from django.utils.encoding import smart_str, smart_bytes
 from psutil import AccessDenied
 import re
 import os
@@ -26,9 +26,12 @@ RUN_USER = "gentlemember"
 
 REALTIME_MULTIPLIER = 3
 
+STDOUT_MAX_SIZE = 512*1024
+STDERR_MAX_SIZE = 512*1024
+
 USER_TIMEOUT    = [137, 35072]
 USER_CRASH      = [1,9,128,257,300]
-PROC_EXCEED     = [11, 139]
+PROC_EXCEED     = [139]
 MEM_EXCEED      = [-9,134]
 
 def set_resource(time, memory=-1, procs=-1):
@@ -88,7 +91,7 @@ def evaluate_task(submission_id):
         elif retval in USER_TIMEOUT:
             submission.text_feedback = "Compile timeout"
         else:
-            submission.text_feedback = "Unspecified compile time error."
+            submission.text_feedback = "Compile time error."
         submission.status = Submission.EVALUATED
         submission.save()
         return retval, stdout, stderr
@@ -119,7 +122,7 @@ def evaluate_task(submission_id):
             elif exretval in PROC_EXCEED:
                 submission.text_feedback = "Number of processes exceeded."
             else:
-                submission.text_feedback = "Unspecified runtime error."   
+                submission.text_feedback = "Runtime error."   
             break
     logger.debug('Exec end')
     submission.status = Submission.EVALUATED
@@ -262,9 +265,9 @@ def runLogger(submission, command, stdout, stderr, retval):
     Creates a ExecutionLogEntry for the given parameters.
     It will also limit stdout and stderr to 512kB
     '''
-    if len(bytearray(stdout.encode("ascii"))) > 512*1024:
+    if len(smart_bytes(stdout, errors="replace"))) > STDOUT_MAX_SIZE:
         stdout = 'stdout to large'
-    if len(bytearray(stderr.encode("ascii"))) > 512*1024:
+    if len(smart_bytes(stderr, errors="replace"))) > STDERR_MAX_SIZE:
         stderr = 'stderr to large'
     ExecutionLogEntry.objects.create(submission=submission,
                                     command=command,
