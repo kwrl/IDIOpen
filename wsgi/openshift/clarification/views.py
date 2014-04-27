@@ -7,7 +7,23 @@ from django.shortcuts import Http404
 
 # Create your views here.
 
+'''
+This is for clarification post a question
+'''
 def clarification(request):
+    
+    if not helpView.contest_begin(request): 
+        messages.info(request, "contest has not yet begun")
+        return clarificationAnswers(request)
+    
+    elif not request.user.is_authenticated():
+        messages.info(request, "You are not logged in")
+        return clarificationAnswers(request)
+        
+    elif not helpView.is_member_of_team(request):
+        messages.info(request, "You are not on a team")
+        return clarificationAnswers(request)
+    
     if request.method == 'POST':
         
         form = QuestionForm(request.POST)
@@ -39,13 +55,11 @@ def clarification(request):
 
 
 def clarificationAnswers(request):
-    # Raise 404 if contest hasn't begun or has ended, and if user is not member of team
-    if not helpView.contest_begin(request) or not helpView.is_member_of_team(request):
-        raise Http404
-    
+    '''
+    Everybody should be able to view clarifications at all time
+    '''
     answers = helpView.get_all_answers(request)
     context = {
                'answers': answers
                }
-    
     return render(request, 'clarificationAnswers.html', context)
