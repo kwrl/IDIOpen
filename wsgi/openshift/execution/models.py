@@ -90,16 +90,16 @@ class Resource (models.Model):
     problem = models.ForeignKey('execution.Problem', related_name="resource_problem")
     
     #The maximum time a program can use to compile
-    max_compile_time = models.IntegerField(max_length = 20, default = 30,
+    max_compile_time = models.IntegerField(max_length = 20, default = 10,
                                            help_text = 'The maximum compile time in <strong>seconds</strong>') #in sec
     
     #How long the program can run before 
-    max_program_timeout = models.IntegerField(max_length = 5, default = 60,
+    max_program_timeout = models.IntegerField(max_length = 5, default = 2,
                                               help_text = 'The maximum run time in <strong>seconds</strong>')# in sec 
     
     #Maximum memory a program can use for this problem  
     max_memory = models.IntegerField(max_length = 20, default = 1024,
-                                     help_text = 'The maximum adress space in <strong>MegaBytes</strong>.Add 850MB extra to get Java working properly.') # in bytes
+                                     help_text = 'The maximum adress space in <strong>MegaBytes</strong>. For java use -1(unlimited).') # in bytes
     
     #The maximum number of child processes. (avoid fork bombs)
     max_processes = models.IntegerField(max_length = 10, default = 5,
