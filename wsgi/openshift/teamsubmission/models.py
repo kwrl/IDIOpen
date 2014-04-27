@@ -26,7 +26,10 @@ class TeamTrRow(object):
         self.total_score = 0
         self.total_time = 0
         self.total_solved = 0
-        self.skill_level = team.members.first().skill_level
+        self.skill_level = '1'
+        x = team.members.first()
+        if x:
+            self.skill_level = x.skill_level
         self.pro = False
         if self.skill_level == 'pro':
             self.pro = True
