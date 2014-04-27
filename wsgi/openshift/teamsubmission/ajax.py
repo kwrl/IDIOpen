@@ -122,8 +122,7 @@ def build_closed_string(contest):
     close_time_first = contest.end_date-timedelta(hours=CLOSE_TIME)
     close_time_completed = contest.end_date
     return "<smalL> Highscore frozen.  </small>"
-    #delta = close_time_completed - close_time_first
-    
+    #delta = close_time_completed - close_time_first    
     
 def get_current_contest(url):
     try: 
