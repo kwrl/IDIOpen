@@ -29,15 +29,36 @@ $(document).ready(function()
 {% url 'highscorePageRes' contest.url 'student' as student %}
 {% url 'highscorePageRes' contest.url 'pro' as pro %}
 
-Show for location:
-<a href="{{ all }}"> All </a>
-|<a href="{{ onsite }}"> Onsite </a>
-| <a href="{{ offsite }}"> Offsite </a>
+Show highscores: 
+{% if sort_res != "all" %}
+<a href="{% url 'highscorePage' contest.url %}"> all </a>
+{% else %}
+{{ sort_res }}
+{% endif %}
+</br>
+Show for location: 
+{% for loc in locations %}
+{% if not forloop.first %}
+|
+{% endif %}
+{% if loc != sort_res %}
+<a href="{% url 'highscorePageRes' contest.url loc %}"> {{ loc }} </a>
+{% else %}
+{{ loc }}
+{% endif %}
+{% endfor %}
 </br>
 Show for team type:
-<a href="{{ all }}"> All </a>
- |<a href="{{ student }}"> Student </a>
- |<a href="{{ pro }}"> Pro </a>
+{% for team in team_types %}
+{% if not forloop.first %}
+|
+{% endif %}
+{% if team != sort_res %}
+<a href="{% url 'highscorePageRes' contest.url team %}"> {{ team }} </a>
+{% else %}
+{{ team }}
+{% endif %}
+{% endfor %}
 </div>
 
 {% if freeze %}
@@ -56,19 +77,21 @@ Show for team type:
             </tr>
     </thead>
     <tbody>
-            {% for entry in highscore %}
+            {% for entry in highscore|dictsort:"total_score"|dictsortreversed:"total_solved" %}
             <tr>
                 <td> {{forloop.counter}} </td>
                 <td> {{entry.team}} </td>
                 <td> {{entry.site}}</td>
-                <td> {{entry.total_solved }} </td>
+                <td> {{entry.total_solved}} </td>
                 <td> {{entry.total_score}}</td>
                 <td> {{entry.total_time }}</td>
                 {% for x in entry.problemList %}
                 {% if x.solved %}
                 <td style="background: #90EE90"> {{x.tries|add:"1"}}/{{x.attempts}} </td>
-                {% else %}
+                {% elif x.tries %}
                 <td style="background: #FFC0CB"> {{x.tries}}/{{x.attempts}} </td>
+                {% else %}
+                <td> {{x.tries}}/{{x.attempts}} </td>
                 {% endif %}
                 {% endfor %}
             </tr>
