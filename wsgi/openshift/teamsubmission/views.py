@@ -207,13 +207,16 @@ def highscore_view(request, sort_res="all"):
 
     highscore = Submission.objects.get_highscore(contest, sort_res)
     problems = Problem.objects.all()
-        
+    
     context = {
                'contest' : contest,
                #'statistics' : teams,
                'highscore' : highscore,
                'problems' : problems,
-               'freeze' : show_contest(contest)
+               'freeze' : show_contest(contest),
+               'locations' : ["onsite", "offsite"],
+               'team_types' : ["student", "pro"],
+               'sort_res' : sort_res,
                }
     
     return render(request, 'highscore.html', context)
