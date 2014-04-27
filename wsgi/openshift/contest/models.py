@@ -16,7 +16,6 @@ from django.utils import timezone
 
 '''
 Contest model
-
 TODO: Add location, fix start, end, publish date, validate
 Is done now right?
 '''

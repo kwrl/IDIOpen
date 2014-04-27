@@ -6,7 +6,7 @@ urlpatterns = patterns('',
     url(r'^$', submission_view, name = 'submission_page'),
     url(r'(?P<problemID>[\d]+)', submission_problem, name = 'submission_problem'),
     url(r'clarification', clarViews.clarification, name = "clarificationPage"),
-    url(r'answers', clarViews.clarificationAnswers, name = "clarificationAnswersPage"),
+    
 )
 
 # EOF
