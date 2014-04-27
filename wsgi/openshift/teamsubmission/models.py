@@ -136,7 +136,10 @@ def file_function(instance, filename):
 
 
 class Submission(models.Model):
-
+    
+    class Meta:
+        verbose_name_plural = "View Submissions"
+    
     NOTSET = 0
     QUEUED = 1
     RUNNING = 2
@@ -163,6 +166,9 @@ class Submission(models.Model):
         return unicode(self.pk)
 
 class ExecutionLogEntry(models.Model):
+    class Meta:
+        verbose_name_plural = "View Execution Log Entries"
+    
     submission  = models.ForeignKey(Submission)
     command     = models.CharField(help_text="Command issued", max_length=200)
     stdout      = models.TextField(help_text="Standard output")
