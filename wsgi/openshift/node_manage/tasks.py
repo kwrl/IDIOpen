@@ -31,7 +31,7 @@ STDERR_MAX_SIZE = 512*1024
 
 USER_TIMEOUT    = [137, 35072]
 USER_CRASH      = [1,9,128,257,300]
-PROC_EXCEED     = [11, 139]
+PROC_EXCEED     = [139]
 MEM_EXCEED      = [-9,134]
 
 def set_resource(time, memory=-1, procs=-1):
@@ -91,7 +91,7 @@ def evaluate_task(submission_id):
         elif retval in USER_TIMEOUT:
             submission.text_feedback = "Compile timeout"
         else:
-            submission.text_feedback = "Unspecified compile time error."
+            submission.text_feedback = "Compile time error."
         submission.status = Submission.EVALUATED
         submission.save()
         return retval, stdout, stderr
@@ -122,7 +122,7 @@ def evaluate_task(submission_id):
             elif exretval in PROC_EXCEED:
                 submission.text_feedback = "Number of processes exceeded."
             else:
-                submission.text_feedback = "Unspecified runtime error."   
+                submission.text_feedback = "Runtime error."   
             break
     logger.debug('Exec end')
     submission.status = Submission.EVALUATED
