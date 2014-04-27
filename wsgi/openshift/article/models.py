@@ -5,6 +5,9 @@ from django import forms
 # Create your models here.
 
 class Article(models.Model):
+    class Meta:
+        verbose_name_plural = "View/Add Articles"
+    
     title = models.CharField(max_length=200,
                              help_text = "Title of the Article, will be in a header 1 html tag")
     created_at = models.DateTimeField(auto_now_add=True)

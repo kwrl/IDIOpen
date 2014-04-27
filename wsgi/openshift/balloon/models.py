@@ -29,7 +29,7 @@ class string_with_title(str):
 class balloon_view(models.Model):
     class Meta:
         managed = True 
-        verbose_name = "Click here to view balloon table"
-        verbose_name_plural = "Click here to view balloon table"
+        verbose_name = "View balloon overview"
+        verbose_name_plural = "View balloon overview"
     
 # EOL
