@@ -36,8 +36,8 @@ class TeamTrRow(object):
 
         if team.members.count() > 0:
             for member in team.members.all()[1:]:
-                if member.skill_level != self.skill_level:
-                    self.skill_level = '-'
+                if member.skill_level > self.skill_level:
+                    self.skill_level = member.skill_level
                     if member.skill_level == 'pro':
                         self.pro = True
 
