@@ -94,7 +94,7 @@ def build_html_table(stats):
         if len(teamname) > 10:
             string += "<td>" + unicode(teamname[:10], "utf-8", errors="ignore") + "..." + "</td>"
         else:
-            string += "<td>" + unicode(teamname) + "</td>"
+            string += "<td>" + unicode(teamname, "utf-8", errors="ignore") + "</td>"
             
         #Number of solved
         string += "<td>" + unicode(stats[s].total_solved) + "</td>"
@@ -105,7 +105,7 @@ def build_html_table(stats):
             if len(unicode(stats[s].site)) > 4:
                 string += "<td>" + unicode(stats[s].site)[:4] + ".." "</td>"
             else:
-                string += "<td>" + stats[s].site + "</td>"
+                string += "<td>" + unicode(stats[s].site) + "</td>"
         else: 
             string += "<td>" + "Yes"  + "</td>"
         

@@ -24,7 +24,7 @@ class QuestionAnswer(models.Model):
 
     class Meta:
         verbose_name = "Clarification"
-        verbose_name_plural = "View/add Clarifications"
+        verbose_name_plural = "View/Add Clarifications"
    
     subject     = models.CharField(max_length = 120, help_text = "Max 120 chars")
     body        = models.TextField(max_length = 355, help_text = "Max 355 chars")
