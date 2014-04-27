@@ -24,11 +24,12 @@ def get_problem_score_tries(team, problem, contest):
     sub = None
     for sub in prob_subs:
         if sub.solved_problem:
-            sub = sub
+            valid_sub = sub
         else:
             incorrect_counts += 1
     _, score = get_score(sub, incorrect_counts, contest)
-    if sub: incorrect_counts +=1
+    if valid_sub: 
+        incorrect_counts +=1
     return score, incorrect_counts
 
 def is_problem_solved(team, problemID):
