@@ -14,6 +14,8 @@ class TeamForm(forms.ModelForm):
                 id=self.instance.id)).exclude(is_staff=True)
 class TeamAdmin(admin.ModelAdmin):
     filter_horizontal = ('members',)
+    list_display = ('name', 'contest', 'onsite', 'leader', 'offsite',)
+    search_fields = ('name',)
     form = TeamForm
 
 class LinkAdmin(admin.ModelAdmin):

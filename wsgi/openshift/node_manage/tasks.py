@@ -265,9 +265,9 @@ def runLogger(submission, command, stdout, stderr, retval):
     Creates a ExecutionLogEntry for the given parameters.
     It will also limit stdout and stderr to 512kB
     '''
-    if len(smart_bytes(stdout, errors="replace"))) > STDOUT_MAX_SIZE:
+    if len(smart_bytes(stdout, errors="replace")) > STDOUT_MAX_SIZE:
         stdout = 'stdout to large'
-    if len(smart_bytes(stderr, errors="replace"))) > STDERR_MAX_SIZE:
+    if len(smart_bytes(stderr, errors="replace")) > STDERR_MAX_SIZE:
         stderr = 'stderr to large'
     ExecutionLogEntry.objects.create(submission=submission,
                                     command=command,
