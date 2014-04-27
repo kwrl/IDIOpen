@@ -1,12 +1,10 @@
 from __future__ import absolute_import
-from openshift.execution.models import CompilerProfile, TestCase, Resource, get_resource
+from openshift.execution.models import TestCase, Resource, get_resource
 from openshift.teamsubmission.models import Submission, ExecutionLogEntry 
-from subprocess import call
 from openshift import celery_app as app
-from subprocess import PIPE, Popen
-from signal import SIGKILL, SIGXCPU, SIGALRM, alarm, signal 
-from django.utils.encoding import smart_str, smart_bytes
-from psutil import AccessDenied
+from subprocess import PIPE
+from signal import SIGALRM, alarm, signal 
+from django.utils.encoding import smart_bytes
 import re
 import os
 import shlex
@@ -74,67 +72,66 @@ def set_resource(time, memory=-1, procs=-1):
 @app.task
 def evaluate_task(submission_id):
     submission  = Submission.objects.get(pk=submission_id)
-    #try:
-    compiler    = submission.compileProfile
-    problem     = submission.problem
-    submission.status = Submission.RUNNING
-    submission.save()
-    runner = RunJob(submission.submission, 
-                           compiler, 
-                           get_resource(submission, compiler))
+    try:
+        compiler    = submission.compileProfile
+        problem     = submission.problem
+        submission.status = Submission.RUNNING
+        submission.save()
+        runner = RunJob(submission.submission, 
+                               compiler, 
+                               get_resource(submission, compiler))
+        
+        retval, stdout, stderr = runner.compile()
+        runLogger(submission, runner.compileCMD, stdout, stderr, retval)
+        if retval != 0:
+            if retval in MEM_EXCEED:
+                submission.text_feedback = "Compile time memory limit exceeded."
+            elif retval in USER_TIMEOUT:
+                submission.text_feedback = "Compile timeout"
+            else:
+                submission.text_feedback = "Compile time error."
+            submission.status = Submission.EVALUATED
+            submission.save()
+            return retval, stdout, stderr
     
-    retval, stdout, stderr = runner.compile()
-    runLogger(submission, runner.compileCMD, stdout, stderr, retval)
-    if retval != 0:
-        if retval in MEM_EXCEED:
-            submission.text_feedback = "Compile time memory limit exceeded."
-        elif retval in USER_TIMEOUT:
-            submission.text_feedback = "Compile timeout"
-        else:
-            submission.text_feedback = "Compile time error."
+        logger.debug('Exec start')
+    
+        results = run_tests(runner, submission)
+        exretval = 0
+    
+        for res in results:
+            #No runtime error
+            if res[0] == 0:
+                exretval = res[0]
+                submission.solved_problem = res[3]
+                if submission.solved_problem:
+                    submission.text_feedback = "Successful submission!"
+                else:
+                    submission.text_feedback = "Incorrect output."
+            #Runtime error
+            else:
+                exretval = res[0]
+                submission.solved_problem = res[3]
+                
+                if exretval in MEM_EXCEED:
+                    submission.text_feedback = "Runtime memory limit exceeded."
+                elif exretval in USER_TIMEOUT:
+                    submission.text_feedback = "Runtime timeout."
+                elif exretval in PROC_EXCEED:
+                    submission.text_feedback = "Number of processes exceeded."
+                else:
+                    submission.text_feedback = "Runtime error."   
+                break
+        logger.debug('Exec end')
         submission.status = Submission.EVALUATED
         submission.save()
-        return retval, stdout, stderr
-
-    logger.debug('Exec start')
-
-    results = run_tests(runner, submission)
-    exretval = 0
-
-    for res in results:
-        #No runtime error
-        if res[0] == 0:
-            exretval = res[0]
-            submission.solved_problem = res[3]
-            if submission.solved_problem:
-                submission.text_feedback = "Successful submission!"
-            else:
-                submission.text_feedback = "Incorrect output."
-        #Runtime error
-        else:
-            exretval = res[0]
-            submission.solved_problem = res[3]
-            
-            if exretval in MEM_EXCEED:
-                submission.text_feedback = "Runtime memory limit exceeded."
-            elif exretval in USER_TIMEOUT:
-                submission.text_feedback = "Runtime timeout."
-            elif exretval in PROC_EXCEED:
-                submission.text_feedback = "Number of processes exceeded."
-            else:
-                submission.text_feedback = "Runtime error."   
-            break
-    logger.debug('Exec end')
-    submission.status = Submission.EVALUATED
-    submission.save()
-    return results
-    #except Exception as e:
-    #    logger.debug(e.args)
-    #    logger.debug(e.message)
-    #    submission.status = Submission.EVALUATED
-    #    submission.text_feedback = "Something went wrong. Contacts admins"
-    #    submission.save()
-
+        return results
+    except Exception as e:
+        logger.debug(e.args)
+        logger.debug(e.message)
+        submission.status = Submission.EVALUATED
+        submission.text_feedback = "Something went wrong. Contacts admins"
+        submission.save()
 
 class RunJob():
     '''
@@ -265,9 +262,9 @@ def runLogger(submission, command, stdout, stderr, retval):
     Creates a ExecutionLogEntry for the given parameters.
     It will also limit stdout and stderr to 512kB
     '''
-    if len(smart_bytes(stdout, errors="replace"))) > STDOUT_MAX_SIZE:
+    if len(smart_bytes(stdout, errors="replace")) > STDOUT_MAX_SIZE:
         stdout = 'stdout to large'
-    if len(smart_bytes(stderr, errors="replace"))) > STDERR_MAX_SIZE:
+    if len(smart_bytes(stderr, errors="replace")) > STDERR_MAX_SIZE:
         stderr = 'stderr to large'
     ExecutionLogEntry.objects.create(submission=submission,
                                     command=command,
