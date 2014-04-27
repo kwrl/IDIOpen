@@ -22,7 +22,7 @@ def in_contest(submission, contest):
 
 def get_score(sub, incorrect_count, contest):
     if not sub:
-        return 0, (incorrect_count * contest.penalty_constant) 
+        return 0, 0
 
     time = int((sub.date_uploaded
             - contest.start_date).total_seconds()) / 60

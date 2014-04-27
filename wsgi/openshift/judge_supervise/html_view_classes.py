@@ -16,10 +16,10 @@ class ProblemAttempsCount(object):
 
         if self.successfull == 0:
             return 0
-        if self.failed == 0:
-            return self.successfull
+        if self.total == 0:
+            return 0
 
-        return (Decimal(self.successfull) / Decimal(self.failed))
+        return (Decimal(self.successfull) / Decimal(self.total))
 
     def __init__(self, problem, failed, successfull):
         self.problem = problem
