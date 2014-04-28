@@ -18,6 +18,10 @@ from django.utils import timezone;
 # Create your views here.
 
 def index(request):
+	'''
+	The root view/url for a contest. Lists all articles with the visible_article_list set to true,
+	and displays urgent articles at the top of the list.
+	'''
     url = get_current_url(request)
 
     '''
