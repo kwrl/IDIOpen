@@ -11,7 +11,11 @@ from django.shortcuts import Http404
 This is for clarification post a question
 '''
 def clarification(request):
-    
+	'''
+	This view handles sending Questions/clarifications.
+	In order to get access to the clarifications you need to
+	be logged in, on a team, and the contest needs to have started.
+	'''
     if not helpView.contest_begin(request): 
         messages.info(request, "contest has not yet begun")
         return clarificationAnswers(request)

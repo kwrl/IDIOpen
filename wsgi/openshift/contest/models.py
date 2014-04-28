@@ -25,6 +25,10 @@ def getTodayDate():
     return timezone.make_aware(datetime.datetime.now(), timezone.get_default_timezone())
 
 class ContactInformation(models.Model):
+	'''
+	Simple entity for storing contact information. Initially only used in the website footer
+	for adding support info.
+	'''
     email = models.EmailField()
     name = models.CharField(max_length=30)
 
@@ -70,6 +74,11 @@ class Contest(models.Model):
      
 # Links for displaying in navigation for each contest    
 class Link(models.Model):
+	'''
+	Used to dynamically add links to the global left side menu on the website.
+	Can also be used to create empty space between other links, in which case
+	it is called a separator. 
+	'''
     #name of the link
     text = models.CharField(max_length=30, help_text='The display name for the link')
     # If true, url gets added to contest url
@@ -92,6 +101,12 @@ class Link(models.Model):
  
     
 class Team(models.Model):
+	'''
+	Used to represent a team competing in a specific contest. A team consists of
+	a group of users, the team members, one of which is set to be the team leader.
+	Team members can choose to leave a team, but other than that only the team
+	leader can edit the team. 
+	'''
     name = models.CharField(max_length=50, verbose_name = "Team name")
     onsite = models.BooleanField()
     leader = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='leader', null = True)
@@ -115,6 +130,11 @@ class Team(models.Model):
                     setattr(self, field.name, value.strip())
                                       
 class InviteManager(models.Manager):
+	'''
+	Used to handle invites. If a team leader invites a new user to his team
+	the create_invite function is called and an invite instance is created.
+	Finally the send_new_mail is called to notify the user of the invite.
+	'''
     def create_invite(self, email, team, url, site):
         invite = self.create(email=email, team=team)
         user = User.objects.filter(email=email)
@@ -144,6 +164,9 @@ class InviteManager(models.Manager):
         
 
 class Invite(models.Model):
+	'''
+	Represents an invitation to join a team in the database.
+	'''
     email = models.EmailField() 
     team = models.ForeignKey('Team')
     is_member = models.BooleanField(default=False)
@@ -154,6 +177,9 @@ class Invite(models.Model):
 
 
 class Sponsor(models.Model):
+	'''
+	Sponsors need ad space. Logos etc are stored as instances of this class and displayed on the website.
+	'''
     name = models.CharField(max_length=50, default='Logo', help_text='Company name for the sponsor')
     url = models.URLField(help_text='The url you want the user to get redirected to when the logo is clicked')  
     image = FileBrowseField('Image', max_length=200, directory='sponsor/', 
