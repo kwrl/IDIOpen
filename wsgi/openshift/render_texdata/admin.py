@@ -7,9 +7,15 @@ from .urls import render_csv_url, latex_url
 
 from openshift.helpFunctions.views import get_most_plausible_contest
 
+from .views import latex_view
+
 class LatexAdmin(admin.ModelAdmin):
     def get_urls(self):
         return latex_url(self, LatexAdmin)
+
+    # def changelist_view(self, request, extra_context=None):
+    #     #return latex_view
+    #     return  super(foo, self).changelist_view(request,extra_context)
 
 class RenderAdmin(admin.ModelAdmin):
     # FIXME
