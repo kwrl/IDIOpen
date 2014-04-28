@@ -13,7 +13,9 @@ class TestCaseAdmin(admin.ModelAdmin):
 admin.site.register(TestCase, TestCaseAdmin)
 
 class ProblemAdmin(admin.ModelAdmin):
+    search_fields = ('title', 'author',)
     list_display = ('title', 'author', 'contest') 
+    list_filter = ('contest',)
     fields = ('title', 'description', 'textFile', 'contest')
     # Set author, to the user/admin who created the article
     def save_model(self, request, obj, form, change):

@@ -26,6 +26,7 @@ class ArticleAdmin(admin.ModelAdmin):
     form = ArticleForm
     list_display = ('title', 'created_at','contest','author','visible_article_list','url', 'is_urgent')
     search_fields = ('title', 'text','author',)
+    list_filter = ('contest',)
     ordering = ('created_at',)
     
     # Set author, to the user/admin who created the article
