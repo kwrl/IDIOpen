@@ -60,7 +60,8 @@ def clarification(request):
 
 def clarificationAnswers(request):
     '''
-    Everybody should be able to view clarifications at all time
+	This view displays the answers to a question. 
+	Access to this view is not restricted in any way.
     '''
     answers = helpView.get_all_answers(request)
     context = {

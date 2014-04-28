@@ -36,6 +36,12 @@ class ContactInformation(models.Model):
         return self.name
 
 class Contest(models.Model):
+	'''
+	This class represents a contest. Every article, submission, team etc are in some way related to
+	an instance of this class. Other than binding the other entities together it sets the start
+	date for the contest, the end date, a registration end date, and a publish date. The penalty 
+	constant used to calculate team scores is also set in this model.
+	'''
     title = models.CharField(max_length=200)
     contact_infos = models.ManyToManyField('ContactInformation', null = True)
     """ The url is saved as the suffix from root, only, not the entire url

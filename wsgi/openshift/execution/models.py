@@ -74,6 +74,13 @@ def get_upload_path2(instance, filename):
 
 #Author: Tino, typo
 class Problem(models.Model):
+	'''
+	This class represents a problem for teams to solve during a contest.
+	This model containt little more than a simple description of the
+	problem and a relation to the contest it is to be part of. 
+	Resource limitation are set as relations between this class and
+	compiler profiles.
+	'''
     title       = models.CharField(max_length=200, unique = True)
     description = models.TextField()
     textFile    = models.FileField(upload_to=get_upload_path2,
@@ -130,9 +137,13 @@ class Resource (models.Model):
     
 
 class TestCase(models.Model):
-    """ We're assuming error cases are defined elsewhere...
-        As a python test
-    """
+	'''
+	When a user submits code for evaluation it is compiled and then run through a set of
+	test cases, represented by this model. TestCases can function in two different ways,
+	either by means of a custom validator or by simple string comparison. Custom validators
+	need a compiler profile to work. For in detail description how TestCases are used check
+	node_manage/tasks.py
+	'''
     inputFile = models.FileField(upload_to=get_upload_path,
                        verbose_name="Input data (file)")
     outputFile = models.FileField(upload_to=get_upload_path,
