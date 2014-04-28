@@ -78,6 +78,7 @@ INSTALLED_APPS = (
     'openshift.helpFunctions',
     'openshift.judge_supervise',
     'openshift.balloon',
+    'openshift.render_texdata',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -98,6 +99,7 @@ TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
     'django.template.loaders.eggs.Loader',
+    'apptemplates.Loader',
 )
 TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.request",

@@ -22,12 +22,13 @@ def render_csv_url(inst, class_super):
 
 def latex_url(inst, class_super):
     urls = super(class_super, inst).get_urls()
-    urls = [urls[0], ]
+    #urls = [urls[0], ]
     #import ipdb; ipdb.set_trace()
     my_urls = patterns('',
        url(r'^$',
-                admin.site.admin_view(latex_view,
-                                      cacheable=True)),
+                admin.site.admin_view(latex_view),
+                                    name="nei",
+                                    ),
     )
     return my_urls + urls
 
