@@ -9,6 +9,10 @@ from openshift.helpFunctions import views as helpView
 from django import forms
 
 class QuestionForm(forms.ModelForm):
+    '''
+    Form for submitting questions to the clarification system.
+    Does little of note other than stripping subject and body.
+    '''
     class Meta:
         model=Question
         widgets = {
