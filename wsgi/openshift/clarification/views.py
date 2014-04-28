@@ -14,7 +14,7 @@ This is for clarification post a question
 def clarification(request):
     
     if not helpView.contest_begin(request): 
-        messages.info(request, "contest has not yet begun")
+        messages.info(request, "contest has not yet started")
         return redirect("clarificationAnswersPage", get_current_contest(request).url)
     
     elif not request.user.is_authenticated():
