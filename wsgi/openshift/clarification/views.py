@@ -1,9 +1,10 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .forms import QuestionForm
 from .models import Question
 from django.contrib import messages
 from openshift.helpFunctions import views as helpView
 from django.shortcuts import Http404
+from openshift.helpFunctions.views import get_current_contest
 
 # Create your views here.
 
@@ -14,7 +15,7 @@ def clarification(request):
     
     if not helpView.contest_begin(request): 
         messages.info(request, "contest has not yet begun")
-        return clarificationAnswers(request)
+        return redirect("clarificationAnswersPage", get_current_contest(request).url)
     
     elif not request.user.is_authenticated():
         messages.info(request, "You are not logged in")
