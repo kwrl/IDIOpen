@@ -14,6 +14,7 @@ from .forms import SubmissionForm
 import datetime
 from datetime import timedelta
 from collections import defaultdict
+from django.core.exceptions import ObjectDoesNotExist
 
 CLOSE_TIME = 1 #Hour
 
@@ -57,34 +58,40 @@ def submission_problem(request, problemID):
     #TODO: maybe a nicer url than numeric ID
     contest = get_current_contest(request)
     user = request.user
+            
     if not user.is_authenticated():
         return redirect('login', contest.url)
-    # Raise 404 if contest hasn't begun or has ended, and if user is not member of team
-    if not contest_begin(request) or not is_member_of_team(request, contest):
-        raise Http404
-    if contest_end(request):
-        messages.warning(request, 'The contest has ended, you are not able to upload any more submissions.')
-
-    if not is_leader(request, contest):
-        messages.warning(request, 'Only leader can upload a solution')
+    
+    if not user.is_staff:
+        # Raise 404 if contest hasn't begun or has ended, and if user is not member of team
+        if not contest_begin(request) or not is_member_of_team(request, contest):
+            raise Http404
+        if contest_end(request):
+            messages.warning(request, 'The contest has ended, you are not able to upload any more submissions.')
+    
+        if not is_leader(request, contest):
+            messages.warning(request, 'Only leader can upload a solution')
+    
+    else:
+        messages.warning(request, 'pssst: You are now logged in with a staf user')
+        
 
     #TODO: Only leader can upload check
-    problem = get_object_or_404(Problem.objects.filter(pk=problemID))
-    user = request.user
+    problem = get_object_or_404(Problem.objects.filter(pk=problemID)) 
     team = Team.objects.filter(contest=contest).get(members__id = user.id)
     submission = Submission.objects.filter(team=team).filter(problem=problemID)
-    prob_sub_dict = dict()
+    prob_sub_dict = dict() #Was is das?
 
     if len(submission.values_list()) > 0:
         submission = submission[0]
         problem = submission.problem
-
     else:
         submission = Submission()
         submission.problem = problem
         submission.team = team
-    '''
-    Does not look good
+    
+    ''''
+    Does not look good|
     if is_problem_solved(team, problemID):
         messages.success(request, 'This problem is solved!')
     '''
@@ -103,7 +110,7 @@ def submission_problem(request, problemID):
         elif (submission.status != submission.EVALUATED and submission.status != submission.NOTSET):
             messages.info(request, 'Please wait. Only one submisison at a time')
         
-        elif is_leader(request, contest):
+        elif is_leader(request, contest) or user.is_staff:
             if form.is_valid():
                 form.save()
                 return redirect('submission_problem', contest.url, problemID)
@@ -138,19 +145,27 @@ def submission_view(request):
     if not user.is_authenticated():
         messages.error(request, 'You have to be logged in in order to view the contest page')
         return redirect('login', contest.url)
-
-    if not is_member_of_team(request, contest):
-        messages.error(request, 'Please register a team to participate')
-        return redirect('team_profile', contest.url)
-
-    # Raise 404 if contest hasn't begun or contest has ended
-    if not contest_begin(request):
-        messages.error(request, 'Contest has not yet started')
-        return redirect('contest_list', contest.url)
-
-    if contest_end(request):
-        messages.warning(request, 'The contest has ended, you are not able to upload any more submissions.')
-
+    
+    if not user.is_staff:
+        if not is_member_of_team(request, contest):
+            messages.error(request, 'Please register a team to participate')
+            return redirect('team_profile', contest.url)
+    
+        # Raise 404 if contest hasn't begun or contest has ended
+        if not contest_begin(request):
+            messages.error(request, 'Contest has not yet started')
+            return redirect('contest_list', contest.url)
+    
+        if contest_end(request):
+            messages.warning(request, 'The contest has ended, you are not able to upload any more submissions.')
+    
+    else:
+        team = Team.objects.filter(contest=contest, members__id = user.id)
+        if  team:
+            messages.warning(request, 'pssst: You are now logged in with a staf user, remember to delete your team before contest start') 
+        else: 
+            messages.warning(request, 'pssst: You are now logged in with a staf user. you need a team in order to test. Create a team and remember to delete it before contest start!')
+    
     team = Team.objects.filter(contest=contest, members__id = user.id)
     problems = Problem.objects.filter(contest=contest)
     prob_sub_dict = dict()
