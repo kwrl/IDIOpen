@@ -141,7 +141,7 @@ def submission_problem(request, problemID):
 #Login required
 def submission_view(request):
 	'''
-	This is what is the view used to serve what is usually referrede to
+	This is what is the view used to serve what is usually referred to
 	as the contest page. The contest page consists of the list of problems
 	available in the contest. Each of the problems are marked with whether
 	or not they are solved, and prints the feedback of the latest attempt
