@@ -27,7 +27,7 @@ def get_problem_score_tries(team, problem, contest):
             valid_sub = sub
         else:
             incorrect_counts += 1
-    _, score = get_score(sub, incorrect_counts, contest)
+    _, score = get_score(valid_sub, incorrect_counts, contest)
     if valid_sub: 
         incorrect_counts +=1
     return score, incorrect_counts
