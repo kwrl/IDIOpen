@@ -8,12 +8,19 @@ import os
 PROBLEM_ROOT_DIR = 'problems'
 
 class FileExtension(models.Model):
+	'''
+	Used to make sure that submissions aren't submitted with the wrong compiler profile. 
+	E.g HelloWorld.java submitted to the C++ compiler profile.
+	'''
     extension = models.CharField(max_length=4, help_text = 'e.g java, c or cpp. Write the extension name without dot in front. ')
 
     def __unicode__(self):
         return self.extension
 
 class CompilerProfile(models.Model):
+	'''
+	Defines how submissions and custom validators of a certain type should be built and executed.
+	'''
     name = models.CharField(max_length=100)
     extensions = models.ManyToManyField('FileExtension')
     
@@ -83,8 +90,8 @@ class Problem(models.Model):
 #Author: typo
 class Resource (models.Model):
     '''
-    This models contains all "limitations" on each Profile. 
-    E.g. the number maximum memory usage for this profile, if JAVA is used is XXXXX. 
+	Defines the resource limitation for a submission. Resources are related
+	to both compiler profiles and problems. 
     '''
     cProfile = models.ForeignKey('execution.CompilerProfile', related_name="resource_CompilerProfile")
     problem = models.ForeignKey('execution.Problem', related_name="resource_problem")
