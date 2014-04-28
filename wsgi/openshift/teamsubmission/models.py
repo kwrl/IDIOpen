@@ -19,6 +19,9 @@ class TriesTimeSolved(object):
         self.solved = solved
 
 class TeamTrRow(object):
+	'''
+	Class used to store calculated score and team information. Used by the highscore table.
+	'''
     def __init__(self, team, problemsLen):
         self.problemList = [None] * problemsLen
         self.team = team

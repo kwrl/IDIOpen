@@ -5,6 +5,13 @@ from django import forms
 # Create your models here.
 
 class Article(models.Model):
+	'''
+	Articles view on the website are stored as instances of this class. 
+	Articles are related to a specific contest, store what user authored them.
+	Contests have a an article feed, articles can be left out of this feed by
+	setting visible_article_list false. If you want an article to appear at the
+	top of the article list you can set is_urgent to true.
+	'''
     class Meta:
         verbose_name_plural = "View/Add Articles"
     
