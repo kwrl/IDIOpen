@@ -287,8 +287,8 @@ def leave_team(request):
         messages.error(request, 'Sorry, you can\'t leave team after registration is closed')
     elif request.method == 'POST':
         if is_RegOpen:
-            team = Team.objects.filter(contest=con).get(members__id = request.user.id)
             if is_leader(request, con): # If leader, delete the team
+                team = Team.objects.filter(contest=con).get(members__id = request.user.id)
                 if team.members.all().count() > 1: # If member count is > 1
                     messages.error(request, 'You need to transfer leadership before you can leave the team.')
                 else:
