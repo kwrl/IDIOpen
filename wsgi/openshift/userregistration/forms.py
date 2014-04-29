@@ -126,7 +126,7 @@ class RegistrationForm(forms.Form):
             raise forms.ValidationError(
                     _("A user with that email already exists."))
         else:
-            return self.cleaned_data['email'].lower()
+            return self.cleaned_data['email']
  
 #===============================================================================
 # Strips trailing whitespace from first_name, last_name and nickname.
