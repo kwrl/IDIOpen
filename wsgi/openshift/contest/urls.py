@@ -7,6 +7,10 @@ from django.conf.urls import patterns, include, url
 from openshift.contest import views
 from openshift.article import views as articleview
 from openshift.teamsubmission.views import highscore_view
+from openshift.clarification.views import clarificationAnswers
+
+
+
 urlpatterns = patterns('',
     # Examples:
     url(r'^$', views.index, name='contest_list'),
@@ -29,6 +33,7 @@ urlpatterns = patterns('',
     url(r'^cage$', views.cage_me, name = 'nic_cage'), 
     url(r'^highscore/$', highscore_view, name = 'highscorePage'),
     url(r'^highscore/(?P<sort_res>\w+)/$', highscore_view, name = 'highscorePageRes'),
+    url(r'answers', clarificationAnswers, name = "clarificationAnswersPage"),
 )
 
 # EOF
