@@ -78,7 +78,6 @@ def process_team_contestants(latex_parse_string, team_list):
 
     i = 0
     for team_name, contestants in team_contestant_dict.iteritems():
-        import ipdb; ipdb.set_trace();
         tex_dict = {
                betweenParanthesis(CONTESTANT_PARSELINE) : renderingStr(contestants),
                betweenParanthesis(TEAM_PARSELINE)       : team_name}
@@ -106,6 +105,8 @@ def process_team_contestants(latex_parse_string, team_list):
     zf = ZipFile(s, mode='w')
     zf.filename = "teampdf.zip"
 
+
+
     pdf_files = [file for file in listdir(dir_dest) if file.endswith(".pdf")]
     if len(pdf_files) == 1:
         file = path.join(dir_dest, pdf_files[0])
@@ -113,14 +114,35 @@ def process_team_contestants(latex_parse_string, team_list):
         response['Content-Disposition'] = 'attachment; filename="team.pdf"'
         return response
 
+    """ fuckup BEGING """
+    string = ""
+    for pdf in pdf_files:
+        string += path.join(dir_dest, pdf + " ")
+
+    monster_pdf = path.join(dir_dest, "out.pdf") 
+
+    proc=Popen(split('pdfunite %s %s' % (string, monster_pdf)))
+    proc.communicate()
+
+    response = HttpResponse(open(monster_pdf), content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="team.pdf"'
+
+    return response
+
+    """ fuckup end"""
+
+
     for pdf in pdf_files:
         zf.write(path.join(dir_dest, pdf), arcname="teamPDF/" + pdf)
     zf.close()
+
 
     # Grab ZIP file from in-memory, make response with correct MIME-type
     response = HttpResponse(s.getvalue(), mimetype = "application/x-zip-compressed")
     # ..and correct content-disposition
     response['Content-Disposition'] = 'attachment; filename=%s' % zf.filename
+
+
     return response
 
 def get_team_contestant_dict(teams):
