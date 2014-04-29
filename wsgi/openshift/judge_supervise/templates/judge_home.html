@@ -50,7 +50,7 @@ background-size: auto;
             {%endif %}
          {% endfor %}
         </select>
-
+<br />
 <br />
 <br />
 <h2> Select team to inspect </h2>
@@ -65,7 +65,11 @@ background-size: auto;
 <br />
 <br />
 
-<small>Click on a table column to sort on that field</small>
+<small>Click on a table column to sort on that field
+<br />
+Sort multiple columns simultaneously by holding down the shift key and clicking a second
+, third or even fourth column header. 
+</small>
 <br />
 <br />
 <h3> Onsite teams </h3>
@@ -132,15 +136,15 @@ background-size: auto;
             <th data-toggle="tooltip" data-placement="top" title="What problem this is about">Successfull attempts</th>
             <th data-toggle="tooltip" data-placement="top" title="">Failed attempts</th>
             <th data-toggle="tooltip" data-placement="top" title="What problem this is about">Total</th>
-            <th data-toggle="tooltip" data-placement="top" title="What problem this is about">Success/Failed Ratio</th>
+            <th data-toggle="tooltip" data-placement="top" title="What problem this is about">Success/Total Ratio</th>
             </tr>
     </thead>
     <tbody>
             {% for listitem in prob_attempt_counts %}
             <tr >
             <td >{{listitem.problem}}</td>
-            <td>{{listitem.failed}}</td>
             <td>{{listitem.successfull}}</td>
+            <td>{{listitem.failed}}</td>
             <td>{{listitem.total}}</td>
             <td>{{listitem.success_ratio}}</td>
         </tr>
@@ -171,7 +175,7 @@ background-size: auto;
             </tr>
     </thead>
     <tbody>
-            {% for entry in highscore %}
+            {% for entry in highscore|dictsort:"total_score"|dictsortreversed:"total_solved" %}
             <tr>
                 <td> {{forloop.counter}} </td>
                 <td> {{entry.team}} </td>
@@ -184,8 +188,10 @@ background-size: auto;
                 {% for x in entry.problemList %}
                 {% if x.solved %}
                 <td style="background: #90EE90"> {{x.tries|add:"1"}}/{{x.attempts}} </td>
-                {% else %}
+                {% elif x.tries %}
                 <td style="background: #FFC0CB"> {{x.tries}}/{{x.attempts}} </td>
+                {% else %}
+                <td> {{x.tries}}/{{x.attempts}} </td>
                 {% endif %}
                 {% endfor %}
             </tr>

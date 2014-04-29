@@ -10,6 +10,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import Http404
 from django.contrib import messages
+from openshift.helpFunctions import views as helpViews
 
 import datetime;
 from django.utils import timezone;
@@ -28,7 +29,6 @@ def index(request):
 
 
     context = {'article_list' : article_list,
-              # 'article_urgent': article_urgent,
                }
     return render(request, 'contest/index.html', context)
 
@@ -58,8 +58,8 @@ AUTHOR: Tino, Filip
 # Check if user is Team leader
 #===============================================================================
 def is_leader(request, contest):
-    team = Team.objects.filter(contest=contest).get(members__id = request.user.id)
-    if team.leader.id == request.user.id:
+    leader_team = Team.objects.filter(contest=contest).get(members__id = request.user.id)
+    if leader_team.leader.id == request.user.id and leader_team.pk == helpViews.get_team(request).pk:
         return True
     else:
         return False
@@ -358,7 +358,6 @@ def deleteMember(request, member_id):
     user = request.user
     url = request.path.split('/')[1]
     con = get_current_contest(request)
-
     if is_leader(request, con):
         queryset = Team.objects.filter(contest=con).filter(members__in = [user])
         team = get_object_or_404(queryset)
