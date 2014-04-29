@@ -30,7 +30,6 @@ FILENAME = "/tmp/outfile.csv"
 
 #MYSQL_CON = mdb.connect('hv-6146.idi.ntnu.no', 'gentle', 'tacosushi', 'gentleidi', 3306);
 #MYSQL_CON = mdb.connect('localhost', 'gentle', 'tacosushi', 'gentleidi', 3306);
-MYSQL_CON = mdb.connect('localhost', 'tino', 'password', 'gentleidi')
 
 
 
@@ -82,6 +81,7 @@ def process_team_contestants(request):
 
 def get_team_contestant_dict():
     team_members_dict = defaultdict( list )
+    MYSQL_CON = mdb.connect('localhost', 'andesil', 'password', 'gentleidi')
     with MYSQL_CON: 
         cur = MYSQL_CON.cursor()
         cur.execute(SQL_FETCH_USERNAME_TEAM)
@@ -111,6 +111,7 @@ def extract_to_csv():
     except OSError:
         pass
 
+    MYSQL_CON = mdb.connect('localhost', 'andesil', 'password', 'gentleidi')
     with MYSQL_CON: 
         cur = MYSQL_CON.cursor()
         

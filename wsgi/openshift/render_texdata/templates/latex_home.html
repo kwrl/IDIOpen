@@ -1,9 +1,9 @@
 {% extends "admin/change_list.html" %}
 
 {% load i18n admin_urls %}
+</ul>
+</div>
 
-{% block object-tools-items %}
-<h2> Choose contest </h2>
 <select name="selectContest" onchange="switchContest()">
     {% for con in contests %}
          {% if con.pk == contest.pk %}
@@ -17,7 +17,12 @@
 <br />
 <br />
 
-<button type="submit"> AAa </button>
+
+
+{% block object-tools-items %}
+<button >aaaa</button>
+
+</div>
 
 <script type="text/javascript">
         function post_to_url(path, params) {
