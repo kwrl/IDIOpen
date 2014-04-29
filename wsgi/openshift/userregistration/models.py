@@ -113,10 +113,10 @@ class CustomUserManager(BaseUserManager):
             new_user.send_activation_email(site, url)
 
         return new_user;
-    '''
+    
     def get_by_natural_key(self, username):
         return self.get(email__iexact = username)
-    '''
+    
 YEAR_OF_STUDY = (
         ('1', '1'),
         ('2', '2'),
