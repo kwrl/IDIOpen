@@ -20,6 +20,6 @@ class Latex_TeamText(models.Model):
     latex_text = models.TextField()
     team = models.ForeignKey(Team)
     class Meta:
-        #app_label = string_with_title("Latex_TeamText", "Latex_TeamText")
+        #app_label = 'aaa'; string_with_title("Latex_TeamText", "Latex_TeamText")
         pass
 # EOF

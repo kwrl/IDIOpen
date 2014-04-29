@@ -25,7 +25,7 @@ def latex_url(inst, class_super):
     #urls = [urls[0], ]
     #import ipdb; ipdb.set_trace()
     my_urls = patterns('',
-       url(r'^$',
+       url(r'^newurl$',
                 admin.site.admin_view(latex_view),
                                     name="nei",
                                     ),
