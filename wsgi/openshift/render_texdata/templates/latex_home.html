@@ -18,11 +18,11 @@
 \documentclass{article}
 \begin{document}
 %(team)s \\
-"%(contestant_line)s"
-"%(sponsor1)s"
-"%(sponsor2)s"
-"%(sponsor3)s"
-"%(prize)s"
+%(contestant_line)s
+%(sponsor1)s
+%(sponsor2)s
+%(sponsor3)s
+%(prize)s
 \end{document}
 </textarea>
 
@@ -95,7 +95,7 @@ button.buttonGroup  {
     }
 </style>
 
-<button type="submit" class="buttonGroup" onclick="post_to_url('', {'text':document.getElementById('id_latex').value}, 'teamCSV')">Create CSV for teams</button>
+<button type="submit" class="buttonGroup" onclick="post_to_url('', {'text':document.getElementById('id_latex').value}, 'teamCSV')">Create latex for teams</button>
 
 
 <button type="submit" class="buttonGroup" onclick="post_to_url('', {}, 'emailCSV')">Create list of emails</button>

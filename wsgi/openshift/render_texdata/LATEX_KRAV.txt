@@ -19,5 +19,4 @@ ikke bare portrait (men de lager hele latex)
 
 semikolon-separert liste over lagepost
 
-
 lagnavn, nummer, medlemsnavn, sponsor, premienavn?
