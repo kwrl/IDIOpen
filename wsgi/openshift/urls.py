@@ -11,6 +11,8 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
     # Examples:
+    url(r'^private_files/', include('private_files.urls')),
+    
     url(r'^$', 'openshift.views.home', name='home'),
     url(r'^test/$', 'openshift.views.taskTest'),
     # url(r'^blog/', include('blog.urls')),

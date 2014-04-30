@@ -11,6 +11,9 @@ from django.core.exceptions import ObjectDoesNotExist
 from openshift.userregistration.models import CustomUser as User
 import datetime
 from django.utils import timezone
+from django.http import Http404
+from private_files import PrivateFileField
+
 
 # Create your models here.
 
@@ -150,11 +153,11 @@ class Team(models.Model):
                     setattr(self, field.name, value.strip())
                                       
 class InviteManager(models.Manager):
-	'''
+    '''
 	Used to handle invites. If a team leader invites a new user to his team
 	the create_invite function is called and an invite instance is created.
 	Finally the send_new_mail is called to notify the user of the invite.
-	'''
+    '''
     def create_invite(self, email, team, url, site):
         invite = self.create(email=email, team=team)
         user = User.objects.filter(email=email)
@@ -184,9 +187,9 @@ class InviteManager(models.Manager):
         
 
 class Invite(models.Model):
-	'''
+    '''
 	Represents an invitation to join a team in the database.
-	'''
+    '''
     email = models.EmailField() 
     team = models.ForeignKey('Team')
     is_member = models.BooleanField(default=False)
@@ -197,9 +200,9 @@ class Invite(models.Model):
 
 
 class Sponsor(models.Model):
-	'''
+    '''
 	Sponsors need ad space. Logos etc are stored as instances of this class and displayed on the website.
-	'''
+    '''
     name = models.CharField(max_length=50, default='Logo', help_text='Company name for the sponsor')
     url = models.URLField(help_text='The url you want the user to get redirected to when the logo is clicked')  
     image = FileBrowseField('Image', max_length=200, directory='sponsor/', 

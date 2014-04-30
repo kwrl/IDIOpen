@@ -81,7 +81,10 @@ INSTALLED_APPS = (
     'openshift.helpFunctions',
     'openshift.judge_supervise',
     'openshift.balloon',
+    'private_files',
 )
+
+FILE_PROTECTION_METHOD = 'nginx'
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
