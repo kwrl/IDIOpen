@@ -3,7 +3,11 @@ from openshift.contest.models import Team, Contest
 from django.conf import settings
     
 class Question (models.Model):
-    
+	'''
+	Questions submitted by users are stored as instances of this class.
+	The questions are related to the team asking the question, and marked
+	with whether or not the question has been answered.
+	'''
     class Meta:
         verbose_name = "or add an answer to a question"
         verbose_name_plural = "View and answer questions"
@@ -21,7 +25,10 @@ class Question (models.Model):
         return self.subject
 
 class QuestionAnswer(models.Model):
-
+	'''
+	This class represents the answers to the Question instances. These are created by
+	privileged users(admin/judge) in response to the questions posed by contestants.
+	'''
     class Meta:
         verbose_name = "Clarification"
         verbose_name_plural = "View/Add Clarifications"

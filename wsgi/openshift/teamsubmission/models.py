@@ -19,6 +19,9 @@ class TriesTimeSolved(object):
         self.solved = solved
 
 class TeamTrRow(object):
+	'''
+	Class used to store calculated score and team information. Used by the highscore table.
+	'''
     def __init__(self, team, problemsLen):
         self.problemList = [None] * problemsLen
         self.team = team
@@ -136,7 +139,12 @@ def file_function(instance, filename):
 
 
 class Submission(models.Model):
-    
+	'''
+	When a user attempts to upload a solution to a problem the data related to that upload
+	is stored as an instance of this class. It contains the submitted source code, the compiler
+	profile selected etc. When a submission has been evaluated the results are also stored in
+	the same instance of this class.
+	'''
     class Meta:
         verbose_name_plural = "View Submissions"
     
@@ -166,6 +174,10 @@ class Submission(models.Model):
         return unicode(self.pk)
 
 class ExecutionLogEntry(models.Model):
+	'''
+	When a submission is compiled or executed the data related the process created is stored
+	here. 
+	'''
     class Meta:
         verbose_name_plural = "View Execution Log Entries"
     
