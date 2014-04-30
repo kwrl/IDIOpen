@@ -55,6 +55,14 @@ def is_leader(request, contest):
 
 #View for uploading submissions to a problem
 def submission_problem(request, problemID):
+	'''
+	The view for uploading submission and reviewing the status of a team's
+	latest submission. By default this view lets teams upload submission,
+	once the team has uploaded a valid submission they are no longer able 
+	to upload any more submission and the view simply tells the user that
+	the problem has been solved, awarding the team x points.
+	'''
+
     #TODO: maybe a nicer url than numeric ID
     contest = get_current_contest(request)
     user = request.user
@@ -139,6 +147,13 @@ def submission_problem(request, problemID):
 
 #Login required
 def submission_view(request):
+	'''
+	This is what is the view used to serve what is usually referred to
+	as the contest page. The contest page consists of the list of problems
+	available in the contest. Each of the problems are marked with whether
+	or not they are solved, and prints the feedback of the latest attempt
+	made by the team viewing the page.
+	'''
     user = request.user
     contest = get_current_contest(request)
 
@@ -217,6 +232,12 @@ def submission_view(request):
     return render(request, 'submission_home.html', context)
 
 def highscore_view(request, sort_res="all"):
+	'''
+	This view calculates and renders the highscore list.
+	During the last hour of the contest this list will no
+	longer be available. Privileged users will have access
+	to a more thorough list available in the admin panel. 
+	'''
     # sort res can say offsite of onsite or student or pro
     contest = get_current_contest(request)
 
