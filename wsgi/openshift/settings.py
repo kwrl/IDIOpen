@@ -42,6 +42,8 @@ AUTH_USER_MODEL = 'userregistration.CustomUser'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+SITE_ID = 0
+
 TEMPLATE_DEBUG = DEBUG
 
 if DEBUG:
@@ -55,6 +57,7 @@ INSTALLED_APPS = (
     'grappelli',
     'filebrowser',
     'django.contrib.admin',
+    'django.contrib.admindocs',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
