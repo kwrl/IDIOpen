@@ -19,9 +19,9 @@ class TriesTimeSolved(object):
         self.solved = solved
 
 class TeamTrRow(object):
-	'''
-	Class used to store calculated score and team information. Used by the highscore table.
-	'''
+    '''
+    Class used to store calculated score and team information. Used by the highscore table.
+    '''
     def __init__(self, team, problemsLen):
         self.problemList = [None] * problemsLen
         self.team = team
@@ -139,16 +139,16 @@ class ScoreManager(models.Manager):
 
 def file_function(instance, filename):
     return '/'.join(['submissions', str(instance.team.contest.id), str(instance.team.id),
-				    str(instance.problem.id), datetime.strftime(datetime.now(), '%d%m%y%H%M%S'), filename])
+                    str(instance.problem.id), datetime.strftime(datetime.now(), '%d%m%y%H%M%S'), filename])
 
 
 class Submission(models.Model):
-	'''
-	When a user attempts to upload a solution to a problem the data related to that upload
-	is stored as an instance of this class. It contains the submitted source code, the compiler
-	profile selected etc. When a submission has been evaluated the results are also stored in
-	the same instance of this class.
-	'''
+    '''
+    When a user attempts to upload a solution to a problem the data related to that upload
+    is stored as an instance of this class. It contains the submitted source code, the compiler
+    profile selected etc. When a submission has been evaluated the results are also stored in
+    the same instance of this class.
+    '''
     class Meta:
         verbose_name_plural = "View Submissions"
     
@@ -178,10 +178,10 @@ class Submission(models.Model):
         return unicode(self.pk)
 
 class ExecutionLogEntry(models.Model):
-	'''
-	When a submission is compiled or executed the data related the process created is stored
-	here. 
-	'''
+    '''
+    When a submission is compiled or executed the data related the process created is stored
+    here. 
+    '''
     class Meta:
         verbose_name_plural = "View Execution Log Entries"
     
