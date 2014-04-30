@@ -14,34 +14,34 @@ from django.utils import timezone
 
 # Create your models here.
 
-'''
-Contest model
-TODO: Add location, fix start, end, publish date, validate
-Is done now right?
-'''
+
 
 
 def getTodayDate():
     return timezone.make_aware(datetime.datetime.now(), timezone.get_default_timezone())
 
 class ContactInformation(models.Model):
-	'''
-	Simple entity for storing contact information. Initially only used in the website footer
-	for adding support info.
-	'''
+    '''
+    Simple entity for storing contact information. Initially only used in the website footer
+    for adding support info.
+    '''
     email = models.EmailField()
     name = models.CharField(max_length=30)
 
     def __unicode__(self):
         return self.name
 
+
+def is_start():
+    return False
+
 class Contest(models.Model):
-	'''
+    '''
 	This class represents a contest. Every article, submission, team etc are in some way related to
 	an instance of this class. Other than binding the other entities together it sets the start
 	date for the contest, the end date, a registration end date, and a publish date. The penalty 
 	constant used to calculate team scores is also set in this model.
-	'''
+    '''
     title = models.CharField(max_length=200)
     contact_infos = models.ManyToManyField('ContactInformation', null = True)
     """ The url is saved as the suffix from root, only, not the entire url
@@ -60,6 +60,8 @@ class Contest(models.Model):
     logo = FileBrowseField('Logo', max_length=200, directory='logo/', 
                           extensions=['.jpg','.jpeg','.png','.gif'], blank=True, null=True,
                           help_text='Select logo image, allowed formats jpg, jpeg, png, gif')
+    
+    problem_set = PrivateFileField("file", upload_to = 'problemset', condition = is_start)
 
     def isPublishable(self):
         return self.publish_date.__lt__(getTodayDate())
@@ -77,14 +79,17 @@ class Contest(models.Model):
             
     def __str__(self):
         return self.title
-     
+
+
+
+    
 # Links for displaying in navigation for each contest    
 class Link(models.Model):
-	'''
+    '''
 	Used to dynamically add links to the global left side menu on the website.
 	Can also be used to create empty space between other links, in which case
 	it is called a separator. 
-	'''
+    '''
     #name of the link
     text = models.CharField(max_length=30, help_text='The display name for the link')
     # If true, url gets added to contest url
@@ -107,7 +112,7 @@ class Link(models.Model):
  
     
 class Team(models.Model):
-	'''
+    '''
 	Used to represent a team competing in a specific contest. A team consists of
 	a group of users, the team members, one of which is set to be the team leader.
 	Team members can choose to leave a team, but other than that only the team
