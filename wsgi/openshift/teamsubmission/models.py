@@ -30,15 +30,18 @@ class TeamTrRow(object):
         self.total_time = 0
         self.total_solved = 0
         self.skill_level = '1'
-        x = team.members.first()
+        x = team.leader
         if x:
             self.skill_level = x.skill_level
+            self.staff = x.is_staff
         self.pro = False
         if self.skill_level == 'pro':
             self.pro = True
 
         if team.members.count() > 0:
-            for member in team.members.all()[1:]:
+            for member in team.members.all():
+                if member.is_staff:
+                    self.staff == True
                 if member.skill_level > self.skill_level:
                     self.skill_level = member.skill_level
                     if member.skill_level == 'pro':
@@ -93,7 +96,8 @@ class ScoreManager(models.Manager):
 
         for team in teams:
             ttr = TeamTrRow(team, num_problems)
-            if ttr.pro == False and sort_res == 'pro' \
+            if ttr.staff \
+            or ttr.pro == False and sort_res == 'pro' \
             or ttr.pro == True  and sort_res == 'student':
                 continue
 

@@ -22,6 +22,13 @@ $(document).ready(function()
 </script>
 <h2>Highscore table</h2>
 <hr>
+<small>
+The numbers in the problem rows represent number of tries and time until solved, respectively.
+<br />
+Sort multiple columns simultaneously by holding down the shift key 
+and clicking a second, third or even fourth column header. 
+</small>
+<hr>
 <div>
 {% url 'highscorePage' contest.url as all %}
 {% url 'highscorePageRes' contest.url 'onsite' as onsite %}
@@ -81,7 +88,7 @@ Show for team type:
             <tr>
                 <td> {{forloop.counter}} </td>
                 <td> {{entry.team}} </td>
-                <td> {{entry.site}}</td>
+                <td> {{entry.site|truncatechars:12}}</td>
                 <td> {{entry.total_solved}} </td>
                 <td> {{entry.total_score}}</td>
                 <td> {{entry.total_time }}</td>
