@@ -43,13 +43,20 @@ class SponsorAdmin(admin.ModelAdmin):
     list_display = ('name', 'url',)
     search_fields = ('name', 'url',)
     ordering = ('name',)
+    
+class ContactInformationAdmin(admin.ModelAdmin):
+    list_display = ('name', 'email')
+    def get_contactInformation(self,obj):
+        return obj
+    search_fields = ('name', 'email',)
+    ordering = ('name',)
 
 admin.site.register(Contest, ContestAdmin)
 admin.site.register(Link, LinkAdmin)
 admin.site.register(Team, TeamAdmin)
 admin.site.register(Sponsor, SponsorAdmin)
 admin.site.register(Invite, InviteAdmin)
-admin.site.register(ContactInformation)
+admin.site.register(ContactInformation, ContactInformationAdmin)
 
 
 
