@@ -87,11 +87,11 @@ def submission_problem(request, problemID):
     #TODO: Only leader can upload check
     problem = get_object_or_404(Problem.objects.filter(pk=problemID)) 
     team = Team.objects.filter(contest=contest).get(members__id = user.id)
-    submission = Submission.objects.filter(team=team).filter(problem=problemID)
+    submissions = Submission.objects.filter(team=team).filter(problem=problemID).order_by('date_uploaded')
     prob_sub_dict = dict() #Was is das?
 
     if len(submission.values_list()) > 0:
-        submission = submission[0]
+        submission = submissions.last()
         problem = submission.problem
     else:
         submission = Submission()
