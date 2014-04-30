@@ -73,10 +73,10 @@ def set_resource(time, memory=-1, procs=-1):
 
 @app.task
 def evaluate_task(submission_id):
-	'''
-	Entry point for submission evaluation. Sets up a RunJob instance for the submitted source and goes through the stages of compiling the submission,
-	running the compiled subsmission through all related test_cases and finally evaluating the results.  
-	'''
+    '''
+    Entry point for submission evaluation. Sets up a RunJob instance for the submitted source and goes through the stages of compiling the submission,
+    running the compiled subsmission through all related test_cases and finally evaluating the results.  
+    '''
     submission  = Submission.objects.get(pk=submission_id)
     try:
         compiler    = submission.compileProfile
@@ -194,13 +194,13 @@ class RunJob():
         return command
     
 def run_tests(runJob, submission):
-	'''
-	run_tests goes through all the test cases related to the problem the submission is intended to solve.
-	Runnning a test case consists of running the submission with an input given by the test case. The next 
-	step is to check whether or not the output from the run was valid. This can be done either by means of
-	a custom validator, or simply by doing a simple string comparison with the correct output (provided by
-	the test case). 
-	'''
+    '''
+    run_tests goes through all the test cases related to the problem the submission is intended to solve.
+    Runnning a test case consists of running the submission with an input given by the test case. The next 
+    step is to check whether or not the output from the run was valid. This can be done either by means of
+    a custom validator, or simply by doing a simple string comparison with the correct output (provided by
+    the test case). 
+    '''
     test_cases = TestCase.objects.filter(problem__pk = submission.problem.pk)
     results = []
     for test in test_cases:
@@ -257,11 +257,11 @@ def MBtoB(mbcount):
 
 
 def validate(input_content, run_stdout, test_case):
-	'''
-	Uses a custom validator to check whether or not the output from a test run is correct.
-	The first step is to compile the validator, then run it with the concatenation of the 
-	test case input and the output from the submission test run.
-	'''
+    '''
+    Uses a custom validator to check whether or not the output from a test run is correct.
+    The first step is to compile the validator, then run it with the concatenation of the 
+    test case input and the output from the submission test run.
+    '''
     
     runner = RunJob(test_case.validator, test_case.compileProfile, get_validator_resource())
     retval, stdout, stderr = runner.compile()
@@ -332,14 +332,14 @@ def execute(command, dir_path, res, stdin=None, timeout = -1):
     return retval, stdout, stderr
 
 def use_run_user(command):
-	'''
-	Used to run submissions as a less privileged user than the one doing compilation. 
-	'''
+    '''
+    Used to run submissions as a less privileged user than the one doing compilation. 
+    '''
     return 'sudo su ' + RUN_USER + ' -c "' + command + '"'
 
 def time_command(command):
-	'''
-	Used to get the runtime of a test run.
-	'''
+    '''
+    Used to get the runtime of a test run.
+    '''
     return '/usr/bin/time -f "%Sn%U" -q ' + command
 
