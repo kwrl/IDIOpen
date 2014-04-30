@@ -32,8 +32,17 @@ class ContactInformation(models.Model):
         return self.name
 
 
-def is_start():
-    return False
+def is_start(request, instance):
+    try: 
+        startDate = instance.start_date
+        dateToday = timezone.now()
+        if (dateToday >= startDate):
+            has_started = True
+        else:
+            has_started = False
+    except ObjectDoesNotExist as e: 
+        raise Http404
+    return has_started
 
 class Contest(models.Model):
     '''
