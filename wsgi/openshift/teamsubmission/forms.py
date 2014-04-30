@@ -104,7 +104,7 @@ class SubmissionForm(forms.ModelForm):
         new_sub.team = self.instance.team
         new_sub.status = new_sub.QUEUED
         new_sub.save()
-       #print 'running task'
+        #print 'running task'
         evaluate_task.delay(new_sub.pk)
 
 # End of life
