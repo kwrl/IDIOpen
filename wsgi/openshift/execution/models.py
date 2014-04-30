@@ -1,11 +1,12 @@
 from django.db import models
 from django.conf import settings
+from django.core.files.storage import FileSystemStorage
 
 import os
 
 """ Located in media folder (prefix ../media)
 """
-PROBLEM_ROOT_DIR = 'problems'
+PROBLEM_ROOT_DIR = 'submissions/problems'
 
 class FileExtension(models.Model):
     '''
@@ -71,6 +72,10 @@ def get_upload_path2(instance, filename):
     # path.join appends a trailing / in between each argument
     return os.path.join("%s" % PROBLEM_ROOT_DIR,
                         filename)
+
+private_media = FileSystemStorage(location=settings.PRIVATE_MEDIA_ROOT,
+                                  base_url=settings.PRIVATE_MEDIA_URL,
+                                  )
 
 #Author: Tino, typo
 class Problem(models.Model):
@@ -144,9 +149,9 @@ class TestCase(models.Model):
     need a compiler profile to work. For in detail description how TestCases are used check
     node_manage/tasks.py
     '''
-    inputFile = models.FileField(upload_to=get_upload_path,
+    inputFile = models.FileField(storage=private_media, upload_to=get_upload_path,
                        verbose_name="Input data (file)")
-    outputFile = models.FileField(upload_to=get_upload_path,
+    outputFile = models.FileField(storage=private_media, upload_to=get_upload_path,
                        verbose_name="Output data (file)")
     # inputFile = models.FileField(upload_to=get_upload_path)
     short_description = models.CharField(max_length=40,
@@ -163,7 +168,7 @@ class TestCase(models.Model):
     problem = models.ForeignKey('execution.Problem')
 
     compileProfile  = models.ForeignKey(CompilerProfile, null=True, blank=True)
-    validator       = models.FileField(upload_to=get_upload_path,null=True, blank=True,
+    validator       = models.FileField(storage=private_media, upload_to=get_upload_path,null=True, blank=True,
                             verbose_name="Custom validator source")
 
     def __unicode__(self):
