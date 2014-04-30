@@ -17,10 +17,10 @@ class ArticleForm(forms.ModelForm):
 
 
 class ArticleAdmin(admin.ModelAdmin):
-	'''
-	This class manages the creation of new articles. It uses a js editor(grapelli) to
-	format the articles. 
-	'''
+    '''
+    This class manages the creation of new articles. It uses a js editor(grapelli) to
+    format the articles. 
+    '''
     fieldsets = (
         (None, {
             'fields': ('title', 'contest','visible_article_list', 'url', 'is_urgent', 'text'),
