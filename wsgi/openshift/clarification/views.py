@@ -12,11 +12,11 @@ from openshift.helpFunctions.views import get_current_contest
 This is for clarification post a question
 '''
 def clarification(request):
-	'''
-	This view handles sending Questions/clarifications.
-	In order to get access to the clarifications you need to
-	be logged in, on a team, and the contest needs to have started.
-	'''
+    '''
+    This view handles sending Questions/clarifications.
+    In order to get access to the clarifications you need to
+    be logged in, on a team, and the contest needs to have started.
+    '''
     if not helpView.contest_begin(request): 
         messages.info(request, "contest has not yet started")
         return redirect("clarificationAnswersPage", get_current_contest(request).url)
@@ -61,8 +61,8 @@ def clarification(request):
 
 def clarificationAnswers(request):
     '''
-	This view displays the answers to a question. 
-	Access to this view is not restricted in any way.
+    This view displays the answers to a question. 
+    Access to this view is not restricted in any way.
     '''
     answers = helpView.get_all_answers(request)
     context = {
