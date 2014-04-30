@@ -90,7 +90,7 @@ def submission_problem(request, problemID):
     submissions = Submission.objects.filter(team=team).filter(problem=problemID).order_by('date_uploaded')
     prob_sub_dict = dict() #Was is das?
 
-    if len(submission.values_list()) > 0:
+    if len(submissions.values_list()) > 0:
         submission = submissions.last()
         problem = submission.problem
     else:
