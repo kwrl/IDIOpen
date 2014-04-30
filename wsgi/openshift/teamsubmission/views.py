@@ -17,7 +17,7 @@ from collections import defaultdict
 from django.core.exceptions import ObjectDoesNotExist
 
 CLOSE_TIME = 1 #Hour
-
+#TODO: Fix this, could use .count()
 def get_problem_score_tries(team, problem, contest):
     prob_subs = Submission.objects.filter(team=team, problem=problem)
     incorrect_counts = 0
@@ -88,7 +88,6 @@ def submission_problem(request, problemID):
     problem = get_object_or_404(Problem.objects.filter(pk=problemID)) 
     team = Team.objects.filter(contest=contest).get(members__id = user.id)
     submissions = Submission.objects.filter(team=team).filter(problem=problemID).order_by('date_uploaded')
-    prob_sub_dict = dict() #Was is das?
 
     if len(submissions.values_list()) > 0:
         submission = submissions.last()
@@ -108,8 +107,10 @@ def submission_problem(request, problemID):
     if request.method == "POST":
         form = SubmissionForm(request.POST, request.FILES,
                                instance=submission)
-        
-        if not request.FILES:
+        if submission.solved_problem:
+            messages.error(request, 'You have already completed this problem')
+           
+        elif not request.FILES:
             messages.error(request, 'You need to choose a file to upload')
 
         elif contest_end(request):
@@ -177,9 +178,9 @@ def submission_view(request):
     else:
         team = Team.objects.filter(contest=contest, members__id = user.id)
         if  team:
-            messages.warning(request, 'pssst: You are now logged in with a staf user, remember to delete your team before contest start') 
+            messages.warning(request, 'pssst: You are now logged in with a staff user, remember to delete your team before contest start') 
         else: 
-            messages.warning(request, 'pssst: You are now logged in with a staf user. you need a team in order to test. Create a team and remember to delete it before contest start!')
+            messages.warning(request, 'pssst: You are now logged in with a staff user. you need a team in order to test. Create a team and remember to delete it before contest start!')
     
     team = Team.objects.filter(contest=contest, members__id = user.id)
     problems = Problem.objects.filter(contest=contest)
