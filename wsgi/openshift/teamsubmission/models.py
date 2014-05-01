@@ -174,6 +174,8 @@ class Submission(models.Model):
     runtime = models.IntegerField(max_length = 15, blank = True, null = True)
     objects = ScoreManager()
 
+    def contest(self):
+        return self.team.contest
     def __unicode__(self):
         return unicode(self.pk)
 
@@ -190,6 +192,12 @@ class ExecutionLogEntry(models.Model):
     stdout      = models.TextField(help_text="Standard output")
     stderr      = models.TextField(help_text="Standard error")
     retval      = models.IntegerField(help_text="Return value")
+    
+    def team(self):
+        return self.submission.team
+    
+    def contest(self):
+        return self.submission.team.contest
 
     def __unicode__(self):
         return "Submission:\t" + unicode(self.submission.pk) + "\tCommand:\t " + self.command
