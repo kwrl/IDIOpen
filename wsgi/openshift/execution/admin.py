@@ -5,7 +5,9 @@ from .models import TestCase, Problem, CompilerProfile, FileExtension, Resource
 
 
 class TestCaseAdmin(admin.ModelAdmin):
-    # list_display = ('short_description')
+    list_display = ('name', 'problem', 'compileProfile', 'author' )
+    def name(self, obj):
+        return obj # uses the toString method
     # search_fields = ('name', '',)
     ordering = ('inputFile','inputDescription', 
                 'outputFile', 'outputDescription')
@@ -13,7 +15,9 @@ class TestCaseAdmin(admin.ModelAdmin):
 admin.site.register(TestCase, TestCaseAdmin)
 
 class ProblemAdmin(admin.ModelAdmin):
+    search_fields = ('title', 'author',)
     list_display = ('title', 'author', 'contest') 
+    list_filter = ('contest',)
     fields = ('title', 'description', 'textFile', 'contest')
     # Set author, to the user/admin who created the article
     def save_model(self, request, obj, form, change):
@@ -28,6 +32,10 @@ class ProblemAdmin(admin.ModelAdmin):
         ]
         
 class ResourceAdmin(admin.ModelAdmin):
+    list_display = ('name', 'cProfile', 'problem', 'max_compile_time')
+    list_filter = ('cProfile', )
+    def name(self, obj):
+        return obj
     fieldsets = (
         (None, {
             'fields': ('cProfile', 'problem')
@@ -39,8 +47,10 @@ class ResourceAdmin(admin.ModelAdmin):
             ' to enforce these limits. <br> Java does <strong>not</strong> work very well here and you might have to set the limits directly on the compiler ' \
             ' profile for Java and the limits here should be set to <strong>-1</strong>. This means unlimited'
         }),
-        
-    )      
+    
+    )
+    
+    
 class CompilerProfileForm(forms.ModelForm):
     class Meta:
         model = CompilerProfile

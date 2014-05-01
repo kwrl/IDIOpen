@@ -1,19 +1,27 @@
 from django.db import models
 from django.conf import settings
+from django.core.files.storage import FileSystemStorage
 
 import os
 
 """ Located in media folder (prefix ../media)
 """
-PROBLEM_ROOT_DIR = 'problems'
+PROBLEM_ROOT_DIR = 'submissions/problems'
 
 class FileExtension(models.Model):
+    '''
+    Used to make sure that submissions aren't submitted with the wrong compiler profile. 
+    E.g HelloWorld.java submitted to the C++ compiler profile.
+    '''
     extension = models.CharField(max_length=4, help_text = 'e.g java, c or cpp. Write the extension name without dot in front. ')
 
     def __unicode__(self):
         return self.extension
 
 class CompilerProfile(models.Model):
+    '''
+    Defines how submissions and custom validators of a certain type should be built and executed.
+    '''
     name = models.CharField(max_length=100)
     extensions = models.ManyToManyField('FileExtension')
     
@@ -65,8 +73,19 @@ def get_upload_path2(instance, filename):
     return os.path.join("%s" % PROBLEM_ROOT_DIR,
                         filename)
 
+private_media = FileSystemStorage(location=settings.PRIVATE_MEDIA_ROOT,
+                                  base_url=settings.PRIVATE_MEDIA_URL,
+                                  )
+
 #Author: Tino, typo
 class Problem(models.Model):
+    '''
+    This class represents a problem for teams to solve during a contest.
+    This model containt little more than a simple description of the
+    problem and a relation to the contest it is to be part of. 
+    Resource limitation are set as relations between this class and
+    compiler profiles.
+    '''
     title       = models.CharField(max_length=200, unique = True)
     description = models.TextField()
     textFile    = models.FileField(upload_to=get_upload_path2,
@@ -83,8 +102,8 @@ class Problem(models.Model):
 #Author: typo
 class Resource (models.Model):
     '''
-    This models contains all "limitations" on each Profile. 
-    E.g. the number maximum memory usage for this profile, if JAVA is used is XXXXX. 
+    Defines the resource limitation for a submission. Resources are related
+    to both compiler profiles and problems. 
     '''
     cProfile = models.ForeignKey('execution.CompilerProfile', related_name="resource_CompilerProfile")
     problem = models.ForeignKey('execution.Problem', related_name="resource_problem")
@@ -123,12 +142,16 @@ class Resource (models.Model):
     
 
 class TestCase(models.Model):
-    """ We're assuming error cases are defined elsewhere...
-        As a python test
-    """
-    inputFile = models.FileField(upload_to=get_upload_path,
+    '''
+    When a user submits code for evaluation it is compiled and then run through a set of
+    test cases, represented by this model. TestCases can function in two different ways,
+    either by means of a custom validator or by simple string comparison. Custom validators
+    need a compiler profile to work. For in detail description how TestCases are used check
+    node_manage/tasks.py
+    '''
+    inputFile = models.FileField(storage=private_media, upload_to=get_upload_path,
                        verbose_name="Input data (file)")
-    outputFile = models.FileField(upload_to=get_upload_path,
+    outputFile = models.FileField(storage=private_media, upload_to=get_upload_path,
                        verbose_name="Output data (file)")
     # inputFile = models.FileField(upload_to=get_upload_path)
     short_description = models.CharField(max_length=40,
@@ -145,7 +168,7 @@ class TestCase(models.Model):
     problem = models.ForeignKey('execution.Problem')
 
     compileProfile  = models.ForeignKey(CompilerProfile, null=True, blank=True)
-    validator       = models.FileField(upload_to=get_upload_path,null=True, blank=True,
+    validator       = models.FileField(storage=private_media, upload_to=get_upload_path,null=True, blank=True,
                             verbose_name="Custom validator source")
 
     def __unicode__(self):

@@ -18,6 +18,10 @@ from django.utils import timezone;
 # Create your views here.
 
 def index(request):
+    '''
+    The root view/url for a contest. Lists all articles with the visible_article_list set to true,
+    and displays urgent articles at the top of the list.
+    '''
     url = get_current_url(request)
 
     '''
@@ -78,9 +82,15 @@ def is_member_of_team(request, contest):
 # @login_required
 def registration(request):
     '''
-    TODO: Ch3ck if you already have a team.
-    Done?
+    Registers a new team given that a couple of requirements are met.
+    The user creating the team can not be a member of a another team
+    competing in the same contest, the registration end date can not
+    have passed and the forms must have been filled out correctly.
     '''
+    #'''
+    #TODO: Ch3ck if you already have a team.
+    #Done?
+    #'''
     if not request.user.is_authenticated():
         return render(request, 'registerForContest/requireLogin.html')
     

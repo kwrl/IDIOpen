@@ -17,7 +17,7 @@ from collections import defaultdict
 from django.core.exceptions import ObjectDoesNotExist
 
 CLOSE_TIME = 1 #Hour
-
+#TODO: Fix this, could use .count()
 def get_problem_score_tries(team, problem, contest):
     prob_subs = Submission.objects.filter(team=team, problem=problem)
     incorrect_counts = 0
@@ -28,7 +28,7 @@ def get_problem_score_tries(team, problem, contest):
             valid_sub = sub
         else:
             incorrect_counts += 1
-    _, score = get_score(sub, incorrect_counts, contest)
+    _, score = get_score(valid_sub, incorrect_counts, contest)
     if valid_sub: 
         incorrect_counts +=1
     return score, incorrect_counts
@@ -55,6 +55,14 @@ def is_leader(request, contest):
 
 #View for uploading submissions to a problem
 def submission_problem(request, problemID):
+    '''
+    The view for uploading submission and reviewing the status of a team's
+    latest submission. By default this view lets teams upload submission,
+    once the team has uploaded a valid submission they are no longer able 
+    to upload any more submission and the view simply tells the user that
+    the problem has been solved, awarding the team x points.
+    '''
+
     #TODO: maybe a nicer url than numeric ID
     contest = get_current_contest(request)
     user = request.user
@@ -79,11 +87,10 @@ def submission_problem(request, problemID):
     #TODO: Only leader can upload check
     problem = get_object_or_404(Problem.objects.filter(pk=problemID)) 
     team = Team.objects.filter(contest=contest).get(members__id = user.id)
-    submission = Submission.objects.filter(team=team).filter(problem=problemID)
-    prob_sub_dict = dict() #Was is das?
+    submissions = Submission.objects.filter(team=team).filter(problem=problemID).order_by('date_uploaded')
 
-    if len(submission.values_list()) > 0:
-        submission = submission[0]
+    if len(submissions.values_list()) > 0:
+        submission = submissions.last()
         problem = submission.problem
     else:
         submission = Submission()
@@ -100,8 +107,10 @@ def submission_problem(request, problemID):
     if request.method == "POST":
         form = SubmissionForm(request.POST, request.FILES,
                                instance=submission)
-        
-        if not request.FILES:
+        if submission.solved_problem:
+            messages.error(request, 'You have already completed this problem')
+           
+        elif not request.FILES:
             messages.error(request, 'You need to choose a file to upload')
 
         elif contest_end(request):
@@ -139,6 +148,13 @@ def submission_problem(request, problemID):
 
 #Login required
 def submission_view(request):
+    '''
+    This is what is the view used to serve what is usually referred to
+    as the contest page. The contest page consists of the list of problems
+    available in the contest. Each of the problems are marked with whether
+    or not they are solved, and prints the feedback of the latest attempt
+    made by the team viewing the page.
+    '''
     user = request.user
     contest = get_current_contest(request)
 
@@ -162,9 +178,9 @@ def submission_view(request):
     else:
         team = Team.objects.filter(contest=contest, members__id = user.id)
         if  team:
-            messages.warning(request, 'pssst: You are now logged in with a staf user, remember to delete your team before contest start') 
+            messages.warning(request, 'pssst: You are now logged in with a staff user, remember to delete your team before contest start') 
         else: 
-            messages.warning(request, 'pssst: You are now logged in with a staf user. you need a team in order to test. Create a team and remember to delete it before contest start!')
+            messages.warning(request, 'pssst: You are now logged in with a staff user. you need a team in order to test. Create a team and remember to delete it before contest start!')
     
     team = Team.objects.filter(contest=contest, members__id = user.id)
     problems = Problem.objects.filter(contest=contest)
@@ -217,6 +233,12 @@ def submission_view(request):
     return render(request, 'submission_home.html', context)
 
 def highscore_view(request, sort_res="all"):
+    '''
+    This view calculates and renders the highscore list.
+    During the last hour of the contest this list will no
+    longer be available. Privileged users will have access
+    to a more thorough list available in the admin panel. 
+    '''
     # sort res can say offsite of onsite or student or pro
     contest = get_current_contest(request)
 

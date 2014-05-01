@@ -57,6 +57,14 @@ class FileInputInitial(ClearableFileInput):
         return mark_safe(template % substitutions)
 
 class SubmissionForm(forms.ModelForm):
+    '''
+    Form used for submission uploads. It makes sure that there is a compiler profile selected,
+    and that there is an actual source file to be uploaded. It then proceeds to verifying that
+    the file's file extension matches that of one of the compiler profile's valid extensions. E.g
+    that HelloWorld.c is indeed sent to a C compiler and not one intended for fotran. It also 
+    verifies that the problem has got a resource entity set for the selected compiler profile,
+    and proceed to check whether or not the to-be-uploaded file exceeds the max file size.
+    '''
     #compilerProfile = forms.ModelChoiceField(CompilerProfile.objects.all())
     
     class Meta:
@@ -96,7 +104,7 @@ class SubmissionForm(forms.ModelForm):
         new_sub.team = self.instance.team
         new_sub.status = new_sub.QUEUED
         new_sub.save()
-       #print 'running task'
+        #print 'running task'
         evaluate_task.delay(new_sub.pk)
 
 # End of life

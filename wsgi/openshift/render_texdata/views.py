@@ -6,20 +6,20 @@ from collections import defaultdict
 from subprocess import Popen
 from shlex import split
 from os import path, makedirs, remove, walk, listdir
-import re, string; 
+import re, string;
 import csv
 from zipfile import ZipFile
 from StringIO import StringIO
 from shutil import rmtree
 
-from openshift.helpFunctions.views import get_most_plausible_contest 
+from openshift.helpFunctions.views import get_most_plausible_contest
 from openshift.contest.models import Team, Contest, Sponsor
 
 
 SQL_FETCH_USERNAME_TEAM = \
 """
-SELECT T.name, U.email 
-FROM contest_team AS T , userregistration_customuser AS U, contest_team_members AS CTM 
+SELECT T.name, U.email
+FROM contest_team AS T , userregistration_customuser AS U, contest_team_members AS CTM
 WHERE CTM.team_id = T.id AND U.id = CTM.customuser_id AND T.onsite = 1
 ORDER BY T.id
 ;
@@ -46,6 +46,11 @@ def render_semicolonlist(team_list):
             retString += c + ";"
 
     return retString
+
+
+def filter_team_name(team_name):
+    pattern = re.compile('[\W_]+')
+    return pattern.sub('', team_name) 
 
 def process_team_contestants(latex_parse_string, team_list, output_format, contest):
     team_contestant_dict = get_team_contestant_dict(team_list)
@@ -86,8 +91,8 @@ def process_team_contestants(latex_parse_string, team_list, output_format, conte
         tex_dict.update(sponsor_dict)
         tex_dict.update(prize_dict)
 
-        file_name = dir_dest + pattern.sub('', team_name) +  str(i) + '.tex'
-    
+        file_name = dir_dest + filter_team_name(team_name) +  str(i) + '.tex'
+
         i += 1
         
         with open(file_name,'w') as f:
@@ -120,7 +125,7 @@ def process_team_contestants(latex_parse_string, team_list, output_format, conte
         for pdf in pdf_files:
             string += path.join(dir_dest, pdf + " ")
 
-        monster_pdf = path.join(dir_dest, "out.pdf") 
+        monster_pdf = path.join(dir_dest, "out.pdf")
 
         proc=Popen(split('pdfunite %s %s' % (string, monster_pdf)))
         proc.communicate()
@@ -157,8 +162,12 @@ def get_team_contestant_dict(teams):
     team_members_dict = defaultdict( list )
     for team_id in teams:
         team = Team.objects.get(pk=int(team_id))
+        #teamname = filter_team_name(team.name)
+        teamname = team.name
         for member in team.members.all():
-            team_members_dict[team.name].append(member.email)
+            team_members_dict[teamname].append(member.email)
+        # if team.leader.email not in team_members_dict[team]:
+        team_members_dict[teamname].append(team.leader.email)
     return team_members_dict
 
 
@@ -186,9 +195,9 @@ def extract_to_csv():
         pass
 
     MYSQL_CON = mdb.connect('localhost', 'andesil', 'password', 'gentleidi')
-    with MYSQL_CON: 
+    with MYSQL_CON:
         cur = MYSQL_CON.cursor()
-        
+
         cur.execute(SQL_FETCH_USERNAME_TEAM)
         rows = cur.fetchall()
         fp = open(FILENAME, 'w')
