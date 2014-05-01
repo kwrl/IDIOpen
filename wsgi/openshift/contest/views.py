@@ -249,6 +249,7 @@ def team_profile(request):
                        'addMemberForm' : addMemberForm,
                         'is_leader' : leader,
                        'contest_started' : contest_started,
+                       'is_staff': user.is_staff
                        }
             return render(request, 'contest/team.html', context)
         # If you are the leader
@@ -272,12 +273,14 @@ def team_profile(request):
                        'addMemberForm' : addMemberForm,
                        'is_leader' : leader,
                        'invites' : invites,
+                       'is_staff': user.is_staff,
                        }
         # If user is not leader, send context without addMemberForm
         else:
             context = {'team':team,
                        'is_leader' : leader,
                        'invites' : invites,
+                       'is_staff': user.is_staff,
                        }
     # If you don't have team, send an empty context
     else:
