@@ -15,11 +15,8 @@ lagmedlemmene
 skal kinne velge ut de forksjellige typer lag
     gender, pro, off/onsite
 
-
-
 ikke bare portrait (men de lager hele latex)
 
 semikolon-separert liste over lagepost
-
 
 lagnavn, nummer, medlemsnavn, sponsor, premienavn?

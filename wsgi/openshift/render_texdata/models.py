@@ -1,5 +1,11 @@
 from django.db import models
 from openshift.contest.models import Team
+
+class FakeTeam(object):
+    #objects = Team.objects
+    team = models.ForeignKey(Team, related_name="aa")
+    pass
+
 class string_with_title(str):
     def __new__(cls, value, title):
         instance = str.__new__(cls, value)
@@ -19,7 +25,4 @@ class Latex_Teamview(models.Model):
 class Latex_TeamText(models.Model):
     latex_text = models.TextField()
     team = models.ForeignKey(Team)
-    class Meta:
-        #app_label = 'aaa'; string_with_title("Latex_TeamText", "Latex_TeamText")
-        pass
 # EOF

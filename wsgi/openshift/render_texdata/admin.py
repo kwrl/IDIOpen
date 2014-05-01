@@ -10,15 +10,22 @@ from django.template.response import SimpleTemplateResponse, TemplateResponse
 from django.utils.translation import ugettext as _
 from django.utils.translation import ungettext
 from django.utils.encoding import force_text
+from django.contrib.admin.views.main import ERROR_FLAG
 
+
+from django.contrib import messages
+
+
+from django.db import models
+from django.contrib import admin
+import operator
+
+from .views import process_team_contestants, render_semicolonlist
+from .models import FakeTeam
 
 
 class IncorrectLookupParameters(Exception):
     pass
-
-
-
-
 
 
 from django.contrib import admin
@@ -31,33 +38,90 @@ from .urls import render_csv_url, latex_url
 from openshift.helpFunctions.views import get_most_plausible_contest
 
 from .views import latex_view
-
 class LatexAdmin(admin.ModelAdmin):
     def get_urls(self):
         return latex_url(self, LatexAdmin)
+
+
+    def get_search_results(self, request, queryset, search_term):
+        """
+        Returns a tuple containing a queryset to implement the search,
+        and a boolean indicating if the results may contain duplicates.
+        """
+        self.opts = Team._meta
+        # Apply keyword searches.
+        def construct_search(field_name):
+            if field_name.startswith('^'):
+                return "%s__istartswith" % field_name[1:]
+            elif field_name.startswith('='):
+                return "%s__iexact" % field_name[1:]
+            elif field_name.startswith('@'):
+                return "%s__search" % field_name[1:]
+            else:
+                return "%s__icontains" % field_name
+
+        use_distinct = False
+        if self.search_fields and search_term:
+            orm_lookups = [construct_search(str(search_field))
+                           for search_field in self.search_fields]
+            for bit in search_term.split():
+                or_queries = [models.Q(**{orm_lookup: bit})
+                              for orm_lookup in orm_lookups]
+                queryset = queryset.filter(reduce(operator.or_, or_queries))
+            if not use_distinct:
+                for search_spec in orm_lookups:
+                    if lookup_needs_distinct(self.opts, search_spec):
+                        use_distinct = True
+                        break
+
+        return queryset, use_distinct
 
     def changelist_view(self, request, extra_context=None):
         """
         The 'change list' admin view for this model.
         """
-        from django.contrib.admin.views.main import ERROR_FLAG
+
+        semicolon_list = None
+        if request.method == "POST":
+            selected = request.POST.getlist(helpers.ACTION_CHECKBOX_NAME)
+            selected = request.POST['teams'].split(',')
+
+            if not selected or len(selected) < 1 or selected[0] == '':
+                messages.error(request, "No team selected")
+            else:
+                if "buttonId" in request.POST:
+                    if request.POST["buttonId"] == "emailCSV":
+                        try:
+                            # Response = email_view(selected)
+                            semicolon_list = render_semicolonlist(selected)
+                        except ValueError as ve:
+                            messages.error(request, ve.message)
+
+                    elif request.POST["buttonId"] == "teamCSV":
+                        try:
+                            response = process_team_contestants(request.POST['text'], selected)
+                            return response
+                        except ValueError as ve:
+                            messages.error(request, "Invalid formatting, ensure all given variables are on the form \"%(var)s\".\n" + ve.message)
+
+
         self.model = Team
         opts = self.model._meta
         app_label = opts.app_label
-        if not self.has_change_permission(request, None):
-            raise PermissionDenied
 
-        list_display = self.get_list_display(request)
+        list_display = ('name', 'onsite', 'contest', 'leader', 'offsite',)
         list_display_links = self.get_list_display_links(request, list_display)
-        list_filter = self.get_list_filter(request)
-
-        # Check actions to see if any are available on this changelist
+        list_filter = ('onsite', 'contest',)
         actions = self.get_actions(request)
+        search_fields = ['id', 'name']    
+
         if actions:
             # Add the action checkboxes if there are any actions available.
             list_display = ['action_checkbox'] + list(list_display)
 
+        self.search_fields = search_fields
         ChangeList = self.get_changelist(request)
+        cl = ChangeList
         try:
             cl = ChangeList(request, self.model, list_display,
                 list_display_links, list_filter, self.date_hierarchy,
@@ -65,88 +129,19 @@ class LatexAdmin(admin.ModelAdmin):
                 self.list_per_page, self.list_max_show_all, self.list_editable,
                 self)
         except IncorrectLookupParameters:
-            # Wacky lookup parameters were given, so redirect to the main
-            # changelist page, without parameters, and pass an 'invalid=1'
-            # parameter via the query string. If wacky parameters were given
-            # and the 'invalid=1' parameter was already in the query string,
-            # something is screwed up with the database, so display an error
-            # page.
             if ERROR_FLAG in request.GET.keys():
                 return SimpleTemplateResponse('admin/invalid_setup.html', {
                     'title': _('Database error'),
                 })
             return HttpResponseRedirect(request.path + '?' + ERROR_FLAG + '=1')
 
-        # If the request was POSTed, this might be a bulk action or a bulk
-        # edit. Try to look up an action or confirmation first, but if this
-        # isn't an action the POST will fall through to the bulk edit check,
-        # below.
         action_failed = False
         selected = request.POST.getlist(helpers.ACTION_CHECKBOX_NAME)
 
-        # Actions with no confirmation
-        if (actions and request.method == 'POST' and
-                'index' in request.POST and '_save' not in request.POST):
-            if selected:
-                response = self.response_action(request, queryset=cl.get_queryset(request))
-                if response:
-                    return response
-                else:
-                    action_failed = True
-            else:
-                msg = _("Items must be selected in order to perform "
-                        "actions on them. No items have been changed.")
-                self.message_user(request, msg, messages.WARNING)
-                action_failed = True
-
-        # Actions with confirmation
-        if (actions and request.method == 'POST' and
-                helpers.ACTION_CHECKBOX_NAME in request.POST and
-                'index' not in request.POST and '_save' not in request.POST):
-            if selected:
-                response = self.response_action(request, queryset=cl.get_queryset(request))
-                if response:
-                    return response
-                else:
-                    action_failed = True
-
-        # If we're allowing changelist editing, we need to construct a formset
-        # for the changelist given all the fields to be edited. Then we'll
-        # use the formset to validate/process POSTed data.
         formset = cl.formset = None
 
-        # Handle POSTed bulk-edit data.
-        if (request.method == "POST" and cl.list_editable and
-                '_save' in request.POST and not action_failed):
-            FormSet = self.get_changelist_formset(request)
-            formset = cl.formset = FormSet(request.POST, request.FILES, queryset=cl.result_list)
-            if formset.is_valid():
-                changecount = 0
-                for form in formset.forms:
-                    if form.has_changed():
-                        obj = self.save_form(request, form, change=True)
-                        self.save_model(request, obj, form, change=True)
-                        self.save_related(request, form, formsets=[], change=True)
-                        change_msg = self.construct_change_message(request, form, None)
-                        self.log_change(request, obj, change_msg)
-                        changecount += 1
-
-                if changecount:
-                    if changecount == 1:
-                        name = force_text(opts.verbose_name)
-                    else:
-                        name = force_text(opts.verbose_name_plural)
-                    msg = ungettext("%(count)s %(name)s was changed successfully.",
-                                    "%(count)s %(name)s were changed successfully.",
-                                    changecount) % {'count': changecount,
-                                                    'name': name,
-                                                    'obj': force_text(obj)}
-                    self.message_user(request, msg, messages.SUCCESS)
-
-                return HttpResponseRedirect(request.get_full_path())
-
         # Handle GET -- construct a formset for display.
-        elif cl.list_editable:
+        if cl.list_editable:
             FormSet = self.get_changelist_formset(request)
             formset = cl.formset = FormSet(queryset=cl.result_list)
 
@@ -166,25 +161,30 @@ class LatexAdmin(admin.ModelAdmin):
         selection_note_all = ungettext('%(total_count)s selected',
             'All %(total_count)s selected', cl.result_count)
 
+        print action_form
         context = {
             'module_name': force_text(opts.verbose_name_plural),
             'selection_note': _('0 of %(cnt)s selected') % {'cnt': len(cl.result_list)},
             'selection_note_all': selection_note_all % {'total_count': cl.result_count},
-            'title': cl.title,
+            'selection_counter': selection_note_all % {'total_count': cl.result_count},
+            # 'title': cl.title,
+            'title': 'Select teams to render email-line or latex-rendition',
             'is_popup': cl.is_popup,
             'cl': cl,
             'media': media,
             'has_add_permission': self.has_add_permission(request),
             'opts': cl.opts,
-            'app_label': app_label,
+            # 'app_label': app_label,
+            'app_label': 'Tesssst',
             'action_form': action_form,
-            'actions_on_top': self.actions_on_top,
-            'actions_on_bottom': self.actions_on_bottom,
+            # 'actions_on_top': self.actions_on_top,
+            'actions_on_top': None,
+            # 'actions_on_bottom': self.actions_on_bottom,
+            'actions_on_bottom': None,
             'actions_selection_counter': self.actions_selection_counter,
             'preserved_filters': self.get_preserved_filters(request),
-            'test' : 'test',
-        }
-        context.update({'contests' : Contest.objects.all(), 'contest' : Contest.objects.first()})
+            'semicolon_list' : semicolon_list,
+            }        
         context.update(extra_context or {})
 
         return render(request, 'latex_home.html', context)
@@ -194,6 +194,7 @@ class LatexAdmin(admin.ModelAdmin):
             'admin/change_list.html'
         ], context, current_app=self.admin_site.name)
 
+
 class RenderAdmin(admin.ModelAdmin):
     # FIXME
     """ Temporary solution to get a view connected in admin site
@@ -202,6 +203,7 @@ class RenderAdmin(admin.ModelAdmin):
         return render_csv_url(self, RenderAdmin)
 
 admin.site.register(Latex_TeamText, LatexAdmin)
+#admin.site.register(FakeTeam, LatexAdmin)
 
 admin.site.register(Latex_Teamview, RenderAdmin)
 #admin.site.register(Latex_Teamview)
