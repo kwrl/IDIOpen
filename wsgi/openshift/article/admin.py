@@ -17,6 +17,10 @@ class ArticleForm(forms.ModelForm):
 
 
 class ArticleAdmin(admin.ModelAdmin):
+    '''
+    This class manages the creation of new articles. It uses a js editor(grapelli) to
+    format the articles. 
+    '''
     fieldsets = (
         (None, {
             'fields': ('title', 'contest','visible_article_list', 'url', 'is_urgent', 'text'),
@@ -26,6 +30,7 @@ class ArticleAdmin(admin.ModelAdmin):
     form = ArticleForm
     list_display = ('title', 'created_at','contest','author','visible_article_list','url', 'is_urgent')
     search_fields = ('title', 'text','author',)
+    list_filter = ('contest',)
     ordering = ('created_at',)
     
     # Set author, to the user/admin who created the article

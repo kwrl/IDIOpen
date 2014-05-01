@@ -1,9 +1,10 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .forms import QuestionForm
 from .models import Question
 from django.contrib import messages
 from openshift.helpFunctions import views as helpView
 from django.shortcuts import Http404
+from openshift.helpFunctions.views import get_current_contest
 
 # Create your views here.
 
@@ -11,10 +12,14 @@ from django.shortcuts import Http404
 This is for clarification post a question
 '''
 def clarification(request):
-    
+    '''
+    This view handles sending Questions/clarifications.
+    In order to get access to the clarifications you need to
+    be logged in, on a team, and the contest needs to have started.
+    '''
     if not helpView.contest_begin(request): 
-        messages.info(request, "contest has not yet begun")
-        return clarificationAnswers(request)
+        messages.info(request, "contest has not yet started")
+        return redirect("clarificationAnswersPage", get_current_contest(request).url)
     
     elif not request.user.is_authenticated():
         messages.info(request, "You are not logged in")
@@ -56,7 +61,8 @@ def clarification(request):
 
 def clarificationAnswers(request):
     '''
-    Everybody should be able to view clarifications at all time
+    This view displays the answers to a question. 
+    Access to this view is not restricted in any way.
     '''
     answers = helpView.get_all_answers(request)
     context = {
