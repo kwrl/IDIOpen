@@ -11,8 +11,19 @@ class TestCaseAdmin(admin.ModelAdmin):
     # search_fields = ('name', '',)
     ordering = ('inputFile','inputDescription', 
                 'outputFile', 'outputDescription')
+    
+    fieldsets = (
+        (None, {
+            'fields': ('inputFile', 'outputFile', 'short_description', 'inputDescription',
+                       'outputDescription', 'problem')
+        }),
+        ('Custom validator', {
+            'fields': ('compileProfile', 'validator'),
+            'description': 'If your output is floating point or requires a custom validator' \
+            ' you can specify the custom validator here. The file will get compiled with the compiler profile you specify.',
+        }),
+    )
 
-admin.site.register(TestCase, TestCaseAdmin)
 
 class ProblemAdmin(admin.ModelAdmin):
     search_fields = ('title', 'author',)
@@ -79,3 +90,4 @@ admin.site.register(Problem, ProblemAdmin)
 admin.site.register(FileExtension, FileExtensionAdmin)
 admin.site.register(CompilerProfile, CompilerProfileAdmin)
 admin.site.register(Resource, ResourceAdmin)
+admin.site.register(TestCase, TestCaseAdmin)
