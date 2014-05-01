@@ -18,7 +18,7 @@ from django.contrib import messages
 
 from django.db import models
 from django.contrib import admin
-import operator
+import operator, re
 
 from .views import process_team_contestants, render_semicolonlist
 from .models import FakeTeam
@@ -41,9 +41,24 @@ class LatexAdmin(admin.ModelAdmin):
     def get_urls(self):
         return latex_url(self, LatexAdmin)
 
-    def queryset(self, request, contest_pk=None):
-        qs = super(LatexAdmin, self).queryset(request)
-        qs = Team.objects.filter(contest_id=contest_pk)
+    def get_queryset(self, request):
+        """
+        Returns a QuerySet of all model instances that can be edited by the
+        admin site. This is used by changelist_view.
+        """
+        contest = re.search('\d{1,3}$', request.path)
+        if contest:
+            contest = contest.group()
+        else:
+             contest = get_most_plausible_contest(contest_pk)
+             if not contest:
+                return HttpResponse("<h1> No contests in system </h1>")
+
+        # qs = self.model._default_manager.get_queryset()
+        qs = self.model._default_manager.filter(contest=contest)
+        ordering = self.get_ordering(request)
+        if ordering:
+            qs = qs.order_by(*ordering)
         return qs
 
     def get_search_results(self, request, queryset, search_term):
@@ -153,6 +168,7 @@ class LatexAdmin(admin.ModelAdmin):
             FormSet = self.get_changelist_formset(request)
             formset = cl.formset = FormSet(queryset=cl.result_list)
 
+
         # Build the list of media to be used by the formset.
         if formset:
             media = self.media + formset.media
@@ -194,6 +210,7 @@ class LatexAdmin(admin.ModelAdmin):
             'semicolon_list' : semicolon_list,
             'contests': Contest.objects.all(),
             'contest': contest,
+            
     
             }        
         context.update(extra_context or {})
