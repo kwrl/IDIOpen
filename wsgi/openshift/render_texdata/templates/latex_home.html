@@ -4,6 +4,28 @@
 {% block object-tools-items %}
 </ul>
 </header>
+
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+
+<script>
+    function switchContest()
+    {
+        window.document.location = $('select[name="selectContest"] option:selected').val();
+  }
+</script>
+
+<h2> Choose contest </h2>
+<select name="selectContest" onchange="switchContest()">
+    {% for con in contests %}
+        {% if con.pk == contest.pk %}
+            <option selected value = "con{{con.pk}}">{{con.title}}</option>
+        {% else %}
+            <option value = "con{{con.pk}}">{{con.title}}</option>
+        {%endif %}
+    {% endfor %}
+</select>
+
 <h3>Variables that will be replaced if given. Not including the below variables gives default empty strings</h3>
 <ul>
     <li>%(team)s - will be subsituted with team name for each selected team</li>
@@ -95,8 +117,10 @@ button.buttonGroup  {
     }
 </style>
 
-<button type="submit" class="buttonGroup" onclick="post_to_url('', {'text':document.getElementById('id_latex').value}, 'teamCSV')">Create latex for teams</button>
+<button type="submit" class="buttonGroup" onclick="post_to_url('', {'text':document.getElementById('id_latex').value}, 'teamCSV_onePDF')">Create latex for teams (one pdf)</button>
 
+
+<button type="submit" class="buttonGroup" onclick="post_to_url('', {'text':document.getElementById('id_latex').value}, 'teamCSV_manyPDF')">Create latex for teams (several pdf)</button>
 
 <button type="submit" class="buttonGroup" onclick="post_to_url('', {}, 'emailCSV')">Create list of emails</button>
 
