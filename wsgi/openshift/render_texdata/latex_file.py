@@ -1,8 +1,7 @@
+#coding:utf8
 """ The latex to be rendered
 """
 
-CONTESTANT_PARSELINE = "%(contestant_line)s"
-TEAM_PARSELINE = "%(team)s"
 
 LATEX_PARSE = r"""
 \documentclass{article}
@@ -14,5 +13,4 @@ TEAM_PARSELINE + r""" \\}
 CONTESTANT_PARSELINE + r"""
 \end{document}
 """
-
 # EOF
