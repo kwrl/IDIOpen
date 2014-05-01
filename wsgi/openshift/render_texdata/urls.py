@@ -14,7 +14,7 @@ def render_csv_url(inst, class_super):
        url(r'^$',
                 admin.site.admin_view(render_csv,
                                       cacheable=True)),
-       url(r'^con(?P<contest_pk>[0-9]+)$',
+       url(r'^(?P<contest_pk>[0-9]+)$',
                 admin.site.admin_view(render_csv)),
     )
 
@@ -22,15 +22,15 @@ def render_csv_url(inst, class_super):
 
 def latex_url(inst, class_super):
     urls = super(class_super, inst).get_urls()
-    #urls = [urls[0], ]
+    urls = [urls[0], ]
     #import ipdb; ipdb.set_trace()
     my_urls = patterns('',
        url(r'^newurl$',
-                admin.site.admin_view(latex_view),
-                                    name="nei",
-                                    ),
-    )
+                admin.site.admin_view(latex_view)),
+        url(r'^con(?P<contest_pk>[0-9]+)$',
+            admin.site.admin_view(latex_view)),
+         )
     return my_urls + urls
 
-# EOF
+# EO dsdsF
 

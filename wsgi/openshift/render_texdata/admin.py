@@ -42,6 +42,10 @@ class LatexAdmin(admin.ModelAdmin):
     def get_urls(self):
         return latex_url(self, LatexAdmin)
 
+    def queryset(self, request, contest_pk=None):
+        qs = super(LatexAdmin, self).queryset(request)
+        qs = Team.objects.filter(contest_id=contest_pk)
+        return qs
 
     def get_search_results(self, request, queryset, search_term):
         """
@@ -76,11 +80,15 @@ class LatexAdmin(admin.ModelAdmin):
 
         return queryset, use_distinct
 
-    def changelist_view(self, request, extra_context=None):
+    def changelist_view(self, request, extra_context=None, contest_pk=None):
         """
         The 'change list' admin view for this model.
         """
-
+        contest = get_most_plausible_contest(contest_pk)
+        
+        if not contest:
+            return HttpResponse("<h1> No contest </h1>")
+         
         semicolon_list = None
         if request.method == "POST":
             selected = request.POST.getlist(helpers.ACTION_CHECKBOX_NAME)
@@ -97,9 +105,9 @@ class LatexAdmin(admin.ModelAdmin):
                         except ValueError as ve:
                             messages.error(request, ve.message)
 
-                    elif request.POST["buttonId"] == "teamCSV":
+                    elif request.POST["buttonId"] == "teamCSV_onePDF" or request.POST["buttonId"] == "teamCSV_manyPDF":
                         try:
-                            response = process_team_contestants(request.POST['text'], selected)
+                            response = process_team_contestants(request.POST['text'], selected, request.POST['buttonId'], contest)
                             return response
                         except ValueError as ve:
                             messages.error(request, "Invalid formatting, ensure all given variables are on the form \"%(var)s\".\n" + ve.message)
@@ -161,7 +169,7 @@ class LatexAdmin(admin.ModelAdmin):
         selection_note_all = ungettext('%(total_count)s selected',
             'All %(total_count)s selected', cl.result_count)
 
-        print action_form
+       
         context = {
             'module_name': force_text(opts.verbose_name_plural),
             'selection_note': _('0 of %(cnt)s selected') % {'cnt': len(cl.result_list)},
@@ -184,6 +192,9 @@ class LatexAdmin(admin.ModelAdmin):
             'actions_selection_counter': self.actions_selection_counter,
             'preserved_filters': self.get_preserved_filters(request),
             'semicolon_list' : semicolon_list,
+            'contests': Contest.objects.all(),
+            'contest': contest,
+    
             }        
         context.update(extra_context or {})
 

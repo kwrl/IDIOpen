@@ -92,7 +92,7 @@ class NestTask(TaskSet):
             print c.content
             self.interrupt()
 
-    #@task
+    @task
     class RegisterUser(TaskSet):
         global USERNAME_LIST
         # user = USERNAME_LIST[randint(0, len(USERNAME_LIST)-1)]
