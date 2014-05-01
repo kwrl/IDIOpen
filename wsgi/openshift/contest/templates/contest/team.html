@@ -10,14 +10,12 @@
 			<h2>Team page</h2>
 		</span>
 		<span class= "pull-right">
-		{% if contest_started %}
+		{% if contest_started or user.is_staff%}
 			<span data-toggle="tooltip" data-placement="left" title="Press this button to go to the contest page">
 			<a href="{% url 'submission_page' contest.url %}" class="btn btn-primary btn-large">{% trans 'Go To Contest Page' %}</a>
-			</span>
-		{% elif user.is_staff %}
-			<span data-toggle="tooltip" data-placement="left" title="Press this button to go to the contest page, as staff">
-			<a href="{% url 'submission_page' contest.url %}" class="btn btn-primary btn-large">{% trans 'Go To Contest Page' %}</a>
-			<p><small>Check it out as staff</small><p>
+			{% if not contest_started %}
+				<p><small>Check it out as staff</small><p>
+			{% endif %}
 			</span>
 		{% else %}
 			<span data-toggle="tooltip" data-placement="left" title="This button will be enabled when the contest starts">
