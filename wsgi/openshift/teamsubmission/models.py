@@ -19,6 +19,9 @@ class TriesTimeSolved(object):
         self.solved = solved
 
 class TeamTrRow(object):
+    '''
+    Class used to store calculated score and team information. Used by the highscore table.
+    '''
     def __init__(self, team, problemsLen):
         self.problemList = [None] * problemsLen
         self.team = team
@@ -27,15 +30,18 @@ class TeamTrRow(object):
         self.total_time = 0
         self.total_solved = 0
         self.skill_level = '1'
-        x = team.members.first()
+        x = team.leader
         if x:
             self.skill_level = x.skill_level
+            self.staff = x.is_staff
         self.pro = False
         if self.skill_level == 'pro':
             self.pro = True
 
         if team.members.count() > 0:
-            for member in team.members.all()[1:]:
+            for member in team.members.all():
+                if member.is_staff:
+                    self.staff == True
                 if member.skill_level > self.skill_level:
                     self.skill_level = member.skill_level
                     if member.skill_level == 'pro':
@@ -90,7 +96,8 @@ class ScoreManager(models.Manager):
 
         for team in teams:
             ttr = TeamTrRow(team, num_problems)
-            if ttr.pro == False and sort_res == 'pro' \
+            if ttr.staff \
+            or ttr.pro == False and sort_res == 'pro' \
             or ttr.pro == True  and sort_res == 'student':
                 continue
 
@@ -132,11 +139,16 @@ class ScoreManager(models.Manager):
 
 def file_function(instance, filename):
     return '/'.join(['submissions', str(instance.team.contest.id), str(instance.team.id),
-				    str(instance.problem.id), datetime.strftime(datetime.now(), '%d%m%y%H%M%S'), filename])
+                    str(instance.problem.id), datetime.strftime(datetime.now(), '%d%m%y%H%M%S'), filename])
 
 
 class Submission(models.Model):
-    
+    '''
+    When a user attempts to upload a solution to a problem the data related to that upload
+    is stored as an instance of this class. It contains the submitted source code, the compiler
+    profile selected etc. When a submission has been evaluated the results are also stored in
+    the same instance of this class.
+    '''
     class Meta:
         verbose_name_plural = "View Submissions"
     
@@ -166,6 +178,10 @@ class Submission(models.Model):
         return unicode(self.pk)
 
 class ExecutionLogEntry(models.Model):
+    '''
+    When a submission is compiled or executed the data related the process created is stored
+    here. 
+    '''
     class Meta:
         verbose_name_plural = "View Execution Log Entries"
     

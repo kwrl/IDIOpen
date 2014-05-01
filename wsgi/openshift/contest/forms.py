@@ -37,7 +37,10 @@ class _RadioSelect(forms.RadioSelect):
         return u''.join(rendered_widgets)
 
 class Team_Form(forms.ModelForm):
-
+    '''
+    Form used for team registration. Verifies that a team is either 
+    set to being onsite or have provided an offsite location.
+    '''
     member_one = forms.EmailField(required=False, 
                                   label= u'Second Team Member',
                                   widget=forms.TextInput(attrs= {'placeholder':'(Optional) Insert team member email.'}));
@@ -105,6 +108,10 @@ class Team_Form(Team_Base):
         return name
  '''           
 class Team_Edit(forms.ModelForm):
+    '''
+    Form used to edit teams. Verifies that at team is either set to 
+    onsite or have provided an offsite location.
+    '''
     def __init__(self, *args, **kwargs):
         super(Team_Edit, self).__init__(*args, **kwargs)
         self.fields['leader'].queryset = self.instance.members.all()
@@ -149,13 +156,11 @@ class Team_Add_Members(forms.ModelForm):
         fields = ['email']
                 
 class LinkForm(forms.ModelForm):
-
     def __init__(self, *args, **kargs):
         super(LinkForm, self).__init__(*args, **kargs)
         self.fields["text"].required = False
         self.fields["url"].required = False 
 
-    
 
     def clean(self):
         if self.cleaned_data['separator']:

@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django import forms
 from django.db import models
-
+from django.contrib.admin.widgets import AdminTextInputWidget, AdminTextareaWidget, AdminIntegerFieldWidget
 from .models import Submission, ExecutionLogEntry
 
 class SubmissionAdmin(admin.ModelAdmin):
@@ -10,9 +10,9 @@ class SubmissionAdmin(admin.ModelAdmin):
 
 class ExecutionLogEntryAdmin(admin.ModelAdmin):
     formfield_overrides = {
-        models.CharField: {'widget':forms.TextInput(attrs={'readonly':'readonly','size':'30'})},
-        models.TextField: {'widget':forms.Textarea(attrs={'readonly':'readonly','rows':40,'cols':40})},
-        models.IntegerField: {'widget':forms.TextInput(attrs={'readonly':'readonly'})},
+        models.CharField: {'widget':AdminTextInputWidget(attrs={'readonly':'readonly'})},
+        models.TextField: {'widget':AdminTextareaWidget(attrs={'readonly':'readonly','rows':40})},
+        models.IntegerField: {'widget':AdminIntegerFieldWidget(attrs={'readonly':'readonly'})},
         models.ForeignKey: {'widget':forms.Select(attrs={'disabled':'disabled'})}
     }
 
