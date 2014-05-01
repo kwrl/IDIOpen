@@ -14,7 +14,7 @@
 			<span data-toggle="tooltip" data-placement="left" title="Press this button to go to the contest page">
 			<a href="{% url 'submission_page' contest.url %}" class="btn btn-primary btn-large">{% trans 'Go To Contest Page' %}</a>
 			</span>
-		{% elif is_staff %}
+		{% elif user.is_staff %}
 			<span data-toggle="tooltip" data-placement="left" title="Press this button to go to the contest page, as staff">
 			<a href="{% url 'submission_page' contest.url %}" class="btn btn-primary btn-large">{% trans 'Go To Contest Page' %}</a>
 			<p><small>Check it out as staff</small><p>
