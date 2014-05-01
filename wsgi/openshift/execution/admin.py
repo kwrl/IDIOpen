@@ -5,14 +5,26 @@ from .models import TestCase, Problem, CompilerProfile, FileExtension, Resource
 
 
 class TestCaseAdmin(admin.ModelAdmin):
-    list_display = ('name', 'problem', 'compileProfile', 'author' )
+    list_display = ('name', 'problem', 'compileProfile', 'author', 'contest')
     def name(self, obj):
         return obj # uses the toString method
     # search_fields = ('name', '',)
     ordering = ('inputFile','inputDescription', 
                 'outputFile', 'outputDescription')
+    search_fields = ('problem__title','short_description')
+    list_filter = ('problem__contest',)
+    fieldsets = (
+        (None, {
+            'fields': ('inputFile', 'outputFile', 'short_description', 'inputDescription',
+                       'outputDescription', 'problem')
+        }),
+        ('Custom validator', {
+            'fields': ('compileProfile', 'validator'),
+            'description': 'If your output is floating point or requires a custom validator' \
+            ' you can specify the custom validator here. The file will get compiled with the compiler profile you specify.',
+        }),
+    )
 
-admin.site.register(TestCase, TestCaseAdmin)
 
 class ProblemAdmin(admin.ModelAdmin):
     search_fields = ('title', 'author',)
@@ -79,3 +91,4 @@ admin.site.register(Problem, ProblemAdmin)
 admin.site.register(FileExtension, FileExtensionAdmin)
 admin.site.register(CompilerProfile, CompilerProfileAdmin)
 admin.site.register(Resource, ResourceAdmin)
+admin.site.register(TestCase, TestCaseAdmin)

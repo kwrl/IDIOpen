@@ -170,6 +170,9 @@ class TestCase(models.Model):
     compileProfile  = models.ForeignKey(CompilerProfile, null=True, blank=True)
     validator       = models.FileField(storage=private_media, upload_to=get_upload_path,null=True, blank=True,
                             verbose_name="Custom validator source")
+    
+    def contest(self):
+        return self.problem.contest
 
     def __unicode__(self):
         return "%s" % (self.short_description)
