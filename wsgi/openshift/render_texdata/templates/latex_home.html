@@ -1,0 +1,134 @@
+{% extends "admin/change_list.html" %}
+
+{% load i18n admin_urls %}
+{% block object-tools-items %}
+</ul>
+</header>
+
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+
+<script>
+    function switchContest()
+    {
+        window.document.location = $('select[name="selectContest"] option:selected').val();
+  }
+</script>
+
+<h2> Choose contest </h2>
+<select name="selectContest" onchange="switchContest()">
+    {% for con in contests %}
+        {% if con.pk == contest.pk %}
+            <option selected value = "con{{con.pk}}">{{con.title}}</option>
+        {% else %}
+            <option value = "con{{con.pk}}">{{con.title}}</option>
+        {%endif %}
+    {% endfor %}
+</select>
+
+<h3>Variables that will be replaced if given. Not including the below variables gives default empty strings</h3>
+<ul>
+    <li>%(team)s - will be subsituted with team name for each selected team</li>
+    <li>%(contestant_line)s - will be substituted with a comma-separated line with commas</li>
+    <li>%(sponsor)s, - will be replaced by company logo </li>
+</ul>
+
+<br />
+<br />
+
+<textarea id="id_latex" rows="14" cols="450">
+\documentclass{article}                                                             
+\begin{document}                                                                    
+///TEAM \\
+///CONTESTANT1
+///CONTESTANT2
+///CONTESTANT3
+///SPONSOR
+\end{document}
+</textarea>
+
+
+
+
+{% if semicolon_list %}    
+<textarea rows="10">
+{{semicolon_list}}
+    </textarea>
+{% endif %}
+
+
+<script type="text/javascript">
+        function post_to_url(path, params, buttonID) {
+                var form = document.createElement("form");
+                form.setAttribute("action", path);
+                form.setAttribute("method", "POST");
+                
+                var csrf_field = document.createElement("input");
+                csrf_field.setAttribute("type", "hidden");
+                csrf_field.setAttribute("name", "csrfmiddlewaretoken");
+                csrf_field.setAttribute("value", "{{ csrf_token }}");
+                form.appendChild(csrf_field);
+
+                var button_id = document.createElement("input");
+                button_id.setAttribute("type", "hidden");
+                button_id.setAttribute("name", "buttonId");
+                button_id.setAttribute("value", buttonID);
+                form.appendChild(button_id);
+
+
+
+                checkboxes = document.getElementsByName("_selected_action");
+
+                var teams = [];
+                var hiddenField = document.createElement("input");
+                hiddenField.setAttribute("type", "hidden");
+                for(var iPos = 0; iPos < checkboxes.length; iPos++)
+                {
+
+
+                    if (checkboxes[iPos].checked == true)
+                    {
+                        teams.push(checkboxes[iPos].value);
+                    }
+
+                }
+                hiddenField.setAttribute("name", "teams");
+                hiddenField.setAttribute("value", teams);
+                form.appendChild(hiddenField)
+
+                for ( var key in params) {
+                        if (params.hasOwnProperty(key)) {
+                                var hiddenField = document.createElement("input");
+                                hiddenField.setAttribute("type", "hidden");
+                                hiddenField.setAttribute("name", key);
+                                hiddenField.setAttribute("value", params[key]);
+
+                                form.appendChild(hiddenField);
+                        }
+                }
+                document.body.appendChild(form);
+                form.submit();
+        }
+</script>
+
+<style>
+button.buttonGroup  {
+    width : auto;
+    margin : 4px;
+    padding : 4px 15px;
+    color : #1A1717;
+    }
+</style>
+
+<button type="submit" class="buttonGroup" onclick="post_to_url('', {'text':document.getElementById('id_latex').value}, 'teamCSV_onePDF')">Create latex for teams (one pdf)</button>
+
+
+<button type="submit" class="buttonGroup" onclick="post_to_url('', {'text':document.getElementById('id_latex').value}, 'teamCSV_manyPDF')">Create latex for teams (several pdf)</button>
+
+<button type="submit" class="buttonGroup" onclick="post_to_url('', {}, 'emailCSV')">Create list of emails</button>
+
+
+<br />
+<br />
+
+{% endblock %}
