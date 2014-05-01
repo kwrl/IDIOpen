@@ -14,8 +14,12 @@
     <li>%(prize) - prize title for team</li>
 </ul>
 
+<br />
+<br />
+
 <textarea id="id_latex" rows="14" cols="450">
 \documentclass{article}
+\usepackage[utf8x]{inputenc}
 \begin{document}
 %(team)s \\
 %(contestant_line)s
@@ -24,13 +28,37 @@
 %(sponsor3)s
 %(prize)s
 \end{document}
+
+
 </textarea>
+
+
+{#  #}
+{#  #}
+{# \documentclass{article}                                                              #}
+{# \usepackage{CJKutf8}                                                                 #}
+{# \usepackage{ucs}                                                                     #}
+{# \usepackage[encapsulated]{CJK}                                                       #}
+{# \newcommand{\myfont}{bsmi} % or {stheiti}, etc                                                          #}
+{# \begin{document}                                                                     #}
+{# \begin{CJK}{UTF8}{\myfont}  #}
+{# %(team)s \\ #}
+{# %(contestant_line)s #}
+{# %(sponsor1)s #}
+{# %(sponsor2)s #}
+{# %(sponsor3)s #}
+{# %(prize)s #}
+{# \end{CJK} #}
+{# \end{document} #}
+{#  #}
+
 
 {% if semicolon_list %}    
 <textarea rows="10">
 {{semicolon_list}}
     </textarea>
 {% endif %}
+
 
 <script type="text/javascript">
         function post_to_url(path, params, buttonID) {
@@ -99,5 +127,9 @@ button.buttonGroup  {
 
 
 <button type="submit" class="buttonGroup" onclick="post_to_url('', {}, 'emailCSV')">Create list of emails</button>
+
+
+<br />
+<br />
 
 {% endblock %}
