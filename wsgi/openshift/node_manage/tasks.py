@@ -132,9 +132,8 @@ def evaluate_task(submission_id):
         submission.status = Submission.EVALUATED
         submission.save()
         return results
-    except Exception as e:
-        logger.debug(e.args)
-        logger.debug(e.message)
+    except Exception:
+        logger.exception("Something went wrong")
         submission.status = Submission.EVALUATED
         submission.text_feedback = "Something went wrong. Contacts admins"
         submission.save()
