@@ -1,12 +1,10 @@
 from __future__ import absolute_import
-from openshift.execution.models import CompilerProfile, TestCase, Resource, get_resource
+from openshift.execution.models import TestCase, Resource, get_resource
 from openshift.teamsubmission.models import Submission, ExecutionLogEntry 
-from subprocess import call
 from openshift import celery_app as app
-from subprocess import PIPE, Popen
-from signal import SIGKILL, SIGXCPU, SIGALRM, alarm, signal 
-from django.utils.encoding import smart_str, smart_bytes
-from psutil import AccessDenied
+from subprocess import PIPE
+from signal import SIGALRM, alarm, signal 
+from django.utils.encoding import smart_bytes
 import re
 import os
 import shlex
@@ -29,6 +27,8 @@ REALTIME_MULTIPLIER = 3
 STDOUT_MAX_SIZE = 512*1024
 STDERR_MAX_SIZE = 512*1024
 
+
+#Categorization of exit codes. 
 USER_TIMEOUT    = [137, 35072]
 USER_CRASH      = [1,9,128,257,300]
 PROC_EXCEED     = [139]
@@ -37,7 +37,7 @@ MEM_EXCEED      = [-9,134]
 def set_resource(time, memory=-1, procs=-1):
     '''
     Return a function that sets resources for a subprocess
-    -1 is equivalent of unlimited, or os max limits. The funtion will also set nice to 19 for the process
+    -1 is equivalent to unlimited, or os max limits. The funtion will also set nice to 19 for the process
 
     Keyword arguments:
     time -- maximum cpu time in seconds
@@ -73,68 +73,71 @@ def set_resource(time, memory=-1, procs=-1):
 
 @app.task
 def evaluate_task(submission_id):
+    '''
+    Entry point for submission evaluation. Sets up a RunJob instance for the submitted source and goes through the stages of compiling the submission,
+    running the compiled subsmission through all related test_cases and finally evaluating the results.  
+    '''
     submission  = Submission.objects.get(pk=submission_id)
-    #try:
-    compiler    = submission.compileProfile
-    problem     = submission.problem
-    submission.status = Submission.RUNNING
-    submission.save()
-    runner = RunJob(submission.submission, 
-                           compiler, 
-                           get_resource(submission, compiler))
+    try:
+        compiler    = submission.compileProfile
+        problem     = submission.problem
+        submission.status = Submission.RUNNING
+        submission.save()
+        runner = RunJob(submission.submission, 
+                               compiler, 
+                               get_resource(submission, compiler))
+        
+        retval, stdout, stderr = runner.compile()
+        runLogger(submission, runner.compileCMD, stdout, stderr, retval)
+        if retval != 0:
+            if retval in MEM_EXCEED:
+                submission.text_feedback = "Compile time memory limit exceeded."
+            elif retval in USER_TIMEOUT:
+                submission.text_feedback = "Compile timeout"
+            else:
+                submission.text_feedback = "Compile time error."
+            submission.status = Submission.EVALUATED
+            submission.save()
+            return retval, stdout, stderr
     
-    retval, stdout, stderr = runner.compile()
-    runLogger(submission, runner.compileCMD, stdout, stderr, retval)
-    if retval != 0:
-        if retval in MEM_EXCEED:
-            submission.text_feedback = "Compile time memory limit exceeded."
-        elif retval in USER_TIMEOUT:
-            submission.text_feedback = "Compile timeout"
-        else:
-            submission.text_feedback = "Compile time error."
+        logger.debug('Exec start')
+    
+        results = run_tests(runner, submission)
+        exretval = 0
+    
+        for res in results:
+            #No runtime error
+            if res[0] == 0:
+                exretval = res[0]
+                submission.solved_problem = res[3]
+                if submission.solved_problem:
+                    submission.text_feedback = "Successful submission!"
+                else:
+                    submission.text_feedback = "Incorrect output."
+            #Runtime error
+            else:
+                exretval = res[0]
+                submission.solved_problem = res[3]
+                
+                if exretval in MEM_EXCEED:
+                    submission.text_feedback = "Runtime memory limit exceeded."
+                elif exretval in USER_TIMEOUT:
+                    submission.text_feedback = "Runtime timeout."
+                elif exretval in PROC_EXCEED:
+                    submission.text_feedback = "Number of processes exceeded."
+                else:
+                    submission.text_feedback = "Runtime error."   
+                break
+        logger.debug('Exec end')
         submission.status = Submission.EVALUATED
         submission.save()
-        return retval, stdout, stderr
-
-    logger.debug('Exec start')
-
-    results = run_tests(runner, submission)
-    exretval = 0
-
-    for res in results:
-        #No runtime error
-        if res[0] == 0:
-            exretval = res[0]
-            submission.solved_problem = res[3]
-            if submission.solved_problem:
-                submission.text_feedback = "Successful submission!"
-            else:
-                submission.text_feedback = "Incorrect output."
-        #Runtime error
-        else:
-            exretval = res[0]
-            submission.solved_problem = res[3]
-            
-            if exretval in MEM_EXCEED:
-                submission.text_feedback = "Runtime memory limit exceeded."
-            elif exretval in USER_TIMEOUT:
-                submission.text_feedback = "Runtime timeout."
-            elif exretval in PROC_EXCEED:
-                submission.text_feedback = "Number of processes exceeded."
-            else:
-                submission.text_feedback = "Runtime error."   
-            break
-    logger.debug('Exec end')
-    submission.status = Submission.EVALUATED
-    submission.save()
-    return results
-    #except Exception as e:
-    #    logger.debug(e.args)
-    #    logger.debug(e.message)
-    #    submission.status = Submission.EVALUATED
-    #    submission.text_feedback = "Something went wrong. Contacts admins"
-    #    submission.save()
-
+        return results
+    except Exception as e:
+        logger.debug(e.args)
+        logger.debug(e.message)
+        submission.status = Submission.EVALUATED
+        submission.text_feedback = "Something went wrong. Contacts admins"
+        submission.save()
 
 class RunJob():
     '''
@@ -191,6 +194,13 @@ class RunJob():
         return command
     
 def run_tests(runJob, submission):
+    '''
+    run_tests goes through all the test cases related to the problem the submission is intended to solve.
+    Runnning a test case consists of running the submission with an input given by the test case. The next 
+    step is to check whether or not the output from the run was valid. This can be done either by means of
+    a custom validator, or simply by doing a simple string comparison with the correct output (provided by
+    the test case). 
+    '''
     test_cases = TestCase.objects.filter(problem__pk = submission.problem.pk)
     results = []
     for test in test_cases:
@@ -247,6 +257,11 @@ def MBtoB(mbcount):
 
 
 def validate(input_content, run_stdout, test_case):
+    '''
+    Uses a custom validator to check whether or not the output from a test run is correct.
+    The first step is to compile the validator, then run it with the concatenation of the 
+    test case input and the output from the submission test run.
+    '''
     
     runner = RunJob(test_case.validator, test_case.compileProfile, get_validator_resource())
     retval, stdout, stderr = runner.compile()
@@ -317,8 +332,14 @@ def execute(command, dir_path, res, stdin=None, timeout = -1):
     return retval, stdout, stderr
 
 def use_run_user(command):
+    '''
+    Used to run submissions as a less privileged user than the one doing compilation. 
+    '''
     return 'sudo su ' + RUN_USER + ' -c "' + command + '"'
 
 def time_command(command):
+    '''
+    Used to get the runtime of a test run.
+    '''
     return '/usr/bin/time -f "%Sn%U" -q ' + command
 

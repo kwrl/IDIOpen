@@ -42,6 +42,8 @@ AUTH_USER_MODEL = 'userregistration.CustomUser'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+SITE_ID = 0
+
 TEMPLATE_DEBUG = DEBUG
 
 if DEBUG:
@@ -55,6 +57,7 @@ INSTALLED_APPS = (
     'grappelli',
     'filebrowser',
     'django.contrib.admin',
+    'django.contrib.admindocs',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -64,7 +67,7 @@ INSTALLED_APPS = (
     'openshift.contest',
     'openshift.article',
     'openshift.userregistration',
-	'django_jenkins',
+    'django_jenkins',
     'south',
     'dajaxice',
     'dajax',
@@ -130,12 +133,12 @@ MYSQL = True
 if MYSQL:
     DATABASES = {
          'default': {
-             'ENGINE'	: 'django.db.backends.mysql',
-             'NAME'	: 'gentleidi',
-             'USER'	: os.getenv('USER'), #Added Windows support  
-	     'PASSWORD'	: 'password',
-	     'HOST'	: 'localhost',
-	     'PORT'	: '3306',
+             'ENGINE'   : 'django.db.backends.mysql',
+             'NAME' : 'gentleidi',
+             'USER' : os.getenv('USER'), #Added Windows support  
+         'PASSWORD' : 'password',
+         'HOST' : 'localhost',
+         'PORT' : '3306',
          }
     }
 else:
@@ -195,7 +198,7 @@ LOGGING = {
         'file': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
-	    'formatter': 'verbose',
+        'formatter': 'verbose',
             'filename': LOG_ROOT + '/debug.log',
         },
     },
@@ -205,11 +208,11 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': True,
         },
-	'django': {
-	    'handlers': ['file'],
-	    'level': 'INFO',
-	    'propagate': True,
-	},
+    'django': {
+        'handlers': ['file'],
+        'level': 'INFO',
+        'propagate': True,
+    },
     },
 }
 

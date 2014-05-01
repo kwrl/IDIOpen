@@ -53,9 +53,12 @@ def get_highscore(request, contest):
         dajax.assign('#highscore_done', 'innerHTML', build_closed_string(contest))
         return dajax.json()
     
-    stats = Submission.objects.get_highscore(contest)[:5]
+    stats = Submission.objects.get_highscore(contest)
     
-    dajax.assign('#highscoretable', 'innerHTML', build_html_table(stats))
+    stats.sort(key=operator.attrgetter('total_score'))
+    stats.sort(key=operator.attrgetter('total_solved'), reverse=True)
+    
+    dajax.assign('#highscoretable', 'innerHTML', build_html_table(stats[:5]))
     return dajax.json()
 
 
@@ -81,8 +84,6 @@ def show_contest(contest):
 #gets the curent contest based on url string
 def build_html_table(stats):
 
-    stats.sort(key=operator.attrgetter('total_score'), reverse=True)
-    
     string = ""
     for s in range(len(stats)):
         string += "<tr>"

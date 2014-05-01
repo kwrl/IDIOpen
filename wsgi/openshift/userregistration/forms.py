@@ -128,10 +128,10 @@ class RegistrationForm(forms.Form):
         else:
             return self.cleaned_data['email']
  
- #===============================================================================
- # Strips trailing whitespace from first_name, last_name and nickname.
- # Note: Not the best solution, but didn't manage to do this in the model instead.
- #===============================================================================
+#===============================================================================
+# Strips trailing whitespace from first_name, last_name and nickname.
+# Note: Not the best solution, but didn't manage to do this in the model instead.
+#===============================================================================
  
     def clean_first_name(self):        
         first_name = self.cleaned_data.get('first_name')
