@@ -1,7 +1,6 @@
 #coding:utf-8
 BROKER_URL = "amqp://guest:guest@localhost:5672//"
 CELERY_RESULT_BACKEND = "amqp"
-import subprocess
 '''
 CELERYD_NODES = "w1"
 CELERY_MULTI = "celery multi"
@@ -19,9 +18,6 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 """
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
-import imp
-import uuid
-from datetime import datetime
 
 BASE_DIR = os.path.dirname(os.path.realpath(__file__))
 print(BASE_DIR)
