@@ -54,18 +54,44 @@ def render_semicolonlist(team_list):
     return retString
 
 
+def get_sponsor(contest):
+    contest = Contest.objects.get(pk=contest)
+    
+    latex_prefix= r"""
+   \begin{figure}[ht]"""
+    latex_suffix = r"""
+    \end{figure}
+    """
+    image_line = r"""
+    \begin{minipage}[b]{0.45\linewidth}
+    \centering
+    \includegraphics[width=\textwidth]{///FILENAME}\caption{///SPONSORLABEL}
+    \label{///SPONSORLABEL}
+    \end{minipage} \hspace{0.5cm}
+    """
+
+    imageString = ""
+    import ipdb; ipdb.set_trace()
+    for spon in contest.sponsors.all():
+        parse_string = LatexTemplate(image_line.encode('utf-8'))
+        imageString += parse_string.substitute({'FILENAME': spon.image.path_full, 'SPONSORLABEL' : spon.name})
+
+
+    retString = latex_prefix + imageString + latex_suffix
+    return retString.encode('utf-8')
+
 def filter_team_name(team_name):
     pattern = re.compile(r'[\W_]+')
     return pattern.sub('', team_name)
 
 def tex_render_unsafe(unsafe_string):
-    retString = u"""\verb|""" + unsafe_string.replace("|", "") + u"""|"""
+    retString = r"""\verb|""" + unsafe_string.replace("|", "") + r"""|"""
     return retString.encode('utf-8')
 
 def process_team_contestants(latex_parse_string, team_list, output_format, contest):
     team_contestant_dict = get_team_contestant_dict(team_list)
 
-    get_sponsor_logo_name(contest) # Returns list with sponsor objects
+    sponsor = get_sponsor(contest) # Returns list with sponsor objects
     dir_dest = "/tmp/teams/"
     if path.exists(dir_dest):
         rmtree(dir_dest)
@@ -93,6 +119,7 @@ def process_team_contestants(latex_parse_string, team_list, output_format, conte
                 betweenParanthesis(CON1): '',
                 betweenParanthesis(CON2): '',
                 betweenParanthesis(CON3): '',
+                'SPONSOR': sponsor,
         }
 
         index = 1
@@ -120,9 +147,11 @@ def process_team_contestants(latex_parse_string, team_list, output_format, conte
                     break
                 except KeyError as ke:
                     tex_dict[ke.args[0]] = u''
-            import ipdb; ipdb.set_trace()
-            f.write(string.encode('utf-8'))
-
+            try:
+                f.write(string.decode('utf-8').encode('utf-8'))
+            except UnicodeError:
+                #import ipdb; ipdb.set_trace()
+                pass
 
         proc=Popen(split('xelatex -no-file-line-error --halt-on-error --output-directory="%s" ' % (dir_dest) + file_name))
         proc.communicate()
@@ -151,8 +180,12 @@ def process_team_contestants(latex_parse_string, team_list, output_format, conte
         proc=Popen(split('pdfunite %s %s' % (string, monster_pdf)))
         proc.communicate()
 
-        response = HttpResponse(open(monster_pdf), content_type='application/pdf')
-        response['Content-Disposition'] = 'attachment; filename="team.pdf"'
+        response = None
+        try:
+            response = HttpResponse(open(monster_pdf), content_type='application/pdf')
+            response['Content-Disposition'] = 'attachment; filename="team.pdf"'
+        except IOError:
+            response = HttpResponse('<h1> Error occured during PDF rendering: no files produced! </h1>')
 
         return response
 
@@ -170,14 +203,6 @@ def process_team_contestants(latex_parse_string, team_list, output_format, conte
         return response
 
 
-def get_sponsor_logo_name(contest):
-    contest_sponsor = Contest.objects.filter(title=contest.title).prefetch_related('sponsors')
-    sponsor_list = []
-    for contest in contest_sponsor:
-        sponsors = contest.sponsors.all()
-        for sponsor in sponsors:
-            sponsor_list.append(sponsor)
-    return sponsor_list    
 
 def get_team_contestant_dict(teams):
     team_members_dict = defaultdict( list )
@@ -194,7 +219,6 @@ def get_team_contestant_dict(teams):
 
 def betweenParanthesis(string):
     return string
-    return string[string.find("(")+1:string.find(")")]
 
 def extract_to_csv():
     try:

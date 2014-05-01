@@ -98,7 +98,13 @@ class LatexAdmin(admin.ModelAdmin):
         """
         The 'change list' admin view for this model.
         """
-        contest = get_most_plausible_contest(contest_pk)
+        contest = re.search('\d{1,3}$', request.path)
+        if contest:
+            contest = contest.group()
+        else:
+             contest = get_most_plausible_contest(contest_pk)
+             if not contest:
+                return HttpResponse("<h1> No contests in system </h1>")
         
         if not contest:
             return HttpResponse("<h1> No contest </h1>")

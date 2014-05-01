@@ -1,0 +1,32 @@
+\documentclass{article}
+\usepackage{graphicx,subfig, array}
+\usepackage{caption}
+\newcolumntype{V}{>{\centering\arraybackslash} m{.4\linewidth} }
+
+\captionsetup[subfloat]{labelformat=empty}
+\captionsetup[figure]{labelformat=empty}
+
+
+\begin{document}
+TEAM \\
+c2ADwa@a.dwadwad.com, dawdjawid@adwad.com \\
+
+\begin{figure}[ht]
+     \caption[]{\textbf{Sponsors}}
+   \subfloat[Sponsor1]{%
+  \begin{tabular}{c}
+    \includegraphics[width=0.3\textwidth, height=2cm]{/home/andesil/gentlecoding/IDIOpen/wsgi/media/uploads/sponsor/schlum_logo_blue.png}
+  \end{tabular}}
+ \subfloat[Column 2 subcaption]{%
+  \begin{tabular}{c}
+    \includegraphics[width=0.3\textwidth, height=2cm]{/home/andesil/gentlecoding/IDIOpen/wsgi/media/uploads/sponsor/MSFT_logo_png.png}
+  \end{tabular}
+ }%
+ \subfloat[Column 3 subcaption]{%
+  \begin{tabular}{c}
+    \includegraphics[width=0.3\textwidth, height=2cm]{/home/andesil/gentlecoding/IDIOpen/wsgi/media/uploads/sponsor/schlum_logo_blue.png} 
+  \end{tabular}
+ }%
+\end{figure}
+
+\end{document}
