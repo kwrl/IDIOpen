@@ -223,7 +223,7 @@ def run_tests(runJob, submission):
             continue
 
         if test.validator:
-            if validate(input_content, stdout, test):
+            if validate(submission, input_content, stdout, test):
                 results.append([retval, stdout, stderr, True])
             else:
                 results.append([retval, stdout, stderr, False])
@@ -255,7 +255,7 @@ def MBtoB(mbcount):
     return mbcount*(1024**2)
 
 
-def validate(input_content, run_stdout, test_case):
+def validate(submission, input_content, run_stdout, test_case):
     '''
     Uses a custom validator to check whether or not the output from a test run is correct.
     The first step is to compile the validator, then run it with the concatenation of the 
@@ -264,11 +264,15 @@ def validate(input_content, run_stdout, test_case):
     
     runner = RunJob(test_case.validator, test_case.compileProfile, get_validator_resource())
     retval, stdout, stderr = runner.compile()
+    logger.debug([retval, stdout, stderr])
+    runLogger(submission, runner.compileCMD, stdout, stderr, retval)
 
     if retval:
         return False
 
-    retval, stdout, stderr, command = runner.run(input_content+run_stdout,restricted=False, timed=False) 
+    retval, stdout, stderr, command = runner.run(input_content+'\n'+run_stdout,restricted=False, timed=False) 
+    runLogger(submission, command, stdout, stderr, retval)
+    
     try:
         return int(stdout) == 1
     except:
