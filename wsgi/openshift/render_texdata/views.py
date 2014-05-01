@@ -62,9 +62,10 @@ def tex_render_unsafe(unsafe_string):
     retString = u"""\verb|""" + unsafe_string.replace("|", "") + u"""|"""
     return retString.encode('utf-8')
 
-def process_team_contestants(latex_parse_string, team_list):
+def process_team_contestants(latex_parse_string, team_list, output_format, contest):
     team_contestant_dict = get_team_contestant_dict(team_list)
 
+    get_sponsor_logo_name(contest) # Returns list with sponsor objects
     dir_dest = "/tmp/teams/"
     if path.exists(dir_dest):
         rmtree(dir_dest)
@@ -109,7 +110,7 @@ def process_team_contestants(latex_parse_string, team_list):
         file_name = dir_dest + filter_team_name(team_name) +  str(i) + '.tex'
 
         i += 1
-
+        
         with open(file_name,'w') as f:
                 # latex_parse_string.encode('ISO-8859-1')
             #string = latex_parse_string.encode('utf-8')%tex_dict
@@ -133,7 +134,6 @@ def process_team_contestants(latex_parse_string, team_list):
     zf.filename = "teampdf.zip"
 
 
-
     pdf_files = [file for file in listdir(dir_dest) if file.endswith(".pdf")]
     if len(pdf_files) == 1:
         file = path.join(dir_dest, pdf_files[0])
@@ -141,40 +141,47 @@ def process_team_contestants(latex_parse_string, team_list):
         response['Content-Disposition'] = 'attachment; filename="team.pdf"'
         return response
 
-    """ fuckup BEGING """
-    string = ""
-    for pdf in pdf_files:
-        string += path.join(dir_dest, pdf + " ")
+    if output_format == "teamCSV_onePDF":
+        """ fuckup BEGING """
+        string = ""
+        for pdf in pdf_files:
+            string += path.join(dir_dest, pdf + " ")
 
-    monster_pdf = path.join(dir_dest, "out.pdf")
+        monster_pdf = path.join(dir_dest, "out.pdf")
 
-    proc=Popen(split('pdfunite %s %s' % (string, monster_pdf)))
-    proc.communicate()
+        proc=Popen(split('pdfunite %s %s' % (string, monster_pdf)))
+        proc.communicate()
 
-    response = HttpResponse(open(monster_pdf), content_type='application/pdf')
-    response['Content-Disposition'] = 'attachment; filename="team.pdf"'
+        response = HttpResponse(open(monster_pdf), content_type='application/pdf')
+        response['Content-Disposition'] = 'attachment; filename="team.pdf"'
 
-    return response
+        return response
 
-    """ fuckup end"""
-
-
-    for pdf in pdf_files:
-        zf.write(path.join(dir_dest, pdf), arcname="teamPDF/" + pdf)
-    zf.close()
-
-
-    # Grab ZIP file from in-memory, make response with correct MIME-type
-    response = HttpResponse(s.getvalue(), mimetype = "application/x-zip-compressed")
-    # ..and correct content-disposition
-    response['Content-Disposition'] = 'attachment; filename=%s' % zf.filename
+    else:
+        for pdf in pdf_files:
+            zf.write(path.join(dir_dest, pdf), arcname="teamPDF/" + pdf)
+        zf.close()
 
 
-    return response
+        # Grab ZIP file from in-memory, make response with correct MIME-type
+        response = HttpResponse(s.getvalue(), mimetype = "application/x-zip-compressed")
+        # ..and correct content-disposition
+        response['Content-Disposition'] = 'attachment; filename=%s' % zf.filename
+
+        return response
+
+
+def get_sponsor_logo_name(contest):
+    contest_sponsor = Contest.objects.filter(title=contest.title).prefetch_related('sponsors')
+    sponsor_list = []
+    for contest in contest_sponsor:
+        sponsors = contest.sponsors.all()
+        for sponsor in sponsors:
+            sponsor_list.append(sponsor)
+    return sponsor_list    
 
 def get_team_contestant_dict(teams):
     team_members_dict = defaultdict( list )
-
     for team_id in teams:
         team = Team.objects.get(pk=int(team_id))
         #teamname = filter_team_name(team.name)
@@ -225,7 +232,6 @@ def latex_view(request, contest_pk=None):
     if not contest:
         return HttpResponse("<h1> No contest </h1>")
     teams = Team.objects.filter(contest=contest, onsite='True')
-
     context = {
             'teams' : teams,
             'contests': Contest.objects.all(),
