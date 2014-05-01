@@ -142,7 +142,6 @@ def process_team_contestants(latex_parse_string, team_list, output_format, conte
         return response
 
     if output_format == "teamCSV_onePDF":
-        """ fuckup BEGING """
         string = ""
         for pdf in pdf_files:
             string += path.join(dir_dest, pdf + " ")
