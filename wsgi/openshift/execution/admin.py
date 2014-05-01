@@ -5,13 +5,14 @@ from .models import TestCase, Problem, CompilerProfile, FileExtension, Resource
 
 
 class TestCaseAdmin(admin.ModelAdmin):
-    list_display = ('name', 'problem', 'compileProfile', 'author' )
+    list_display = ('name', 'problem', 'compileProfile', 'author', 'contest')
     def name(self, obj):
         return obj # uses the toString method
     # search_fields = ('name', '',)
     ordering = ('inputFile','inputDescription', 
                 'outputFile', 'outputDescription')
-    
+    search_fields = ('problem__title','short_description')
+    list_filter = ('problem__contest',)
     fieldsets = (
         (None, {
             'fields': ('inputFile', 'outputFile', 'short_description', 'inputDescription',
