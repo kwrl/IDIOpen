@@ -37,7 +37,6 @@ from .urls import render_csv_url, latex_url
 
 from openshift.helpFunctions.views import get_most_plausible_contest
 
-from .views import latex_view
 class LatexAdmin(admin.ModelAdmin):
     def get_urls(self):
         return latex_url(self, LatexAdmin)
@@ -101,8 +100,9 @@ class LatexAdmin(admin.ModelAdmin):
                         try:
                             response = process_team_contestants(request.POST['text'], selected)
                             return response
-                        except ValueError as ve:
-                            messages.error(request, "Invalid formatting, ensure all given variables are on the form \"%(var)s\".\n" + ve.message)
+                        except KeyError as ve:
+                            messages.error(request, "Invalid formatting, ensure all given variables are on the form \"%(var)s\"")
+                            messages.error(request, "(Error message: " + str(ve) + " )")
 
 
         self.model = Team

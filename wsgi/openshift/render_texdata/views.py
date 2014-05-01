@@ -1,3 +1,8 @@
+""" 
+prefix all | with a special.. err
+avoid fonts in verbatim..
+"""
+
 from django.shortcuts import render
 from django.http import HttpResponse
 
@@ -5,15 +10,19 @@ import MySQLdb as mdb
 from collections import defaultdict
 from subprocess import Popen
 from shlex import split
-from os import path, makedirs, remove, walk, listdir
-import re, string;
+from os import path, makedirs, remove, listdir
+import re, string
 import csv
 from zipfile import ZipFile
 from StringIO import StringIO
 from shutil import rmtree
+from string import Template
 
 from openshift.helpFunctions.views import get_most_plausible_contest
 from openshift.contest.models import Team, Contest, Sponsor
+
+class LatexTemplate(Template):
+    delimiter = '///'
 
 
 SQL_FETCH_USERNAME_TEAM = \
@@ -29,14 +38,11 @@ FILENAME = "/tmp/outfile.csv"
 #MYSQL_CON = mdb.connect('hv-6146.idi.ntnu.no', 'gentle', 'tacosushi', 'gentleidi', 3306);
 #MYSQL_CON = mdb.connect('localhost', 'gentle', 'tacosushi', 'gentleidi', 3306);
 
-
-CONTESTANT_PARSELINE = "%(contestant_line)s"
-TEAM_PARSELINE = "%(team)s"
-SPONSOR1 = "%(sponsor1)s"
-SPONSOR2 = "%(sponsor2)s"
-SPONSOR3 = "%(sponsor3)s"
-
-PRIZE = "%(prize)s"
+TEAM_PARSELINE = "TEAM"
+SPONSOR = "SPONSOR"
+CON1 = "CONTESTANT1"
+CON2 = "CONTESTANT2"
+CON3 = "CONTESTANT3"
 
 def render_semicolonlist(team_list):
     retString = ""
@@ -49,15 +55,15 @@ def render_semicolonlist(team_list):
 
 
 def filter_team_name(team_name):
-    pattern = re.compile('[\W_]+')
-    return pattern.sub('', team_name) 
+    pattern = re.compile(r'[\W_]+')
+    return pattern.sub('', team_name)
+
+def tex_render_unsafe(unsafe_string):
+    retString = u"""\verb|""" + unsafe_string.replace("|", "") + u"""|"""
+    return retString.encode('utf-8')
 
 def process_team_contestants(latex_parse_string, team_list):
     team_contestant_dict = get_team_contestant_dict(team_list)
-    # yesno = raw_input("This will make latex for each %s teams - are you sure?"
-    #                  % (len(team_contestant_dict)) +  "(Y/N)\n" )
-    # if yesno is not 'Y':
-    #     return
 
     dir_dest = "/tmp/teams/"
     if path.exists(dir_dest):
@@ -65,43 +71,59 @@ def process_team_contestants(latex_parse_string, team_list):
 
     makedirs(dir_dest)
 
-    pattern = re.compile('[\W_]+')
-
-    sponsor_dict = {
-            betweenParanthesis(SPONSOR1): ' ',
-            betweenParanthesis(SPONSOR2): ' ',
-            betweenParanthesis(SPONSOR3): ' ',
+    con_dict = {
+            betweenParanthesis(CON1): '',
+            betweenParanthesis(CON2): '',
+            betweenParanthesis(CON3): '',
     }
 
-    prize_dict = {
-            betweenParanthesis(PRIZE): ' ',
+    i = 0
+
+
+
+    for team_name, contestants in team_contestant_dict.iteritems():
+        parse_string = LatexTemplate(latex_parse_string.encode('utf-8'))
+        tex_dict = {
+               betweenParanthesis(TEAM_PARSELINE)       : tex_render_unsafe(team_name),
+               betweenParanthesis(SPONSOR): '',
+            }
+
+        con_dict = {
+                betweenParanthesis(CON1): '',
+                betweenParanthesis(CON2): '',
+                betweenParanthesis(CON3): '',
         }
 
-    for index, sponsor in enumerate(Sponsor.objects.all()):
-        key = "sponsor" + str(index)
-        sponsor_dict[key] = sponsor
+        index = 1
+        for con in contestants[:-1]:
+            key = "CONTESTANT" + str(index)
+            con_dict[key] = tex_render_unsafe(con) + ", "
+            index += 1
 
-    i = 0
-    for team_name, contestants in team_contestant_dict.iteritems():
-        tex_dict = {
-               betweenParanthesis(CONTESTANT_PARSELINE) : renderingStr(contestants),
-               betweenParanthesis(TEAM_PARSELINE)       : team_name}
 
-        tex_dict.update(sponsor_dict)
-        tex_dict.update(prize_dict)
+        key = "CONTESTANT" + str(index)
+        con_dict[key] = tex_render_unsafe(contestants[-1])
+
+        tex_dict.update(con_dict)
 
         file_name = dir_dest + filter_team_name(team_name) +  str(i) + '.tex'
 
         i += 1
 
         with open(file_name,'w') as f:
-            try:
-                string = latex_parse_string%tex_dict
-            except ValueError:
-                raise ValueError("Invalid format character! Format is \"\%(var)s\"")
+                # latex_parse_string.encode('ISO-8859-1')
+            #string = latex_parse_string.encode('utf-8')%tex_dict
+            while True:
+                try:
+                    string = parse_string.substitute(tex_dict)
+                    break
+                except KeyError as ke:
+                    tex_dict[ke.args[0]] = u''
+            import ipdb; ipdb.set_trace()
             f.write(string.encode('utf-8'))
 
-        proc=Popen(split('pdflatex -output-directory %s ' % (dir_dest) + file_name))
+
+        proc=Popen(split('xelatex -no-file-line-error --halt-on-error --output-directory="%s" ' % (dir_dest) + file_name))
         proc.communicate()
 
 
@@ -164,21 +186,8 @@ def get_team_contestant_dict(teams):
     return team_members_dict
 
 
-def renderingStr(contestants):
-    con_prefix = r"""\textbf{"""
-    con_suffix = r"""}"""
-
-    con_prefix = ""
-    con_suffix = ""
-
-    string = ""
-    for con in contestants[:-1]:
-        string = string + con + ", "
-    string += contestants[-1]
-
-    return con_prefix + string + con_suffix
-
 def betweenParanthesis(string):
+    return string
     return string[string.find("(")+1:string.find(")")]
 
 def extract_to_csv():
@@ -198,9 +207,7 @@ def extract_to_csv():
         file.writerows(rows)
         fp.close()
 
-        #MYSQL_CON.commit()
         cur.close()
-        #MYSQL_CON.close()
 
 def render_csv(request):
     # Create the HttpResponse object with the appropriate CSV header.

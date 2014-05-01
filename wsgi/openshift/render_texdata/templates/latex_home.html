@@ -8,49 +8,24 @@
 <ul>
     <li>%(team)s - will be subsituted with team name for each selected team</li>
     <li>%(contestant_line)s - will be substituted with a comma-separated line with commas</li>
-    <li>%(sponsor1)s, - will be replaced by company logo </li>
-    <li>%(sponsor1)s</li>
-    <li>%(sponsor1)s</li>
-    <li>%(prize) - prize title for team</li>
+    <li>%(sponsor)s, - will be replaced by company logo </li>
 </ul>
 
 <br />
 <br />
 
 <textarea id="id_latex" rows="14" cols="450">
-\documentclass{article}
-\usepackage[utf8x]{inputenc}
-\begin{document}
-%(team)s \\
-%(contestant_line)s
-%(sponsor1)s
-%(sponsor2)s
-%(sponsor3)s
-%(prize)s
+\documentclass{article}                                                             
+\begin{document}                                                                    
+///TEAM \\
+///CONTESTANT1
+///CONTESTANT2
+///CONTESTANT3
+///SPONSOR
 \end{document}
-
-
 </textarea>
 
 
-{#  #}
-{#  #}
-{# \documentclass{article}                                                              #}
-{# \usepackage{CJKutf8}                                                                 #}
-{# \usepackage{ucs}                                                                     #}
-{# \usepackage[encapsulated]{CJK}                                                       #}
-{# \newcommand{\myfont}{bsmi} % or {stheiti}, etc                                                          #}
-{# \begin{document}                                                                     #}
-{# \begin{CJK}{UTF8}{\myfont}  #}
-{# %(team)s \\ #}
-{# %(contestant_line)s #}
-{# %(sponsor1)s #}
-{# %(sponsor2)s #}
-{# %(sponsor3)s #}
-{# %(prize)s #}
-{# \end{CJK} #}
-{# \end{document} #}
-{#  #}
 
 
 {% if semicolon_list %}    
