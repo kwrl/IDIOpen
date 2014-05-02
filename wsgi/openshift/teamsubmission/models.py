@@ -35,7 +35,7 @@ class TeamTrRow(object):
             self.skill_level = x.skill_level
             self.staff = x.is_staff
         self.pro = False
-        if self.skill_level == 'pro':
+        if self.skill_level == 'Pro':
             self.pro = True
 
         if team.members.count() > 0:
@@ -44,7 +44,7 @@ class TeamTrRow(object):
                     self.staff == True
                 if member.skill_level > self.skill_level:
                     self.skill_level = member.skill_level
-                    if member.skill_level == 'pro':
+                    if member.skill_level == 'Pro':
                         self.pro = True
 
 def get_upload_path(instance, filename):
@@ -87,7 +87,7 @@ class ScoreManager(models.Manager):
         # give score
 
         problem_index_dict = dict()
-        problems = Problem.objects.all()
+        problems = Problem.objects.filter(contest=contest)
 
         for index, prob in enumerate(problems):
             problem_index_dict[prob] = index
