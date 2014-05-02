@@ -1,5 +1,5 @@
 #coding: utf-8
-""" 
+"""
 Render tex/pdf/CSV for end users
 """
 # Some latex is sensitive to newlines, beware
@@ -18,10 +18,10 @@ from zipfile import ZipFile
 from StringIO import StringIO
 from shutil import rmtree
 from string import Template
-from decimal import Decimal, getcontext
+from decimal import Decimal
 
 from openshift.helpFunctions.views import get_most_plausible_contest
-from openshift.contest.models import Team, Contest, Sponsor
+from openshift.contest.models import Team, Contest
 
 SQL_FETCH_USERNAME_TEAM = \
 """
@@ -77,13 +77,13 @@ def render_semicolonlist(team_list):
 def get_sponsor(contest):
     imageString = ""
     sponsors = contest.sponsors.all()
-    if sponsors.count() < 1: 
+    if sponsors.count() < 1:
         return DEFAULT_EMPTY
     imageWidth = str(Decimal(1) / Decimal(sponsors.count()))
 
     for spon in sponsors:
         parse_string = LatexTemplate(SPONSOR_IMAGE_LATEX)
-        d = {'FILENAME': spon.image.path_full, 
+        d = {'FILENAME': spon.image.path_full,
             'SPONSORLABEL' : spon.name,
             'PERCENTWIDTH': imageWidth[:3],
         }
@@ -97,7 +97,9 @@ def filter_team_name(team_name):
     return pattern.sub('', team_name)
 
 def tex_render_unsafe(unsafe_string):
-    retString = r"""\verb|""".decode('utf-8') + unsafe_string.replace("|", "") + r"""|""".decode('utf-8')
+    retString = r"""\verb|""" . decode('utf-8') \
+              + unsafe_string . replace("|", "") \
+              + r"""|"""      . decode('utf-8')
     return retString
 
 def add_preamble(latex_str):
@@ -185,14 +187,16 @@ def write_team_pdf(team_name, index, tex_dict, parser):
         write_buf = parser.substitute(tex_dict).encode('utf-8')
         f.write(write_buf)
 
-    cmd_latex = "xelatex -no-file-line-error --halt-on-error --output-directory="
+    cmd_latex = "xelatex -no-file-line-error --halt-on-error" \
+                + "-interaction=nonstopmde --output-directory="
     cmd_run= '%s"%s" %s' % (cmd_latex, DIR_DEST, file_name)
 
     proc=Popen(split(cmd_run))
     proc.communicate()
 
-def process_team_contestants(latex_parse_string, team_list, output_format, contest):
-    cleanup_previous()
+def process_team_contestants(latex_parse_string,
+                            team_list, output_format, contest):
+    cleanup_previous() # delete old tmp folder, create a new
 
     team_contestant_dict = get_team_contestant_dict(team_list)
 
@@ -204,7 +208,7 @@ def process_team_contestants(latex_parse_string, team_list, output_format, conte
             latex_parse_string = add_preamble(latex_parse_string)
             sponsor = get_sponsor(contest)
             tex_dict.update({SPONSOR: sponsor})
-        
+
         parser = LatexTemplate(latex_parse_string)
         write_team_pdf(team_name, index, tex_dict, parser)
 
@@ -240,8 +244,6 @@ def extract_to_csv():
         remove(FILENAME)
     except OSError:
         pass
-
-    
 
     MYSQL_CON = mdb.connect('localhost', 'andesil', 'password', 'gentleidi')
     with MYSQL_CON:

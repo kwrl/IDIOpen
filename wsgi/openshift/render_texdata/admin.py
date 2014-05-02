@@ -3,15 +3,12 @@
 
 from django.contrib import admin, messages
 from django.contrib.admin import helpers
-from django.contrib.admin.util import (flatten_fieldsets,
-                                       get_deleted_objects, model_format_dict,
-                                       NestedObjects, lookup_needs_distinct)
+from django.contrib.admin.util import lookup_needs_distinct
 from django.contrib.admin.views.main import ERROR_FLAG
-from django.core.exceptions import PermissionDenied
 from django.db import models
 from django.http import HttpResponseRedirect
 from django.shortcuts import HttpResponse, render
-from django.template.response import SimpleTemplateResponse, TemplateResponse
+from django.template.response import SimpleTemplateResponse
 from django.utils.translation import ugettext as _
 from django.utils.translation import ungettext
 from django.utils.encoding import force_text
@@ -37,12 +34,12 @@ class LatexAdmin(admin.ModelAdmin):
         Returns a QuerySet of all model instances that can be edited by the
         admin site. This is used by changelist_view.
         """
-        contest = re.search('\d{1,3}$', request.path)
+        contest = re.search(r'\d{1,3}$', request.path)
         if contest:
             contest = Contest.objects.get(pk=str(contest.group()))
         else:
-             contest = get_most_plausible_contest(contest)
-             if not contest:
+            contest = get_most_plausible_contest(contest)
+            if not contest:
                 return HttpResponse("<h1> No contests in system </h1>")
 
         # qs = self.model._default_manager.get_queryset()
@@ -89,17 +86,16 @@ class LatexAdmin(admin.ModelAdmin):
         """
         The 'change list' admin view for this model.
         """
-        contest = re.search('\d{1,3}$', request.path)
+        contest = re.search(r'\d{1,3}$', request.path)
         if contest:
             contest = Contest.objects.get(pk=int(contest.group()))
         else:
-             contest = get_most_plausible_contest(contest_pk)
-             if not contest:
+            contest = get_most_plausible_contest(contest_pk)
+            if not contest:
                 return HttpResponse("<h1> No contests in system </h1>")
-         
+
         semicolon_list = None
         if request.method == "POST":
-            selected = request.POST.getlist(helpers.ACTION_CHECKBOX_NAME)
             selected = request.POST['teams'].split(',')
 
             if not selected or len(selected) < 1 or selected[0] == '':
@@ -115,27 +111,35 @@ class LatexAdmin(admin.ModelAdmin):
                         except KeyError as ke:
                             messages.error(request, str(ke))
 
-                    elif request.POST["buttonId"] == "teamCSV_onePDF" or request.POST["buttonId"] == "teamCSV_manyPDF":
+                    elif request.POST["buttonId"] == "teamCSV_onePDF" \
+                    or request.POST["buttonId"] == "teamCSV_manyPDF":
                         try:
-                            response = process_team_contestants(request.POST['text'], selected, request.POST['buttonId'], contest)
+                            response = process_team_contestants(
+                                    request.POST['text'], selected,
+                                    request.POST['buttonId'], contest)
                             return response
                         except ValueError as ve:
                             messages.error(request, "Invalid formatting," +
                                 "ensure all given variables are on the form " +
                                 "///VARIABLE")
-                            messages.error(request, "(Error message: " + str(ve) + " )")
+                            messages.error(request,
+                                           "(Error message: " + str(ve) + " )")
                         except KeyError as ke:
                             messages.error(request, "No match for %s" % str(ke))
+                        except OSError:
+                            messages.error(request,
+                            "Please verify that you have %s and %s installed" \
+                                    % ("xelatex", "pdfunite"))
 
         self.model = Team
         opts = self.model._meta
-        app_label = opts.app_label
+        #app_label = opts.app_label
 
         list_display = ('name', 'onsite', 'contest', 'leader', 'offsite',)
         list_display_links = self.get_list_display_links(request, list_display)
         list_filter = ('onsite', 'contest',)
         actions = self.get_actions(request)
-        search_fields = ['id', 'name']    
+        search_fields = ['id', 'name']
 
         if actions:
             # Add the action checkboxes if there are any actions available.
@@ -157,7 +161,6 @@ class LatexAdmin(admin.ModelAdmin):
                 })
             return HttpResponseRedirect(request.path + '?' + ERROR_FLAG + '=1')
 
-        action_failed = False
         selected = request.POST.getlist(helpers.ACTION_CHECKBOX_NAME)
 
         formset = cl.formset = None
@@ -177,19 +180,23 @@ class LatexAdmin(admin.ModelAdmin):
         # Build the action form and populate it with available actions.
         if actions:
             action_form = self.action_form(auto_id=None)
-            action_form.fields['action'].choices = self.get_action_choices(request)
+            action_form.fields['action'].choices = \
+                                    self.get_action_choices(request)
         else:
             action_form = None
 
         selection_note_all = ungettext('%(total_count)s selected',
             'All %(total_count)s selected', cl.result_count)
 
-       
+
         context = {
             'module_name': force_text(opts.verbose_name_plural),
-            'selection_note': _('0 of %(cnt)s selected') % {'cnt': len(cl.result_list)},
-            'selection_note_all': selection_note_all % {'total_count': cl.result_count},
-            'selection_counter': selection_note_all % {'total_count': cl.result_count},
+            'selection_note': _('0 of %(cnt)s selected')
+                                % {'cnt': len(cl.result_list)},
+            'selection_note_all': selection_note_all
+                                    % {'total_count': cl.result_count},
+            'selection_counter': selection_note_all
+                                    % {'total_count': cl.result_count},
             'title': 'Select teams to render email-line or latex-rendition',
             'is_popup': cl.is_popup,
             'cl': cl,
@@ -208,16 +215,10 @@ class LatexAdmin(admin.ModelAdmin):
             'semicolon_list' : semicolon_list,
             'contests': Contest.objects.all(),
             'contest': contest,
-            }        
+            }
         context.update(extra_context or {})
 
         return render(request, 'latex_home.html', context)
-        return TemplateResponse(request, self.change_list_template or [
-            'admin/%s/%s/change_list.html' % (app_label, opts.model_name),
-            'admin/%s/change_list.html' % app_label,
-            'admin/change_list.html'
-        ], context, current_app=self.admin_site.name)
-
 
 class RenderAdmin(admin.ModelAdmin):
     def get_urls(self):
