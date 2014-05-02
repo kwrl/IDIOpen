@@ -96,6 +96,7 @@ class LatexAdmin(admin.ModelAdmin):
                 return HttpResponse("<h1> No contests in system </h1>")
 
         semicolon_list = None
+        latex_compile_stdout = None
         if request.method == "POST":
             selected = request.POST['teams'].split(',')
 
@@ -136,10 +137,12 @@ class LatexAdmin(admin.ModelAdmin):
                             messages.error(request,
                                     "xelatex failed to compile")
                             for log in logfile:
+                                latex_compile_stdout = ""
                                 with open(log, 'r') as f:
                                     for line in f:
-                                        if line.startswith('!'):
-                                            messages.error(request, line)
+                                        latex_compile_stdout += line + '\n'
+                                        # if line.startswith('!'):
+                                        #     messages.error(request, line)
 
         self.model = Team
         opts = self.model._meta
@@ -225,6 +228,7 @@ class LatexAdmin(admin.ModelAdmin):
             'semicolon_list' : semicolon_list,
             'contests': Contest.objects.all(),
             'contest': contest,
+            'latex_compile_stdout' : latex_compile_stdout,
             }
         context.update(extra_context or {})
 
