@@ -88,11 +88,7 @@ Show for team type:
             <tr>
                 <td> {{forloop.counter}} </td>
                 <td> {{entry.team}} </td>
-                {% if entry.site %}
                 <td> {{entry.site|truncatechars:12}}</td>
-                {% else %}
-                <td> &#8203 </td>
-                {% endif %}
                 <td> {{entry.total_solved}} </td>
                 <td> {{entry.total_score}}</td>
                 <td> {{entry.total_time }}</td>
