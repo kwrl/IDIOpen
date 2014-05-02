@@ -87,7 +87,7 @@ class ScoreManager(models.Manager):
         # give score
 
         problem_index_dict = dict()
-        problems = Problem.objects.all()
+        problems = Problem.objects.filter(contest=contest)
 
         for index, prob in enumerate(problems):
             problem_index_dict[prob] = index
