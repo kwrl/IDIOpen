@@ -173,4 +173,10 @@ button.buttonGroup  {
 <br />
 <br />
 
+{% if latex_compile_stdout %}
+<textarea rows=1000>
+{{latex_compile_stdout}}
+</textarea>
+{% endif %}
+
 {% endblock %}
