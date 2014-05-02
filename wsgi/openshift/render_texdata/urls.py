@@ -24,7 +24,6 @@ def render_csv_url(inst, class_super):
 def latex_url(inst, class_super):
     urls = super(class_super, inst).get_urls()
     urls = [urls[0], ]
-    #import ipdb; ipdb.set_trace()
     my_urls = patterns('',
         url(r'^con(?P<contest_pk>[0-9]+)$',
             admin.site.admin_view(inst.changelist_view)),
