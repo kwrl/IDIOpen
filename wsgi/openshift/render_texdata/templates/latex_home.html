@@ -29,23 +29,22 @@
 <br />
 <br />
 
-<h2>Subsitution pattern: anywhere in your tex-code, 3 forward slashes followed by VARIABLE, e.g.  ///TEAM </h2>
+<h2>Subsitution pattern: anywhere in your tex-code, 3 forward slashes followed by VARIABLE, e.g.  ///CONTESTANT1 </h2>
 <h4>All variables below are optional</h4>
 <ul>
     <li>TEAM - name of selected team</li>
-    <li>CONTESTANT1 - leader of team</li>
-    <li>CONTESTANT2 - member of team, if any</li>
-    <li>CONTESTANT3 - member of team, if any</li>
+    <li>CONTESTANT&lt;number&gt; nth member of a team, indexed 1 to 3</li>
     <li>SPONSOR - image and title of sponsors (can only be used with \documentclass{article}</li>
+    <li>SPONSOR&lt;number&gt;_IMAGE_FILENAME - absolute filename to nth sponsor logo - not rendered</li>
     <li>CONTEST_LOGO - absolute filename to contest logo - not rendered</li>
 </ul>
 
 <br />
 <br />
-<h3>(Please use \documentclass{article}.... Using {letter} breaks image alignments)</h3>
+<h3></h3>
 <textarea id="id_latex" rows="14" cols="450">
 \documentclass[a4paper]{article}
-\usepackage[demo]{graphicx}
+\usepackage{graphicx}
 \usepackage{wallpaper}
 \usepackage[absolute]{textpos}
 
@@ -56,7 +55,7 @@
 
 \begin{center}
 \vspace*{-4cm}
-\includegraphics[scale=0.4]{///CONTEST_LOGO}
+\includegraphics[scale=0.3]{///CONTEST_LOGO}
 \end{center}
 
 \begin{center}
