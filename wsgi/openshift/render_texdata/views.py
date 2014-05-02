@@ -77,6 +77,8 @@ def render_semicolonlist(team_list):
 def get_sponsor(contest):
     imageString = ""
     sponsors = contest.sponsors.all()
+    if sponsors.count() < 1: 
+        return DEFAULT_EMPTY
     imageWidth = str(Decimal(1) / Decimal(sponsors.count()))
 
     for spon in sponsors:
@@ -122,13 +124,17 @@ def populateContestants(con_list):
     return con_dict
 
 def get_latex_init_dict(contest, team_name, contestants):
+    logo = DEFAULT_EMPTY
+    if contest.logo and len(contest.logo) > 0:
+        logo = contest.logo.path_full
+
     ret = {
             TEAM_PARSELINE : tex_render_unsafe(team_name),
             SPONSOR: DEFAULT_EMPTY,
             CON1: DEFAULT_EMPTY,
             CON2: DEFAULT_EMPTY,
             CON3: DEFAULT_EMPTY,
-            CONTEST_LOGO: contest.logo.path_full,
+            CONTEST_LOGO: logo,
         }
     ret.update(populateContestants(contestants))
     return ret
