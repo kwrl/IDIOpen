@@ -14,6 +14,7 @@ from django.utils.translation import ungettext
 from django.utils.encoding import force_text
 
 from functools import partial, reduce, update_wrapper
+from glob import glob
 import operator, re
 
 from openshift.contest.models import Contest, Team
@@ -130,6 +131,15 @@ class LatexAdmin(admin.ModelAdmin):
                             messages.error(request,
                             "Please verify that you have %s and %s installed" \
                                     % ("xelatex", "pdfunite"))
+                        except IOError as ioe:
+                            logfile = glob('/tmp/teams/*.log')
+                            messages.error(request,
+                                    "xelatex failed to compile")
+                            for log in logfile:
+                                with open(log, 'r') as f:
+                                    for line in f:
+                                        if line.startswith('!'):
+                                            messages.error(request, line)
 
         self.model = Team
         opts = self.model._meta
