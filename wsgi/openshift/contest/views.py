@@ -93,7 +93,7 @@ def registration(request):
     #'''
     if not request.user.is_authenticated():
         return render(request, 'registerForContest/requireLogin.html')
-
+    
     con = get_current_contest(request);
 
     if not con.isRegOpen():

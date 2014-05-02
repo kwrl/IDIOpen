@@ -77,6 +77,7 @@ INSTALLED_APPS = (
     'openshift.helpFunctions',
     'openshift.judge_supervise',
     'openshift.balloon',
+    'openshift.render_texdata',
 )
 
 MIDDLEWARE_CLASSES = (
