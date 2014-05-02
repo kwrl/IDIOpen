@@ -67,6 +67,13 @@ class LatexTemplate(Template):
     delimiter = '///'
 
 
+def get_teamnames(teamlist):
+    retList = []
+    for team_pk in teamlist:
+        team = Team.objects.get(pk=team_pk)
+        retList.append(team)
+    return retList
+
 def get_team_contestant_dict2(teams):
     team_members_dict = defaultdict( list )
     for team_id in teams:

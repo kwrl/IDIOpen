@@ -21,7 +21,7 @@ from openshift.contest.models import Contest, Team
 from openshift.helpFunctions.views import get_most_plausible_contest
 from .models import RenderCSV, RenderTexOrEmail
 from .urls import render_csv_url, latex_url
-from .views import process_team_contestants, render_semicolonlist
+from .views import process_team_contestants, render_semicolonlist, get_teamnames
 
 class IncorrectLookupParameters(Exception):
     pass
@@ -97,6 +97,7 @@ class LatexAdmin(admin.ModelAdmin):
 
         semicolon_list = None
         latex_compile_stdout = None
+        teamname_list = None
         if request.method == "POST":
             selected = request.POST['teams'].split(',')
 
@@ -143,6 +144,8 @@ class LatexAdmin(admin.ModelAdmin):
                                         latex_compile_stdout += line + '\n'
                                         # if line.startswith('!'):
                                         #     messages.error(request, line)
+                    elif request.POST["buttonId"] == "teamnames":
+                        teamname_list = get_teamnames(selected)
 
         self.model = Team
         opts = self.model._meta
@@ -229,6 +232,7 @@ class LatexAdmin(admin.ModelAdmin):
             'contests': Contest.objects.all(),
             'contest': contest,
             'latex_compile_stdout' : latex_compile_stdout,
+            'teamname_list': teamname_list,
             }
         context.update(extra_context or {})
 

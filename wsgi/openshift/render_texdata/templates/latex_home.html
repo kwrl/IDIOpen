@@ -169,6 +169,8 @@ button.buttonGroup  {
 
 <button type="submit" class="buttonGroup" onclick="post_to_url('', {}, 'emailCSV')">Create list of emails</button>
 
+<button type="submit" class="buttonGroup" onclick="post_to_url('', {}, 'teamnames')">Get list of teamnames</button>
+
 
 <br />
 <br />
@@ -176,6 +178,14 @@ button.buttonGroup  {
 {% if latex_compile_stdout %}
 <textarea rows=1000>
 {{latex_compile_stdout}}
+</textarea>
+{% endif %}
+
+
+{% if teamname_list %}
+<textarea rows=1000>
+{% for name in teamname_list %}
+{{ name }}{% endfor %}
 </textarea>
 {% endif %}
 
