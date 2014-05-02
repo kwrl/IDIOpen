@@ -85,7 +85,7 @@ def submission_problem(request, problemID):
         
 
     #TODO: Only leader can upload check
-    problem = get_object_or_404(Problem.objects.filter(pk=problemID)) 
+    problem = get_object_or_404(Problem.objects.filter(pk=problemID, contest=contest)) 
     team = Team.objects.filter(contest=contest).get(members__id = user.id)
     submissions = Submission.objects.filter(team=team).filter(problem=problemID).order_by('date_uploaded')
 

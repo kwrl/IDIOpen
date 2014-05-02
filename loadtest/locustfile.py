@@ -39,7 +39,7 @@ class NestTask(TaskSet):
                     'password': 'password',
                     }
 
-            c = self.client.post("/secrettest/accounts/login/", loginDict)
+            c = self.client.post("/open14/accounts/login/", loginDict)
 
         @task
         def upload_submission(self):
@@ -53,11 +53,11 @@ class NestTask(TaskSet):
                         }
 
             problem = PROBLEMS[randint(0, len(PROBLEMS)-1)]
-            c = self.client.post("/secrettest/problem/" + str(problem) + "/", submission_json,
+            c = self.client.post("/open14/problem/" + str(problem) + "/", submission_json,
                                  files=file_json)
             print c.content
 
-    #@task
+    @task
     class RegisterTeam(TaskSet):
         global USERNAME_LIST
         #user = USERNAME_LIST.pop()
@@ -72,7 +72,7 @@ class NestTask(TaskSet):
                     'password': 'password',
                     }
 
-            c = self.client.post("/secrettest/accounts/login/", loginDict)
+            c = self.client.post("/open14/accounts/login/", loginDict)
 
         @task
         def registerTeam(self):
@@ -80,7 +80,7 @@ class NestTask(TaskSet):
             """
             # Strip away ".com" and remove the at and period mark
             teamname = "team" + self.user.translate(None, '@.')[:-3]
-            teamurl = "/secrettest/team/register/"
+            teamurl = "/open14/team/register/"
             postDict = {
                     'name'       : teamname,
                     'onsite'     : 'True',
@@ -92,7 +92,7 @@ class NestTask(TaskSet):
             print c.content
             self.interrupt()
 
-    @task
+    #@task
     class RegisterUser(TaskSet):
         global USERNAME_LIST
         # user = USERNAME_LIST[randint(0, len(USERNAME_LIST)-1)]
@@ -112,7 +112,7 @@ class NestTask(TaskSet):
                     'gender'      : 'M',
                     }
 
-            c = self.client.post("/secrettest/accounts/register/",
+            c = self.client.post("/open14/accounts/register/",
                     data=postDict)
             self.interrupt()
 
@@ -124,35 +124,35 @@ class NestTask(TaskSet):
                         'username': 'haakon.konrad@gmail.com',
                         'password': 'penis123',
                     }
-            c = self.client.post("/secrettest/accounts/login/", loginDict)
+            c = self.client.post("/open14/accounts/login/", loginDict)
 
         @task
         def getHighScore(self):
-            c = self.client.get("/secrettest/highscore/")
+            c = self.client.get("/open14/highscore/")
         
         @task
         def getContestView(self):
-            c = self.client.get("/secrettest/problem/")
+            c = self.client.get("/open14/problem/")
 
         @task
         def getClarifications(self):
-            c = self.client.get("/secrettest/problem/answers/")
+            c = self.client.get("/open14/problem/answers/")
 
         @task
         def getTeamView(self):
-            c = self.client.get("/secrettest/team/")
+            c = self.client.get("/open14/team/")
 
         @task
         def getProfileView(self):
-            c = self.client.get("/secrettest/accounts/profile/")
+            c = self.client.get("/open14/accounts/profile/")
 
         @task
         def getTeamsView(self):
-            c = self.client.get("/secrettest/teams/")
+            c = self.client.get("/open14/teams/")
         
         #@task
         def getProblemView(self):
-            c = self.client.get("/secrettest/problem/1/")
+            c = self.client.get("/open14/problem/1/")
             
 #Admin site
         @task
@@ -176,8 +176,8 @@ class WebsiteUser(HttpLocust):
     weight = 3
 
     """ the target, as a prefix """
-    #host = "http://127.0.0.1:8000"
+    host = "http://127.0.0.1:8000"
     #host = "http://vps.filip0.com"
-    host = "http://hv-6146.idi.ntnu.no"
+    #host = "http://hv-6146.idi.ntnu.no"
 
 # EOF

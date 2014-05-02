@@ -228,7 +228,10 @@ $(document).ready(function()
             var i = parseFloat(s);
             return (isNaN(i)) ? null : i;
         };
-        $("#highscoreTable").tablesorter( {sortList: [[0,0]]} ); 
+        $("#highscoreTable").tablesorter( {
+        	sortList: [[0,0]],
+        	emptyTo: 'none'
+        	} ); 
         $(".clickableRow").click(function() {
         	window.document.location = $(this).attr("href");
       	});
