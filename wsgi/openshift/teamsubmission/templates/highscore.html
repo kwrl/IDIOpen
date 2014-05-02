@@ -13,7 +13,7 @@ $(document).ready(function()
             var i = parseFloat(s);
             return (isNaN(i)) ? null : i;
         };
-        $("#highscoreTable").tablesorter( {sortList: [[0,0]]} ); 
+        $("#highscoreTable").tablesorter( {sortList: [[0,0]], emptyTo: 'bottom', } ); 
         $(".clickableRow").click(function() {
         	window.document.location = $(this).attr("href");
       	});
@@ -88,7 +88,11 @@ Show for team type:
             <tr>
                 <td> {{forloop.counter}} </td>
                 <td> {{entry.team}} </td>
+                {% if entry.site %}
                 <td> {{entry.site|truncatechars:12}}</td>
+                {% else %}
+                <td> &#8203 </td>
+                {% endif %}
                 <td> {{entry.total_solved}} </td>
                 <td> {{entry.total_score}}</td>
                 <td> {{entry.total_time }}</td>
