@@ -154,8 +154,8 @@ def get_latex_init_dict(contest, team_name, contestants):
             CON2: DEFAULT_EMPTY,
             CON3: DEFAULT_EMPTY,
             # CONTEST_LOGO: logo,
-            CONTEST_LOGO: '/home/andesil/Downloads/IDIOpen_logo.jpg',
-            #CONTEST_LOGO: '/webapps/idi_open/wsgi/media/uploads/IDIOpen_logo.jpg',
+            #CONTEST_LOGO: '/home/andesil/Downloads/IDIOpen_logo.jpg',
+            CONTEST_LOGO: '/webapps/idi_open/wsgi/media/uploads/IDIOpen_logo.jpg',
             #CONTEST_LOGO: '/tmp/test.jpg',
             #.. to create empty image: convert -size 1x1 "xc:#FF0000" /tmp/test.jpg
             # requires imagemagick from repo
