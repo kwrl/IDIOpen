@@ -236,5 +236,5 @@ class RenderAdmin(admin.ModelAdmin):
 
 admin.site.register(RenderTexOrEmail, LatexAdmin)
 
-admin.site.register(RenderCSV, RenderAdmin)
+#admin.site.register(RenderCSV, RenderAdmin)
 #admin.site.register(RenderCSV)
