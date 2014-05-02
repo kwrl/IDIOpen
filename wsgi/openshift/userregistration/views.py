@@ -65,7 +65,6 @@ class RegistrationView(FormView):
         # form control.
         form_class = self.get_form_class(request)
         form = self.get_form(form_class)
-        # Make Email to lowercase, because Django has case sensitive usernames
         if form.is_valid():
             # Pass request to form_valid.
             return self.form_valid(request, form)
