@@ -243,7 +243,7 @@ def highscore_view(request, sort_res="all"):
     contest = get_current_contest(request)
 
     highscore = Submission.objects.get_highscore(contest, sort_res)
-    problems = Problem.objects.all()
+    problems = Problem.objects.filter(contest=contest)
     
     context = {
                'contest' : contest,
