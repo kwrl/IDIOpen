@@ -42,7 +42,8 @@ CONTEST_LOGO = "CONTEST_LOGO".decode('utf-8')
 DEFAULT_EMPTY = r"""\ """.decode('utf-8')
 
 SPONSOR_LATEX_PREAMBLE = r"""
-\usepackage{caption, graphicx, subfig}
+\usepackage{caption, subfig}
+\usepackage{graphicx}
 \captionsetup[subfloat]{labelformat=empty}
 \captionsetup[figure]{labelformat=empty}
 """.decode('utf-8')
@@ -50,7 +51,7 @@ SPONSOR_LATEX_PREAMBLE = r"""
 SPONSOR_IMAGE_LATEX = r"""
 \subfloat[///SPONSORLABEL]{
 \begin{tabular}{c}
-\includegraphics[width=///PERCENTWIDTH \textwidth, height=2cm]{///FILENAME}
+\includegraphics[width=///PERCENTWIDTH \textwidth, height=2cm]{///SPONSOR_IMAGE_FILENAME}
 \end{tabular}}""".decode('utf-8')
 
 SPONSOR_IMAGE_PREFIX= r"""
@@ -78,19 +79,22 @@ def get_sponsor(contest):
     imageString = ""
     sponsors = contest.sponsors.all()
     if sponsors.count() < 1:
-        return DEFAULT_EMPTY
+        return DEFAULT_EMPTY, {}
     imageWidth = str(Decimal(1) / Decimal(sponsors.count()))
 
-    for spon in sponsors:
+    retDict = {}
+    for index, spon in enumerate(sponsors):
         parse_string = LatexTemplate(SPONSOR_IMAGE_LATEX)
-        d = {'FILENAME': spon.image.path_full,
+        d = {
+            'SPONSOR_IMAGE_FILENAME': spon.image.path_full,
             'SPONSORLABEL' : spon.name,
-            'PERCENTWIDTH': imageWidth[:3],
+            'PERCENTWIDTH': imageWidth[:3], # precision 3
         }
+        retDict['SPONSOR%d_IMAGE_FILENAME' % (index + 1)] = spon.image.path_full
         imageString += parse_string.substitute(d)
 
     retString = SPONSOR_IMAGE_PREFIX + imageString + SPONSOR_IMAGE_SUFFIX
-    return retString
+    return retString, retDict
 
 def filter_team_name(team_name):
     pattern = re.compile(r'[\W_]+')
@@ -130,13 +134,19 @@ def get_latex_init_dict(contest, team_name, contestants):
     if contest.logo and len(contest.logo) > 0:
         logo = contest.logo.path_full
 
+    #TODO: hardcoded logo is baaaaad practise
+
     ret = {
             TEAM_PARSELINE : tex_render_unsafe(team_name),
             SPONSOR: DEFAULT_EMPTY,
             CON1: DEFAULT_EMPTY,
             CON2: DEFAULT_EMPTY,
             CON3: DEFAULT_EMPTY,
-            CONTEST_LOGO: logo,
+            # CONTEST_LOGO: logo,
+            CONTEST_LOGO: '/webapps/idi_open/wsgi/media/uploads/IDIOpen_logo.jpg',
+            #CONTEST_LOGO: '/tmp/test.jpg',
+            #.. to create empty image: convert -size 1x1 "xc:#FF0000" /tmp/test.jpg
+            # requires imagemagick from repo
         }
     ret.update(populateContestants(contestants))
     return ret
@@ -201,9 +211,10 @@ def process_team_contestants(latex_parse_string,
         team_name, contestants = tup[0], tup[1]
         tex_dict = get_latex_init_dict(contest, team_name, contestants)
         #TODO: remove hardcode
-        if latex_parse_string.find("///SPONSOR") > 0:
+        sponsor, sponsDict = get_sponsor(contest)
+        tex_dict.update(sponsDict)
+        if latex_parse_string.find("///SPONSOR ") > 0:
             latex_parse_string = add_preamble(latex_parse_string)
-            sponsor = get_sponsor(contest)
             tex_dict.update({SPONSOR: sponsor})
 
         parser = LatexTemplate(latex_parse_string)
