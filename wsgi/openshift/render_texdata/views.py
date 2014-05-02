@@ -42,7 +42,8 @@ CONTEST_LOGO = "CONTEST_LOGO".decode('utf-8')
 DEFAULT_EMPTY = r"""\ """.decode('utf-8')
 
 SPONSOR_LATEX_PREAMBLE = r"""
-\usepackage{caption, graphicx, subfig}
+\usepackage{caption, subfig}
+\usepackage{graphicx}
 \captionsetup[subfloat]{labelformat=empty}
 \captionsetup[figure]{labelformat=empty}
 """.decode('utf-8')
@@ -50,7 +51,7 @@ SPONSOR_LATEX_PREAMBLE = r"""
 SPONSOR_IMAGE_LATEX = r"""
 \subfloat[///SPONSORLABEL]{
 \begin{tabular}{c}
-\includegraphics[width=///PERCENTWIDTH \textwidth, height=2cm]{///FILENAME}
+\includegraphics[width=///PERCENTWIDTH \textwidth, height=2cm]{///SPONSOR_IMAGE_FILENAME}
 \end{tabular}}""".decode('utf-8')
 
 SPONSOR_IMAGE_PREFIX= r"""
@@ -78,19 +79,22 @@ def get_sponsor(contest):
     imageString = ""
     sponsors = contest.sponsors.all()
     if sponsors.count() < 1:
-        return DEFAULT_EMPTY
+        return DEFAULT_EMPTY, {}
     imageWidth = str(Decimal(1) / Decimal(sponsors.count()))
 
-    for spon in sponsors:
+    retDict = {}
+    for index, spon in enumerate(sponsors):
         parse_string = LatexTemplate(SPONSOR_IMAGE_LATEX)
-        d = {'FILENAME': spon.image.path_full,
+        d = {
+            'SPONSOR_IMAGE_FILENAME': spon.image.path_full,
             'SPONSORLABEL' : spon.name,
-            'PERCENTWIDTH': imageWidth[:3],
+            'PERCENTWIDTH': imageWidth[:3], # precision 3
         }
+        retDict['SPONSOR%d_IMAGE_FILENAME' % (index + 1)] = spon.image.path_full
         imageString += parse_string.substitute(d)
 
     retString = SPONSOR_IMAGE_PREFIX + imageString + SPONSOR_IMAGE_SUFFIX
-    return retString
+    return retString, retDict
 
 def filter_team_name(team_name):
     pattern = re.compile(r'[\W_]+')
@@ -130,13 +134,19 @@ def get_latex_init_dict(contest, team_name, contestants):
     if contest.logo and len(contest.logo) > 0:
         logo = contest.logo.path_full
 
+    #TODO: hardcoded logo is baaaaad practise
+
     ret = {
             TEAM_PARSELINE : tex_render_unsafe(team_name),
             SPONSOR: DEFAULT_EMPTY,
             CON1: DEFAULT_EMPTY,
             CON2: DEFAULT_EMPTY,
             CON3: DEFAULT_EMPTY,
-            CONTEST_LOGO: logo,
+            # CONTEST_LOGO: logo,
+            CONTEST_LOGO: '/webapps/idi_open/wsgi/media/uploads/IDIOpen_logo.jpg',
+            #CONTEST_LOGO: '/tmp/test.jpg',
+            #.. to create empty image: convert -size 1x1 "xc:#FF0000" /tmp/test.jpg
+            # requires imagemagick from repo
         }
     ret.update(populateContestants(contestants))
     return ret
@@ -155,11 +165,8 @@ def genOnePdf(pdf_files):
         proc.communicate()
 
     response = None
-    try:
-        response = HttpResponse(open(output_pdf), content_type='application/pdf')
-        response['Content-Disposition'] = 'attachment; filename="team.pdf"'
-    except IOError as ioe:
-        response = HttpResponse('<h1> Error occured during PDF rendering: xelatex failed to compile all PDF</h1>')
+    response = HttpResponse(open(output_pdf), content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="team.pdf"'
 
     return response
 
@@ -187,8 +194,8 @@ def write_team_pdf(team_name, index, tex_dict, parser):
         write_buf = parser.substitute(tex_dict).encode('utf-8')
         f.write(write_buf)
 
-    cmd_latex = "xelatex -no-file-line-error --halt-on-error" \
-                + "-interaction=nonstopmde --output-directory="
+    cmd_latex = "xelatex -no-file-line-error -halt-on-error" \
+                + " -interaction=nonstopmode --output-directory="
     cmd_run= '%s"%s" %s' % (cmd_latex, DIR_DEST, file_name)
 
     proc=Popen(split(cmd_run))
@@ -204,9 +211,10 @@ def process_team_contestants(latex_parse_string,
         team_name, contestants = tup[0], tup[1]
         tex_dict = get_latex_init_dict(contest, team_name, contestants)
         #TODO: remove hardcode
-        if latex_parse_string.find("///SPONSOR") > 0:
+        sponsor, sponsDict = get_sponsor(contest)
+        tex_dict.update(sponsDict)
+        if latex_parse_string.find("///SPONSOR ") > 0:
             latex_parse_string = add_preamble(latex_parse_string)
-            sponsor = get_sponsor(contest)
             tex_dict.update({SPONSOR: sponsor})
 
         parser = LatexTemplate(latex_parse_string)
@@ -240,23 +248,7 @@ def get_team_contestant_dict(teams):
 # TODO: rewrite as ORM, this is silly
 #FIXME: per default rendered to libreoffice, which cannot see the unicode?
 def extract_to_csv():
-    try:
-        remove(FILENAME)
-    except OSError:
-        pass
-
-    MYSQL_CON = mdb.connect('localhost', 'andesil', 'password', 'gentleidi')
-    with MYSQL_CON:
-        cur = MYSQL_CON.cursor()
-
-        cur.execute(SQL_FETCH_USERNAME_TEAM)
-        rows = cur.fetchall()
-        fp = open(FILENAME, 'w')
-        file = csv.writer(fp)
-        file.writerows(rows)
-        fp.close()
-
-        cur.close()
+    pass
 
 def render_csv(request):
     # Create the HttpResponse object with the appropriate CSV header.

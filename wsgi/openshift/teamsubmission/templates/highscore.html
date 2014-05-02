@@ -13,7 +13,25 @@ $(document).ready(function()
             var i = parseFloat(s);
             return (isNaN(i)) ? null : i;
         };
-        $("#highscoreTable").tablesorter( {sortList: [[0,0]], emptyTo: 'bottom', } ); 
+        $.tablesorter.addParser({ 
+            // set a unique id 
+            id: 'offsite', 
+            is: function(s) { 
+              // return false so this parser is not auto detected 
+              return false; 
+            }, 
+            format: function(s, table, cell, cellIndex) { 
+              // get data attributes from $(cell).attr('data-something');
+              // check specific column using cellIndex
+              return $(cell).attr('data-offsite');
+            }, 
+            // set type, either numeric or text 
+            type: 'text' 
+        });
+        $("#highscoreTable").tablesorter({
+        	sortList: [[0,0]],
+        	headers : {2 : { sorter: 'offsite' }}
+        }); 
         $(".clickableRow").click(function() {
         	window.document.location = $(this).attr("href");
       	});
@@ -86,23 +104,19 @@ Show for team type:
     <tbody>
             {% for entry in highscore|dictsort:"total_score"|dictsortreversed:"total_solved" %}
             <tr>
-                <td> {{forloop.counter}} </td>
-                <td> {{entry.team}} </td>
-                {% if entry.site %}
-                <td> {{entry.site|truncatechars:12}}</td>
-                {% else %}
-                <td> &#8203 </td>
-                {% endif %}
-                <td> {{entry.total_solved}} </td>
-                <td> {{entry.total_score}}</td>
-                <td> {{entry.total_time }}</td>
+                <td>{{forloop.counter}}</td>
+                <td>{{entry.team}}</td>
+                <td data-offsite='{{entry.team.onsite}}'>{{entry.site|truncatechars:12}}</td>
+                <td>{{entry.total_solved}}</td>
+                <td>{{entry.total_score}}</td>
+                <td>{{entry.total_time }}</td>
                 {% for x in entry.problemList %}
                 {% if x.solved %}
-                <td style="background: #90EE90"> {{x.tries|add:"1"}}/{{x.attempts}} </td>
+                <td style="background: #90EE90">{{x.tries|add:"1"}}/{{x.attempts}}</td>
                 {% elif x.tries %}
-                <td style="background: #FFC0CB"> {{x.tries}}/{{x.attempts}} </td>
+                <td style="background: #FFC0CB">{{x.tries}}/{{x.attempts}}</td>
                 {% else %}
-                <td> {{x.tries}}/{{x.attempts}} </td>
+                <td>{{x.tries}}/{{x.attempts}}</td>
                 {% endif %}
                 {% endfor %}
             </tr>

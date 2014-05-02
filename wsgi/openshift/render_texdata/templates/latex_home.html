@@ -29,76 +29,67 @@
 <br />
 <br />
 
-<h2>Subsitution pattern: anywhere in your tex-code, 3 forward slashes followed by VARIABLE, e.g.  ///TEAM </h2>
+<h2>Subsitution pattern: anywhere in your tex-code, 3 forward slashes followed by VARIABLE, e.g.  ///CONTESTANT1 </h2>
 <h4>All variables below are optional</h4>
 <ul>
     <li>TEAM - name of selected team</li>
-    <li>CONTESTANT1 - leader of team</li>
-    <li>CONTESTANT2 - member of team, if any</li>
-    <li>CONTESTANT3 - member of team, if any</li>
+    <li>CONTESTANT&lt;number&gt; nth member of a team, indexed 1 to 3</li>
     <li>SPONSOR - image and title of sponsors (can only be used with \documentclass{article}</li>
+    <li>SPONSOR&lt;number&gt;_IMAGE_FILENAME - absolute filename to nth sponsor logo - not rendered</li>
     <li>CONTEST_LOGO - absolute filename to contest logo - not rendered</li>
 </ul>
 
 <br />
 <br />
-<h3>(Please use \documentclass{article}.... Using {letter} breaks image alignments)</h3>
+<h3></h3>
 <textarea id="id_latex" rows="14" cols="450">
 \documentclass[a4paper]{article}
 \usepackage{graphicx}
+\usepackage{wallpaper}
 \usepackage[absolute]{textpos}
 
 \begin{document}
-\pagestyle{empty}
+\thispagestyle{empty}
 
-%********************************
-%copy fra her
-%********************************
+% \ThisLRCornerWallPaper{1.0}{}
+
 \begin{center}
-
 \vspace*{-4cm}
-% \includegraphics[scale=0.4]{Logo_paper_cropped(edit).png}
+\includegraphics[scale=0.3]{///CONTEST_LOGO}
+\end{center}
 
-\vspace*{2cm}
-
-%******************
-% Navn skal inn her
-%******************
+\begin{center}
+\vspace{1cm}
+{\Huge 1. plass} \\*
+\vspace*{1.5cm}
 {\Huge \bf ///TEAM} \\*
-\vspace*{0.7cm}
-{\Huge ///CONTESTANT1}\\*
 \vspace*{0.5cm}
-{\Huge ///CONTESTANT2}\\*
-\vspace*{0.5cm}
-{\Huge ///CONTESTANT3}\\*
+{\LARGE ///CONTESTANT1}\\*
+\vspace*{0.2cm}
+{\LARGE ///CONTESTANT2}\\*
+%\vspace*{0.2cm}
+%{\LARGE ///CONTESTANT3}\\*
+
 
 \end{center}
 
 
-\begin{textblock}{1}[4,-1](10, 10)
-% \includegraphics[scale=0.35]{pizzabrus.png}
+\begin{textblock}{3}(3.2, 12)
+\hspace{0.5cm} \makebox[1.5in]{\hrulefill}
+\hspace*{1.2cm} Halvor Strand \\
+\hspace*{1cm} Contest Director
+\end{textblock}
+
+\begin{textblock}{3}(8.5, 12)
+\hspace{0.5cm} \makebox[1.5in]{\hrulefill}
+\hspace*{1.3cm} Eirik Reksten\\
+\hspace*{1.4cm} Head Judge
 \end{textblock}
 
 ///SPONSOR
 
-\newpage
-
-%********************************
-%copy til hit
-%********************************
-
-
-% http://handyfloss.wordpress.com/2007/05/29/latex-the-textpos-package/
-% \begin{textblock}{width}[xt,yt](X,Y)  the-text-goes-here  \end{textblock}
-
-%{\ae}=æ
-%{\o}=ø
-%{\aa}=å
-
 \end{document}
 </textarea>
-
-
 
 
 {% if semicolon_list %}    
