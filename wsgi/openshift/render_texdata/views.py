@@ -1,8 +1,8 @@
 #coding: utf-8
 """ 
-prefix all | with a special.. err
-avoid fonts in verbatim..
+Render tex/pdf/CSV for end users
 """
+# Some latex is sensitive to newlines, beware
 
 from django.shortcuts import render
 from django.http import HttpResponse
@@ -38,6 +38,8 @@ SPONSOR = "SPONSOR".decode('utf-8')
 CON1 = "CONTESTANT1".decode('utf-8')
 CON2 = "CONTESTANT2".decode('utf-8')
 CON3 = "CONTESTANT3".decode('utf-8')
+CONTEST_LOGO = "CONTEST_LOGO".decode('utf-8')
+DEFAULT_EMPTY = r"""\ """.decode('utf-8')
 
 SPONSOR_LATEX_PREAMBLE = r"""
 \usepackage{caption, graphicx, subfig}
@@ -51,13 +53,12 @@ SPONSOR_IMAGE_LATEX = r"""
 \includegraphics[width=///PERCENTWIDTH \textwidth, height=2cm]{///FILENAME}
 \end{tabular}}""".decode('utf-8')
 
-IMAGE_PREFIX= r"""
+SPONSOR_IMAGE_PREFIX= r"""
 \begin{figure}[ht]
  \caption[]{\textbf{Sponsors}}
 """.decode('utf-8')
 
-# Oops! Sensitive to newline chars, beware
-IMAGE_SUFFIX = r"""\end{figure}""".decode('utf-8')
+SPONSOR_IMAGE_SUFFIX = r"""\end{figure}""".decode('utf-8')
 
 DIR_DEST = "/tmp/teams/".decode('utf-8')
 
@@ -74,12 +75,9 @@ def render_semicolonlist(team_list):
     return retString
 
 def get_sponsor(contest):
-    contest = Contest.objects.get(pk=contest)
-    
     imageString = ""
     sponsors = contest.sponsors.all()
     imageWidth = str(Decimal(1) / Decimal(sponsors.count()))
-    import ipdb; ipdb.set_trace()
 
     for spon in sponsors:
         parse_string = LatexTemplate(SPONSOR_IMAGE_LATEX)
@@ -89,7 +87,7 @@ def get_sponsor(contest):
         }
         imageString += parse_string.substitute(d)
 
-    retString = IMAGE_PREFIX + imageString + IMAGE_SUFFIX
+    retString = SPONSOR_IMAGE_PREFIX + imageString + SPONSOR_IMAGE_SUFFIX
     return retString
 
 def filter_team_name(team_name):
@@ -126,10 +124,11 @@ def populateContestants(con_list):
 def get_latex_init_dict(contest, team_name, contestants):
     ret = {
             TEAM_PARSELINE : tex_render_unsafe(team_name),
-            SPONSOR: get_sponsor(contest),
-            CON1: '',
-            CON2: '',
-            CON3: '',
+            SPONSOR: DEFAULT_EMPTY,
+            CON1: DEFAULT_EMPTY,
+            CON2: DEFAULT_EMPTY,
+            CON3: DEFAULT_EMPTY,
+            CONTEST_LOGO: contest.logo.path_full,
         }
     ret.update(populateContestants(contestants))
     return ret
@@ -152,7 +151,7 @@ def genOnePdf(pdf_files):
         response = HttpResponse(open(output_pdf), content_type='application/pdf')
         response['Content-Disposition'] = 'attachment; filename="team.pdf"'
     except IOError as ioe:
-        response = HttpResponse('<h1> Error occured during PDF rendering: no files produced! </h1>')
+        response = HttpResponse('<h1> Error occured during PDF rendering: xelatex failed to compile all PDF</h1>')
 
     return response
 
@@ -190,12 +189,17 @@ def process_team_contestants(latex_parse_string, team_list, output_format, conte
     cleanup_previous()
 
     team_contestant_dict = get_team_contestant_dict(team_list)
-    latex_parse_string = add_preamble(latex_parse_string)
 
     for index, tup in enumerate(team_contestant_dict.iteritems()):
         team_name, contestants = tup[0], tup[1]
-        parser = LatexTemplate(latex_parse_string)
         tex_dict = get_latex_init_dict(contest, team_name, contestants)
+        #TODO: remove hardcode
+        if latex_parse_string.find("///SPONSOR") > 0:
+            latex_parse_string = add_preamble(latex_parse_string)
+            sponsor = get_sponsor(contest)
+            tex_dict.update({SPONSOR: sponsor})
+        
+        parser = LatexTemplate(latex_parse_string)
         write_team_pdf(team_name, index, tex_dict, parser)
 
     pdf_files = [file for file in listdir(DIR_DEST) if file.endswith(".pdf")]
@@ -206,21 +210,32 @@ def process_team_contestants(latex_parse_string, team_list, output_format, conte
     else:
         return genManyPdf(pdf_files)
 
+# TODO: rewrite as ORM, this is sill
+def get_contestant_println(con_obj):
+    nickname = ''
+    if con_obj.nickname:
+        nickname = ' `' + con_obj.nickname + '` '
+    return (con_obj.first_name + nickname + con_obj.last_name)
+
 def get_team_contestant_dict(teams):
     team_members_dict = defaultdict( list )
     for team_id in teams:
         team = Team.objects.get(pk=int(team_id))
         teamname = team.name
+        #team_members_dict[teamname].append(get_contestant_println(team.leader))
         for member in team.members.all():
-            team_members_dict[teamname].append(member.email)
-        team_members_dict[teamname].append(team.leader.email)
+            team_members_dict[teamname].append(get_contestant_println(member))
     return team_members_dict
 
+# TODO: rewrite as ORM, this is silly
+#FIXME: per default rendered to libreoffice, which cannot see the unicode?
 def extract_to_csv():
     try:
         remove(FILENAME)
     except OSError:
         pass
+
+    
 
     MYSQL_CON = mdb.connect('localhost', 'andesil', 'password', 'gentleidi')
     with MYSQL_CON:
