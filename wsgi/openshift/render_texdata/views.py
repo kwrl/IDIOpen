@@ -248,23 +248,7 @@ def get_team_contestant_dict(teams):
 # TODO: rewrite as ORM, this is silly
 #FIXME: per default rendered to libreoffice, which cannot see the unicode?
 def extract_to_csv():
-    try:
-        remove(FILENAME)
-    except OSError:
-        pass
-
-    MYSQL_CON = mdb.connect('localhost', 'andesil', 'password', 'gentleidi')
-    with MYSQL_CON:
-        cur = MYSQL_CON.cursor()
-
-        cur.execute(SQL_FETCH_USERNAME_TEAM)
-        rows = cur.fetchall()
-        fp = open(FILENAME, 'w')
-        file = csv.writer(fp)
-        file.writerows(rows)
-        fp.close()
-
-        cur.close()
+    pass
 
 def render_csv(request):
     # Create the HttpResponse object with the appropriate CSV header.
