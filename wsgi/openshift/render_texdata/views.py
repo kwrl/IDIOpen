@@ -34,7 +34,7 @@ ORDER BY T.id
 FILENAME = "/tmp/outfile.csv"
 
 TEAM_PARSELINE = "TEAM".decode('utf-8')
-SPONSOR = "SPONSOR".decode('utf-8')
+SPONSOR = "SPONSORALL".decode('utf-8')
 CON1 = "CONTESTANT1".decode('utf-8')
 CON2 = "CONTESTANT2".decode('utf-8')
 CON3 = "CONTESTANT3".decode('utf-8')
@@ -154,7 +154,8 @@ def get_latex_init_dict(contest, team_name, contestants):
             CON2: DEFAULT_EMPTY,
             CON3: DEFAULT_EMPTY,
             # CONTEST_LOGO: logo,
-            CONTEST_LOGO: '/webapps/idi_open/wsgi/media/uploads/IDIOpen_logo.jpg',
+            CONTEST_LOGO: '/home/andesil/Downloads/IDIOpen_logo.jpg',
+            #CONTEST_LOGO: '/webapps/idi_open/wsgi/media/uploads/IDIOpen_logo.jpg',
             #CONTEST_LOGO: '/tmp/test.jpg',
             #.. to create empty image: convert -size 1x1 "xc:#FF0000" /tmp/test.jpg
             # requires imagemagick from repo
@@ -224,7 +225,7 @@ def process_team_contestants(latex_parse_string,
         #TODO: remove hardcode
         sponsor, sponsDict = get_sponsor(contest)
         tex_dict.update(sponsDict)
-        if latex_parse_string.find("///SPONSOR ") > 0:
+        if latex_parse_string.find("///SPONSORALL") > 0:
             latex_parse_string = add_preamble(latex_parse_string)
             tex_dict.update({SPONSOR: sponsor})
 
