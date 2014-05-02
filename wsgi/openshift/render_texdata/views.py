@@ -155,11 +155,8 @@ def genOnePdf(pdf_files):
         proc.communicate()
 
     response = None
-    try:
-        response = HttpResponse(open(output_pdf), content_type='application/pdf')
-        response['Content-Disposition'] = 'attachment; filename="team.pdf"'
-    except IOError as ioe:
-        response = HttpResponse('<h1> Error occured during PDF rendering: xelatex failed to compile all PDF</h1>')
+    response = HttpResponse(open(output_pdf), content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="team.pdf"'
 
     return response
 
@@ -187,8 +184,8 @@ def write_team_pdf(team_name, index, tex_dict, parser):
         write_buf = parser.substitute(tex_dict).encode('utf-8')
         f.write(write_buf)
 
-    cmd_latex = "xelatex -no-file-line-error --halt-on-error" \
-                + "-interaction=nonstopmde --output-directory="
+    cmd_latex = "xelatex -no-file-line-error -halt-on-error" \
+                + " -interaction=nonstopmode --output-directory="
     cmd_run= '%s"%s" %s' % (cmd_latex, DIR_DEST, file_name)
 
     proc=Popen(split(cmd_run))
