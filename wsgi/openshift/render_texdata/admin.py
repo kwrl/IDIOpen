@@ -1,40 +1,29 @@
-from functools import partial, reduce, update_wrapper
-from django.contrib import messages
+""" To be refactored
+"""
+
+from django.contrib import admin, messages
 from django.contrib.admin import helpers
 from django.contrib.admin.util import (flatten_fieldsets,
                                        get_deleted_objects, model_format_dict,
                                        NestedObjects, lookup_needs_distinct)
+from django.contrib.admin.views.main import ERROR_FLAG
 from django.core.exceptions import PermissionDenied
+from django.db import models
 from django.http import HttpResponseRedirect
+from django.shortcuts import HttpResponse, render
 from django.template.response import SimpleTemplateResponse, TemplateResponse
 from django.utils.translation import ugettext as _
 from django.utils.translation import ungettext
 from django.utils.encoding import force_text
-from django.contrib.admin.views.main import ERROR_FLAG
 
-
-from django.contrib import messages
-
-
-from django.db import models
-from django.contrib import admin
+from functools import partial, reduce, update_wrapper
 import operator, re
 
-from .views import process_team_contestants, render_semicolonlist
-from .models import FakeTeam
-
-
-
-
-from django.contrib import admin
-from django.shortcuts import HttpResponse, render
-
 from openshift.contest.models import Contest, Team
-from .models import Latex_Teamview, Latex_TeamText
-from .urls import render_csv_url, latex_url
-
 from openshift.helpFunctions.views import get_most_plausible_contest
-
+from .models import RenderCSV, RenderTexOrEmail
+from .urls import render_csv_url, latex_url
+from .views import process_team_contestants, render_semicolonlist
 
 class IncorrectLookupParameters(Exception):
     pass
@@ -50,7 +39,7 @@ class LatexAdmin(admin.ModelAdmin):
         """
         contest = re.search('\d{1,3}$', request.path)
         if contest:
-            contest = contest.group()
+            contest = Contest.objects.get(pk=str(contest.group()))
         else:
              contest = get_most_plausible_contest(contest)
              if not contest:
@@ -102,14 +91,11 @@ class LatexAdmin(admin.ModelAdmin):
         """
         contest = re.search('\d{1,3}$', request.path)
         if contest:
-            contest = contest.group()
+            contest = Contest.objects.get(pk=int(contest.group()))
         else:
              contest = get_most_plausible_contest(contest_pk)
              if not contest:
                 return HttpResponse("<h1> No contests in system </h1>")
-        
-        if not contest:
-            return HttpResponse("<h1> No contest </h1>")
          
         semicolon_list = None
         if request.method == "POST":
@@ -125,18 +111,21 @@ class LatexAdmin(admin.ModelAdmin):
                             # Response = email_view(selected)
                             semicolon_list = render_semicolonlist(selected)
                         except ValueError as ve:
-                            messages.error(request, ve.message)
+                            messages.error(request, str(ve))
                         except KeyError as ke:
-                            messages.error(request, ke.message)
+                            messages.error(request, str(ke))
 
                     elif request.POST["buttonId"] == "teamCSV_onePDF" or request.POST["buttonId"] == "teamCSV_manyPDF":
                         try:
                             response = process_team_contestants(request.POST['text'], selected, request.POST['buttonId'], contest)
                             return response
-                        except KeyError as ve:
-                            messages.error(request, "Invalid formatting, ensure all given variables are on the form \"%(var)s\"")
+                        except ValueError as ve:
+                            messages.error(request, "Invalid formatting," +
+                                "ensure all given variables are on the form " +
+                                "///VARIABLE")
                             messages.error(request, "(Error message: " + str(ve) + " )")
-
+                        except KeyError as ke:
+                            messages.error(request, "No match for %s" % str(ke))
 
         self.model = Team
         opts = self.model._meta
@@ -201,7 +190,6 @@ class LatexAdmin(admin.ModelAdmin):
             'selection_note': _('0 of %(cnt)s selected') % {'cnt': len(cl.result_list)},
             'selection_note_all': selection_note_all % {'total_count': cl.result_count},
             'selection_counter': selection_note_all % {'total_count': cl.result_count},
-            # 'title': cl.title,
             'title': 'Select teams to render email-line or latex-rendition',
             'is_popup': cl.is_popup,
             'cl': cl,
@@ -209,7 +197,7 @@ class LatexAdmin(admin.ModelAdmin):
             'has_add_permission': self.has_add_permission(request),
             'opts': cl.opts,
             # 'app_label': app_label,
-            'app_label': 'Tesssst',
+            'app_label': 'Render your information here',
             'action_form': action_form,
             # 'actions_on_top': self.actions_on_top,
             'actions_on_top': None,
@@ -220,8 +208,6 @@ class LatexAdmin(admin.ModelAdmin):
             'semicolon_list' : semicolon_list,
             'contests': Contest.objects.all(),
             'contest': contest,
-            
-    
             }        
         context.update(extra_context or {})
 
@@ -234,14 +220,10 @@ class LatexAdmin(admin.ModelAdmin):
 
 
 class RenderAdmin(admin.ModelAdmin):
-    # FIXME
-    """ Temporary solution to get a view connected in admin site
-    """
     def get_urls(self):
         return render_csv_url(self, RenderAdmin)
 
-admin.site.register(Latex_TeamText, LatexAdmin)
-#admin.site.register(FakeTeam, LatexAdmin)
+admin.site.register(RenderTexOrEmail, LatexAdmin)
 
-admin.site.register(Latex_Teamview, RenderAdmin)
-#admin.site.register(Latex_Teamview)
+admin.site.register(RenderCSV, RenderAdmin)
+#admin.site.register(RenderCSV)

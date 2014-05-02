@@ -26,25 +26,75 @@
     {% endfor %}
 </select>
 
-<h3>Variables that will be replaced if given. Not including the below variables gives default empty strings</h3>
+<br />
+<br />
+
+<h2>Subsitution pattern: anywhere in your tex-code, 3 forward slashes followed by VARIABLE, e.g.  ///TEAM </h2>
+<h4>All variables below are optional</h4>
 <ul>
-    <li>%(team)s - will be subsituted with team name for each selected team</li>
-    <li>%(contestant_line)s - will be substituted with a comma-separated line with commas</li>
-    <li>%(sponsor)s, - will be replaced by company logo </li>
+    <li>TEAM - name of selected team</li>
+    <li>CONTESTANT1 - leader of team</li>
+    <li>CONTESTANT2 - member of team, if any</li>
+    <li>CONTESTANT3 - member of team, if any</li>
+    <li>SPONSOR - image and title of sponsors (can only be used with \documentclass{article}</li>
+    <li>CONTEST_LOGO - absolute filename to contest logo - not rendered</li>
 </ul>
 
 <br />
 <br />
-
+<h3>(Please use \documentclass{article}.... Using {letter} breaks image alignments)</h3>
 <textarea id="id_latex" rows="14" cols="450">
-\documentclass{article}                                                             
+\documentclass[a4paper]{article}
 \usepackage{graphicx}
-\begin{document}                                                                    
-///TEAM \\
-///CONTESTANT1
-///CONTESTANT2
-///CONTESTANT3
+\usepackage[absolute]{textpos}
+
+\begin{document}
+\pagestyle{empty}
+
+%********************************
+%copy fra her
+%********************************
+\begin{center}
+
+\vspace*{-4cm}
+% \includegraphics[scale=0.4]{Logo_paper_cropped(edit).png}
+
+\vspace*{2cm}
+
+%******************
+% Navn skal inn her
+%******************
+{\Huge \bf ///TEAM} \\*
+\vspace*{0.7cm}
+{\Huge ///CONTESTANT1}\\*
+\vspace*{0.5cm}
+{\Huge ///CONTESTANT2}\\*
+\vspace*{0.5cm}
+{\Huge ///CONTESTANT3}\\*
+
+\end{center}
+
+
+\begin{textblock}{1}[4,-1](10, 10)
+% \includegraphics[scale=0.35]{pizzabrus.png}
+\end{textblock}
+
 ///SPONSOR
+
+\newpage
+
+%********************************
+%copy til hit
+%********************************
+
+
+% http://handyfloss.wordpress.com/2007/05/29/latex-the-textpos-package/
+% \begin{textblock}{width}[xt,yt](X,Y)  the-text-goes-here  \end{textblock}
+
+%{\ae}=æ
+%{\o}=ø
+%{\aa}=å
+
 \end{document}
 </textarea>
 
