@@ -24,8 +24,6 @@ from .views import process_team_contestants, render_semicolonlist
 from .models import FakeTeam
 
 
-class IncorrectLookupParameters(Exception):
-    pass
 
 
 from django.contrib import admin
@@ -36,6 +34,10 @@ from .models import Latex_Teamview, Latex_TeamText
 from .urls import render_csv_url, latex_url
 
 from openshift.helpFunctions.views import get_most_plausible_contest
+
+
+class IncorrectLookupParameters(Exception):
+    pass
 
 class LatexAdmin(admin.ModelAdmin):
     def get_urls(self):
@@ -50,7 +52,7 @@ class LatexAdmin(admin.ModelAdmin):
         if contest:
             contest = contest.group()
         else:
-             contest = get_most_plausible_contest(contest_pk)
+             contest = get_most_plausible_contest(contest)
              if not contest:
                 return HttpResponse("<h1> No contests in system </h1>")
 
@@ -124,6 +126,8 @@ class LatexAdmin(admin.ModelAdmin):
                             semicolon_list = render_semicolonlist(selected)
                         except ValueError as ve:
                             messages.error(request, ve.message)
+                        except KeyError as ke:
+                            messages.error(request, ke.message)
 
                     elif request.POST["buttonId"] == "teamCSV_onePDF" or request.POST["buttonId"] == "teamCSV_manyPDF":
                         try:

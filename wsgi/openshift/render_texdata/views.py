@@ -1,3 +1,4 @@
+#coding: utf-8
 """ 
 prefix all | with a special.. err
 avoid fonts in verbatim..
@@ -17,13 +18,10 @@ from zipfile import ZipFile
 from StringIO import StringIO
 from shutil import rmtree
 from string import Template
+from decimal import Decimal, getcontext
 
 from openshift.helpFunctions.views import get_most_plausible_contest
 from openshift.contest.models import Team, Contest, Sponsor
-
-class LatexTemplate(Template):
-    delimiter = '///'
-
 
 SQL_FETCH_USERNAME_TEAM = \
 """
@@ -35,14 +33,36 @@ ORDER BY T.id
 """
 FILENAME = "/tmp/outfile.csv"
 
-#MYSQL_CON = mdb.connect('hv-6146.idi.ntnu.no', 'gentle', 'tacosushi', 'gentleidi', 3306);
-#MYSQL_CON = mdb.connect('localhost', 'gentle', 'tacosushi', 'gentleidi', 3306);
+TEAM_PARSELINE = "TEAM".decode('utf-8')
+SPONSOR = "SPONSOR".decode('utf-8')
+CON1 = "CONTESTANT1".decode('utf-8')
+CON2 = "CONTESTANT2".decode('utf-8')
+CON3 = "CONTESTANT3".decode('utf-8')
 
-TEAM_PARSELINE = "TEAM"
-SPONSOR = "SPONSOR"
-CON1 = "CONTESTANT1"
-CON2 = "CONTESTANT2"
-CON3 = "CONTESTANT3"
+SPONSOR_LATEX_PREAMBLE = r"""
+\usepackage{caption, graphicx, subfig}
+\captionsetup[subfloat]{labelformat=empty}
+\captionsetup[figure]{labelformat=empty}
+""".decode('utf-8')
+
+SPONSOR_IMAGE_LATEX = r"""
+\subfloat[///SPONSORLABEL]{
+\begin{tabular}{c}
+\includegraphics[width=///PERCENTWIDTH \textwidth, height=2cm]{///FILENAME}
+\end{tabular}}""".decode('utf-8')
+
+IMAGE_PREFIX= r"""
+\begin{figure}[ht]
+ \caption[]{\textbf{Sponsors}}
+""".decode('utf-8')
+
+# Oops! Sensitive to newline chars, beware
+IMAGE_SUFFIX = r"""\end{figure}""".decode('utf-8')
+
+DIR_DEST = "/tmp/teams/".decode('utf-8')
+
+class LatexTemplate(Template):
+    delimiter = '///'
 
 def render_semicolonlist(team_list):
     retString = ""
@@ -53,172 +73,148 @@ def render_semicolonlist(team_list):
 
     return retString
 
-
 def get_sponsor(contest):
     contest = Contest.objects.get(pk=contest)
     
-    latex_prefix= r"""
-   \begin{figure}[ht]"""
-    latex_suffix = r"""
-    \end{figure}
-    """
-    image_line = r"""
-    \begin{minipage}[b]{0.45\linewidth}
-    \centering
-    \includegraphics[width=\textwidth]{///FILENAME}\caption{///SPONSORLABEL}
-    \label{///SPONSORLABEL}
-    \end{minipage} \hspace{0.5cm}
-    """
-
     imageString = ""
+    sponsors = contest.sponsors.all()
+    imageWidth = str(Decimal(1) / Decimal(sponsors.count()))
     import ipdb; ipdb.set_trace()
-    for spon in contest.sponsors.all():
-        parse_string = LatexTemplate(image_line.encode('utf-8'))
-        imageString += parse_string.substitute({'FILENAME': spon.image.path_full, 'SPONSORLABEL' : spon.name})
 
+    for spon in sponsors:
+        parse_string = LatexTemplate(SPONSOR_IMAGE_LATEX)
+        d = {'FILENAME': spon.image.path_full, 
+            'SPONSORLABEL' : spon.name,
+            'PERCENTWIDTH': imageWidth[:3],
+        }
+        imageString += parse_string.substitute(d)
 
-    retString = latex_prefix + imageString + latex_suffix
-    return retString.encode('utf-8')
+    retString = IMAGE_PREFIX + imageString + IMAGE_SUFFIX
+    return retString
 
 def filter_team_name(team_name):
     pattern = re.compile(r'[\W_]+')
     return pattern.sub('', team_name)
 
 def tex_render_unsafe(unsafe_string):
-    retString = r"""\verb|""" + unsafe_string.replace("|", "") + r"""|"""
-    return retString.encode('utf-8')
+    retString = r"""\verb|""".decode('utf-8') + unsafe_string.replace("|", "") + r"""|""".decode('utf-8')
+    return retString
 
-def process_team_contestants(latex_parse_string, team_list, output_format, contest):
-    team_contestant_dict = get_team_contestant_dict(team_list)
+def add_preamble(latex_str):
+    latex_str = latex_str.split('\n')
+    latex_str.insert(1, SPONSOR_LATEX_PREAMBLE)
+    return "\n".join(latex_str)
 
-    sponsor = get_sponsor(contest) # Returns list with sponsor objects
-    dir_dest = "/tmp/teams/"
-    if path.exists(dir_dest):
-        rmtree(dir_dest)
+def cleanup_previous():
+    if path.exists(DIR_DEST):
+        rmtree(DIR_DEST)
+    makedirs(DIR_DEST)
 
-    makedirs(dir_dest)
-
-    con_dict = {
-            betweenParanthesis(CON1): '',
-            betweenParanthesis(CON2): '',
-            betweenParanthesis(CON3): '',
-    }
-
-    i = 0
-
-
-
-    for team_name, contestants in team_contestant_dict.iteritems():
-        parse_string = LatexTemplate(latex_parse_string.encode('utf-8'))
-        tex_dict = {
-               betweenParanthesis(TEAM_PARSELINE)       : tex_render_unsafe(team_name),
-               betweenParanthesis(SPONSOR): '',
-            }
-
-        con_dict = {
-                betweenParanthesis(CON1): '',
-                betweenParanthesis(CON2): '',
-                betweenParanthesis(CON3): '',
-                'SPONSOR': sponsor,
-        }
-
-        index = 1
-        for con in contestants[:-1]:
-            key = "CONTESTANT" + str(index)
-            con_dict[key] = tex_render_unsafe(con) + ", "
-            index += 1
-
-
+def populateContestants(con_list):
+    con_dict = {}
+    index = 1
+    for con in con_list[:-1]:
         key = "CONTESTANT" + str(index)
-        con_dict[key] = tex_render_unsafe(contestants[-1])
+        con_dict[key] = tex_render_unsafe(con) + ", "
+        index += 1
 
-        tex_dict.update(con_dict)
+    key = "CONTESTANT" + str(index)
+    con_dict[key] = tex_render_unsafe(con_list[-1])
 
-        file_name = dir_dest + filter_team_name(team_name) +  str(i) + '.tex'
+    return con_dict
 
-        i += 1
-        
-        with open(file_name,'w') as f:
-                # latex_parse_string.encode('ISO-8859-1')
-            #string = latex_parse_string.encode('utf-8')%tex_dict
-            while True:
-                try:
-                    string = parse_string.substitute(tex_dict)
-                    break
-                except KeyError as ke:
-                    tex_dict[ke.args[0]] = u''
-            try:
-                f.write(string.decode('utf-8').encode('utf-8'))
-            except UnicodeError:
-                #import ipdb; ipdb.set_trace()
-                pass
+def get_latex_init_dict(contest, team_name, contestants):
+    ret = {
+            TEAM_PARSELINE : tex_render_unsafe(team_name),
+            SPONSOR: get_sponsor(contest),
+            CON1: '',
+            CON2: '',
+            CON3: '',
+        }
+    ret.update(populateContestants(contestants))
+    return ret
 
-        proc=Popen(split('xelatex -no-file-line-error --halt-on-error --output-directory="%s" ' % (dir_dest) + file_name))
+def genOnePdf(pdf_files):
+    string = ""
+    for pdf in pdf_files:
+        string += path.join(DIR_DEST, "%s " % (pdf ))
+
+    output_pdf = path.join(DIR_DEST, "out.pdf")
+
+    if len(pdf_files) == 1:
+        output_pdf = string[:-1] # pop excess space
+    else:
+        proc=Popen(split('pdfunite %s %s' % (string, output_pdf)))
         proc.communicate()
 
+    response = None
+    try:
+        response = HttpResponse(open(output_pdf), content_type='application/pdf')
+        response['Content-Disposition'] = 'attachment; filename="team.pdf"'
+    except IOError as ioe:
+        response = HttpResponse('<h1> Error occured during PDF rendering: no files produced! </h1>')
 
+    return response
+
+def genManyPdf(pdf_files):
     s = StringIO()
-    #ZIP_FILE = "/tmp/teams.zip"
     zf = ZipFile(s, mode='w')
     zf.filename = "teampdf.zip"
 
+    for pdf in pdf_files:
+        zf.write(path.join(DIR_DEST, pdf), arcname="teamPDF/" + pdf)
+    zf.close()
 
-    pdf_files = [file for file in listdir(dir_dest) if file.endswith(".pdf")]
-    if len(pdf_files) == 1:
-        file = path.join(dir_dest, pdf_files[0])
-        response = HttpResponse(open(file), content_type='application/pdf')
-        response['Content-Disposition'] = 'attachment; filename="team.pdf"'
-        return response
+
+    # Grab ZIP file from in-memory, make response with correct MIME-type
+    response = HttpResponse(s.getvalue(), mimetype = "application/x-zip-compressed")
+    # ..and correct content-disposition
+    response['Content-Disposition'] = 'attachment; filename=%s' % zf.filename
+
+    return response
+
+def write_team_pdf(team_name, index, tex_dict, parser):
+    file_name = DIR_DEST + filter_team_name(team_name) +  str(index) + '.tex'
+
+    with open(file_name,'w') as f:
+        write_buf = parser.substitute(tex_dict).encode('utf-8')
+        f.write(write_buf)
+
+    cmd_latex = "xelatex -no-file-line-error --halt-on-error --output-directory="
+    cmd_run= '%s"%s" %s' % (cmd_latex, DIR_DEST, file_name)
+
+    proc=Popen(split(cmd_run))
+    proc.communicate()
+
+def process_team_contestants(latex_parse_string, team_list, output_format, contest):
+    cleanup_previous()
+
+    team_contestant_dict = get_team_contestant_dict(team_list)
+    latex_parse_string = add_preamble(latex_parse_string)
+
+    for index, tup in enumerate(team_contestant_dict.iteritems()):
+        team_name, contestants = tup[0], tup[1]
+        parser = LatexTemplate(latex_parse_string)
+        tex_dict = get_latex_init_dict(contest, team_name, contestants)
+        write_team_pdf(team_name, index, tex_dict, parser)
+
+    pdf_files = [file for file in listdir(DIR_DEST) if file.endswith(".pdf")]
 
     if output_format == "teamCSV_onePDF":
-        string = ""
-        for pdf in pdf_files:
-            string += path.join(dir_dest, pdf + " ")
-
-        monster_pdf = path.join(dir_dest, "out.pdf")
-
-        proc=Popen(split('pdfunite %s %s' % (string, monster_pdf)))
-        proc.communicate()
-
-        response = None
-        try:
-            response = HttpResponse(open(monster_pdf), content_type='application/pdf')
-            response['Content-Disposition'] = 'attachment; filename="team.pdf"'
-        except IOError:
-            response = HttpResponse('<h1> Error occured during PDF rendering: no files produced! </h1>')
-
-        return response
+        return genOnePdf(pdf_files)
 
     else:
-        for pdf in pdf_files:
-            zf.write(path.join(dir_dest, pdf), arcname="teamPDF/" + pdf)
-        zf.close()
-
-
-        # Grab ZIP file from in-memory, make response with correct MIME-type
-        response = HttpResponse(s.getvalue(), mimetype = "application/x-zip-compressed")
-        # ..and correct content-disposition
-        response['Content-Disposition'] = 'attachment; filename=%s' % zf.filename
-
-        return response
-
-
+        return genManyPdf(pdf_files)
 
 def get_team_contestant_dict(teams):
     team_members_dict = defaultdict( list )
     for team_id in teams:
         team = Team.objects.get(pk=int(team_id))
-        #teamname = filter_team_name(team.name)
         teamname = team.name
         for member in team.members.all():
             team_members_dict[teamname].append(member.email)
-        # if team.leader.email not in team_members_dict[team]:
         team_members_dict[teamname].append(team.leader.email)
     return team_members_dict
-
-
-def betweenParanthesis(string):
-    return string
 
 def extract_to_csv():
     try:
