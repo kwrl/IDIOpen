@@ -66,9 +66,20 @@ DIR_DEST = "/tmp/teams/".decode('utf-8')
 class LatexTemplate(Template):
     delimiter = '///'
 
+
+def get_team_contestant_dict2(teams):
+    team_members_dict = defaultdict( list )
+    for team_id in teams:
+        team = Team.objects.get(pk=int(team_id))
+        teamname = team.name
+        #team_members_dict[teamname].append(get_contestant_println(team.leader))
+        for member in team.members.all():
+            team_members_dict[teamname].append(member.email)
+    return team_members_dict
+
 def render_semicolonlist(team_list):
     retString = ""
-    team_contestant_dict = get_team_contestant_dict(team_list)
+    team_contestant_dict = get_team_contestant_dict2(team_list)
     for _, contestants in team_contestant_dict.iteritems():
         for c in contestants:
             retString += c + ";"
