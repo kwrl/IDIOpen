@@ -10,3 +10,4 @@ pillow
 celery
 django-dajaxice
 django-dajax
+psutil
