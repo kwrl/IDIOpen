@@ -9,3 +9,4 @@ MYSQL-python
 pillow
 celery
 django-dajaxice
+django-dajax
