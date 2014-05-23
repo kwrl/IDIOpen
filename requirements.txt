@@ -6,6 +6,6 @@ django-filebrowser
 django-registration
 django-sortedm2m
 MYSQL-python
-django-jenkins
 pillow
 celery
+django-dajaxice
