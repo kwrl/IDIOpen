@@ -19,15 +19,74 @@ import operator, re
 
 from openshift.contest.models import Contest, Team
 from openshift.helpFunctions.views import get_most_plausible_contest
-from .models import RenderCSV, RenderTexOrEmail
+from .models import RenderTexOrEmail
 from .urls import render_csv_url, latex_url
 from .views import process_team_contestants, render_semicolonlist, get_teamnames
 
 class IncorrectLookupParameters(Exception):
     pass
 
+def _doAction(request, selected, contest):
+    if not selected or len(selected) < 1 or selected[0] == '':
+        messages.error(request, "No team selected")
+        return
+
+    FORMAT_ERR = ["Invalid formatting, ensure all given variables are on" +
+                    "the form ///VARIABLE",
+                 "Error message: %s"
+                 ]
+    INVALID_VAR_ERR = ["No match for %s"]
+    MISSING_PROG_ERR = ["Please verify that you have %s and %s installed" \
+                        % ("xelatex", "pdfunite")]
+
+    if "buttonId" in request.POST:
+        if request.POST["buttonId"] == "emailCSV":
+            try:
+                # Response = email_view(selected)
+                semicolon_list = render_semicolonlist(selected)
+            except (KeyError,ValueError) as e:
+                messages.error(request, str(e))
+
+        elif request.POST["buttonId"] == "teamCSV_onePDF" \
+        or request.POST["buttonId"] == "teamCSV_manyPDF":
+            try:
+                response = process_team_contestants(
+                        request.POST['text'], selected,
+                        request.POST['buttonId'], contest)
+                return response
+            except ValueError as ve:
+                messages.error(request, FORMAT_ERR[0])
+                messages.error(request, FORMAT_ERR[1] % str(ve))
+            except KeyError as ke:
+                messages.error(request, INVALID_VAR_ERR % str(ke))
+            except OSError:
+                messages.error(request, MISSING_PROG_ERR)
+            except IOError:
+                logfile = glob('/tmp/teams/*.log')
+                messages.error(request,
+                        "xelatex failed to compile")
+                for log in logfile:
+                    latex_compile_stdout = ""
+                    with open(log, 'r') as f:
+                        for line in f:
+                            latex_compile_stdout += line + '\n'
+                            if line.startswith('!'):
+                                messages.error(request, line)
+        else:
+            teamname_list = get_teamnames(selected)
+
+
+def _getContest(request, contest_pk=None):
+    contest = re.search(r'\d{1,3}$', request.path)
+    if contest:
+        contest = Contest.objects.get(pk=int(contest.group()))
+    else:
+        contest = get_most_plausible_contest(contest_pk)
+    return contest
+
 class LatexAdmin(admin.ModelAdmin):
     def get_urls(self):
+        """ Override to get custom admin views from the admin site """
         return latex_url(self, LatexAdmin)
 
     def get_queryset(self, request):
@@ -35,6 +94,8 @@ class LatexAdmin(admin.ModelAdmin):
         Returns a QuerySet of all model instances that can be edited by the
         admin site. This is used by changelist_view.
         """
+        # Future developers might want to find a better way to retreive the
+        # contest here it is extracted from the URL
         contest = re.search(r'\d{1,3}$', request.path)
         if contest:
             contest = Contest.objects.get(pk=str(contest.group()))
@@ -43,7 +104,7 @@ class LatexAdmin(admin.ModelAdmin):
             if not contest:
                 return HttpResponse("<h1> No contests in system </h1>")
 
-        # qs = self.model._default_manager.get_queryset()
+        # Fetch contests and order them - earliest first
         qs = self.model._default_manager.filter(contest=contest)
         ordering = self.get_ordering(request)
         if ordering:
@@ -52,7 +113,7 @@ class LatexAdmin(admin.ModelAdmin):
 
     def get_search_results(self, request, queryset, search_term):
         """
-        Returns a tuple containing a queryset to implement the search,
+        Returns a tuple for each team
         and a boolean indicating if the results may contain duplicates.
         """
         self.opts = Team._meta
@@ -87,79 +148,29 @@ class LatexAdmin(admin.ModelAdmin):
         """
         The 'change list' admin view for this model.
         """
-        contest = re.search(r'\d{1,3}$', request.path)
-        if contest:
-            contest = Contest.objects.get(pk=int(contest.group()))
-        else:
-            contest = get_most_plausible_contest(contest_pk)
-            if not contest:
-                return HttpResponse("<h1> No contests in system </h1>")
+        contest = _getContest(request)
+        if not contest:
+            return HttpResponse("<h1> No contests in system </h1>")
 
         semicolon_list = None
         latex_compile_stdout = None
         teamname_list = None
+
         if request.method == "POST":
-            selected = request.POST['teams'].split(',')
-
-            if not selected or len(selected) < 1 or selected[0] == '':
-                messages.error(request, "No team selected")
-            else:
-                if "buttonId" in request.POST:
-                    if request.POST["buttonId"] == "emailCSV":
-                        try:
-                            # Response = email_view(selected)
-                            semicolon_list = render_semicolonlist(selected)
-                        except ValueError as ve:
-                            messages.error(request, str(ve))
-                        except KeyError as ke:
-                            messages.error(request, str(ke))
-
-                    elif request.POST["buttonId"] == "teamCSV_onePDF" \
-                    or request.POST["buttonId"] == "teamCSV_manyPDF":
-                        try:
-                            response = process_team_contestants(
-                                    request.POST['text'], selected,
-                                    request.POST['buttonId'], contest)
-                            return response
-                        except ValueError as ve:
-                            messages.error(request, "Invalid formatting," +
-                                "ensure all given variables are on the form " +
-                                "///VARIABLE")
-                            messages.error(request,
-                                           "(Error message: " + str(ve) + " )")
-                        except KeyError as ke:
-                            messages.error(request, "No match for %s" % str(ke))
-                        except OSError:
-                            messages.error(request,
-                            "Please verify that you have %s and %s installed" \
-                                    % ("xelatex", "pdfunite"))
-                        except IOError as ioe:
-                            logfile = glob('/tmp/teams/*.log')
-                            messages.error(request,
-                                    "xelatex failed to compile")
-                            for log in logfile:
-                                latex_compile_stdout = ""
-                                with open(log, 'r') as f:
-                                    for line in f:
-                                        latex_compile_stdout += line + '\n'
-                                        # if line.startswith('!'):
-                                        #     messages.error(request, line)
-                    elif request.POST["buttonId"] == "teamnames":
-                        teamname_list = get_teamnames(selected)
+            _doAction(request, request.POST['teams'].split(','), contest,)
 
         self.model = Team
         opts = self.model._meta
         #app_label = opts.app_label
 
+        # Render the queryset's view properties
         list_display = ('name', 'onsite', 'contest', 'leader', 'offsite',)
         list_display_links = self.get_list_display_links(request, list_display)
         list_filter = ('onsite', 'contest',)
         actions = self.get_actions(request)
         search_fields = ['id', 'name']
 
-        if actions:
-            # Add the action checkboxes if there are any actions available.
-            list_display = ['action_checkbox'] + list(list_display)
+        list_display = ['action_checkbox'] + list(list_display)
 
         self.search_fields = search_fields
         ChangeList = self.get_changelist(request)
@@ -239,6 +250,8 @@ class LatexAdmin(admin.ModelAdmin):
         return render(request, 'latex_home.html', context)
 
 class RenderAdmin(admin.ModelAdmin):
+    """ Dummy class to render the CSV-download link
+    """
     def get_urls(self):
         return render_csv_url(self, RenderAdmin)
 

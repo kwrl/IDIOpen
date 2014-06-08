@@ -1,11 +1,12 @@
-""" to be used in the (modeladmin) view class
+""" to be used in the (modeladmin) view class -
+    the urls used here are special in that they override default
+    admin URLS (from modeladmin). This is to enable simple access from the
+    django admin interface
 """
 from django.conf.urls import url, patterns
 from django.contrib import admin
 
-from .views import  render_csv, latex_view
-
-
+from .views import  render_csv
 
 def render_csv_url(inst, class_super):
     urls = super(class_super, inst).get_urls()
@@ -30,5 +31,4 @@ def latex_url(inst, class_super):
          )
     return my_urls + urls
 
-# EO dsdsF
-
+# EOF

@@ -131,9 +131,9 @@ if MYSQL:
          'default': {
              'ENGINE'   : 'django.db.backends.mysql',
              'NAME' : 'gentleidi',
-             'USER' : 'gentle', #Added Windows support  
-         'PASSWORD' : 'tacosushi',
-         'HOST' : 'hv-6146.idi.ntnu.no',
+             'USER' : 'andesil', #Added Windows support  
+         'PASSWORD' : 'password',
+         'HOST' : 'localhost',
          'PORT' : '3306',
          }
     }

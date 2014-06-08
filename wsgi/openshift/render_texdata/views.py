@@ -4,25 +4,24 @@ Render tex/pdf/CSV for end users
 """
 # Some latex is sensitive to newlines, beware
 
-from django.shortcuts import render
-from django.http import HttpResponse
+from django.shortcuts               import render
+from django.http                    import HttpResponse
 
-import MySQLdb as mdb
-from collections import defaultdict
-from subprocess import Popen
-from shlex import split
-from os import path, makedirs, remove, listdir
+from collections                    import defaultdict
+from decimal                        import Decimal
+from shlex                          import split
+from os                             import path, makedirs, listdir
 import re, string
-import csv
-from zipfile import ZipFile
-from StringIO import StringIO
-from shutil import rmtree
-from string import Template
-from decimal import Decimal
+from shutil                         import rmtree
+from string                         import Template
+from StringIO                       import StringIO
+from subprocess                     import Popen
+from zipfile                        import ZipFile
 
-from openshift.helpFunctions.views import get_most_plausible_contest
-from openshift.contest.models import Team, Contest
+from openshift.helpFunctions.views  import get_most_plausible_contest
+from openshift.contest.models       import Team, Contest
 
+# Should be deprecated - Python ORM scales better
 SQL_FETCH_USERNAME_TEAM = \
 """
 SELECT T.name, U.email
@@ -33,13 +32,13 @@ ORDER BY T.id
 """
 FILENAME = "/tmp/outfile.csv"
 
-TEAM_PARSELINE = "TEAM".decode('utf-8')
-SPONSOR = "SPONSORALL".decode('utf-8')
-CON1 = "CONTESTANT1".decode('utf-8')
-CON2 = "CONTESTANT2".decode('utf-8')
-CON3 = "CONTESTANT3".decode('utf-8')
-CONTEST_LOGO = "CONTEST_LOGO".decode('utf-8')
-DEFAULT_EMPTY = r"""\ """.decode('utf-8')
+TEAM_PARSELINE = "TEAM"         .decode('utf-8')
+SPONSOR        = "SPONSORALL"   .decode('utf-8')
+CON1           = "CONTESTANT1"  .decode('utf-8')
+CON2           = "CONTESTANT2"  .decode('utf-8')
+CON3           = "CONTESTANT3"  .decode('utf-8')
+CONTEST_LOGO   = "CONTEST_LOGO" .decode('utf-8')
+DEFAULT_EMPTY  = r"""\ """      .decode('utf-8')
 
 SPONSOR_LATEX_PREAMBLE = r"""
 \usepackage{caption, subfig}
@@ -58,16 +57,18 @@ SPONSOR_IMAGE_PREFIX= r"""
 \begin{figure}[ht]
  \caption[]{\textbf{Sponsors}}
 """.decode('utf-8')
-
 SPONSOR_IMAGE_SUFFIX = r"""\end{figure}""".decode('utf-8')
 
 DIR_DEST = "/tmp/teams/".decode('utf-8')
 
 class LatexTemplate(Template):
+    """ Class used to easily find variables to replace, prefixed with ///
+    """
     delimiter = '///'
 
-
 def get_teamnames(teamlist):
+    """ From a queryset, retrieve a list of teamnames
+    """
     retList = []
     for team_pk in teamlist:
         team = Team.objects.get(pk=team_pk)
@@ -85,6 +86,7 @@ def get_team_contestant_dict2(teams):
     return team_members_dict
 
 def render_semicolonlist(team_list):
+    """ Given a list of team names, `
     retString = ""
     team_contestant_dict = get_team_contestant_dict2(team_list)
     for _, contestants in team_contestant_dict.iteritems():

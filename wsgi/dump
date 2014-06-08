@@ -1,0 +1,1257 @@
+-- MySQL dump 10.13  Distrib 5.5.35, for debian-linux-gnu (i686)
+--
+-- Host: localhost    Database: gentleidi
+-- ------------------------------------------------------
+-- Server version	5.5.35-0+wheezy1
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Table structure for table `article_article`
+--
+
+DROP TABLE IF EXISTS `article_article`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `article_article` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `title` varchar(200) COLLATE utf8_bin NOT NULL,
+  `created_at` datetime NOT NULL,
+  `contest_id` int(11) NOT NULL,
+  `text` longtext COLLATE utf8_bin NOT NULL,
+  `author_id` int(11) DEFAULT NULL,
+  `visible_article_list` tinyint(1) NOT NULL,
+  `url` varchar(200) COLLATE utf8_bin DEFAULT NULL,
+  `is_urgent` tinyint(1) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `url` (`url`),
+  KEY `article_article_28b54792` (`contest_id`),
+  KEY `article_article_e969df21` (`author_id`),
+  CONSTRAINT `author_id_refs_id_3f0a2a2f` FOREIGN KEY (`author_id`) REFERENCES `userregistration_customuser` (`id`),
+  CONSTRAINT `contest_id_refs_id_4ab83368` FOREIGN KEY (`contest_id`) REFERENCES `contest_contest` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `article_article`
+--
+
+LOCK TABLES `article_article` WRITE;
+/*!40000 ALTER TABLE `article_article` DISABLE KEYS */;
+/*!40000 ALTER TABLE `article_article` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `auth_group`
+--
+
+DROP TABLE IF EXISTS `auth_group`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `auth_group` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(80) COLLATE utf8_bin NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `name` (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `auth_group`
+--
+
+LOCK TABLES `auth_group` WRITE;
+/*!40000 ALTER TABLE `auth_group` DISABLE KEYS */;
+/*!40000 ALTER TABLE `auth_group` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `auth_group_permissions`
+--
+
+DROP TABLE IF EXISTS `auth_group_permissions`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `auth_group_permissions` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `group_id` int(11) NOT NULL,
+  `permission_id` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `group_id` (`group_id`,`permission_id`),
+  KEY `auth_group_permissions_5f412f9a` (`group_id`),
+  KEY `auth_group_permissions_83d7f98b` (`permission_id`),
+  CONSTRAINT `group_id_refs_id_f4b32aac` FOREIGN KEY (`group_id`) REFERENCES `auth_group` (`id`),
+  CONSTRAINT `permission_id_refs_id_6ba0f519` FOREIGN KEY (`permission_id`) REFERENCES `auth_permission` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `auth_group_permissions`
+--
+
+LOCK TABLES `auth_group_permissions` WRITE;
+/*!40000 ALTER TABLE `auth_group_permissions` DISABLE KEYS */;
+/*!40000 ALTER TABLE `auth_group_permissions` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `auth_permission`
+--
+
+DROP TABLE IF EXISTS `auth_permission`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `auth_permission` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) COLLATE utf8_bin NOT NULL,
+  `content_type_id` int(11) NOT NULL,
+  `codename` varchar(100) COLLATE utf8_bin NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `content_type_id` (`content_type_id`,`codename`),
+  KEY `auth_permission_37ef4eb4` (`content_type_id`),
+  CONSTRAINT `content_type_id_refs_id_d043b34a` FOREIGN KEY (`content_type_id`) REFERENCES `django_content_type` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=76 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `auth_permission`
+--
+
+LOCK TABLES `auth_permission` WRITE;
+/*!40000 ALTER TABLE `auth_permission` DISABLE KEYS */;
+INSERT INTO `auth_permission` VALUES (1,'Can add log entry',1,'add_logentry'),(2,'Can change log entry',1,'change_logentry'),(3,'Can delete log entry',1,'delete_logentry'),(4,'Can add permission',2,'add_permission'),(5,'Can change permission',2,'change_permission'),(6,'Can delete permission',2,'delete_permission'),(7,'Can add group',3,'add_group'),(8,'Can change group',3,'change_group'),(9,'Can delete group',3,'delete_group'),(10,'Can add content type',4,'add_contenttype'),(11,'Can change content type',4,'change_contenttype'),(12,'Can delete content type',4,'delete_contenttype'),(13,'Can add session',5,'add_session'),(14,'Can change session',5,'change_session'),(15,'Can delete session',5,'delete_session'),(16,'Can add migration history',6,'add_migrationhistory'),(17,'Can change migration history',6,'change_migrationhistory'),(18,'Can delete migration history',6,'delete_migrationhistory'),(19,'Can add contact information',7,'add_contactinformation'),(20,'Can change contact information',7,'change_contactinformation'),(21,'Can delete contact information',7,'delete_contactinformation'),(22,'Can add contest',8,'add_contest'),(23,'Can change contest',8,'change_contest'),(24,'Can delete contest',8,'delete_contest'),(25,'Can add link',9,'add_link'),(26,'Can change link',9,'change_link'),(27,'Can delete link',9,'delete_link'),(28,'Can add team',10,'add_team'),(29,'Can change team',10,'change_team'),(30,'Can delete team',10,'delete_team'),(31,'Can add invite',11,'add_invite'),(32,'Can change invite',11,'change_invite'),(33,'Can delete invite',11,'delete_invite'),(34,'Can add sponsor',12,'add_sponsor'),(35,'Can change sponsor',12,'change_sponsor'),(36,'Can delete sponsor',12,'delete_sponsor'),(37,'Can add article',13,'add_article'),(38,'Can change article',13,'change_article'),(39,'Can delete article',13,'delete_article'),(40,'Can add user',14,'add_customuser'),(41,'Can change user',14,'change_customuser'),(42,'Can delete user',14,'delete_customuser'),(43,'Can add email address change request',15,'add_changeemail'),(44,'Can change email address change request',15,'change_changeemail'),(45,'Can delete email address change request',15,'delete_changeemail'),(46,'Can add file extension',16,'add_fileextension'),(47,'Can change file extension',16,'change_fileextension'),(48,'Can delete file extension',16,'delete_fileextension'),(49,'Can add compiler profile',17,'add_compilerprofile'),(50,'Can change compiler profile',17,'change_compilerprofile'),(51,'Can delete compiler profile',17,'delete_compilerprofile'),(52,'Can add problem',18,'add_problem'),(53,'Can change problem',18,'change_problem'),(54,'Can delete problem',18,'delete_problem'),(55,'Can add resource',19,'add_resource'),(56,'Can change resource',19,'change_resource'),(57,'Can delete resource',19,'delete_resource'),(58,'Can add test case',20,'add_testcase'),(59,'Can change test case',20,'change_testcase'),(60,'Can delete test case',20,'delete_testcase'),(61,'Can add submission',21,'add_submission'),(62,'Can change submission',21,'change_submission'),(63,'Can delete submission',21,'delete_submission'),(64,'Can add message',22,'add_message'),(65,'Can change message',22,'change_message'),(66,'Can delete message',22,'delete_message'),(67,'Can add message answer',23,'add_messageanswer'),(68,'Can change message answer',23,'change_messageanswer'),(69,'Can delete message answer',23,'delete_messageanswer'),(70,'Can add execution log entry',24,'add_executionlogentry'),(71,'Can change execution log entry',24,'change_executionlogentry'),(72,'Can delete execution log entry',24,'delete_executionlogentry'),(73,'Can add execution node',25,'add_executionnode'),(74,'Can change execution node',25,'change_executionnode'),(75,'Can delete execution node',25,'delete_executionnode');
+/*!40000 ALTER TABLE `auth_permission` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `celery_taskmeta`
+--
+
+DROP TABLE IF EXISTS `celery_taskmeta`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `celery_taskmeta` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `task_id` varchar(255) NOT NULL,
+  `status` varchar(50) NOT NULL,
+  `result` longtext,
+  `date_done` datetime NOT NULL,
+  `traceback` longtext,
+  `hidden` tinyint(1) NOT NULL,
+  `meta` longtext,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `task_id` (`task_id`),
+  KEY `celery_taskmeta_2ff6b945` (`hidden`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `celery_taskmeta`
+--
+
+LOCK TABLES `celery_taskmeta` WRITE;
+/*!40000 ALTER TABLE `celery_taskmeta` DISABLE KEYS */;
+/*!40000 ALTER TABLE `celery_taskmeta` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `celery_tasksetmeta`
+--
+
+DROP TABLE IF EXISTS `celery_tasksetmeta`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `celery_tasksetmeta` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `taskset_id` varchar(255) NOT NULL,
+  `result` longtext NOT NULL,
+  `date_done` datetime NOT NULL,
+  `hidden` tinyint(1) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `taskset_id` (`taskset_id`),
+  KEY `celery_tasksetmeta_2ff6b945` (`hidden`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `celery_tasksetmeta`
+--
+
+LOCK TABLES `celery_tasksetmeta` WRITE;
+/*!40000 ALTER TABLE `celery_tasksetmeta` DISABLE KEYS */;
+/*!40000 ALTER TABLE `celery_tasksetmeta` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `changeemail_changeemail`
+--
+
+DROP TABLE IF EXISTS `changeemail_changeemail`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `changeemail_changeemail` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `new_email` varchar(75) COLLATE utf8_bin NOT NULL,
+  `created_date` datetime NOT NULL,
+  `refuser_id` int(11) NOT NULL,
+  `activation_key` varchar(40) COLLATE utf8_bin NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `activation_key` (`activation_key`),
+  KEY `changeemail_changeemail_e88337db` (`refuser_id`),
+  CONSTRAINT `refuser_id_refs_id_64a779f8` FOREIGN KEY (`refuser_id`) REFERENCES `userregistration_customuser` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `changeemail_changeemail`
+--
+
+LOCK TABLES `changeemail_changeemail` WRITE;
+/*!40000 ALTER TABLE `changeemail_changeemail` DISABLE KEYS */;
+/*!40000 ALTER TABLE `changeemail_changeemail` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `clarification_message`
+--
+
+DROP TABLE IF EXISTS `clarification_message`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `clarification_message` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `subject` varchar(120) COLLATE utf8_bin NOT NULL,
+  `body` longtext COLLATE utf8_bin NOT NULL,
+  `sender_id` int(11) NOT NULL,
+  `sent_at` datetime DEFAULT NULL,
+  `contest_id` int(11) NOT NULL,
+  `answered` tinyint(1) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `clarification_message_0a681a64` (`sender_id`),
+  KEY `clarification_message_28b54792` (`contest_id`),
+  CONSTRAINT `contest_id_refs_id_913fa518` FOREIGN KEY (`contest_id`) REFERENCES `contest_contest` (`id`),
+  CONSTRAINT `sender_id_refs_id_84ed1c3a` FOREIGN KEY (`sender_id`) REFERENCES `contest_team` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `clarification_message`
+--
+
+LOCK TABLES `clarification_message` WRITE;
+/*!40000 ALTER TABLE `clarification_message` DISABLE KEYS */;
+INSERT INTO `clarification_message` VALUES (1,'Problem 3','Why is problem 3 so hard?',7,'2014-04-18 21:32:13',1,0),(2,'dfgdfgdfgdfg','dfgdffdgdfg',6,'2014-04-19 01:16:55',1,0);
+/*!40000 ALTER TABLE `clarification_message` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `clarification_messageanswer`
+--
+
+DROP TABLE IF EXISTS `clarification_messageanswer`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `clarification_messageanswer` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `subject` varchar(120) NOT NULL,
+  `body` longtext NOT NULL,
+  `message_id` int(11) DEFAULT NULL,
+  `contest_id` int(11) NOT NULL,
+  `answered_by_id` int(11) DEFAULT NULL,
+  `answered_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `clarification_messageanswer_d4a47933` (`message_id`),
+  KEY `clarification_messageanswer_28b54792` (`contest_id`),
+  KEY `clarification_messageanswer_69ddb941` (`answered_by_id`),
+  CONSTRAINT `answered_by_id_refs_id_30c45c9d` FOREIGN KEY (`answered_by_id`) REFERENCES `userregistration_customuser` (`id`),
+  CONSTRAINT `contest_id_refs_id_0f5f84a3` FOREIGN KEY (`contest_id`) REFERENCES `contest_contest` (`id`),
+  CONSTRAINT `message_id_refs_id_2227255d` FOREIGN KEY (`message_id`) REFERENCES `clarification_message` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `clarification_messageanswer`
+--
+
+LOCK TABLES `clarification_messageanswer` WRITE;
+/*!40000 ALTER TABLE `clarification_messageanswer` DISABLE KEYS */;
+/*!40000 ALTER TABLE `clarification_messageanswer` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `contest_contactinformation`
+--
+
+DROP TABLE IF EXISTS `contest_contactinformation`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `contest_contactinformation` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `email` varchar(75) COLLATE utf8_bin NOT NULL,
+  `name` varchar(30) COLLATE utf8_bin NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `contest_contactinformation`
+--
+
+LOCK TABLES `contest_contactinformation` WRITE;
+/*!40000 ALTER TABLE `contest_contactinformation` DISABLE KEYS */;
+INSERT INTO `contest_contactinformation` VALUES (1,'cage@cage.com','NIck Cage');
+/*!40000 ALTER TABLE `contest_contactinformation` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `contest_contest`
+--
+
+DROP TABLE IF EXISTS `contest_contest`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `contest_contest` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `title` varchar(200) COLLATE utf8_bin NOT NULL,
+  `url` varchar(20) COLLATE utf8_bin NOT NULL,
+  `start_date` datetime NOT NULL,
+  `end_date` datetime NOT NULL,
+  `publish_date` datetime NOT NULL,
+  `teamreg_end_date` datetime NOT NULL,
+  `css` varchar(200) COLLATE utf8_bin DEFAULT NULL,
+  `logo` varchar(200) COLLATE utf8_bin DEFAULT NULL,
+  `penalty_constant` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `url` (`url`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `contest_contest`
+--
+
+LOCK TABLES `contest_contest` WRITE;
+/*!40000 ALTER TABLE `contest_contest` DISABLE KEYS */;
+INSERT INTO `contest_contest` VALUES (1,'IDI Open 2014','open14','2014-04-18 09:00:00','2014-04-25 15:00:00','2014-04-18 09:00:00','2014-04-19 21:00:00','','',0);
+/*!40000 ALTER TABLE `contest_contest` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `contest_contest_contact_infos`
+--
+
+DROP TABLE IF EXISTS `contest_contest_contact_infos`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `contest_contest_contact_infos` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `contest_id` int(11) NOT NULL,
+  `contactinformation_id` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `contest_contest_contact_infos_contest_id_410f3d11fbcfc2ba_uniq` (`contest_id`,`contactinformation_id`),
+  KEY `contest_contest_contact_infos_28b54792` (`contest_id`),
+  KEY `contest_contest_contact_infos_dd7dc90a` (`contactinformation_id`),
+  CONSTRAINT `contactinformation_id_refs_id_b179aa99` FOREIGN KEY (`contactinformation_id`) REFERENCES `contest_contactinformation` (`id`),
+  CONSTRAINT `contest_id_refs_id_a68a760d` FOREIGN KEY (`contest_id`) REFERENCES `contest_contest` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `contest_contest_contact_infos`
+--
+
+LOCK TABLES `contest_contest_contact_infos` WRITE;
+/*!40000 ALTER TABLE `contest_contest_contact_infos` DISABLE KEYS */;
+INSERT INTO `contest_contest_contact_infos` VALUES (3,1,1);
+/*!40000 ALTER TABLE `contest_contest_contact_infos` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `contest_contest_links`
+--
+
+DROP TABLE IF EXISTS `contest_contest_links`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `contest_contest_links` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `contest_id` int(11) NOT NULL,
+  `link_id` int(11) NOT NULL,
+  `sort_value` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `contest_contest_links_contest_id_618289e860f8d721_uniq` (`contest_id`,`link_id`),
+  KEY `contest_contest_links_28b54792` (`contest_id`),
+  KEY `contest_contest_links_5a67626e` (`link_id`),
+  CONSTRAINT `contest_id_refs_id_f9a74708` FOREIGN KEY (`contest_id`) REFERENCES `contest_contest` (`id`),
+  CONSTRAINT `link_id_refs_id_f6b77406` FOREIGN KEY (`link_id`) REFERENCES `contest_link` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `contest_contest_links`
+--
+
+LOCK TABLES `contest_contest_links` WRITE;
+/*!40000 ALTER TABLE `contest_contest_links` DISABLE KEYS */;
+INSERT INTO `contest_contest_links` VALUES (10,1,1,0),(11,1,2,1),(12,1,3,2),(13,1,5,3),(14,1,6,4);
+/*!40000 ALTER TABLE `contest_contest_links` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `contest_contest_sponsors`
+--
+
+DROP TABLE IF EXISTS `contest_contest_sponsors`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `contest_contest_sponsors` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `contest_id` int(11) NOT NULL,
+  `sponsor_id` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `contest_contest_sponsors_contest_id_6aa1f3863cdef257_uniq` (`contest_id`,`sponsor_id`),
+  KEY `contest_contest_sponsors_28b54792` (`contest_id`),
+  KEY `contest_contest_sponsors_4d683c57` (`sponsor_id`),
+  CONSTRAINT `contest_id_refs_id_467012d0` FOREIGN KEY (`contest_id`) REFERENCES `contest_contest` (`id`),
+  CONSTRAINT `sponsor_id_refs_id_f3a49ba6` FOREIGN KEY (`sponsor_id`) REFERENCES `contest_sponsor` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `contest_contest_sponsors`
+--
+
+LOCK TABLES `contest_contest_sponsors` WRITE;
+/*!40000 ALTER TABLE `contest_contest_sponsors` DISABLE KEYS */;
+/*!40000 ALTER TABLE `contest_contest_sponsors` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `contest_invite`
+--
+
+DROP TABLE IF EXISTS `contest_invite`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `contest_invite` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `email` varchar(75) COLLATE utf8_bin NOT NULL,
+  `team_id` int(11) NOT NULL,
+  `is_member` tinyint(1) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `contest_invite_95e8aaa1` (`team_id`),
+  CONSTRAINT `team_id_refs_id_34105c24` FOREIGN KEY (`team_id`) REFERENCES `contest_team` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `contest_invite`
+--
+
+LOCK TABLES `contest_invite` WRITE;
+/*!40000 ALTER TABLE `contest_invite` DISABLE KEYS */;
+/*!40000 ALTER TABLE `contest_invite` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `contest_link`
+--
+
+DROP TABLE IF EXISTS `contest_link`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `contest_link` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `text` varchar(30) COLLATE utf8_bin NOT NULL,
+  `contestUrl` tinyint(1) NOT NULL,
+  `url` varchar(50) COLLATE utf8_bin NOT NULL,
+  `separator` tinyint(1) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `contest_link`
+--
+
+LOCK TABLES `contest_link` WRITE;
+/*!40000 ALTER TABLE `contest_link` DISABLE KEYS */;
+INSERT INTO `contest_link` VALUES (1,'Admin',0,'/admin/',0),(2,'Problems',1,'/problem/',0),(3,'Register',1,'/accounts/register/',0),(4,'Register team',1,'/team/register/',0),(5,'Team Profile',1,'/team/',0),(6,'Registered teams',1,'/teams/',0);
+/*!40000 ALTER TABLE `contest_link` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `contest_sponsor`
+--
+
+DROP TABLE IF EXISTS `contest_sponsor`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `contest_sponsor` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) COLLATE utf8_bin NOT NULL,
+  `url` varchar(200) COLLATE utf8_bin NOT NULL,
+  `image` varchar(200) COLLATE utf8_bin NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `contest_sponsor`
+--
+
+LOCK TABLES `contest_sponsor` WRITE;
+/*!40000 ALTER TABLE `contest_sponsor` DISABLE KEYS */;
+/*!40000 ALTER TABLE `contest_sponsor` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `contest_team`
+--
+
+DROP TABLE IF EXISTS `contest_team`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `contest_team` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) COLLATE utf8_bin NOT NULL,
+  `onsite` tinyint(1) NOT NULL,
+  `leader_id` int(11) DEFAULT NULL,
+  `contest_id` int(11) DEFAULT NULL,
+  `offsite` varchar(30) COLLATE utf8_bin NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `contest_team_3a82c675` (`leader_id`),
+  KEY `contest_team_28b54792` (`contest_id`),
+  CONSTRAINT `contest_id_refs_id_9ec3dfa2` FOREIGN KEY (`contest_id`) REFERENCES `contest_contest` (`id`),
+  CONSTRAINT `leader_id_refs_id_f8af1b27` FOREIGN KEY (`leader_id`) REFERENCES `userregistration_customuser` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `contest_team`
+--
+
+LOCK TABLES `contest_team` WRITE;
+/*!40000 ALTER TABLE `contest_team` DISABLE KEYS */;
+INSERT INTO `contest_team` VALUES (1,'NoRestForTheSwaggers',1,3,1,''),(2,'Awesome TEAM',1,1,1,''),(6,'Team test',1,2,1,''),(7,'æøå',0,4,1,'hjemme'),(8,'h̲̠̟̯͉̖̬̒̐ g̖̳̞̫̹͒͐̌ͤ̊͊ọ̡͓͕̳̣̦̘̖̃͛̏̅͆̈́́͞d̒͊ͪ̄̋ͯ̇͠',1,7,1,''),(9,'(•_•) ( •_•)>⌐■-■  (⌐■_■)',0,8,1,'ด็็็็็้้้้้็็็็้้้้้็็็็็้้้้้'),(10,'dfgdfgdfgdfgdfg',0,6,1,'vcvchvch');
+/*!40000 ALTER TABLE `contest_team` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `contest_team_members`
+--
+
+DROP TABLE IF EXISTS `contest_team_members`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `contest_team_members` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `team_id` int(11) NOT NULL,
+  `customuser_id` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `contest_team_members_team_id_5d13d9d13167b121_uniq` (`team_id`,`customuser_id`),
+  KEY `contest_team_members_95e8aaa1` (`team_id`),
+  KEY `contest_team_members_a110e492` (`customuser_id`),
+  CONSTRAINT `customuser_id_refs_id_bce03469` FOREIGN KEY (`customuser_id`) REFERENCES `userregistration_customuser` (`id`),
+  CONSTRAINT `team_id_refs_id_732af897` FOREIGN KEY (`team_id`) REFERENCES `contest_team` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `contest_team_members`
+--
+
+LOCK TABLES `contest_team_members` WRITE;
+/*!40000 ALTER TABLE `contest_team_members` DISABLE KEYS */;
+INSERT INTO `contest_team_members` VALUES (1,1,3),(2,2,1),(3,6,2),(4,7,4),(5,8,7),(6,9,8),(7,10,6);
+/*!40000 ALTER TABLE `contest_team_members` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `django_admin_log`
+--
+
+DROP TABLE IF EXISTS `django_admin_log`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `django_admin_log` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `action_time` datetime NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `content_type_id` int(11) DEFAULT NULL,
+  `object_id` longtext COLLATE utf8_bin,
+  `object_repr` varchar(200) COLLATE utf8_bin NOT NULL,
+  `action_flag` smallint(5) unsigned NOT NULL,
+  `change_message` longtext COLLATE utf8_bin NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `django_admin_log_6340c63c` (`user_id`),
+  KEY `django_admin_log_37ef4eb4` (`content_type_id`),
+  CONSTRAINT `content_type_id_refs_id_93d2d1f8` FOREIGN KEY (`content_type_id`) REFERENCES `django_content_type` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=184 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `django_admin_log`
+--
+
+LOCK TABLES `django_admin_log` WRITE;
+/*!40000 ALTER TABLE `django_admin_log` DISABLE KEYS */;
+INSERT INTO `django_admin_log` VALUES (1,'2014-03-17 12:26:09',1,7,'1','ContactInformation object',1,''),(2,'2014-03-17 12:26:31',1,11,'1','Admin',1,''),(3,'2014-03-17 12:26:51',1,10,'1','IDI Open 2014',1,''),(4,'2014-03-17 12:27:40',1,11,'2','Register',1,''),(5,'2014-03-17 12:27:53',1,11,'3','Register team',1,''),(6,'2014-03-17 12:28:10',1,11,'4','Team',1,''),(7,'2014-03-17 12:28:27',1,10,'1','IDI Open 2014',2,'Changed links.'),(8,'2014-03-17 12:28:41',1,10,'1','IDI Open 2014',2,'Changed links.'),(9,'2014-03-17 12:29:19',1,10,'1','IDI Open 2014',2,'Changed links.'),(10,'2014-03-17 12:34:09',1,10,'1','IDI Open 2014',2,'Changed links.'),(11,'2014-03-17 12:36:32',1,10,'1','IDI Open 2014',2,'Changed links.'),(12,'2014-03-17 12:41:39',1,10,'1','IDI Open 2014',2,'Changed links.'),(13,'2014-03-17 12:45:54',1,10,'1','IDI Open 2014',2,'Changed links.'),(14,'2014-03-17 12:46:11',1,11,'5','----------------------',1,''),(15,'2014-03-17 12:46:18',1,10,'1','IDI Open 2014',2,'Changed links.'),(16,'2014-03-17 13:17:35',1,12,'1','Microsoft',1,''),(17,'2014-03-17 13:18:00',1,12,'2','ARM',1,''),(18,'2014-03-17 13:18:03',1,8,'1','IDI Open 2014',2,'Changed sponsors.'),(19,'2014-04-18 09:21:18',1,7,'1','NIck Cage',1,''),(20,'2014-04-18 09:22:45',1,9,'1','Admin',1,''),(21,'2014-04-18 09:23:59',1,9,'2','Problems',1,''),(22,'2014-04-18 09:24:28',1,9,'3','Register',1,''),(23,'2014-04-18 09:24:47',1,9,'4','Register team',1,''),(24,'2014-04-18 09:26:01',1,9,'5','Your Team',1,''),(25,'2014-04-18 09:27:06',1,8,'1','IDI Open 2014',1,''),(26,'2014-04-18 09:27:30',1,8,'1','IDI Open 2014',2,'Changed links.'),(27,'2014-04-18 09:31:29',1,14,'2','idi@open.no',1,''),(28,'2014-04-18 09:32:07',1,14,'3','haakongk@stud.ntnu.no',2,'Changed is_active.'),(29,'2014-04-18 09:37:19',1,14,'3','haakongk@stud.ntnu.no',2,'Changed is_staff.'),(30,'2014-04-18 09:37:29',1,14,'3','haakongk@stud.ntnu.no',2,'Changed is_superuser.'),(31,'2014-04-18 09:38:49',3,16,'1','java',1,''),(32,'2014-04-18 09:43:13',3,17,'1','Java',1,''),(33,'2014-04-18 09:44:54',3,18,'1','Angry',1,''),(34,'2014-04-18 09:45:00',3,19,'1','Angry Java',1,''),(35,'2014-04-18 09:45:28',1,20,'1','Angry',1,''),(36,'2014-04-18 12:00:42',1,19,'1','Angry Java',2,'Changed max_processes.'),(37,'2014-04-18 12:37:09',3,16,'2','c',1,''),(38,'2014-04-18 12:37:45',3,17,'2','C',1,''),(39,'2014-04-18 12:37:52',1,18,'1','Angry Grammar Nazi',2,'Changed title and description.'),(40,'2014-04-18 12:38:02',3,16,'3','cc',1,''),(41,'2014-04-18 12:38:06',3,16,'4','cpp',1,''),(42,'2014-04-18 12:38:46',3,17,'3','C++',1,''),(43,'2014-04-18 12:38:54',1,20,'1','Angry',2,'Changed inputDescription and outputDescription.'),(44,'2014-04-18 12:40:13',3,19,'2','Angry Grammar Nazi C',1,''),(45,'2014-04-18 12:40:31',3,19,'3','Angry Grammar Nazi C++',1,''),(46,'2014-04-18 12:40:44',3,19,'3','Angry Grammar Nazi C++',2,'Changed max_program_timeout.'),(47,'2014-04-18 12:43:40',1,18,'6','Neurotic Network',1,''),(48,'2014-04-18 12:44:33',3,18,'7','Booking',1,''),(49,'2014-04-18 12:44:40',1,18,'8','Negative People in Da House (Easy)',1,''),(50,'2014-04-18 12:45:10',3,19,'4','Booking Java',1,''),(51,'2014-04-18 12:45:35',3,19,'5','Booking C',1,''),(52,'2014-04-18 12:45:45',3,19,'6','Booking C++',1,''),(53,'2014-04-18 12:45:57',3,19,'4','Booking Java',2,'Changed max_program_timeout.'),(54,'2014-04-18 12:47:13',3,18,'11','Traveling Cellsperson',1,''),(55,'2014-04-18 12:47:45',3,19,'7','Traveling Cellsperson Java',1,''),(56,'2014-04-18 12:48:00',3,19,'8','Traveling Cellsperson C',1,''),(57,'2014-04-18 12:48:11',3,19,'9','Booking C++',1,''),(58,'2014-04-18 12:48:20',3,19,'9','Traveling Cellsperson C++',2,'Changed problem.'),(59,'2014-04-18 12:49:07',1,18,'12','Ruben spawns (Easy)',1,''),(60,'2014-04-18 12:49:50',1,18,'13','Space Travel',1,''),(61,'2014-04-18 12:52:11',3,18,'14','CSI P15',1,''),(62,'2014-04-18 12:52:25',3,19,'10','CSI P15 Java',1,''),(63,'2014-04-18 12:52:37',3,19,'11','CSI P15 C',1,''),(64,'2014-04-18 12:52:47',1,20,'2','Negative',1,''),(65,'2014-04-18 12:52:48',3,19,'12','CSI P15 C++',1,''),(66,'2014-04-18 12:52:55',3,19,'11','CSI P15 C',2,'Changed max_program_timeout.'),(67,'2014-04-18 12:53:08',1,20,'2','Negative',2,'Changed inputDescription and outputDescription.'),(68,'2014-04-18 12:53:08',3,19,'11','CSI P15 C',2,'Changed max_compile_time.'),(69,'2014-04-18 12:56:28',3,18,'17','Dimensions',1,''),(70,'2014-04-18 12:56:46',3,19,'13','Dimensions Java',1,''),(71,'2014-04-18 12:56:56',3,19,'14','Dimensions C',1,''),(72,'2014-04-18 12:57:13',3,19,'15','Dimensions C++',1,''),(73,'2014-04-18 12:58:02',3,18,'18','Kings',1,''),(74,'2014-04-18 12:58:12',3,19,'16','Kings Java',1,''),(75,'2014-04-18 12:58:21',3,19,'17','Kings C',1,''),(76,'2014-04-18 12:58:36',3,19,'18','Kings C++',1,''),(77,'2014-04-18 12:59:33',1,20,'3','Neurotic',1,''),(78,'2014-04-18 13:01:33',1,20,'4','Space',1,''),(79,'2014-04-18 13:02:00',1,20,'5','Spawns',1,''),(80,'2014-04-18 13:02:31',1,20,'6','Booking',1,''),(81,'2014-04-18 13:02:54',3,19,'19','Negative People in Da House (Easy) Java',1,''),(82,'2014-04-18 13:03:01',1,20,'7','Cellsman',1,''),(83,'2014-04-18 13:03:02',3,19,'20','Negative People in Da House (Easy) C',1,''),(84,'2014-04-18 13:03:21',3,19,'21','Negative People in Da House (Easy) C++',1,''),(85,'2014-04-18 13:03:39',3,19,'22','Neurotic Network Java',1,''),(86,'2014-04-18 13:03:49',3,19,'23','Neurotic Network C',1,''),(87,'2014-04-18 13:03:59',3,19,'24','Neurotic Network C++',1,''),(88,'2014-04-18 13:04:12',3,19,'25','Space Travel Java',1,''),(89,'2014-04-18 13:04:25',3,19,'26','Neurotic Network C',1,''),(90,'2014-04-18 13:04:37',3,19,'27','Neurotic Network C++',1,''),(91,'2014-04-18 13:04:56',3,19,'26','Space Travel C',2,'Changed problem.'),(92,'2014-04-18 13:05:05',3,19,'27','Space Travel C++',2,'Changed problem.'),(93,'2014-04-18 13:05:21',3,19,'28','Ruben spawns (Easy) Java',1,''),(94,'2014-04-18 13:05:28',3,19,'29','Ruben spawns (Easy) C',1,''),(95,'2014-04-18 13:05:43',3,19,'30','Ruben spawns (Easy) C++',1,''),(96,'2014-04-18 13:06:05',1,20,'8','CSI',1,''),(97,'2014-04-18 13:06:33',1,20,'9','Dimensions',1,''),(98,'2014-04-18 13:10:44',1,20,'10','Kings',1,''),(99,'2014-04-18 13:26:14',1,17,'1','Java',2,'Changed compile and run.'),(100,'2014-04-18 13:41:54',3,17,'1','Java',2,'Changed run.'),(101,'2014-04-18 13:46:32',3,17,'1','Java',2,'Changed run.'),(102,'2014-04-18 13:47:28',3,17,'1','Java',2,'Changed run.'),(103,'2014-04-18 14:06:03',3,17,'1','Java',2,'Changed run.'),(104,'2014-04-18 14:12:20',3,17,'4','Derplol',1,''),(105,'2014-04-18 15:52:41',3,17,'4','Derplol',2,'Changed compile and run.'),(106,'2014-04-18 15:59:31',1,19,'28','Ruben spawns (Easy) Java',2,'Changed max_processes.'),(107,'2014-04-18 16:02:09',3,17,'3','C++',2,'Changed compile.'),(108,'2014-04-18 16:10:24',3,17,'4','Derplol',2,'Changed compile and run.'),(109,'2014-04-18 16:29:32',3,17,'1','Java',2,'Changed compile and run.'),(110,'2014-04-18 17:52:54',3,17,'3','C++',2,'Changed compile.'),(111,'2014-04-18 17:55:33',3,17,'3','C++',2,'Changed compile.'),(112,'2014-04-18 18:00:27',3,18,'19','Odds',1,''),(113,'2014-04-18 18:00:54',3,19,'31','Odds Java',1,''),(114,'2014-04-18 18:01:02',3,19,'32','Odds C',1,''),(115,'2014-04-18 18:01:10',1,20,'11','Odds',1,''),(116,'2014-04-18 18:01:10',1,20,'12','Odds',1,''),(117,'2014-04-18 18:01:15',3,19,'33','Odds C++',1,''),(118,'2014-04-18 18:01:25',1,20,'12','Odds',3,''),(119,'2014-04-18 18:06:06',3,17,'2','C',2,'Changed compile.'),(120,'2014-04-18 18:28:33',3,18,'20','Squares',1,''),(121,'2014-04-18 18:29:08',1,20,'13','Square',1,''),(122,'2014-04-18 18:29:24',3,19,'34','Squares C',1,''),(123,'2014-04-18 18:59:36',3,19,'2','Angry Grammar Nazi C',3,''),(124,'2014-04-18 19:00:25',3,19,'3','Angry Grammar Nazi C++',3,''),(125,'2014-04-18 19:01:34',3,19,'35','Angry Grammar Nazi C',1,''),(126,'2014-04-18 19:14:17',3,19,'36','Angry Grammar Nazi C++',1,''),(127,'2014-04-18 21:07:11',3,14,'4','tinolazreg@gmail.com',2,'Changed nickname.'),(128,'2014-04-18 21:08:07',3,17,'4','Derplol',3,''),(129,'2014-04-18 21:12:35',2,14,'6','a@a.no',1,''),(130,'2014-04-18 21:12:40',2,14,'6','a@a.no',2,'No fields changed.'),(131,'2014-04-18 21:12:50',2,14,'7','b@b.no',1,''),(132,'2014-04-18 21:12:53',2,14,'7','b@b.no',2,'No fields changed.'),(133,'2014-04-18 21:13:00',2,14,'8','c@c.no',1,''),(134,'2014-04-18 21:13:04',2,14,'8','c@c.no',2,'No fields changed.'),(135,'2014-04-18 21:13:36',2,14,'9','d@d.no',1,''),(136,'2014-04-18 21:13:39',2,14,'9','d@d.no',2,'No fields changed.'),(137,'2014-04-18 21:13:54',2,14,'10','e@e.no',1,''),(138,'2014-04-18 21:13:57',2,14,'10','e@e.no',2,'No fields changed.'),(139,'2014-04-18 21:14:07',2,14,'11','f@f.no',1,''),(140,'2014-04-18 21:14:09',2,14,'11','f@f.no',2,'No fields changed.'),(141,'2014-04-18 21:14:21',2,14,'12','g@g.no',1,''),(142,'2014-04-18 21:14:24',2,14,'12','g@g.no',2,'No fields changed.'),(143,'2014-04-18 21:14:34',2,14,'13','h@h.no',1,''),(144,'2014-04-18 21:14:37',2,14,'13','h@h.no',2,'No fields changed.'),(145,'2014-04-18 21:14:45',2,14,'14','i@i.no',1,''),(146,'2014-04-18 21:14:49',2,14,'14','i@i.no',2,'No fields changed.'),(147,'2014-04-18 21:15:35',2,14,'15','j@j.no',1,''),(148,'2014-04-18 21:15:37',2,14,'15','j@j.no',2,'No fields changed.'),(149,'2014-04-18 21:15:46',2,14,'16','k@k.no',1,''),(150,'2014-04-18 21:15:53',2,14,'16','k@k.no',2,'No fields changed.'),(151,'2014-04-18 21:16:03',2,14,'17','l@l.no',1,''),(152,'2014-04-18 21:16:05',2,14,'17','l@l.no',2,'No fields changed.'),(153,'2014-04-18 21:16:27',2,14,'18','m@m.no',1,''),(154,'2014-04-18 21:16:30',2,14,'18','m@m.no',2,'No fields changed.'),(155,'2014-04-18 21:16:51',2,14,'19','n@n.no',1,''),(156,'2014-04-18 21:16:53',2,14,'19','n@n.no',2,'No fields changed.'),(157,'2014-04-18 21:17:00',2,14,'20','o@o.no',1,''),(158,'2014-04-18 21:17:02',2,14,'20','o@o.no',2,'No fields changed.'),(159,'2014-04-18 21:17:15',2,14,'21','p@p.no',1,''),(160,'2014-04-18 21:17:17',2,14,'21','p@p.no',2,'No fields changed.'),(161,'2014-04-18 21:17:27',2,14,'22','q@q.no',1,''),(162,'2014-04-18 21:17:30',2,14,'22','q@q.no',2,'No fields changed.'),(163,'2014-04-18 21:17:50',2,14,'23','r@r.no',1,''),(164,'2014-04-18 21:17:54',2,14,'23','r@r.no',2,'No fields changed.'),(165,'2014-04-18 21:18:05',2,14,'24','s@s.no',1,''),(166,'2014-04-18 21:18:08',2,14,'24','s@s.no',2,'No fields changed.'),(167,'2014-04-18 21:18:19',2,14,'25','t@t.no',1,''),(168,'2014-04-18 21:18:21',2,14,'25','t@t.no',2,'No fields changed.'),(169,'2014-04-18 21:18:31',2,14,'26','u@u.no',1,''),(170,'2014-04-18 21:18:35',2,14,'26','u@u.no',2,'No fields changed.'),(171,'2014-04-18 21:18:42',2,14,'27','v@v.no',1,''),(172,'2014-04-18 21:18:47',2,14,'27','v@v.no',2,'No fields changed.'),(173,'2014-04-18 21:19:00',2,14,'28','w@w.no',1,''),(174,'2014-04-18 21:19:03',2,14,'28','w@w.no',2,'No fields changed.'),(175,'2014-04-18 21:19:17',2,14,'29','x@x.no',1,''),(176,'2014-04-18 21:19:20',2,14,'29','x@x.no',2,'No fields changed.'),(177,'2014-04-18 21:19:30',2,14,'30','y@y.no',1,''),(178,'2014-04-18 21:19:32',2,14,'30','y@y.no',2,'No fields changed.'),(179,'2014-04-18 21:19:48',2,14,'31','z@z.no',1,''),(180,'2014-04-18 21:19:51',2,14,'31','z@z.no',2,'No fields changed.'),(181,'2014-04-18 21:26:38',2,9,'6','Registered teams',1,''),(182,'2014-04-18 21:27:00',2,8,'1','IDI Open 2014',2,'Changed links.'),(183,'2014-04-18 21:34:39',2,9,'5','Team Profile',2,'Changed text.');
+/*!40000 ALTER TABLE `django_admin_log` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `django_content_type`
+--
+
+DROP TABLE IF EXISTS `django_content_type`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `django_content_type` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) COLLATE utf8_bin NOT NULL,
+  `app_label` varchar(100) COLLATE utf8_bin NOT NULL,
+  `model` varchar(100) COLLATE utf8_bin NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `app_label` (`app_label`,`model`)
+) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `django_content_type`
+--
+
+LOCK TABLES `django_content_type` WRITE;
+/*!40000 ALTER TABLE `django_content_type` DISABLE KEYS */;
+INSERT INTO `django_content_type` VALUES (1,'log entry','admin','logentry'),(2,'permission','auth','permission'),(3,'group','auth','group'),(4,'content type','contenttypes','contenttype'),(5,'session','sessions','session'),(6,'migration history','south','migrationhistory'),(7,'contact information','contest','contactinformation'),(8,'contest','contest','contest'),(9,'link','contest','link'),(10,'team','contest','team'),(11,'invite','contest','invite'),(12,'sponsor','contest','sponsor'),(13,'article','article','article'),(14,'user','userregistration','customuser'),(15,'email address change request','changeemail','changeemail'),(16,'file extension','execution','fileextension'),(17,'compiler profile','execution','compilerprofile'),(18,'problem','execution','problem'),(19,'resource','execution','resource'),(20,'test case','execution','testcase'),(21,'submission','teamsubmission','submission'),(22,'message','clarification','message'),(23,'message answer','clarification','messageanswer'),(24,'execution log entry','teamsubmission','executionlogentry'),(25,'execution node','node_manage','executionnode');
+/*!40000 ALTER TABLE `django_content_type` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `django_session`
+--
+
+DROP TABLE IF EXISTS `django_session`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `django_session` (
+  `session_key` varchar(40) COLLATE utf8_bin NOT NULL,
+  `session_data` longtext COLLATE utf8_bin NOT NULL,
+  `expire_date` datetime NOT NULL,
+  PRIMARY KEY (`session_key`),
+  KEY `django_session_b7b81f0c` (`expire_date`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `django_session`
+--
+
+LOCK TABLES `django_session` WRITE;
+/*!40000 ALTER TABLE `django_session` DISABLE KEYS */;
+INSERT INTO `django_session` VALUES ('acfn76pnfxlenmu3znhd1agpz2s12upq','MTA4Mzg5YjRmOGRkZTNkZjhlM2YwZjljNjMxMGM1MWI5NDEyNGQzNjp7Il9hdXRoX3VzZXJfYmFja2VuZCI6ImRqYW5nby5jb250cmliLmF1dGguYmFja2VuZHMuTW9kZWxCYWNrZW5kIiwiX2F1dGhfdXNlcl9pZCI6Mn0=','2014-05-03 00:58:16'),('i1asdo48g2lo8ep5cv8bpmp8i37epob1','MzQ2NDE0ZWVmYThlOTllNGM3NmU2ZDZiZjQzZGRkM2FhNzM0ZDNkNzp7Il9hdXRoX3VzZXJfYmFja2VuZCI6ImRqYW5nby5jb250cmliLmF1dGguYmFja2VuZHMuTW9kZWxCYWNrZW5kIiwiX2F1dGhfdXNlcl9pZCI6M30=','2014-05-04 10:52:28'),('lwoeovgshcelu5jj3gezkjd70cm3vt98','NWE0OTc4YTQzNmE0ZWJkZjM1NWQ4OGExOGVhMTNhOGE5NWRkMDRhNjp7Il9hdXRoX3VzZXJfYmFja2VuZCI6ImRqYW5nby5jb250cmliLmF1dGguYmFja2VuZHMuTW9kZWxCYWNrZW5kIiwiX2F1dGhfdXNlcl9pZCI6NH0=','2014-05-02 21:16:14'),('npw6uomon35xbp4wmoapsoxxl2wr0kln','MzQ2NDE0ZWVmYThlOTllNGM3NmU2ZDZiZjQzZGRkM2FhNzM0ZDNkNzp7Il9hdXRoX3VzZXJfYmFja2VuZCI6ImRqYW5nby5jb250cmliLmF1dGguYmFja2VuZHMuTW9kZWxCYWNrZW5kIiwiX2F1dGhfdXNlcl9pZCI6M30=','2014-05-02 09:38:37'),('ro3i70khh1dnsqbjtx2vkg3balb635ii','OTFlYzdlYjVlMDZhODQ5ZjRjN2FmY2UzYjVlNjdkYzY4YTNjZmIzMzp7Il9hdXRoX3VzZXJfYmFja2VuZCI6ImRqYW5nby5jb250cmliLmF1dGguYmFja2VuZHMuTW9kZWxCYWNrZW5kIiwiX2F1dGhfdXNlcl9pZCI6OH0=','2014-05-02 21:38:31'),('roj5tymmq08yb16hljbyivylz9k7iehk','MzQ2NDE0ZWVmYThlOTllNGM3NmU2ZDZiZjQzZGRkM2FhNzM0ZDNkNzp7Il9hdXRoX3VzZXJfYmFja2VuZCI6ImRqYW5nby5jb250cmliLmF1dGguYmFja2VuZHMuTW9kZWxCYWNrZW5kIiwiX2F1dGhfdXNlcl9pZCI6M30=','2014-05-03 17:42:23'),('tftlhdyqxypxwybz7qufqrgfd3lgqfpa','MzQ2NDE0ZWVmYThlOTllNGM3NmU2ZDZiZjQzZGRkM2FhNzM0ZDNkNzp7Il9hdXRoX3VzZXJfYmFja2VuZCI6ImRqYW5nby5jb250cmliLmF1dGguYmFja2VuZHMuTW9kZWxCYWNrZW5kIiwiX2F1dGhfdXNlcl9pZCI6M30=','2014-05-03 10:43:21'),('y0mp08ewp02sb747p6omaq0cn1rifqw0','NWQ3ZDM1YTZhYjcxYjdhOTdlNjc3MmQ5NTNmMjE2ZTMyZDJhZDI1NDp7Il9hdXRoX3VzZXJfYmFja2VuZCI6ImRqYW5nby5jb250cmliLmF1dGguYmFja2VuZHMuTW9kZWxCYWNrZW5kIiwiX2F1dGhfdXNlcl9pZCI6MX0=','2014-05-01 23:51:28'),('yinv764ow9o75l3gyfsjwlajhrt9le3s','NWQ3ZDM1YTZhYjcxYjdhOTdlNjc3MmQ5NTNmMjE2ZTMyZDJhZDI1NDp7Il9hdXRoX3VzZXJfYmFja2VuZCI6ImRqYW5nby5jb250cmliLmF1dGguYmFja2VuZHMuTW9kZWxCYWNrZW5kIiwiX2F1dGhfdXNlcl9pZCI6MX0=','2014-03-31 12:25:50');
+/*!40000 ALTER TABLE `django_session` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `djcelery_crontabschedule`
+--
+
+DROP TABLE IF EXISTS `djcelery_crontabschedule`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `djcelery_crontabschedule` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `minute` varchar(64) NOT NULL,
+  `hour` varchar(64) NOT NULL,
+  `day_of_week` varchar(64) NOT NULL,
+  `day_of_month` varchar(64) NOT NULL,
+  `month_of_year` varchar(64) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `djcelery_crontabschedule`
+--
+
+LOCK TABLES `djcelery_crontabschedule` WRITE;
+/*!40000 ALTER TABLE `djcelery_crontabschedule` DISABLE KEYS */;
+/*!40000 ALTER TABLE `djcelery_crontabschedule` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `djcelery_intervalschedule`
+--
+
+DROP TABLE IF EXISTS `djcelery_intervalschedule`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `djcelery_intervalschedule` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `every` int(11) NOT NULL,
+  `period` varchar(24) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `djcelery_intervalschedule`
+--
+
+LOCK TABLES `djcelery_intervalschedule` WRITE;
+/*!40000 ALTER TABLE `djcelery_intervalschedule` DISABLE KEYS */;
+/*!40000 ALTER TABLE `djcelery_intervalschedule` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `djcelery_periodictask`
+--
+
+DROP TABLE IF EXISTS `djcelery_periodictask`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `djcelery_periodictask` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(200) NOT NULL,
+  `task` varchar(200) NOT NULL,
+  `interval_id` int(11) DEFAULT NULL,
+  `crontab_id` int(11) DEFAULT NULL,
+  `args` longtext NOT NULL,
+  `kwargs` longtext NOT NULL,
+  `queue` varchar(200) DEFAULT NULL,
+  `exchange` varchar(200) DEFAULT NULL,
+  `routing_key` varchar(200) DEFAULT NULL,
+  `expires` datetime DEFAULT NULL,
+  `enabled` tinyint(1) NOT NULL,
+  `last_run_at` datetime DEFAULT NULL,
+  `total_run_count` int(10) unsigned NOT NULL,
+  `date_changed` datetime NOT NULL,
+  `description` longtext NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `name` (`name`),
+  KEY `djcelery_periodictask_8905f60d` (`interval_id`),
+  KEY `djcelery_periodictask_7280124f` (`crontab_id`),
+  CONSTRAINT `crontab_id_refs_id_286da0d1` FOREIGN KEY (`crontab_id`) REFERENCES `djcelery_crontabschedule` (`id`),
+  CONSTRAINT `interval_id_refs_id_1829f358` FOREIGN KEY (`interval_id`) REFERENCES `djcelery_intervalschedule` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `djcelery_periodictask`
+--
+
+LOCK TABLES `djcelery_periodictask` WRITE;
+/*!40000 ALTER TABLE `djcelery_periodictask` DISABLE KEYS */;
+/*!40000 ALTER TABLE `djcelery_periodictask` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `djcelery_periodictasks`
+--
+
+DROP TABLE IF EXISTS `djcelery_periodictasks`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `djcelery_periodictasks` (
+  `ident` smallint(6) NOT NULL,
+  `last_update` datetime NOT NULL,
+  PRIMARY KEY (`ident`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `djcelery_periodictasks`
+--
+
+LOCK TABLES `djcelery_periodictasks` WRITE;
+/*!40000 ALTER TABLE `djcelery_periodictasks` DISABLE KEYS */;
+/*!40000 ALTER TABLE `djcelery_periodictasks` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `djcelery_taskstate`
+--
+
+DROP TABLE IF EXISTS `djcelery_taskstate`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `djcelery_taskstate` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `state` varchar(64) NOT NULL,
+  `task_id` varchar(36) NOT NULL,
+  `name` varchar(200) DEFAULT NULL,
+  `tstamp` datetime NOT NULL,
+  `args` longtext,
+  `kwargs` longtext,
+  `eta` datetime DEFAULT NULL,
+  `expires` datetime DEFAULT NULL,
+  `result` longtext,
+  `traceback` longtext,
+  `runtime` double DEFAULT NULL,
+  `retries` int(11) NOT NULL,
+  `worker_id` int(11) DEFAULT NULL,
+  `hidden` tinyint(1) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `task_id` (`task_id`),
+  KEY `djcelery_taskstate_5654bf12` (`state`),
+  KEY `djcelery_taskstate_4da47e07` (`name`),
+  KEY `djcelery_taskstate_abaacd02` (`tstamp`),
+  KEY `djcelery_taskstate_cac6a03d` (`worker_id`),
+  KEY `djcelery_taskstate_2ff6b945` (`hidden`),
+  CONSTRAINT `worker_id_refs_id_6fd8ce95` FOREIGN KEY (`worker_id`) REFERENCES `djcelery_workerstate` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `djcelery_taskstate`
+--
+
+LOCK TABLES `djcelery_taskstate` WRITE;
+/*!40000 ALTER TABLE `djcelery_taskstate` DISABLE KEYS */;
+/*!40000 ALTER TABLE `djcelery_taskstate` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `djcelery_workerstate`
+--
+
+DROP TABLE IF EXISTS `djcelery_workerstate`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `djcelery_workerstate` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `hostname` varchar(255) NOT NULL,
+  `last_heartbeat` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `hostname` (`hostname`),
+  KEY `djcelery_workerstate_11e400ef` (`last_heartbeat`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `djcelery_workerstate`
+--
+
+LOCK TABLES `djcelery_workerstate` WRITE;
+/*!40000 ALTER TABLE `djcelery_workerstate` DISABLE KEYS */;
+/*!40000 ALTER TABLE `djcelery_workerstate` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `execution_compilerprofile`
+--
+
+DROP TABLE IF EXISTS `execution_compilerprofile`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `execution_compilerprofile` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `package_name` varchar(30) COLLATE utf8_bin NOT NULL,
+  `name` varchar(100) COLLATE utf8_bin NOT NULL,
+  `compile` varchar(100) COLLATE utf8_bin DEFAULT NULL,
+  `run` varchar(100) COLLATE utf8_bin NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `execution_compilerprofile`
+--
+
+LOCK TABLES `execution_compilerprofile` WRITE;
+/*!40000 ALTER TABLE `execution_compilerprofile` DISABLE KEYS */;
+INSERT INTO `execution_compilerprofile` VALUES (1,'openjdk-6-jdk','Java','javac {FILENAME}','java {BASENAME}'),(2,'gcc','C','gcc -w --std=c99 -O2 -o {BASENAME} {FILENAME} -lm','./{BASENAME}'),(3,'g++','C++','g++ {FILENAME} -o {BASENAME}','./{BASENAME}');
+/*!40000 ALTER TABLE `execution_compilerprofile` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `execution_compilerprofile_extensions`
+--
+
+DROP TABLE IF EXISTS `execution_compilerprofile_extensions`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `execution_compilerprofile_extensions` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `compilerprofile_id` int(11) NOT NULL,
+  `fileextension_id` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `execution_compilerprof_compilerprofile_id_25185c1eb0ef4c8d_uniq` (`compilerprofile_id`,`fileextension_id`),
+  KEY `execution_compilerprofile_extensions_a0189457` (`compilerprofile_id`),
+  KEY `execution_compilerprofile_extensions_5ceeef9f` (`fileextension_id`),
+  CONSTRAINT `compilerprofile_id_refs_id_370d26d2` FOREIGN KEY (`compilerprofile_id`) REFERENCES `execution_compilerprofile` (`id`),
+  CONSTRAINT `fileextension_id_refs_id_3b200cbd` FOREIGN KEY (`fileextension_id`) REFERENCES `execution_fileextension` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `execution_compilerprofile_extensions`
+--
+
+LOCK TABLES `execution_compilerprofile_extensions` WRITE;
+/*!40000 ALTER TABLE `execution_compilerprofile_extensions` DISABLE KEYS */;
+INSERT INTO `execution_compilerprofile_extensions` VALUES (24,1,1),(29,2,2),(27,3,3),(28,3,4);
+/*!40000 ALTER TABLE `execution_compilerprofile_extensions` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `execution_fileextension`
+--
+
+DROP TABLE IF EXISTS `execution_fileextension`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `execution_fileextension` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `extension` varchar(4) COLLATE utf8_bin NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `execution_fileextension`
+--
+
+LOCK TABLES `execution_fileextension` WRITE;
+/*!40000 ALTER TABLE `execution_fileextension` DISABLE KEYS */;
+INSERT INTO `execution_fileextension` VALUES (1,'java'),(2,'c'),(3,'cc'),(4,'cpp');
+/*!40000 ALTER TABLE `execution_fileextension` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `execution_problem`
+--
+
+DROP TABLE IF EXISTS `execution_problem`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `execution_problem` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `title` varchar(200) COLLATE utf8_bin NOT NULL,
+  `description` longtext COLLATE utf8_bin NOT NULL,
+  `textFile` varchar(100) COLLATE utf8_bin NOT NULL,
+  `date_uploaded` datetime NOT NULL,
+  `author_id` int(11) DEFAULT NULL,
+  `contest_id` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `execution_problem_title_8820a86ce4b4a5b_uniq` (`title`),
+  KEY `execution_problem_e969df21` (`author_id`),
+  KEY `execution_problem_28b54792` (`contest_id`),
+  CONSTRAINT `author_id_refs_id_43ffec17` FOREIGN KEY (`author_id`) REFERENCES `userregistration_customuser` (`id`),
+  CONSTRAINT `contest_id_refs_id_7a174c75` FOREIGN KEY (`contest_id`) REFERENCES `contest_contest` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `execution_problem`
+--
+
+LOCK TABLES `execution_problem` WRITE;
+/*!40000 ALTER TABLE `execution_problem` DISABLE KEYS */;
+INSERT INTO `execution_problem` VALUES (1,'Angry Grammar Nazi','Your friend is what we can call a grammar nazi. He spends a lot of\r\ntime on popular internet discussion forums. Unfortunately, he has\r\na bad temper and loses his mind whenever someone incorrigibly\r\nbefouls the English language, with unrelenting violations of\r\ngrammatical and ortographic rules.\r\nIn order to avoid smashed keyboards, monitors and coffee-cup\r\nholders, you advice your friend to momentarily stop reading and\r\ncount to ten each time he becomes angry, instead of smashing\r\nsomething.\r\nYour friend becomes angry whenever he reads the following\r\nwords or sequences of words:\r\n• “u”, “ur” instead or “you”, “your”.\r\n• “would of”, “should of” instead of “would have”, “should have”.\r\n• “lol” instead of “haha”. In fact he becomes angry even when a word contains “lol”\r\nas a substring. (Even if a word contains multiple occurrences of “lol”, such as the\r\nword “lolol”, he will only become angry once.)\r\nYou decide to write a computer program that reads sentences one by one, and for\r\neach sentence calculates how many times your friend will have uttered a number after\r\nreading said sentence. Your friend does not read out loud, so numbers that are part of\r\nthe input-sentences should not be counted.\r\n','','2014-04-18 12:37:52',3,1),(6,'Neurotic Network','In this problem, a neural net is represented by a rooted tree\r\nwith weighted edges. The neural net processes information\r\nby a cascade of signals that begins at the leaf nodes:\r\nEach node in the tree computes an output value based\r\non its upstream neighbors, and passes this value on to its\r\ndownstream neighbor. The output value computed by a\r\nnode is the sum of the output of each of its upstream\r\nneighbors multiplied by the weight of the edge from the\r\nupstream neighbor to the node itself. A node with no\r\nupstream neighbors (leaf nodes) always has 1 as output. All neural nets in this problem\r\nhave exactly one final output node (the root node).\r\n','','2014-04-18 12:43:40',1,1),(7,'Booking','You\'re assigned the job of making a booking system for\r\na special services company. This company conducts all\r\nsorts of services, but you are told not to ask any questions.\r\nThere have been some developers before you that have tried\r\nmaking this system, but sadly none of them are anywhere\r\nto be found, so you can\'t ask them for any help.\r\nThe system is receiving bookings (and cancellations) one\r\nby one, and must immediately accept/reject the booking.\r\nAll bookings last for a whole day, and the part of the system\r\nyou\'re making needs to keep track of a single day.\r\nThe company has a number of employees, each having\r\none or more qualications. Each booking, in addition to\r\nhaving been a given numeric identier, demands a number of people (employees), each\r\nhaving a specic qualication. One person can cover at most one demand from one\r\nbooking during the whole day. The director used Mario as an example; while Mario can\r\nbe both a plumber and an assassin, in a single day he can only do one of the jobs for one\r\nbooking (in this company).\r\nA booking is accepted if and only if\r\n there are no active bookings with that specic identier, and\r\n it is possible, using the given employees, to cover all the demands of the currently\r\nactive bookings as well as the new one.\r\nA cancellation is accepted if and only if\r\n there is an active booking with that specic identier.\r\n\r\nInput specications\r\nThe rst line contains T, the number of test cases that follow. Each test case\r\nstarts with a line containing the numbers N and B, the number of employees and\r\nbookings/cancellations in the test case.\r\nThen there follow N lines, each specifying an employee. Each line consists of a number,\r\nc, followed by c strings delimited by whitespace, giving the names of each qualication of\r\nthat particular employee.\r\nSubsequently there follows B lines, each containing either a booking or a cancellation.\r\nA booking starts with the word book. Then follows the numeric identier I of that\r\nbooking, followed by the number d and then nally d strings delimited by whitespace.\r\nThis gives all qualication demands this booking has. A cancellation consists of a the word\r\ncancel followed by a number referring to the identier I of the booking to be cancelled.\r\n9\r\nOutput specications\r\nFor each booking/cancellation, output a single line of output. The line should consist of\r\nthe word Accepted if the booking/cancellation is accepted, or Rejected otherwise.','','2014-04-18 12:44:33',3,1),(8,'Negative People in Da House (Easy)','The following math joke is presented for your amusement:\r\nTwo mathematicians sit in a car outside a house. Two\r\npeople enter the house. Then, three people are observed\r\ngoing out of the house. One of the mathematicians exclaim:\r\nIf one person is to enter now, the house will be empty!\r\nSince you have very little sense of humor, you are to\r\nwrite a program that will calculate the minimum number of\r\npeople there must have been there to begin with. In other\r\nwords, given a sequence of groups of people leaving and\r\nentering the house, output the minimum number of people\r\nthere must have been before you started stalking. After\r\nwriting this program, your mathematician friend will leave\r\nyou, as well as their math department, to start a company\r\nspecializing in joke-telling and stalking.\r\n','','2014-04-18 12:44:40',1,1),(11,'Traveling Cellsperson','You have solved every problem from Project Euler in your\r\nhead. Now it is time for a problem you might have heard of,\r\nnamely The Traveling Salesperson, whose decision version\r\nis NP-complete. We consider the Traveling Salesperson\r\nproblem in a 2D rectangular grid where every cell can be\r\nreached from their neighboring cells (up, down, left and\r\nright) and you can visit a cell as many times as you like (though, most of the cells aren\'t\r\nthat interesting, so you might prefer not to visit them a lot).\r\nInput specications\r\nThe rst line of the input consists of a single integer T, the number of test cases. Then\r\nfollow two integers X and Y , marking the width and height of the grid, respectively. Then\r\nfollow Y lines with X characters, where the character \'C\' is a cell and the character \'S\' is\r\nthe starting point.\r\nOutput specications\r\nFor each test case, output the minimum number of steps required to make a full roundtrip\r\nof the grid, starting and ending at S, and visiting each cell at least once.\r\nSince you realize that this won\'t lead anywhere, nish o the output with \\LOL\"\r\n(without quotes) on a line of its own (one per run, not per test case).','','2014-04-18 12:47:13',3,1),(12,'Ruben spawns (Easy)','Being the head judge of a programming contest is no small thing. As with everything good in life, there is that inevitably long list of things that need to be done before it can happen. Fortunately for Ruben, he has recently acquired a machine that at the push of a button, can spawn a small minion for him to do part of his work. He has also hired an assistant to remind him to activate the machine. There is one caveat with minions. If you have too many of them, they might get lost. So, simply put, fewer is better.\r\nAfter all, someone has to keep track of those minions. Each minion spawned from the machine can work a set amount\r\nof units, and then they are “spent” (there exists a recycling machine, but it is hidden in a deep, dark forest somewhere).\r\nThe machine itself creates a given number of minions whose work capacities are normally distributed with both (Mu) and (zigma) unknown. The number of minions the machine can spawn in a given time interval is Poisson distributed with intensity (lambda), also unknown. What we are interested in is knowing the minimum amount of times Ruben would have to spawn a minion to be sure that all the work gets done. You are given a list of how many work units each of the N minions can work for. The machine will break down completely after having spawned N minions. The machine lets you choose which minion\r\nyou want spawn next from the list of possible minions, but you can only spawn each once. All minions are unique in their own ways, but they might still have the same work capacity.','','2014-04-18 12:49:07',1,1),(13,'Space Travel','The year is 2014. Mankind has come a long way since\r\nthat crucial day in 2013 when genius students wrote those\r\ngroundbreaking programs at IDI Open. Travelling in space\r\nhas become as normal as feeding your personal crocodile;\r\nsomething you never do more than once...\r\nYou want to do something about this, and have\r\nidentified the problem with space travel to it being too time\r\nconsuming. You therefore decide to write a program that\r\nfinds the optimal (shortest in time) travel route between\r\ntwo points in three dimensional space.\r\nThis is made somewhat more complex due to the\r\nexistence of worm tubes. A space traveller can enter a worm tube at any point (on\r\nit) and leave at any point. This process takes no time at all. A worm tube is modelled as\r\na line segment in a three dimensional space.\r\nOther than in worm tubes, travel time is proportional to the distance travelled\r\n','','2014-04-18 12:49:50',1,1),(14,'CSI P15','You have been cast as the computer genius hero-of-the-\r\nday for the season nale of the show C.S.I.: P15 (coming\r\nthis fall). Somewhat unsurprisingly, there is that camera\r\nfeed that needs to be analyzed. The camera in question is\r\nrecording pictures in HD-9000 quality with extra regression\r\nand the stream is then internally matched by a re-inverted\r\nisomorphic bit coecient matrix, then plasma shifted ve\r\ntimes for good measure. You then view the feed through\r\nNetscape Navigator 4 Platinum Edition. (Note that\r\n\\internally\" is just fancy talk for \\inside the camera\".)\r\nUnfortunately, a saboteur turned on ASCII mode on the camera and set the camera\r\nin picture burst mode. So now all you have is a bunch of still ASCII images. And now,\r\nfor reasons that will be revealed later in the show, you are to design and implement a\r\ndeterministic algorithm for counting the number of \r\nowers and birds in a given still image.\r\nThe pictures always include the ground, which will show up as a contiguous row of \'=\'\r\ncharacters. The ground will always be the bottom-most row of \\ASCII pixels\". There\r\nwill never be anything else on that row (though, on one of the pictures taken before the\r\nsabotage there is a stray electron that a someone will accidentally nd by zooming in too\r\nfar, but that is for a later episode).\r\nAir is marked in the feed as a \'.\' (a dot). The ground is the last line of the feed, and it\r\nlooks like this: \'===========\'. A \r\nower is dened as any 8-connected component which\r\nconsists of characters from the set f\'|\', \'/\', \'\\\', \'-\', \'@\'g, and which is also connected to the\r\nground. Two cells belong to the same 8-connected component if there is a path between\r\nthem that goes through elements from the forementioned set only, such that each step in\r\nthe path is to an 8-connected neighbour (horizontally, vertically, or diagonally adjacent\r\ncell). A bird is an occurence of \'/\\/\\\', such that all neighbouring cells are either air or\r\nedges of the image. So if you see something that looks like a bird on the ground, it is a\r\n\r\nower (possibly an ex-parrot, but that is also a \r\nower for our purposes).\r\nInput specications\r\nThe rst line of the input consists of a single integer T, the number of test cases. Each\r\nof the following T cases then begins with a line of two integers separated by a space,\r\nthe height H and width W, and ends with H lines describing the picture. Each line of\r\nthe picture has exactly W characters. All lines but the last consist of only the following\r\ncharacters: f\'.\', \'|\', \'/\', \'\\\', \'-\', \'@\'g. The last line consists of \'=\' characters only.\r\nOutput specications\r\nFor each test case, output two lines. If the number of \r\nowers is F and the number of\r\nbirds is B, the output should read\r\nFlowers: F\r\nBirds: B\r\nNotes and Constraints\r\n 0 < T  100\r\n 0 < W  30\r\n 0 < H  30\r\nSample input\r\n1\r\n12 28\r\n............................\r\n............................\r\n\\@/.../\\/\\..../\\/\\..........\r\n.|..........................\r\n.|....\\@/.........../\\/\\....\r\n.|.....|.............|......\r\n.|.....|.............|......\r\n.|.....|..\\@/....\\@/.|......\r\n.|.....|....\\..../...|.|-|..\r\n.|.....|.....\\../....|.|.|..\r\n.|.....|......\\/.....|.|.|..\r\n============================\r\nOutput for sample input\r\nFlowers: 5\r\nBirds: 2\r\n24','','2014-04-18 12:52:11',3,1),(17,'Dimensions','You and your friend Christian have decided to take a\r\nvacation year and travel all around the world to see\r\nmagnicent places, meet wonderful people, and experience\r\nnew cultures. Unfortunately, with dierent cultures come\r\ndicult dierences. And the hardest dierences engineers\r\nlike you know of are unit dierences. Why are people using\r\nmiles, rkins, microfortnights, candlepowers, boisseaux,\r\nfoes, pints, kWh and not to mention degrees Celsius when\r\nthey instead would be much happier using the standard and\r\nbeloved SI units of metres, kilograms, seconds, amperes, kelvins and candelas?\r\nQuantity Name Symbol\r\nlength metre m\r\nmass kilogram kg\r\ntime second s\r\nelectric current ampere A\r\ntemperature kelvin K\r\nluminous intensity candela cd\r\nTable 1: List of SI units\r\nIn fact, you love the SI units so much that you refuse to use any other units. Derived\r\nunits like the joule (J), the newton (N), and the ohm (\r\n) are perfectly expressible in their\r\nequivalent SI units of kg m2 / s2, kg m / s2, and kg m2 / s3 A2, respectively. So during\r\nyour travel, you record all units you come across, along with their denitions. Of course,\r\nsome denitions are depending on other denitions, like Pa = N / m2.\r\nWith your denitions ready at hand, you don\'t have to put up with such nonsense as\r\n60 rkins / microfortnights or 63 km / h anymore, since you can always convert them SI\r\nunits. Even calculations like 100 m + 1.3 km and 7 N  8 \r\n become a breeze to you.\r\nInput specications\r\nThe following syntax is given (\' \' denotes \\zero or one\", \'+\' denotes \\one or more\", and\r\n\'*\' denotes \\zero or more\"):\r\npower ::= f integer larger than 1 g\r\nunit ::= f upper or lower case English letter g+\r\ndimension ::= unit [\'^\' power]?\r\nsize ::= fany \r\noating-point numberg [\' \' dimension]* [\'/\' [\' \' dimension]+]\r\noperator ::= \'+\' OR \'-\' OR \'*\'\r\nexpression ::= size \' \' operator \' \' size\r\nunit denition ::= unit \' = \' size\r\nAll units have lenghts less than 10, and in a size, no units are repeated.\r\nThe rst line of the input consists of a single integer U, the number of new units.\r\nThen follow U lines with new unit denitions. After the unit denitions follows a line\r\nwith a single integer N, and then N lines with either an expression or a size.\r\nIn the input, all powers are less than 5, and all units are SI unit symbols or previously\r\ndened units.\r\nOutput specications\r\nFor each computation, output one line with the answer to the expression, or the size\r\nitself, converted to SI units. If the answer cannot be computed, output \\Incompatible\"\r\n(without the quotes). The answer should be formatted as a size, with the following\r\nclarications:\r\n Units can be written in any order, but keep them on the correct side of the division\r\nsign.\r\n Do not output a unit if its exponent is 0, or its exponent if it is equal to 1.\r\n Output one space between each unit and between units and the division sign, \\.\r\n Do not output any spaces before or after the exponent sign, ^.\r\nNotes and Constraints\r\n 0 < U  100\r\n 0 < N  1000\r\n Units are case sensitive.\r\n No lines are longer than 140 characters.\r\n No input, output or part of any computation have size of absolute value above 10100.\r\n No input, output or part of any computation have unit exponents of absolute value\r\nabove 106.\r\n No part of any computation will yield division by 0.\r\n\r\nSample input\r\n4\r\nkm = 1000 m\r\nh = 3600 s\r\nJ = 1 kg m^2 / s^2\r\nX = 3 m^2 kg s / A K cd^4\r\n4\r\n100 m + 1.3 km\r\n63 km / h\r\n1E5 J * 0.003 h^2 / km^2\r\n1 J - 2 X\r\n\r\nOutput for sample input\r\n1400.0 m\r\n17.5 m / s\r\n3888.0 kg\r\nIncompatible','','2014-04-18 12:56:28',3,1),(18,'Kings','You are given a chessboard of size x  y and k identical\r\nkings, and are asked to place all the kings on the board\r\nsuch that no two kings can attack each other. Two kings\r\ncan attack each other if they are horizontally, vertically or\r\ndiagonally adjacent.\r\nWrite a computer program that calculates the number\r\nof possible arrangements of the k kings on the given\r\nchessboard. Since the number of feasible arrangements may\r\nbe large, reduce the number modulo 1,000,000,007.\r\nInput specications\r\nThe rst line of the input consists of a single integer T, the\r\nnumber of test cases. Each of the following T lines consists of three integers x; y and k,\r\nseparated by one space.\r\nOutput specications\r\nFor each test case, output the number of possibilities modulo 1,000,000,007.\r\nNotes and Constraints\r\n 0 < T  50\r\n 2  x; y  15\r\n 1  k  x  y\r\nSample input\r\n4\r\n8 8 1\r\n7 7 16\r\n7 7 7\r\n3 7 15\r\nOutput for sample input\r\n64\r\n1\r\n2484382\r\n0','','2014-04-18 12:58:02',3,1),(19,'Odds','Something, something, somethingsssss','','2014-04-18 18:00:27',3,1),(20,'Squares','justsquarethings','','2014-04-18 18:28:33',3,1);
+/*!40000 ALTER TABLE `execution_problem` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `execution_resource`
+--
+
+DROP TABLE IF EXISTS `execution_resource`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `execution_resource` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `cProfile_id` int(11) NOT NULL,
+  `problem_id` int(11) NOT NULL,
+  `max_compile_time` int(11) NOT NULL,
+  `max_program_timeout` int(11) NOT NULL,
+  `max_memory` int(11) NOT NULL,
+  `max_processes` int(11) NOT NULL,
+  `Max_filesize` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `execution_resource_d95edb1d` (`cProfile_id`),
+  KEY `execution_resource_96ebd21a` (`problem_id`),
+  CONSTRAINT `cProfile_id_refs_id_b113424d` FOREIGN KEY (`cProfile_id`) REFERENCES `execution_compilerprofile` (`id`),
+  CONSTRAINT `problem_id_refs_id_e31fffbd` FOREIGN KEY (`problem_id`) REFERENCES `execution_problem` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `execution_resource`
+--
+
+LOCK TABLES `execution_resource` WRITE;
+/*!40000 ALTER TABLE `execution_resource` DISABLE KEYS */;
+INSERT INTO `execution_resource` VALUES (1,1,1,30,10,-1,20,50),(4,1,7,30,10,-1,20,50),(5,2,7,30,10,102400000,5,50),(6,3,7,30,10,102400000,5,50),(7,1,11,30,10,-1,5,50),(8,2,11,30,10,102400000,5,50),(9,3,11,30,10,102400000,5,50),(10,1,14,30,60,-1,5,50),(11,2,14,30,10,102400000,5,50),(12,3,14,30,10,102400000,5,50),(13,1,17,30,10,-1,5,50),(14,2,17,30,10,102400000,5,50),(15,3,17,30,10,102400000,5,50),(16,1,18,30,10,-1,5,50),(17,2,18,30,10,102400000,5,50),(18,3,18,30,10,102400000,5,50),(19,1,8,30,10,-1,5,50),(20,2,8,30,10,102400000,5,50),(21,3,8,30,10,102400000,5,50),(22,1,6,30,10,-1,5,50),(23,2,6,30,10,102400000,5,50),(24,3,6,30,10,102400000,5,50),(25,1,13,30,10,-1,5,50),(26,2,13,30,10,102400000,5,50),(27,3,13,30,10,102400000,5,50),(28,1,12,30,10,-1,20,50),(29,2,12,30,10,102400000,5,50),(30,3,12,30,10,102400000,5,50),(31,1,19,30,10,-1,5,50),(32,2,19,30,10,102400000,5,50),(33,3,19,30,10,102400000,5,50),(34,2,20,30,10,102400000,5,50),(35,2,1,30,10,102400000,5,50),(36,3,1,30,10,102400000,5,50);
+/*!40000 ALTER TABLE `execution_resource` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `execution_testcase`
+--
+
+DROP TABLE IF EXISTS `execution_testcase`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `execution_testcase` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `inputFile` varchar(100) COLLATE utf8_bin NOT NULL,
+  `outputFile` varchar(100) COLLATE utf8_bin NOT NULL,
+  `short_description` varchar(40) COLLATE utf8_bin NOT NULL,
+  `inputDescription` longtext COLLATE utf8_bin,
+  `outputDescription` longtext COLLATE utf8_bin,
+  `author_id` int(11) DEFAULT NULL,
+  `problem_id` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `execution_testcase_e969df21` (`author_id`),
+  KEY `execution_testcase_96ebd21a` (`problem_id`),
+  CONSTRAINT `author_id_refs_id_5bc1ac96` FOREIGN KEY (`author_id`) REFERENCES `userregistration_customuser` (`id`),
+  CONSTRAINT `problem_id_refs_id_b86d249d` FOREIGN KEY (`problem_id`) REFERENCES `execution_problem` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `execution_testcase`
+--
+
+LOCK TABLES `execution_testcase` WRITE;
+/*!40000 ALTER TABLE `execution_testcase` DISABLE KEYS */;
+INSERT INTO `execution_testcase` VALUES (1,'problems/Angry/case/angry.in','problems/Angry/case/angry.out','Angry','4 \r\nu haz lolcats \r\nmy car is green \r\ni have a lollipop \r\nu should of lold \r\n','20\r\n0\r\n10\r\n30\r\n',NULL,1),(2,'problems/Negative People in Da House (Easy)/case/negative.in','problems/Negative People in Da House (Easy)/case/negative.out','Negative','Description of the input','Description of the output',NULL,8),(3,'problems/Neurotic Network/case/neurotic.in','problems/Neurotic Network/case/neurotic.out','Neurotic','Desc in','Desc out',NULL,6),(4,'problems/Space Travel/case/space.in','problems/Space Travel/case/space.out','Space','','',NULL,13),(5,'problems/Ruben spawns (Easy)/case/spawns.in','problems/Ruben spawns (Easy)/case/spawns.out','Spawns','','',NULL,12),(6,'problems/Booking/case/booking.in','problems/Booking/case/booking.out','Booking','','',NULL,7),(7,'problems/Traveling Cellsperson/case/cellsman.in','problems/Traveling Cellsperson/case/cellsman.out','Cellsman','','',NULL,11),(8,'problems/CSI P15/case/csi.in','problems/CSI P15/case/csi.out','CSI','','',NULL,14),(9,'problems/Dimensions/case/dimensions.in','problems/Dimensions/case/dimensions.out','Dimensions','','',NULL,17),(10,'problems/Kings/case/kings.in','problems/Kings/case/kings.out','Kings','','',NULL,18),(11,'problems/Odds/case/odds.in','problems/Odds/case/odds.out','Odds','','',NULL,19),(13,'problems/Squares/case/test.in','problems/Squares/case/test.out','Square','','',NULL,20);
+/*!40000 ALTER TABLE `execution_testcase` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `node_manage_executionnode`
+--
+
+DROP TABLE IF EXISTS `node_manage_executionnode`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `node_manage_executionnode` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(20) NOT NULL,
+  `dest_ip` char(15) NOT NULL,
+  `password` varchar(50) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `node_manage_executionnode`
+--
+
+LOCK TABLES `node_manage_executionnode` WRITE;
+/*!40000 ALTER TABLE `node_manage_executionnode` DISABLE KEYS */;
+/*!40000 ALTER TABLE `node_manage_executionnode` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `south_migrationhistory`
+--
+
+DROP TABLE IF EXISTS `south_migrationhistory`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `south_migrationhistory` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `app_name` varchar(255) COLLATE utf8_bin NOT NULL,
+  `migration` varchar(255) COLLATE utf8_bin NOT NULL,
+  `applied` datetime NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `south_migrationhistory`
+--
+
+LOCK TABLES `south_migrationhistory` WRITE;
+/*!40000 ALTER TABLE `south_migrationhistory` DISABLE KEYS */;
+INSERT INTO `south_migrationhistory` VALUES (4,'contest','0001_initial','2014-04-17 23:39:36'),(5,'contest','0002_auto__chg_field_team_name','2014-04-17 23:39:36'),(6,'contest','0003_auto__add_field_contest_penalty_constant','2014-04-17 23:39:36'),(7,'article','0001_initial','2014-04-17 23:39:36'),(8,'article','0002_auto__add_field_article_is_urgent','2014-04-17 23:39:37'),(9,'userregistration','0001_initial','2014-04-17 23:39:37'),(10,'changeemail','0001_initial','2014-04-17 23:39:37'),(11,'execution','0001_initial','2014-04-17 23:39:37'),(12,'execution','0002_auto__add_unique_problem_title__chg_field_problem_date_uploaded','2014-04-17 23:39:37'),(13,'execution','0003_auto','2014-04-17 23:39:37'),(14,'execution','0004_auto__add_resource__add_unique_problem_title','2014-04-17 23:39:37'),(15,'execution','0005_auto__add_field_resource_Max_filesize','2014-04-17 23:39:37'),(16,'execution','0006_auto__del_field_compilerprofile_run_flags__del_field_compilerprofile_r','2014-04-17 23:39:37'),(17,'teamsubmission','0001_initial','2014-04-17 23:39:37'),(18,'teamsubmission','0002_auto__del_field_submission_validated__add_field_submission_solved_prob','2014-04-17 23:39:37'),(19,'teamsubmission','0003_auto__add_field_submission_runtime','2014-04-17 23:39:37'),(20,'teamsubmission','0004_auto__add_field_submission_compileProfile','2014-04-17 23:39:37'),(21,'clarification','0001_initial','2014-04-18 20:56:21'),(22,'clarification','0002_auto__del_field_messageanswer_answared_at__del_field_messageanswer_ans','2014-04-18 20:56:22'),(23,'clarification','0003_auto__add_field_message_answered','2014-04-18 20:56:22'),(24,'clarification','0004_auto__chg_field_messageanswer_message','2014-04-18 20:56:22'),(26,'teamsubmission','0005_auto__add_executionlogentry','2014-04-19 11:04:35');
+/*!40000 ALTER TABLE `south_migrationhistory` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `teamsubmission_executionlogentry`
+--
+
+DROP TABLE IF EXISTS `teamsubmission_executionlogentry`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `teamsubmission_executionlogentry` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `submission_id` int(11) NOT NULL,
+  `command` varchar(200) NOT NULL,
+  `stdout` longtext NOT NULL,
+  `stderr` longtext NOT NULL,
+  `retval` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `teamsubmission_executionlogentry_efe1f810` (`submission_id`),
+  CONSTRAINT `submission_id_refs_id_9df84ac1` FOREIGN KEY (`submission_id`) REFERENCES `teamsubmission_submission` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=43 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `teamsubmission_executionlogentry`
+--
+
+LOCK TABLES `teamsubmission_executionlogentry` WRITE;
+/*!40000 ALTER TABLE `teamsubmission_executionlogentry` DISABLE KEYS */;
+INSERT INTO `teamsubmission_executionlogentry` VALUES (1,123,'g++ angry_cnj.cpp -o angry_cnj','','',0),(2,123,'./angry_cnj','20\n0\n10\n30\n20\n10\n0\n500\n0\n0\n0\n0\n0\n0\n0\n0\n0\n10\n0\n0\n10\n0\n10\n10\n0\n0\n10\n0\n20\n40\n40\n10\n0\n0\n20\n0\n0\n20\n0\n0\n0\n20\n0\n20\n10\n20\n10\n10\n0\n0\n','',0),(3,124,'g++ angry_cnj.cpp -o angry_cnj','','',0),(4,124,'sudo su gentlemember -c \"./angry_cnj\"','20\n0\n10\n30\n20\n10\n0\n500\n0\n0\n0\n0\n0\n0\n0\n0\n0\n10\n0\n0\n10\n0\n10\n10\n0\n0\n10\n0\n20\n40\n40\n10\n0\n0\n20\n0\n0\n20\n0\n0\n0\n20\n0\n20\n10\n20\n10\n10\n0\n0\n','',0),(5,125,'g++ angry_cnj.cpp -o angry_cnj','','',0),(6,125,'sudo su gentlemember -c \"./angry_cnj\"','20\n0\n10\n30\n20\n10\n0\n500\n0\n0\n0\n0\n0\n0\n0\n0\n0\n10\n0\n0\n10\n0\n10\n10\n0\n0\n10\n0\n20\n40\n40\n10\n0\n0\n20\n0\n0\n20\n0\n0\n0\n20\n0\n20\n10\n20\n10\n10\n0\n0\n','',0),(7,127,'g++ angry_cnj.cpp -o angry_cnj','','',0),(8,127,'sudo su gentlemember -c \"./angry_cnj\"','','',0),(9,128,'g++ angry_cnj.cpp -o angry_cnj','','',0),(10,128,'sudo su gentlemember -c \"./angry_cnj\"','','',0),(11,129,'javac angry_rs.java','','',0),(12,129,'sudo su gentlemember -c \"java angry_rs\"','','Exception in thread \"main\" java.util.NoSuchElementException: No line found\n	at java.util.Scanner.nextLine(Scanner.java:1533)\n	at angry_rs.main(angry_rs.java:7)\n',1),(13,133,'javac angry_rs.java','','',0),(14,134,'javac angry_rs.java','','',0),(15,134,'sudo su gentlemember -c \"java angry_rs\"','20\n0\n10\n30\n20\n10\n0\n500\n0\n0\n0\n0\n0\n0\n0\n0\n0\n10\n0\n0\n10\n0\n10\n10\n0\n0\n10\n0\n20\n40\n40\n10\n0\n0\n20\n0\n0\n20\n0\n0\n0\n20\n0\n20\n10\n20\n10\n10\n0\n0\n','',0),(16,138,'javac angry_rs.java','','',0),(17,139,'javac angry_rs.java','','',0),(18,139,'sudo su gentlemember -c \"java angry_rs\"','20\n0\n10\n30\n20\n10\n0\n500\n0\n0\n0\n0\n0\n0\n0\n0\n0\n10\n0\n0\n10\n0\n10\n10\n0\n0\n10\n0\n20\n40\n40\n10\n0\n0\n20\n0\n0\n20\n0\n0\n0\n20\n0\n20\n10\n20\n10\n10\n0\n0\n','',0),(19,140,'javac angry_rs.java','','',0),(20,140,'/usr/bin/time -f \"%S\n%U\" -q sudo su gentlemember -c \"java angry_rs\"','20\n0\n10\n30\n20\n10\n0\n500\n0\n0\n0\n0\n0\n0\n0\n0\n0\n10\n0\n0\n10\n0\n10\n10\n0\n0\n10\n0\n20\n40\n40\n10\n0\n0\n20\n0\n0\n20\n0\n0\n0\n20\n0\n20\n10\n20\n10\n10\n0\n0\n','0.01\n0.10\n',0),(21,141,'javac angry_rs.java','','',0),(22,141,'/usr/bin/time -f \"%S\n%U\" -q sudo su gentlemember -c \"java angry_rs\"','20\n0\n10\n30\n20\n10\n0\n500\n0\n0\n0\n0\n0\n0\n0\n0\n0\n10\n0\n0\n10\n0\n10\n10\n0\n0\n10\n0\n20\n40\n40\n10\n0\n0\n20\n0\n0\n20\n0\n0\n0\n20\n0\n20\n10\n20\n10\n10\n0\n0\n','0.01\n0.05\n',0),(23,142,'javac angry_rs.java','','',0),(24,142,'/usr/bin/time -f \"%S\n%U\" -q sudo su gentlemember -c \"java angry_rs\"','20\n0\n10\n30\n20\n10\n0\n500\n0\n0\n0\n0\n0\n0\n0\n0\n0\n10\n0\n0\n10\n0\n10\n10\n0\n0\n10\n0\n20\n40\n40\n10\n0\n0\n20\n0\n0\n20\n0\n0\n0\n20\n0\n20\n10\n20\n10\n10\n0\n0\n','0.00\n0.06\n',0),(25,143,'javac angry_rs.java','','',0),(26,143,'/usr/bin/time -f \"%S\n%U\" -q sudo su gentlemember -c \"java angry_rs\"','20\n0\n10\n30\n20\n10\n0\n500\n0\n0\n0\n0\n0\n0\n0\n0\n0\n10\n0\n0\n10\n0\n10\n10\n0\n0\n10\n0\n20\n40\n40\n10\n0\n0\n20\n0\n0\n20\n0\n0\n0\n20\n0\n20\n10\n20\n10\n10\n0\n0\n','0.02\n0.05\n',0),(27,144,'javac angry_rs.java','','',0),(28,144,'/usr/bin/time -f \"%S\n%U\" -q sudo su gentlemember -c \"java angry_rs\"','20\n0\n10\n30\n20\n10\n0\n500\n0\n0\n0\n0\n0\n0\n0\n0\n0\n10\n0\n0\n10\n0\n10\n10\n0\n0\n10\n0\n20\n40\n40\n10\n0\n0\n20\n0\n0\n20\n0\n0\n0\n20\n0\n20\n10\n20\n10\n10\n0\n0\n','0.02\n0.04\n',0),(29,145,'javac angry_rs.java','','',0),(30,145,'/usr/bin/time -f \"%S\n%U\" -q sudo su gentlemember -c \"java angry_rs\"','20\n0\n10\n30\n20\n10\n0\n500\n0\n0\n0\n0\n0\n0\n0\n0\n0\n10\n0\n0\n10\n0\n10\n10\n0\n0\n10\n0\n20\n40\n40\n10\n0\n0\n20\n0\n0\n20\n0\n0\n0\n20\n0\n20\n10\n20\n10\n10\n0\n0\n','0.00\n0.06\n',0),(31,146,'javac angry_rs.java','','',0),(32,146,'/usr/bin/time -f \"%S\n%U\" -q sudo su gentlemember -c \"java angry_rs\"','20\n0\n10\n30\n20\n10\n0\n500\n0\n0\n0\n0\n0\n0\n0\n0\n0\n10\n0\n0\n10\n0\n10\n10\n0\n0\n10\n0\n20\n40\n40\n10\n0\n0\n20\n0\n0\n20\n0\n0\n0\n20\n0\n20\n10\n20\n10\n10\n0\n0\n','0.02\n0.04\n',0),(33,147,'javac angry_rs.java','','',0),(34,147,'/usr/bin/time -f \"%S\n%U\" -q sudo su gentlemember -c \"java angry_rs\"','20\n0\n10\n30\n20\n10\n0\n500\n0\n0\n0\n0\n0\n0\n0\n0\n0\n10\n0\n0\n10\n0\n10\n10\n0\n0\n10\n0\n20\n40\n40\n10\n0\n0\n20\n0\n0\n20\n0\n0\n0\n20\n0\n20\n10\n20\n10\n10\n0\n0\n','0.01\n0.06\n',0),(35,148,'javac angry_rs.java','','',0),(36,148,'/usr/bin/time -f \"%S\n%U\" -q sudo su gentlemember -c \"java angry_rs\"','20\n0\n10\n30\n20\n10\n0\n500\n0\n0\n0\n0\n0\n0\n0\n0\n0\n10\n0\n0\n10\n0\n10\n10\n0\n0\n10\n0\n20\n40\n40\n10\n0\n0\n20\n0\n0\n20\n0\n0\n0\n20\n0\n20\n10\n20\n10\n10\n0\n0\n','0.02\n0.04\n',0),(37,149,'javac angry_rs.java','','',0),(38,149,'/usr/bin/time -f \"%S\n%U\" -q sudo su gentlemember -c \"java angry_rs\"','20\n0\n10\n30\n20\n10\n0\n500\n0\n0\n0\n0\n0\n0\n0\n0\n0\n10\n0\n0\n10\n0\n10\n10\n0\n0\n10\n0\n20\n40\n40\n10\n0\n0\n20\n0\n0\n20\n0\n0\n0\n20\n0\n20\n10\n20\n10\n10\n0\n0\n','0.02\n0.05\n',0),(39,150,'javac angry_rs.java','','',0),(40,150,'/usr/bin/time -f \"%S\n%U\" -q sudo su gentlemember -c \"java angry_rs\"','20\n0\n10\n30\n20\n10\n0\n500\n0\n0\n0\n0\n0\n0\n0\n0\n0\n10\n0\n0\n10\n0\n10\n10\n0\n0\n10\n0\n20\n40\n40\n10\n0\n0\n20\n0\n0\n20\n0\n0\n0\n20\n0\n20\n10\n20\n10\n10\n0\n0\n','0.01\n0.07\n',0),(41,151,'javac angry_rs.java','','',0),(42,151,'/usr/bin/time -f \"%S\n%U\" -q sudo su gentlemember -c \"java angry_rs\"','20\n0\n10\n30\n20\n10\n0\n500\n0\n0\n0\n0\n0\n0\n0\n0\n0\n10\n0\n0\n10\n0\n10\n10\n0\n0\n10\n0\n20\n40\n40\n10\n0\n0\n20\n0\n0\n20\n0\n0\n0\n20\n0\n20\n10\n20\n10\n10\n0\n0\n','0.01\n0.05\n',0);
+/*!40000 ALTER TABLE `teamsubmission_executionlogentry` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `teamsubmission_submission`
+--
+
+DROP TABLE IF EXISTS `teamsubmission_submission`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `teamsubmission_submission` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `team_id` int(11) NOT NULL,
+  `problem_id` int(11) NOT NULL,
+  `submission` varchar(100) COLLATE utf8_bin NOT NULL,
+  `date_uploaded` datetime NOT NULL,
+  `text_feedback` varchar(50) COLLATE utf8_bin NOT NULL,
+  `solved_problem` tinyint(1) NOT NULL,
+  `runtime` int(11) DEFAULT NULL,
+  `compileProfile_id` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `teamsubmission_submission_95e8aaa1` (`team_id`),
+  KEY `teamsubmission_submission_96ebd21a` (`problem_id`),
+  KEY `teamsubmission_submission_837e81fe` (`compileProfile_id`),
+  CONSTRAINT `compileProfile_id_refs_id_7e04b87c` FOREIGN KEY (`compileProfile_id`) REFERENCES `execution_compilerprofile` (`id`),
+  CONSTRAINT `problem_id_refs_id_c40f09b2` FOREIGN KEY (`problem_id`) REFERENCES `execution_problem` (`id`),
+  CONSTRAINT `team_id_refs_id_0c56436b` FOREIGN KEY (`team_id`) REFERENCES `contest_team` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=152 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `teamsubmission_submission`
+--
+
+LOCK TABLES `teamsubmission_submission` WRITE;
+/*!40000 ALTER TABLE `teamsubmission_submission` DISABLE KEYS */;
+INSERT INTO `teamsubmission_submission` VALUES (1,2,1,'submissions/2/1/0/angry_rs.java','2014-04-18 09:47:48','',0,NULL,1),(2,2,1,'submissions/2/1/1/angry_rs.java','2014-04-18 09:55:23','',0,NULL,1),(3,2,1,'submissions/2/1/2/angry_rs.java','2014-04-18 10:02:00','',0,NULL,1),(4,2,1,'submissions/2/1/3/angry_rs.java','2014-04-18 10:05:15','',0,NULL,1),(5,2,1,'submissions/2/1/4/angry_rs.java','2014-04-18 10:05:57','',0,NULL,1),(6,2,1,'submissions/2/1/5/angry_rs.java','2014-04-18 10:18:36','',0,NULL,1),(7,2,1,'submissions/2/1/6/angry_rs.java','2014-04-18 10:27:47','',0,NULL,1),(8,2,1,'submissions/2/1/7/angry_rs.java','2014-04-18 10:49:10','',0,NULL,1),(9,2,1,'submissions/2/1/8/angry_rs.java','2014-04-18 10:53:17','',0,NULL,1),(10,1,1,'submissions/1/1/0/angry_rs.java','2014-04-18 10:55:08','',0,NULL,1),(11,2,1,'submissions/2/1/9/angry_rs.java','2014-04-18 11:58:17','',0,NULL,1),(12,2,1,'submissions/2/1/10/angry_rs.java','2014-04-18 11:59:35','Unspecified runtime error.',0,NULL,1),(13,2,1,'submissions/2/1/11/angry_rs.java','2014-04-18 12:01:11','Successful submission!',1,NULL,1),(14,1,1,'submissions/1/1/1/angry_rs.java','2014-04-18 13:22:11','',0,NULL,1),(15,1,1,'submissions/1/1/2/angry_rs.java','2014-04-18 13:25:07','',0,NULL,1),(16,1,1,'submissions/1/1/3/angry_rs.java','2014-04-18 13:25:16','',0,NULL,1),(17,1,1,'submissions/1/1/4/angry_rs.java','2014-04-18 13:26:22','',0,NULL,1),(18,1,1,'submissions/1/1/5/angry_rs.java','2014-04-18 13:33:31','',0,NULL,1),(19,2,12,'submissions/2/12/0/spawns_rs.java','2014-04-18 13:35:45','',0,NULL,1),(20,1,1,'submissions/1/1/6/angry_rs.java','2014-04-18 13:42:10','',0,NULL,1),(21,1,1,'submissions/1/1/7/angry_rs.java','2014-04-18 13:46:42','',0,NULL,1),(22,1,1,'submissions/1/1/8/angry_rs.java','2014-04-18 13:47:38','',0,NULL,1),(23,1,1,'submissions/1/1/9/angry_cnj.cpp','2014-04-18 13:50:02','',0,NULL,3),(24,1,1,'submissions/1/1/10/angry_rs.java','2014-04-18 13:52:11','',0,NULL,1),(25,1,1,'submissions/1/1/11/angry_rs.java','2014-04-18 14:06:16','Unspecified runtime error.',0,NULL,1),(26,1,1,'submissions/1/1/12/angry_rs.java','2014-04-18 14:13:54','Unspecified runtime error.',0,NULL,1),(27,2,12,'submissions/2/12/1/spawns_rs.java','2014-04-18 15:22:54','Unspecified runtime error.',0,NULL,1),(28,2,12,'submissions/2/12/2/spawns_rs.java','2014-04-18 15:28:25','Unspecified runtime error.',0,NULL,1),(29,1,1,'submissions/1/1/13/angry_rs.java','2014-04-18 15:39:29','Unspecified runtime error.',0,NULL,1),(30,1,1,'submissions/1/1/14/angry_rs.java','2014-04-18 15:43:15','Unspecified runtime error.',0,NULL,1),(31,1,1,'submissions/1/1/15/angry_rs.java','2014-04-18 15:45:39','Unspecified runtime error.',0,NULL,1),(32,1,1,'submissions/1/1/16/angry_rs.java','2014-04-18 15:52:58','Unspecified runtime error.',0,NULL,1),(33,2,12,'submissions/2/12/3/spawns_rs.java','2014-04-18 15:58:46','Unspecified runtime error.',0,NULL,1),(34,2,12,'submissions/2/12/4/spawns_rs.java','2014-04-18 15:59:43','Unspecified runtime error.',0,NULL,1),(35,1,1,'submissions/1/1/17/angry_cnj.cpp','2014-04-18 16:01:13','',0,NULL,3),(36,1,1,'submissions/1/1/18/angry_cnj.cpp','2014-04-18 16:02:21','',0,NULL,3),(37,1,1,'submissions/1/1/19/angry_cnj.cpp','2014-04-18 16:07:20','',0,NULL,3),(38,1,1,'submissions/1/1/20/angry_cnj.cpp','2014-04-18 16:20:29','Unspecified runtime error.',0,NULL,3),(39,1,1,'submissions/1/1/21/angry_cnj.cpp','2014-04-18 16:21:11','Unspecified runtime error.',0,NULL,3),(40,1,1,'submissions/1/1/22/angry_cnj.cpp','2014-04-18 16:24:54','',0,NULL,1),(41,1,1,'submissions/1/1/23/angry_rs.java','2014-04-18 16:25:07','Unspecified runtime error.',0,NULL,1),(42,1,1,'submissions/1/1/24/angry_rs.java','2014-04-18 16:28:58','Unspecified runtime error.',0,NULL,1),(43,1,1,'submissions/1/1/25/angry_rs.java','2014-04-18 16:29:43','Unspecified runtime error.',0,NULL,1),(44,1,1,'submissions/1/1/26/angry_rs.java','2014-04-18 17:49:31','Unspecified runtime error.',0,NULL,1),(45,1,1,'submissions/1/1/27/angry_rs.java','2014-04-18 17:50:43','Successful submission!',1,NULL,1),(46,1,1,'submissions/1/1/28/angry_rs.java','2014-04-18 17:51:17','Successful submission!',1,NULL,1),(47,1,1,'submissions/1/1/29/angry_cnj.cpp','2014-04-18 17:51:51','',0,NULL,3),(48,1,1,'submissions/1/1/30/angry_cnj.cpp','2014-04-18 17:53:13','',0,NULL,3),(49,1,1,'submissions/1/1/31/angry_cnj.cpp','2014-04-18 17:53:48','',0,NULL,3),(50,1,1,'submissions/1/1/32/angry_cnj.cpp','2014-04-18 17:55:46','Successful submission!',1,NULL,3),(51,1,1,'submissions/1/1/33/angry_cnj.cpp','2014-04-18 17:56:17','Successful submission!',1,NULL,3),(52,2,19,'submissions/2/19/0/odds_rs_v2.c','2014-04-18 18:02:41','Incorrect output.',0,NULL,2),(53,2,19,'submissions/2/19/1/odds_rs_v2.c','2014-04-18 18:05:06','Incorrect output.',0,NULL,2),(54,2,19,'submissions/2/19/2/odds_tg_fast.cpp','2014-04-18 18:07:10','Incorrect output.',0,NULL,3),(55,2,19,'submissions/2/19/3/odds_er.java','2014-04-18 18:07:23','Unspecified runtime error.',0,NULL,1),(56,1,1,'submissions/1/1/34/angry_cnj.cpp','2014-04-18 18:08:27','Successful submission!',1,NULL,3),(57,1,20,'submissions/1/20/0/square.c','2014-04-18 18:30:06','Successful submission!',1,NULL,2),(58,1,20,'submissions/1/20/1/square.c','2014-04-18 18:34:44','Incorrect output.',0,NULL,2),(59,1,20,'submissions/1/20/2/square.c','2014-04-18 18:35:52','Incorrect output.',0,NULL,2),(60,1,20,'submissions/1/20/3/square.c','2014-04-18 18:38:34','Unspecified runtime error.',0,NULL,2),(61,1,20,'submissions/1/20/4/square.c','2014-04-18 18:39:16','',0,NULL,2),(62,1,20,'submissions/1/20/5/square.c','2014-04-18 18:45:16','',0,NULL,2),(63,1,20,'submissions/1/20/6/square.c','2014-04-18 18:46:28','Unspecified compile time error.',0,NULL,2),(64,1,1,'submissions/1/1/35/angry_cnj.cpp','2014-04-18 19:14:39','Successful submission!',1,NULL,3),(65,1,1,'submissions/1/1/36/angry_cnj.cpp','2014-04-18 19:52:50','Successful submission!',1,NULL,3),(66,2,12,'submissions/2/12/5/spawns_rs.java','2014-04-18 20:02:40','Unspecified runtime error.',0,NULL,1),(67,1,1,'submissions/1/1/37/angry_cnj.cpp','2014-04-18 20:12:53','',0,NULL,3),(68,1,1,'submissions/1/1/38/angry_cnj.cpp','2014-04-18 20:13:30','Unspecified runtime error.',0,NULL,3),(69,1,1,'submissions/1/1/39/angry_cnj.cpp','2014-04-18 20:14:17','Unspecified runtime error.',0,NULL,3),(70,1,1,'submissions/1/1/40/angry_cnj.cpp','2014-04-18 20:15:49','Unspecified runtime error.',0,NULL,3),(71,1,1,'submissions/1/1/41/angry_cnj.cpp','2014-04-18 20:16:02','Unspecified runtime error.',0,NULL,3),(72,1,17,'submissions/1/17/0/dimensions_rs.c','2014-04-18 21:14:26','Incorrect output.',0,NULL,2),(73,1,17,'submissions/1/17/1/dimensions_rs.c','2014-04-18 21:30:34','Incorrect output.',0,NULL,2),(74,1,13,'submissions/1/13/0/space_rs_slow.c','2014-04-18 21:31:25','Runtime memory limit exceeded.',0,NULL,2),(75,1,13,'submissions/1/13/1/space_rs.java','2014-04-18 21:31:48','Unspecified runtime error.',0,NULL,1),(76,7,1,'submissions/7/1/0/Gui.java','2014-04-18 21:40:11','Unspecified compile time error.',0,NULL,1),(77,7,1,'submissions/7/1/1/Probe.java','2014-04-18 21:41:23','Unspecified compile time error.',0,NULL,1),(78,1,20,'submissions/1/20/7/space_rs_slow.c','2014-04-18 21:53:17','Incorrect output.',0,NULL,2),(79,1,1,'submissions/1/1/42/angry_cnj.cpp','2014-04-18 21:55:03','Successful submission!',1,NULL,3),(80,6,1,'submissions/6/1/0/angry_rs.java','2014-04-19 00:28:21','Successful submission!',1,NULL,1),(81,6,1,'submissions/6/1/1/booking_rs_slow.cpp','2014-04-19 00:28:48','',0,NULL,3),(82,6,1,'submissions/6/1/2/booking_rs_slow.cpp','2014-04-19 00:30:16','Runtime memory limit exceeded.',0,NULL,3),(83,6,1,'submissions/6/1/3/booking_rs_slow.cpp','2014-04-19 00:32:32','',0,NULL,3),(84,6,1,'submissions/6/1/4/angry_rs.java','2014-04-19 00:32:49','Successful submission!',1,NULL,1),(85,6,1,'submissions/6/1/5/angry_rs.java','2014-04-19 00:32:57','Successful submission!',1,NULL,1),(86,6,1,'submissions/6/1/6/angry_cnj.cpp','2014-04-19 00:37:56','Successful submission!',1,NULL,3),(87,6,1,'submissions/6/1/7/booking_rs_slow.cpp','2014-04-19 00:38:08','',0,NULL,3),(88,6,1,'submissions/6/1/8/booking_rs_slow.cpp','2014-04-19 00:39:02','Runtime memory limit exceeded.',0,NULL,3),(89,6,1,'submissions/6/1/9/angry_cnj.cpp','2014-04-19 00:40:55','Successful submission!',1,NULL,3),(90,6,7,'submissions/6/7/0/booking_rs_slow.cpp','2014-04-19 00:41:58','Runtime memory limit exceeded.',0,NULL,3),(91,6,14,'submissions/6/14/0/csi_cnj.cpp','2014-04-19 00:42:39','Successful submission!',1,NULL,3),(92,6,17,'submissions/6/17/0/dimensions_rs.c','2014-04-19 00:42:50','Incorrect output.',0,NULL,2),(93,6,18,'submissions/6/18/0/kings_rs.java','2014-04-19 00:45:02','Unspecified runtime error.',0,NULL,1),(94,6,8,'submissions/6/8/0/negative_cnj.cpp','2014-04-19 00:45:23','Successful submission!',1,NULL,3),(95,6,6,'submissions/6/6/0/neurotic_rs.java','2014-04-19 00:45:34','Unspecified runtime error.',0,NULL,1),(96,6,12,'submissions/6/12/0/spawns_cnj.cpp','2014-04-19 00:47:17','Successful submission!',1,NULL,3),(97,6,13,'submissions/6/13/0/space_rs.java','2014-04-19 00:47:35','Unspecified runtime error.',0,NULL,1),(98,6,11,'submissions/6/11/0/cellsman_cnj.cpp','2014-04-19 00:47:58','Successful submission!',1,NULL,3),(99,6,11,'submissions/6/11/1/cellsman_rs.java','2014-04-19 00:48:03','Unspecified runtime error.',0,NULL,1),(100,6,1,'submissions/6/1/10/angry_rs.java','2014-04-19 00:48:43','Successful submission!',1,NULL,1),(101,10,11,'submissions/10/11/0/cellsman_rs.java','2014-04-19 00:52:25','Unspecified runtime error.',0,NULL,1),(102,6,1,'submissions/6/1/11/angry_cnj.cpp','2014-04-19 01:10:08','Successful submission!',1,NULL,3),(103,6,1,'submissions/6/1/12/angry_rs.java','2014-04-19 01:10:15','Successful submission!',1,NULL,1),(104,6,19,'submissions/6/19/0/angry_cnj.cpp','2014-04-19 01:19:02','Incorrect output.',0,NULL,3),(105,6,1,'submissions/6/1/13/angry_cnj.cpp','2014-04-19 01:21:12','Successful submission!',1,NULL,3),(106,6,1,'submissions/6/1/14/angry_cnj.cpp','2014-04-19 01:21:18','Successful submission!',1,NULL,3),(107,6,1,'submissions/6/1/15/angry_cnj.cpp','2014-04-19 01:21:24','Successful submission!',1,NULL,3),(108,6,7,'submissions/6/7/1/booking_rs_slow.cpp','2014-04-19 01:21:52','Runtime memory limit exceeded.',0,NULL,3),(109,6,7,'submissions/6/7/2/booking_rs_slow.cpp','2014-04-19 01:26:45','Runtime memory limit exceeded.',0,NULL,3),(110,6,7,'submissions/6/7/3/dimensions_rs.c','2014-04-19 01:26:54','Incorrect output.',0,NULL,2),(111,6,20,'submissions/6/20/0/dimensions_rs.c','2014-04-19 01:27:05','Incorrect output.',0,NULL,2),(112,6,7,'submissions/6/7/4/booking_rs_slow.cpp','2014-04-19 01:31:56','Runtime memory limit exceeded.',0,NULL,3),(113,6,1,'submissions/6/1/16/angry_cnj.cpp','2014-04-19 01:32:16','Successful submission!',1,NULL,3),(114,6,1,'submissions/6/1/17/angry_rs.java','2014-04-19 01:32:25','Successful submission!',1,NULL,1),(115,6,1,'submissions/6/1/18/angry_cnj.cpp','2014-04-19 01:32:31','Successful submission!',1,NULL,3),(116,6,1,'submissions/6/1/19/angry_cnj.cpp','2014-04-19 01:32:39','Successful submission!',1,NULL,3),(117,6,1,'submissions/6/1/20/angry_cnj.cpp','2014-04-19 01:32:44','Successful submission!',1,NULL,3),(118,6,11,'submissions/6/11/2/angry_cnj.cpp','2014-04-19 01:36:59','Incorrect output.',0,NULL,3),(119,6,11,'submissions/6/11/3/cellsman_cnj.cpp','2014-04-19 01:37:13','Successful submission!',1,NULL,3),(120,6,1,'submissions/6/1/21/angry_cnj.cpp','2014-04-19 01:39:12','Successful submission!',1,NULL,3),(121,1,1,'submissions/1/1/43/angry_cnj.cpp','2014-04-19 10:44:53','',0,NULL,3),(122,1,1,'submissions/1/1/44/angry_cnj.cpp','2014-04-19 10:45:37','',0,NULL,3),(123,1,1,'submissions/1/1/45/angry_cnj.cpp','2014-04-19 11:05:09','Successful submission!',1,NULL,3),(124,1,1,'submissions/1/1/46/angry_cnj.cpp','2014-04-19 12:30:45','Successful submission!',1,NULL,3),(125,1,1,'submissions/1/1/47/angry_cnj.cpp','2014-04-19 12:32:11','Successful submission!',1,NULL,3),(126,1,1,'submissions/1/1/48/angry_cnj.cpp','2014-04-19 17:42:41','',0,NULL,3),(127,1,1,'submissions/1/1/49/angry_cnj.cpp','2014-04-19 17:47:21','Incorrect output.',0,NULL,3),(128,1,1,'submissions/1/1/50/angry_cnj.cpp','2014-04-19 17:49:52','Incorrect output.',0,NULL,3),(129,1,1,'submissions/1/1/51/angry_rs.java','2014-04-19 17:50:08','Unspecified runtime error.',0,NULL,1),(130,1,1,'submissions/1/1/52/angry_rs.java','2014-04-19 18:01:59','',0,NULL,1),(131,1,1,'submissions/1/1/53/angry_rs.java','2014-04-19 18:02:33','',0,NULL,1),(132,1,1,'submissions/1/1/54/angry_rs.java','2014-04-19 18:02:45','',0,NULL,1),(133,1,1,'submissions/1/1/55/angry_rs.java','2014-04-19 18:03:09','',0,NULL,1),(134,1,1,'submissions/1/1/56/angry_rs.java','2014-04-19 18:03:48','Successful submission!',1,NULL,1),(135,1,1,'submissions/1/1/57/angry_rs.java','2014-04-19 18:17:54','',0,NULL,1),(136,1,1,'submissions/1/1/58/angry_rs.java','2014-04-19 18:20:08','',0,NULL,1),(137,1,1,'submissions/1/1/59/angry_rs.java','2014-04-19 18:20:26','',0,NULL,1),(138,1,1,'submissions/1/1/60/angry_rs.java','2014-04-19 18:47:42','',0,NULL,1),(139,1,1,'submissions/1/1/61/angry_rs.java','2014-04-19 18:49:18','Successful submission!',1,NULL,1),(140,1,1,'submissions/1/1/62/angry_rs.java','2014-04-19 19:06:47','',0,NULL,1),(141,1,1,'submissions/1/1/63/angry_rs.java','2014-04-19 19:11:15','',0,NULL,1),(142,1,1,'submissions/1/1/64/angry_rs.java','2014-04-19 19:19:30','',0,NULL,1),(143,1,1,'submissions/1/1/65/angry_rs.java','2014-04-19 19:20:07','',0,NULL,1),(144,1,1,'submissions/1/1/66/angry_rs.java','2014-04-19 19:21:11','',0,NULL,1),(145,1,1,'submissions/1/1/67/angry_rs.java','2014-04-19 19:23:05','',0,NULL,1),(146,1,1,'submissions/1/1/68/angry_rs.java','2014-04-19 19:24:39','',0,NULL,1),(147,1,1,'submissions/1/1/69/angry_rs.java','2014-04-19 19:24:40','',0,NULL,1),(148,1,1,'submissions/1/1/70/angry_rs.java','2014-04-19 19:25:31','',0,NULL,1),(149,1,1,'submissions/1/1/71/angry_rs.java','2014-04-19 19:28:49','Successful submission!',1,70,1),(150,1,1,'submissions/1/1/72/angry_rs.java','2014-04-19 20:06:38','Successful submission!',1,80,1),(151,1,1,'submissions/1/1/73/angry_rs.java','2014-04-19 20:07:54','Successful submission!',1,60,1);
+/*!40000 ALTER TABLE `teamsubmission_submission` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `userregistration_customuser`
+--
+
+DROP TABLE IF EXISTS `userregistration_customuser`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `userregistration_customuser` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `password` varchar(128) COLLATE utf8_bin NOT NULL,
+  `last_login` datetime NOT NULL,
+  `is_superuser` tinyint(1) NOT NULL,
+  `skill_level` varchar(4) COLLATE utf8_bin NOT NULL,
+  `gender` varchar(1) COLLATE utf8_bin NOT NULL,
+  `email` varchar(254) COLLATE utf8_bin NOT NULL,
+  `temp_email` varchar(254) COLLATE utf8_bin DEFAULT NULL,
+  `email_activation_key` varchar(40) COLLATE utf8_bin DEFAULT NULL,
+  `first_name` varchar(30) COLLATE utf8_bin NOT NULL,
+  `last_name` varchar(30) COLLATE utf8_bin NOT NULL,
+  `is_staff` tinyint(1) NOT NULL,
+  `is_active` tinyint(1) NOT NULL,
+  `date_joined` datetime NOT NULL,
+  `activation_key` varchar(40) COLLATE utf8_bin NOT NULL,
+  `nickname` varchar(20) COLLATE utf8_bin DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `email` (`email`)
+) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `userregistration_customuser`
+--
+
+LOCK TABLES `userregistration_customuser` WRITE;
+/*!40000 ALTER TABLE `userregistration_customuser` DISABLE KEYS */;
+INSERT INTO `userregistration_customuser` VALUES (1,'pbkdf2_sha256$12000$0WeLTQBYeyso$7lKdelKuNygV0/FmuFbC69FG0X7nGrNS9gHBEj64hBs=','2014-04-17 23:51:28',1,'1','M','filip.egge@gmail.com',NULL,NULL,'Filip Egge','Egge',1,1,'2014-04-17 23:51:22','',''),(2,'pbkdf2_sha256$12000$QJocXA05Yn9g$YmSp0RIbVGLnT4NHwEt5UqZb6c7xEeYHfvH3w6vstD8=','2014-04-19 00:58:16',1,'1',' ','idi@open.no',NULL,NULL,'IDI','Open',1,1,'2014-04-18 09:31:29','',''),(3,'pbkdf2_sha256$12000$Sx9FLpZev1zl$Q1cDCpQAJreSCn2KCydeuY8BfqQDv2wdyHSAa/wyTko=','2014-04-20 10:52:28',1,'3','M','haakongk@stud.ntnu.no',NULL,NULL,'Håkon','Kaurel',1,1,'2014-04-18 09:31:35','c85e0363c529903b877094e3f29ad9310918c06b','kwrl'),(4,'pbkdf2_sha256$12000$ZTiuUOp4PV1N$piKiPB6Yw3EJ1H8D80hW+2/+t2JNSAJ4hkDrDASvs1w=','2014-04-18 21:16:14',0,'3','M','tinois@hotmail.com',NULL,NULL,'Abdul','Karim',0,1,'2014-04-18 21:01:02','ALREADY_ACTIVATED','Mostafa'),(5,'pbkdf2_sha256$12000$RtlN0iVxD2QC$tI8r/OSIXn5aIPseg/zo4ywq8AJ/2kZBA8ryf/p3iwo=','2014-04-18 21:03:14',0,'Pro','M','andsild@gmail.com',NULL,NULL,'first','last',0,1,'2014-04-18 21:03:14','ALREADY_ACTIVATED','nick'),(6,'pbkdf2_sha256$12000$U5qZdfJWPtgJ$YpIEGXfqyGuPNilHs6tdZ2n6SA15/BDbiTtpzG5m/H4=','2014-04-19 00:50:47',0,'1',' ','a@a.no',NULL,NULL,'a','a',0,1,'2014-04-18 21:12:35','',''),(7,'pbkdf2_sha256$12000$uhL8s8ah46M2$lJHLP+McWk+8vtycZJB1nBiw3TVluoSbxSl//YPVr0Q=','2014-04-18 21:36:20',0,'1',' ','b@b.no',NULL,NULL,'b','b',0,1,'2014-04-18 21:12:50','',''),(8,'pbkdf2_sha256$12000$hNIWl7dnuKR7$2c4HEMGkrJ9YJ7vDqFoI1BOmF+qwNtjdhzipChJOOBs=','2014-04-18 21:38:31',0,'1',' ','c@c.no',NULL,NULL,'༼◉','◉༽ ด็็็็็้้้้้็็็็้้้้้็็็็็้้',0,1,'2014-04-18 21:13:00','','Д'),(9,'pbkdf2_sha256$12000$Dee4f9mXd0be$YIZhvn54ITmqgE7ur71k1ajR8HjIqMzraspO6HDmX2w=','2014-04-18 21:13:36',0,'1',' ','d@d.no',NULL,NULL,'d','d',0,1,'2014-04-18 21:13:36','',''),(10,'pbkdf2_sha256$12000$wqVlk7QEBwdB$6ISyFVRgCLBcvGYxa9ua4Dsl6eXlVnnrP6P0EAixg7E=','2014-04-18 21:13:54',0,'1',' ','e@e.no',NULL,NULL,'e','e',0,1,'2014-04-18 21:13:54','',''),(11,'pbkdf2_sha256$12000$5W3H3D3k7Tz4$oTL9UojKlNl/QV9mInjlFaFIkHLNsHwMBbea+RSCPLk=','2014-04-18 21:14:07',0,'1',' ','f@f.no',NULL,NULL,'f','f',0,1,'2014-04-18 21:14:07','',''),(12,'pbkdf2_sha256$12000$sr1RCwAZUQaw$DSxD6KmI4BZeEZD01RMNTH2JjrgaKWrGwyj6v6sj+7Y=','2014-04-18 21:14:21',0,'1',' ','g@g.no',NULL,NULL,'g','g',0,1,'2014-04-18 21:14:21','',''),(13,'pbkdf2_sha256$12000$FP6MLYqHBCeV$PkAD2bubq/pUdoZ27Rfj8ZDfrOkkpmN3ANT//LztmfQ=','2014-04-18 21:14:34',0,'1',' ','h@h.no',NULL,NULL,'h','h',0,1,'2014-04-18 21:14:34','',''),(14,'pbkdf2_sha256$12000$Jz1GOFXIq4Vp$Ti3Py6Ae7V9tV3nOcZG2a7Ea7R3e55VA7W6RL4lQhNA=','2014-04-18 21:14:45',0,'1',' ','i@i.no',NULL,NULL,'i','i',0,1,'2014-04-18 21:14:45','',''),(15,'pbkdf2_sha256$12000$MaKbwlgKMrbj$e0ri2zLd1H98WgRc/lQRGNuAtB8sFEU040ULP0b++XY=','2014-04-18 21:15:35',0,'1',' ','j@j.no',NULL,NULL,'j','j',0,1,'2014-04-18 21:15:35','',''),(16,'pbkdf2_sha256$12000$XQFt0Vq7npaP$7bxpmMWA+N8VQEvEhNVI0+Ln9adtRhBpK3vWQ8culec=','2014-04-18 21:15:46',0,'1',' ','k@k.no',NULL,NULL,'k','k',0,1,'2014-04-18 21:15:46','',''),(17,'pbkdf2_sha256$12000$C1tsUEr3mWzd$HIBxelNWieq/LlkT3j34NBUQpgqu7zA52o9ULWdNi4w=','2014-04-18 21:16:02',0,'1',' ','l@l.no',NULL,NULL,'l','l',0,1,'2014-04-18 21:16:02','',''),(18,'pbkdf2_sha256$12000$Y3yk0FsFMMiT$Kr7aOQ5/b8shFlXyfo7jHmAB6HaLfTvNktHLaEyJ/jE=','2014-04-18 21:16:26',0,'1',' ','m@m.no',NULL,NULL,'m','m',0,1,'2014-04-18 21:16:26','',''),(19,'pbkdf2_sha256$12000$v1mfGMc8nBJq$ovbCm5XYuArhXr0kh+PP8wMpnGw0yOb88ReZMl9ahmM=','2014-04-18 21:16:51',0,'1',' ','n@n.no',NULL,NULL,'n','n',0,1,'2014-04-18 21:16:51','',''),(20,'pbkdf2_sha256$12000$QIdl1jlEEqi1$57h6z1u3I7SHPDip7pWZ+1/D8BOLsYUfbEF7eFurE5I=','2014-04-18 21:17:00',0,'1',' ','o@o.no',NULL,NULL,'o','o',0,1,'2014-04-18 21:17:00','',''),(21,'pbkdf2_sha256$12000$yOOzmbhgeBYP$w1GRLgjMXK7ZR8BNwluECcfKqjXwuHF/qpGx/c5MqVA=','2014-04-18 21:17:15',0,'1',' ','p@p.no',NULL,NULL,'p','p',0,1,'2014-04-18 21:17:15','',''),(22,'pbkdf2_sha256$12000$YPVScNbvXy69$+IG83eUtk91Poj2bSGPBmJXNYt6YLCLZ3+5ZxR5b1gE=','2014-04-18 21:17:27',0,'1',' ','q@q.no',NULL,NULL,'q','q',0,1,'2014-04-18 21:17:27','',''),(23,'pbkdf2_sha256$12000$kl8iayvOduyR$UtVpdqprh1kRlBDJps2eaJKvKLb3ulJXnvTVlImnMi8=','2014-04-18 21:17:50',0,'1',' ','r@r.no',NULL,NULL,'r','r',0,1,'2014-04-18 21:17:50','',''),(24,'pbkdf2_sha256$12000$cUbZrnngClr2$4AeT3Q4U7ZADiNl9MkT7yHAmINcR8M9mrpKNKTXGM1U=','2014-04-18 21:18:05',0,'1',' ','s@s.no',NULL,NULL,'s','s',0,1,'2014-04-18 21:18:05','',''),(25,'pbkdf2_sha256$12000$LHQew9kRKilc$sdwv4mCwAEw3d7v873v10zMp7UuYOb6lN8Bs7/x+Ygs=','2014-04-18 21:18:19',0,'1',' ','t@t.no',NULL,NULL,'t','t',0,1,'2014-04-18 21:18:19','',''),(26,'pbkdf2_sha256$12000$4uq1A7aDiKIp$ZjHo1aX0HCuqS78v843MvDnPzbgDT9ZUcByNLX/mNnE=','2014-04-18 21:18:31',0,'1',' ','u@u.no',NULL,NULL,'u','u',0,1,'2014-04-18 21:18:31','',''),(27,'pbkdf2_sha256$12000$tZrP3YDR2dqK$tkXhsCmRkceTPFI1CjEkSTsYHkRRKdTM9zs826WRmoU=','2014-04-18 21:18:42',0,'1',' ','v@v.no',NULL,NULL,'v','v',0,1,'2014-04-18 21:18:42','',''),(28,'pbkdf2_sha256$12000$H8mPT5DbwqR5$C52wTQ0zSoifqbjRjEsbFTEQKdsH2Ev2fAzM3Z06T9A=','2014-04-18 21:19:00',0,'1',' ','w@w.no',NULL,NULL,'w','w',0,1,'2014-04-18 21:19:00','',''),(29,'pbkdf2_sha256$12000$Ntw0W6GHd900$v9XgIVRablL52aRZcttoOLl0+MRuissBj7pduHOvvnU=','2014-04-18 21:19:17',0,'1',' ','x@x.no',NULL,NULL,'x','x',0,1,'2014-04-18 21:19:17','',''),(30,'pbkdf2_sha256$12000$uM0tlYBGpX1Y$fGVdlF8l8WlyvlRES6Ic8d3tyPzuLyar0xW6YeK8Mmw=','2014-04-18 21:19:30',0,'1',' ','y@y.no',NULL,NULL,'y','y',0,1,'2014-04-18 21:19:30','',''),(31,'pbkdf2_sha256$12000$ejujSjQ4Y5oC$sO18vxVteg7CLlDeQIhxJ782i5ctcZIZLM4f2QWEsd0=','2014-04-18 21:19:48',0,'1',' ','z@z.no',NULL,NULL,'z','z',0,1,'2014-04-18 21:19:48','','');
+/*!40000 ALTER TABLE `userregistration_customuser` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `userregistration_customuser_groups`
+--
+
+DROP TABLE IF EXISTS `userregistration_customuser_groups`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `userregistration_customuser_groups` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `customuser_id` int(11) NOT NULL,
+  `group_id` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `userregistration_customuser_customuser_id_22421b06f120fdca_uniq` (`customuser_id`,`group_id`),
+  KEY `userregistration_customuser_groups_a110e492` (`customuser_id`),
+  KEY `userregistration_customuser_groups_5f412f9a` (`group_id`),
+  CONSTRAINT `customuser_id_refs_id_b38e69ef` FOREIGN KEY (`customuser_id`) REFERENCES `userregistration_customuser` (`id`),
+  CONSTRAINT `group_id_refs_id_d57855ce` FOREIGN KEY (`group_id`) REFERENCES `auth_group` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `userregistration_customuser_groups`
+--
+
+LOCK TABLES `userregistration_customuser_groups` WRITE;
+/*!40000 ALTER TABLE `userregistration_customuser_groups` DISABLE KEYS */;
+/*!40000 ALTER TABLE `userregistration_customuser_groups` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `userregistration_customuser_user_permissions`
+--
+
+DROP TABLE IF EXISTS `userregistration_customuser_user_permissions`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `userregistration_customuser_user_permissions` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `customuser_id` int(11) NOT NULL,
+  `permission_id` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `userregistration_customuser_customuser_id_51d1bc1ba0b75fbd_uniq` (`customuser_id`,`permission_id`),
+  KEY `userregistration_customuser_user_permissions_a110e492` (`customuser_id`),
+  KEY `userregistration_customuser_user_permissions_83d7f98b` (`permission_id`),
+  CONSTRAINT `customuser_id_refs_id_0226ca69` FOREIGN KEY (`customuser_id`) REFERENCES `userregistration_customuser` (`id`),
+  CONSTRAINT `permission_id_refs_id_3b8d89ec` FOREIGN KEY (`permission_id`) REFERENCES `auth_permission` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `userregistration_customuser_user_permissions`
+--
+
+LOCK TABLES `userregistration_customuser_user_permissions` WRITE;
+/*!40000 ALTER TABLE `userregistration_customuser_user_permissions` DISABLE KEYS */;
+/*!40000 ALTER TABLE `userregistration_customuser_user_permissions` ENABLE KEYS */;
+UNLOCK TABLES;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2014-04-20 12:41:36
