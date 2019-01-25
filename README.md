@@ -11,16 +11,6 @@ Programming for IDIOpen
 * openshift SSH: ssh 52e4349a5004466b76000045@it2901-gentlecoding.rhcloud.com
 * sounddrop spotify: http://open.soundrop.fm/s/XN9jBJxMqazaBOZL
 
-dev contact:
------------------
-
-* andsild@gmail.com, andesil@stud.ntnu.no, 91 80 20 57
-* filip.egge@gmail.com, filipfe@stud.ntnu.no, 94809127
-* kitteeeeeeh@gmail.com, aakongk@stud.ntnu.no, 
-* haakon.konrad@gmail.com, 98044242
-* Fosse, 91369708
-* tinolazreg@gmail.com, 90173005
-
 Git configuration
 --------------------------
 
